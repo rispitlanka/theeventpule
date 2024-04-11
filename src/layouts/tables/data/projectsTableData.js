@@ -42,32 +42,38 @@ export default function data() {
     </MDBox>
   );
 
-  const Progress = ({ color, value }) => (
-    <MDBox display="flex" alignItems="center">
-      <MDTypography variant="caption" color="text" fontWeight="medium">
-        {value}%
-      </MDTypography>
-      <MDBox ml={0.5} width="9rem">
-        <MDProgress variant="gradient" color={color} value={value} />
-      </MDBox>
-    </MDBox>
-  );
+  // const Progress = ({ color, value }) => (
+  //   <MDBox display="flex" alignItems="center">
+  //     <MDTypography variant="caption" color="text" fontWeight="medium">
+  //       {value}%
+  //     </MDTypography>
+  //     <MDBox ml={0.5} width="9rem">
+  //       <MDProgress variant="gradient" color={color} value={value} />
+  //     </MDBox>
+  //   </MDBox>
+  // );
 
   return {
     columns: [
-      { Header: "project", accessor: "project", width: "30%", align: "left" },
-      { Header: "budget", accessor: "budget", align: "left" },
+      { Header: "screen name", accessor: "name", width: "30%", align: "left" },
+      { Header: "screen type", accessor: "type", align: "center" },
+      { Header: "price", accessor: "budget", align: "center" },
+      { Header: "sound", accessor: "sound", align: "center" },
       { Header: "status", accessor: "status", align: "center" },
-      { Header: "completion", accessor: "completion", align: "center" },
-      { Header: "action", accessor: "action", align: "center" },
+      { Header: "other", accessor: "action", align: "center" },
     ],
 
     rows: [
       {
-        project: <Project image={LogoAsana} name="Asana" />,
+        name: <Project image={LogoAsana} name="Platinum" />,
+        type: (
+          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+            hd
+          </MDTypography>
+        ),
         budget: (
           <MDTypography component="a" href="#" variant="button" color="text" fontWeight="medium">
-            $2,500
+            LKR 2,500
           </MDTypography>
         ),
         status: (
@@ -75,26 +81,11 @@ export default function data() {
             working
           </MDTypography>
         ),
-        completion: <Progress color="info" value={60} />,
-        action: (
-          <MDTypography component="a" href="#" color="text">
-            <Icon>more_vert</Icon>
-          </MDTypography>
-        ),
-      },
-      {
-        project: <Project image={logoGithub} name="Github" />,
-        budget: (
-          <MDTypography component="a" href="#" variant="button" color="text" fontWeight="medium">
-            $5,000
-          </MDTypography>
-        ),
-        status: (
+        sound: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            done
+            dolby dts
           </MDTypography>
         ),
-        completion: <Progress color="success" value={100} />,
         action: (
           <MDTypography component="a" href="#" color="text">
             <Icon>more_vert</Icon>
@@ -102,29 +93,15 @@ export default function data() {
         ),
       },
       {
-        project: <Project image={logoAtlassian} name="Atlassian" />,
-        budget: (
-          <MDTypography component="a" href="#" variant="button" color="text" fontWeight="medium">
-            $3,400
-          </MDTypography>
-        ),
-        status: (
+        name: <Project image={logoGithub} name="Github" />,
+        type: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            canceled
+            hd
           </MDTypography>
         ),
-        completion: <Progress color="error" value={30} />,
-        action: (
-          <MDTypography component="a" href="#" color="text">
-            <Icon>more_vert</Icon>
-          </MDTypography>
-        ),
-      },
-      {
-        project: <Project image={logoSpotify} name="Spotify" />,
         budget: (
           <MDTypography component="a" href="#" variant="button" color="text" fontWeight="medium">
-            $14,000
+            LKR 1,800
           </MDTypography>
         ),
         status: (
@@ -132,7 +109,11 @@ export default function data() {
             working
           </MDTypography>
         ),
-        completion: <Progress color="info" value={80} />,
+        sound: (
+          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+            dolby dts
+          </MDTypography>
+        ),
         action: (
           <MDTypography component="a" href="#" color="text">
             <Icon>more_vert</Icon>
@@ -140,18 +121,27 @@ export default function data() {
         ),
       },
       {
-        project: <Project image={logoSlack} name="Slack" />,
+        name: <Project image={logoAtlassian} name="Atlassian" />,
+        type: (
+          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+            hd
+          </MDTypography>
+        ),
         budget: (
           <MDTypography component="a" href="#" variant="button" color="text" fontWeight="medium">
-            $1,000
+            LKR 1,400
           </MDTypography>
         ),
         status: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            canceled
+            off
           </MDTypography>
         ),
-        completion: <Progress color="error" value={0} />,
+        sound: (
+          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+            dolby dts
+          </MDTypography>
+        ),
         action: (
           <MDTypography component="a" href="#" color="text">
             <Icon>more_vert</Icon>
@@ -159,18 +149,83 @@ export default function data() {
         ),
       },
       {
-        project: <Project image={logoInvesion} name="Invesion" />,
+        name: <Project image={logoSpotify} name="Spotify" />,
+        type: (
+          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+            hd
+          </MDTypography>
+        ),
         budget: (
           <MDTypography component="a" href="#" variant="button" color="text" fontWeight="medium">
-            $2,300
+            LKR 1,300
           </MDTypography>
         ),
         status: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            done
+            working
           </MDTypography>
         ),
-        completion: <Progress color="success" value={100} />,
+        sound: (
+          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+            dolby dts
+          </MDTypography>
+        ),
+        action: (
+          <MDTypography component="a" href="#" color="text">
+            <Icon>more_vert</Icon>
+          </MDTypography>
+        ),
+      },
+      {
+        name: <Project image={logoSlack} name="Slack" />,
+        type: (
+          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+            hd
+          </MDTypography>
+        ),
+        budget: (
+          <MDTypography component="a" href="#" variant="button" color="text" fontWeight="medium">
+            LKR 1,000
+          </MDTypography>
+        ),
+        status: (
+          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+            disabled
+          </MDTypography>
+        ),
+        sound: (
+          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+            dolby dts
+          </MDTypography>
+        ),
+        action: (
+          <MDTypography component="a" href="#" color="text">
+            <Icon>more_vert</Icon>
+          </MDTypography>
+        ),
+      },
+      {
+        name: <Project image={logoInvesion} name="Invesion" />,
+        type: (
+          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+            hd
+          </MDTypography>
+        ),
+        budget: (
+          <MDTypography component="a" href="#" variant="button" color="text" fontWeight="medium">
+            LKR 2,300
+          </MDTypography>
+        ),
+        status: (
+          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+            off
+          </MDTypography>
+        ),
+        sound: (
+          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+            dolby dts
+          </MDTypography>
+        ),
         action: (
           <MDTypography component="a" href="#" color="text">
             <Icon>more_vert</Icon>
