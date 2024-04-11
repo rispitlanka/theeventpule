@@ -28,12 +28,12 @@ import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 
 // Data
-import authorsTableData from "layouts/tables/data/authorsTableData";
-import projectsTableData from "layouts/tables/data/projectsTableData";
+import ownersTableData from "layouts/tables/data/ownersTableData";
+import screensTableData from "layouts/tables/data/screensTableData";
 
 function Tables() {
-  const { columns, rows } = authorsTableData();
-  const { columns: pColumns, rows: pRows } = projectsTableData();
+  const { columns, rows } = ownersTableData();
+  const { columns: pColumns, rows: pRows } = screensTableData();
 
   return (
     <DashboardLayout>
@@ -53,7 +53,7 @@ function Tables() {
                 coloredShadow="info"
               >
                 <MDTypography variant="h6" color="white">
-                  Authors Table
+                  Theatre Owners
                 </MDTypography>
               </MDBox>
               <MDBox pt={3}>
@@ -80,7 +80,7 @@ function Tables() {
                 coloredShadow="info"
               >
                 <MDTypography variant="h6" color="white">
-                  Projects Table
+                  Theatre Screens
                 </MDTypography>
               </MDBox>
               <MDBox pt={3}>

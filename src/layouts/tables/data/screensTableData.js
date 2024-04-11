@@ -25,15 +25,15 @@ import MDAvatar from "components/MDAvatar";
 import MDProgress from "components/MDProgress";
 
 // Images
-import LogoAsana from "assets/images/small-logos/logo-asana.svg";
-import logoGithub from "assets/images/small-logos/github.svg";
-import logoAtlassian from "assets/images/small-logos/logo-atlassian.svg";
-import logoSlack from "assets/images/small-logos/logo-slack.svg";
-import logoSpotify from "assets/images/small-logos/logo-spotify.svg";
-import logoInvesion from "assets/images/small-logos/logo-invision.svg";
+import LogoAsana from "assets/images/small-logos/screen1.png";
+import logoGithub from "assets/images/small-logos/screen7.jpg";
+import logoAtlassian from "assets/images/small-logos/screen3.jpg";
+import logoSlack from "assets/images/small-logos/screen4.jpg";
+import logoSpotify from "assets/images/small-logos/screen5.jpg";
+import logoInvesion from "assets/images/small-logos/screen6.jpg";
 
 export default function data() {
-  const Project = ({ image, name }) => (
+  const Screen = ({ image, name }) => (
     <MDBox display="flex" alignItems="center" lineHeight={1}>
       <MDAvatar src={image} name={name} size="sm" variant="rounded" />
       <MDTypography display="block" variant="button" fontWeight="medium" ml={1} lineHeight={1}>
@@ -65,10 +65,10 @@ export default function data() {
 
     rows: [
       {
-        name: <Project image={LogoAsana} name="Platinum" />,
+        name: <Screen image={LogoAsana} name="Tharma" />,
         type: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            hd
+            4K
           </MDTypography>
         ),
         budget: (
@@ -93,10 +93,10 @@ export default function data() {
         ),
       },
       {
-        name: <Project image={logoGithub} name="Github" />,
+        name: <Screen image={logoGithub} name="Bheema" />,
         type: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            hd
+            2K
           </MDTypography>
         ),
         budget: (
@@ -121,10 +121,10 @@ export default function data() {
         ),
       },
       {
-        name: <Project image={logoAtlassian} name="Atlassian" />,
+        name: <Screen image={logoAtlassian} name="Archuna" />,
         type: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            hd
+            2K
           </MDTypography>
         ),
         budget: (
@@ -149,10 +149,10 @@ export default function data() {
         ),
       },
       {
-        name: <Project image={logoSpotify} name="Spotify" />,
+        name: <Screen image={logoSpotify} name="Nakula" />,
         type: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            hd
+            2K
           </MDTypography>
         ),
         budget: (
@@ -177,10 +177,10 @@ export default function data() {
         ),
       },
       {
-        name: <Project image={logoSlack} name="Slack" />,
+        name: <Screen image={logoSlack} name="Sakatheva" />,
         type: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            hd
+            2K
           </MDTypography>
         ),
         budget: (
@@ -205,10 +205,10 @@ export default function data() {
         ),
       },
       {
-        name: <Project image={logoInvesion} name="Invesion" />,
+        name: <Screen image={logoInvesion} name="Karna" />,
         type: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            hd
+            2K
           </MDTypography>
         ),
         budget: (
