@@ -19,7 +19,6 @@ Coded by www.creative-tim.com
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDAvatar from "components/MDAvatar";
-import MDBadge from "components/MDBadge";
 
 // Images
 import team2 from "assets/images/team-2.jpg";
@@ -39,12 +38,12 @@ export default function data() {
     </MDBox>
   );
 
-  const Job = ({ title, description }) => (
+  const Theatres = ({ name, location }) => (
     <MDBox lineHeight={1} textAlign="left">
       <MDTypography display="block" variant="caption" color="text" fontWeight="medium">
-        {title}
+        {name}
       </MDTypography>
-      <MDTypography variant="caption">{description}</MDTypography>
+      <MDTypography variant="caption">{location}</MDTypography>
     </MDBox>
   );
 
@@ -53,19 +52,13 @@ export default function data() {
       { Header: "owner name", accessor: "ownerName", width: "45%", align: "left" },
       { Header: "theatre", accessor: "theatre", align: "left" },
       { Header: "owner contact", accessor: "ownerContact", align: "center" },
-      { Header: "status", accessor: "status", align: "center" },
       { Header: "action", accessor: "action", align: "center" },
     ],
 
     rows: [
       {
         ownerName: <Owner image={team2} name="John Michael" email="john@creative-tim.com" />,
-        theatre: <Job title="Pvr" description="colombo" />,
-        status: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent="online" color="success" variant="gradient" size="sm" />
-          </MDBox>
-        ),
+        theatre: <Theatres name="Pvr" location="colombo" />,
         ownerContact: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
             0712345678
@@ -79,12 +72,7 @@ export default function data() {
       },
       {
         ownerName: <Owner image={team3} name="Alexa Liras" email="alexa@creative-tim.com" />,
-        theatre: <Job title="savoy" description="colombo" />,
-        status: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent="offline" color="dark" variant="gradient" size="sm" />
-          </MDBox>
-        ),
+        theatre: <Theatres name="savoy" location="colombo" />,
         ownerContact: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
             0721345678
@@ -98,12 +86,7 @@ export default function data() {
       },
       {
         ownerName: <Owner image={team4} name="Laurent Perrier" email="laurent@creative-tim.com" />,
-        theatre: <Job title="concord" description="colombo" />,
-        status: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent="online" color="success" variant="gradient" size="sm" />
-          </MDBox>
-        ),
+        theatre: <Theatres name="concord" location="colombo" />,
         ownerContact: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
             0731245678
@@ -117,12 +100,7 @@ export default function data() {
       },
       {
         ownerName: <Owner image={team3} name="Michael Levi" email="michael@creative-tim.com" />,
-        theatre: <Job title="regal" description="jaffna" />,
-        status: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent="online" color="success" variant="gradient" size="sm" />
-          </MDBox>
-        ),
+        theatre: <Theatres name="regal" location="jaffna" />,
         ownerContact: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
             0741235678
@@ -136,12 +114,7 @@ export default function data() {
       },
       {
         ownerName: <Owner image={team3} name="Richard Gran" email="richard@creative-tim.com" />,
-        theatre: <Job title="rajah" description="jaffna" />,
-        status: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent="offline" color="dark" variant="gradient" size="sm" />
-          </MDBox>
-        ),
+        theatre: <Theatres name="rajah" location="jaffna" />,
         ownerContact: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
             0751234678
@@ -155,12 +128,7 @@ export default function data() {
       },
       {
         ownerName: <Owner image={team4} name="Miriam Eric" email="miriam@creative-tim.com" />,
-        theatre: <Job title="ss complex" description="pointpedro" />,
-        status: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent="offline" color="dark" variant="gradient" size="sm" />
-          </MDBox>
-        ),
+        theatre: <Theatres name="ss complex" location="pointpedro" />,
         ownerContact: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
             0761234578

@@ -16,10 +16,13 @@ Coded by www.creative-tim.com
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
+import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
+import AddToQueueIcon from "@mui/icons-material/AddToQueue";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
+import MDButton from "components/MDButton";
 
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -47,14 +50,20 @@ function Tables() {
                 mt={-3}
                 py={3}
                 px={2}
+                pt={1}
                 variant="gradient"
                 bgColor="info"
                 borderRadius="lg"
                 coloredShadow="info"
+                display="flex"
+                justifyContent="space-between" 
               >
                 <MDTypography variant="h6" color="white">
                   Theatre Owners
-                </MDTypography>
+                </MDTypography>               
+                <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
+                  <MDButton><PersonAddAlt1Icon color="info"/></MDButton>
+                </MDBox>               
               </MDBox>
               <MDBox pt={3}>
                 <DataTable
@@ -74,14 +83,20 @@ function Tables() {
                 mt={-3}
                 py={3}
                 px={2}
+                pt={1}
                 variant="gradient"
                 bgColor="info"
                 borderRadius="lg"
                 coloredShadow="info"
+                display="flex"
+                justifyContent="space-between" 
               >
                 <MDTypography variant="h6" color="white">
                   Theatre Screens
                 </MDTypography>
+                <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
+                  <MDButton><AddToQueueIcon color="info"/></MDButton>
+                </MDBox>  
               </MDBox>
               <MDBox pt={3}>
                 <DataTable

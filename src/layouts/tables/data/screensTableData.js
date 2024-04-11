@@ -22,7 +22,7 @@ import Icon from "@mui/material/Icon";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDAvatar from "components/MDAvatar";
-import MDProgress from "components/MDProgress";
+import MDBadge from "components/MDBadge";
 
 // Images
 import LogoAsana from "assets/images/small-logos/screen1.png";
@@ -56,6 +56,7 @@ export default function data() {
   return {
     columns: [
       { Header: "screen name", accessor: "name", width: "30%", align: "left" },
+      { Header: "theatre name", accessor: "theatreName", align: "center" },
       { Header: "screen type", accessor: "type", align: "center" },
       { Header: "price", accessor: "budget", align: "center" },
       { Header: "sound", accessor: "sound", align: "center" },
@@ -66,6 +67,11 @@ export default function data() {
     rows: [
       {
         name: <Screen image={LogoAsana} name="Tharma" />,
+        theatreName: (
+          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+            savoy
+          </MDTypography>
+        ),
         type: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
             4K
@@ -77,9 +83,9 @@ export default function data() {
           </MDTypography>
         ),
         status: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            working
-          </MDTypography>
+          <MDBox ml={-1}>
+            <MDBadge badgeContent="running" color="info" variant="gradient" size="sm" />
+          </MDBox>
         ),
         sound: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
@@ -94,6 +100,11 @@ export default function data() {
       },
       {
         name: <Screen image={logoGithub} name="Bheema" />,
+        theatreName: (
+          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+            regal
+          </MDTypography>
+        ),
         type: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
             2K
@@ -105,9 +116,9 @@ export default function data() {
           </MDTypography>
         ),
         status: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            working
-          </MDTypography>
+          <MDBox ml={-1}>
+            <MDBadge badgeContent="available" color="success" variant="gradient" size="sm" />
+          </MDBox>
         ),
         sound: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
@@ -122,6 +133,11 @@ export default function data() {
       },
       {
         name: <Screen image={logoAtlassian} name="Archuna" />,
+        theatreName: (
+          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+            ss complex
+          </MDTypography>
+        ),
         type: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
             2K
@@ -133,9 +149,9 @@ export default function data() {
           </MDTypography>
         ),
         status: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            off
-          </MDTypography>
+          <MDBox ml={-1}>
+            <MDBadge badgeContent="available" color="success" variant="gradient" size="sm" />
+          </MDBox>
         ),
         sound: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
@@ -150,6 +166,11 @@ export default function data() {
       },
       {
         name: <Screen image={logoSpotify} name="Nakula" />,
+        theatreName: (
+          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+            rajah
+          </MDTypography>
+        ),
         type: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
             2K
@@ -161,9 +182,9 @@ export default function data() {
           </MDTypography>
         ),
         status: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            working
-          </MDTypography>
+          <MDBox ml={-1}>
+            <MDBadge badgeContent="running" color="info" variant="gradient" size="sm" />
+          </MDBox>
         ),
         sound: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
@@ -178,6 +199,11 @@ export default function data() {
       },
       {
         name: <Screen image={logoSlack} name="Sakatheva" />,
+        theatreName: (
+          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+            rajah
+          </MDTypography>
+        ),
         type: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
             2K
@@ -189,9 +215,9 @@ export default function data() {
           </MDTypography>
         ),
         status: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            disabled
-          </MDTypography>
+          <MDBox ml={-1}>
+            <MDBadge badgeContent="unavailable" color="dark" variant="gradient" size="sm" />
+          </MDBox>
         ),
         sound: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
@@ -206,6 +232,11 @@ export default function data() {
       },
       {
         name: <Screen image={logoInvesion} name="Karna" />,
+        theatreName: (
+          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+            majestic
+          </MDTypography>
+        ),
         type: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
             2K
@@ -217,9 +248,9 @@ export default function data() {
           </MDTypography>
         ),
         status: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            off
-          </MDTypography>
+          <MDBox ml={-1}>
+            <MDBadge badgeContent="available" color="success" variant="gradient" size="sm" />
+          </MDBox>
         ),
         sound: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
