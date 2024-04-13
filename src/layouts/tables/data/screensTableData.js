@@ -16,7 +16,7 @@ Coded by www.creative-tim.com
 */
 
 // @mui material components
-import Icon from "@mui/material/Icon";
+// import Icon from "@mui/material/Icon";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -31,6 +31,8 @@ import logoAtlassian from "assets/images/small-logos/screen3.jpg";
 import logoSlack from "assets/images/small-logos/screen4.jpg";
 import logoSpotify from "assets/images/small-logos/screen5.jpg";
 import logoInvesion from "assets/images/small-logos/screen6.jpg";
+import MDButton from "components/MDButton";
+import { useNavigate } from "react-router-dom";
 
 export default function data() {
   const Screen = ({ image, name }) => (
@@ -41,6 +43,11 @@ export default function data() {
       </MDTypography>
     </MDBox>
   );
+
+  const navigate = useNavigate();
+  const openPage = (route) => {
+    navigate(route);
+  };
 
   // const Progress = ({ color, value }) => (
   //   <MDBox display="flex" alignItems="center">
@@ -93,9 +100,7 @@ export default function data() {
           </MDTypography>
         ),
         action: (
-          <MDTypography component="a" href="#" color="text">
-            <Icon>more_vert</Icon>
-          </MDTypography>
+          <MDButton onClick={() => openPage("/tables/edit-screen")} variant='text' size='small' color='info'>edit</MDButton>
         ),
       },
       {
@@ -126,9 +131,7 @@ export default function data() {
           </MDTypography>
         ),
         action: (
-          <MDTypography component="a" href="#" color="text">
-            <Icon>more_vert</Icon>
-          </MDTypography>
+          <MDButton onClick={() => openPage("/tables/edit-screen")} variant='text' size='small' color='info'>edit</MDButton>
         ),
       },
       {
@@ -159,9 +162,7 @@ export default function data() {
           </MDTypography>
         ),
         action: (
-          <MDTypography component="a" href="#" color="text">
-            <Icon>more_vert</Icon>
-          </MDTypography>
+          <MDButton onClick={() => openPage("/tables/edit-screen")} variant='text' size='small' color='info'>edit</MDButton>
         ),
       },
       {
@@ -192,9 +193,7 @@ export default function data() {
           </MDTypography>
         ),
         action: (
-          <MDTypography component="a" href="#" color="text">
-            <Icon>more_vert</Icon>
-          </MDTypography>
+          <MDButton onClick={() => openPage("/tables/edit-screen")} variant='text' size='small' color='info'>edit</MDButton>
         ),
       },
       {
@@ -225,9 +224,7 @@ export default function data() {
           </MDTypography>
         ),
         action: (
-          <MDTypography component="a" href="#" color="text">
-            <Icon>more_vert</Icon>
-          </MDTypography>
+          <MDButton onClick={() => openPage("/tables/edit-screen")} variant='text' size='small' color='info'>edit</MDButton>
         ),
       },
       {
@@ -258,9 +255,7 @@ export default function data() {
           </MDTypography>
         ),
         action: (
-          <MDTypography component="a" href="#" color="text">
-            <Icon>more_vert</Icon>
-          </MDTypography>
+          <MDButton onClick={() => openPage("/tables/edit-screen")} variant='text' size='small' color='info'>edit</MDButton>
         ),
       },
     ],

@@ -44,6 +44,10 @@ import Notifications from "layouts/notifications";
 import Profile from "layouts/profile";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
+import AddOwner from "pages/addOwner";
+import AddScreen from "pages/addScreen";
+import ManageOwner from "pages/manageOwner";
+import EditScreen from "pages/editScreen";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
@@ -65,30 +69,22 @@ const routes = [
     route: "/tables",
     component: <Tables />,
   },
-  {
-    type: "collapse",
-    name: "Billing",
-    key: "billing",
-    icon: <Icon fontSize="small">receipt_long</Icon>,
-    route: "/billing",
-    component: <Billing />,
-  },
-  {
-    type: "collapse",
-    name: "RTL",
-    key: "rtl",
-    icon: <Icon fontSize="small">format_textdirection_r_to_l</Icon>,
-    route: "/rtl",
-    component: <RTL />,
-  },
-  {
-    type: "collapse",
-    name: "Notifications",
-    key: "notifications",
-    icon: <Icon fontSize="small">notifications</Icon>,
-    route: "/notifications",
-    component: <Notifications />,
-  },
+  // {
+  //   type: "collapse",
+  //   name: "Billing",
+  //   key: "billing",
+  //   icon: <Icon fontSize="small">receipt_long</Icon>,
+  //   route: "/billing",
+  //   component: <Billing />,
+  // },
+  // {
+  //   type: "collapse",
+  //   name: "Notifications",
+  //   key: "notifications",
+  //   icon: <Icon fontSize="small">notifications</Icon>,
+  //   route: "/notifications",
+  //   component: <Notifications />,
+  // },
   {
     type: "collapse",
     name: "Profile",
@@ -112,6 +108,30 @@ const routes = [
     icon: <Icon fontSize="small">assignment</Icon>,
     route: "/authentication/sign-up",
     component: <SignUp />,
+  },
+  {
+    route: "/tables/add-owner",
+    component: <AddOwner />,
+  },
+  {
+    route: "/tables/add-screen",
+    component: <AddScreen />,
+  },
+  {
+    route: "/tables/manage-owner",
+    component: <ManageOwner />,
+  },
+  {
+    route: "/tables/edit-screen",
+    component: <EditScreen />,
+  },
+  {
+    type: "collapse",
+    name: "RTL",
+    key: "rtl",
+    icon: <Icon fontSize="small">format_textdirection_r_to_l</Icon>,
+    route: "/rtl",
+    component: <RTL />,
   },
 ];
 

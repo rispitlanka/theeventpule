@@ -13,6 +13,7 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
+import { useNavigate } from "react-router-dom";
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
@@ -37,6 +38,11 @@ import screensTableData from "layouts/tables/data/screensTableData";
 function Tables() {
   const { columns, rows } = ownersTableData();
   const { columns: pColumns, rows: pRows } = screensTableData();
+  const navigate = useNavigate();
+  const openPage = (route) => {
+    navigate(route);
+  };
+
 
   return (
     <DashboardLayout>
@@ -56,14 +62,14 @@ function Tables() {
                 borderRadius="lg"
                 coloredShadow="info"
                 display="flex"
-                justifyContent="space-between" 
+                justifyContent="space-between"
               >
                 <MDTypography variant="h6" color="white">
                   Theatre Owners
-                </MDTypography>               
+                </MDTypography>
                 <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
-                  <MDButton><PersonAddAlt1Icon color="info"/></MDButton>
-                </MDBox>               
+                  <MDButton onClick={() => openPage("/tables/add-owner")}><PersonAddAlt1Icon color="info" /></MDButton>
+                </MDBox>
               </MDBox>
               <MDBox pt={3}>
                 <DataTable
@@ -89,14 +95,14 @@ function Tables() {
                 borderRadius="lg"
                 coloredShadow="info"
                 display="flex"
-                justifyContent="space-between" 
+                justifyContent="space-between"
               >
                 <MDTypography variant="h6" color="white">
                   Theatre Screens
                 </MDTypography>
                 <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
-                  <MDButton><AddToQueueIcon color="info"/></MDButton>
-                </MDBox>  
+                  <MDButton onClick={() => openPage("/tables/add-screen")}><AddToQueueIcon color="info" /></MDButton>
+                </MDBox>
               </MDBox>
               <MDBox pt={3}>
                 <DataTable

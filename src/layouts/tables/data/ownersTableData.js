@@ -24,6 +24,8 @@ import MDAvatar from "components/MDAvatar";
 import team2 from "assets/images/team-2.jpg";
 import team3 from "assets/images/team-3.jpg";
 import team4 from "assets/images/team-4.jpg";
+import { useNavigate } from "react-router-dom";
+import MDButton from "components/MDButton";
 
 export default function data() {
   const Owner = ({ image, name, email }) => (
@@ -47,6 +49,11 @@ export default function data() {
     </MDBox>
   );
 
+  const navigate = useNavigate();
+  const openPage = (route) => {
+    navigate(route);
+  };
+
   return {
     columns: [
       { Header: "owner name", accessor: "ownerName", width: "45%", align: "left" },
@@ -65,9 +72,7 @@ export default function data() {
           </MDTypography>
         ),
         action: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            Manage
-          </MDTypography>
+          <MDButton onClick={() => openPage("/tables/manage-owner")} variant='text' color='info' size='small'>Manage</MDButton>
         ),
       },
       {
@@ -79,9 +84,7 @@ export default function data() {
           </MDTypography>
         ),
         action: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            Manage
-          </MDTypography>
+          <MDButton onClick={() => openPage("/tables/manage-owner")} variant='text' color='info' size='small'>Manage</MDButton>
         ),
       },
       {
@@ -93,9 +96,7 @@ export default function data() {
           </MDTypography>
         ),
         action: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            Manage
-          </MDTypography>
+          <MDButton onClick={() => openPage("/tables/manage-owner")} variant='text' color='info' size='small'>Manage</MDButton>
         ),
       },
       {
@@ -107,9 +108,7 @@ export default function data() {
           </MDTypography>
         ),
         action: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            Manage
-          </MDTypography>
+          <MDButton onClick={() => openPage("/tables/manage-owner")} variant='text' color='info' size='small'>Manage</MDButton>
         ),
       },
       {
@@ -121,9 +120,7 @@ export default function data() {
           </MDTypography>
         ),
         action: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            Manage
-          </MDTypography>
+          <MDButton onClick={() => openPage("/tables/manage-owner")} variant='text' color='info' size='small'>Manage</MDButton>
         ),
       },
       {
@@ -135,9 +132,7 @@ export default function data() {
           </MDTypography>
         ),
         action: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            Manage
-          </MDTypography>
+          <MDButton onClick={() => openPage("/tables/manage-owner")} variant='text' color='info' size='small'>Manage</MDButton>
         ),
       },
     ],
