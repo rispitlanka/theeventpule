@@ -51,6 +51,7 @@ import ManageOwner from "pages/manageOwner";
 import EditScreen from "pages/editScreen";
 import Facilities from "pages/facilities";
 import Languages from "pages/languages";
+import Theatres from "pages/theatres";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
@@ -75,6 +76,14 @@ const routes = [
     icon: <Icon fontSize="small">table_view</Icon>,
     route: "/tables",
     component: <Tables />,
+  },
+  {
+    type: "collapse",
+    name: "Theatres",
+    key: "theatres",
+    icon: <Icon fontSize="small">table_view</Icon>,
+    route: "/theatres",
+    component: <Theatres />,
   },
   // {
   //   type: "collapse",
