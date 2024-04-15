@@ -56,7 +56,7 @@ import EditTheatre from "pages/editTheatre";
 import Languages from "pages/languages";
 import Theatres from "pages/theatres";
 import AddTheatre from "pages/addTheatre";
-
+import EditTheatre from "pages/editTheatre";
 // @mui icons
 import Icon from "@mui/material/Icon";
 import { Movie } from "@mui/icons-material";
