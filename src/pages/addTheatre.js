@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { v4 as uuidv4 } from 'uuid';
 
 // @mui material components
 import Grid from "@mui/material/Grid";
@@ -54,8 +55,9 @@ export default function AddTheatre() {
   });
 
   const saveDataToLocal = (data) => {
+    const id = uuidv4();
     let newData = JSON.parse(localStorage.getItem('theatreData')) || [];
-    newData.push(data);
+    newData.push({id,...data});
     localStorage.setItem('theatreData', JSON.stringify(newData));
   }
 
