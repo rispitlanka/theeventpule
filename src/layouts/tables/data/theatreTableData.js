@@ -47,7 +47,6 @@ export default function data() {
     const data = localStorage.getItem('theatreData');
     if (data) {
       setTheatreData(JSON.parse(data));
-      console.log(JSON.parse(data));
     }
     // eslint-disable-next-line
   }, []);
@@ -80,7 +79,7 @@ export default function data() {
       </MDTypography>
     ),
     action: (
-      <MDButton onClick={() => openPage("/tables/edit-screen")} variant='text' size='small' color='info'>edit</MDButton>
+      <MDButton onClick={() => openPage(`/theatres/edit-theatre/${theatre.id}`)} variant='text' size='small' color='info'>edit</MDButton>
     ),
 
   })) : [{name: <MDTypography color='warning' fontWeight='bold'>No theatres found</MDTypography>}];
