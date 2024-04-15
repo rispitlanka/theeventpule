@@ -48,6 +48,7 @@ import AddOwner from "pages/addOwner";
 import AddScreen from "pages/addScreen";
 import ManageOwner from "pages/manageOwner";
 import EditScreen from "pages/editScreen";
+import Facilities from "pages/facilities";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
@@ -108,6 +109,14 @@ const routes = [
     icon: <Icon fontSize="small">assignment</Icon>,
     route: "/authentication/sign-up",
     component: <SignUp />,
+  },
+  {
+    type: "collapse",
+    name: "Facilities",
+    key: "facilities",
+    icon: <Icon fontSize="small">assignment</Icon>,
+    route: "/facilities",
+    component: <Facilities />,
   },
   {
     route: "/tables/add-owner",
