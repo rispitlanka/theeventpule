@@ -45,7 +45,7 @@ export default function Facilities() {
                                 justifyContent="space-between"
                             >
                                 <MDTypography variant="h6" color="white">
-                                    Facilities
+                                    Facilitiesssss
                                 </MDTypography>
                                 <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
                                     <MDButton onClick={() => openPage("")}></MDButton>
