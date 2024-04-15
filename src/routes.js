@@ -46,7 +46,7 @@ import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 import AddOwner from "pages/addOwner";
 import AddScreen from "pages/addScreen";
-import AddFacilities from "pages/addFacilities";
+// import AddFacilities from "pages/addFacilities";
 import ManageOwner from "pages/manageOwner";
 import EditScreen from "pages/editScreen";
 import Facilities from "pages/facilities";
@@ -154,10 +154,10 @@ const routes = [
     route: "/languages",
     component: <Languages />,
   },
-  {
-    route: "/facilities/add-facilities",
-    component: <AddFacilities />,
-  },
+  // {
+  //   route: "/facilities/add-facilities",
+  //   component: <AddFacilities />,
+  // },
   {
     route: "/movies/add-movies",
     component: <AddMovies />,
