@@ -33,11 +33,11 @@ import DataTable from "examples/Tables/DataTable";
 
 // Data
 import ownersTableData from "layouts/tables/data/ownersTableData";
-import screensTableData from "layouts/tables/data/screensTableData";
+import theatreTableData from "layouts/tables/data/theatreTableData";
 
 function Tables() {
   const { columns, rows } = ownersTableData();
-  const { columns: pColumns, rows: pRows } = screensTableData();
+  const { columns: pColumns, rows: pRows } = theatreTableData();
   const navigate = useNavigate();
   const openPage = (route) => {
     navigate(route);
@@ -98,7 +98,7 @@ function Tables() {
                 justifyContent="space-between"
               >
                 <MDTypography variant="h6" color="white">
-                  Theatre Screens
+                  Theatres
                 </MDTypography>
                 <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
                   <MDButton onClick={() => openPage("/tables/add-screen")}><AddToQueueIcon color="info" /></MDButton>

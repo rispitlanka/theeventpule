@@ -13,6 +13,7 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
+import { useEffect, useState } from "react";
 // prop-types is a library for typechecking of props
 import PropTypes from "prop-types";
 
@@ -33,9 +34,10 @@ import MDSnackbarIconRoot from "components/MDSnackbar/MDSnackbarIconRoot";
 // Material Dashboard 2 React context
 import { useMaterialUIController } from "context";
 
-function MDSnackbar({ color, icon, title, dateTime, content, close, bgWhite, ...rest }) {
+function MDSnackbar({ color, icon, title, dateTime, content, close, time, bgWhite, ...rest }) {
   const [controller] = useMaterialUIController();
   const { darkMode } = controller;
+  const [open, setOpen] = useState(true);
 
   let titleColor;
   let dateTimeColor;
@@ -55,8 +57,21 @@ function MDSnackbar({ color, icon, title, dateTime, content, close, bgWhite, ...
     dividerColor = true;
   }
 
+  // Close the Snackbar after the specified time duration
+  useEffect(() => {
+    if (time && time > 0) {
+      const timer = setTimeout(() => {
+        setOpen(false);
+        close(); // Call the close function provided by props
+      }, time);
+      return () => clearTimeout(timer); // Cleanup function
+    }
+  }, [time, close]);
+
   return (
     <Snackbar
+      open={open}
+      onClose={() => setOpen(false)}
       TransitionComponent={Fade}
       autoHideDuration={5000}
       anchorOrigin={{
@@ -169,6 +184,7 @@ MDSnackbar.propTypes = {
   content: PropTypes.node.isRequired,
   close: PropTypes.func.isRequired,
   bgWhite: PropTypes.bool,
+  time: PropTypes.number,
 };
 
 export default MDSnackbar;

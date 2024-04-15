@@ -52,6 +52,7 @@ import EditScreen from "pages/editScreen";
 import Facilities from "pages/facilities";
 import Languages from "pages/languages";
 import Theatres from "pages/theatres";
+import AddTheatre from "pages/addTheatre";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
@@ -176,6 +177,10 @@ const routes = [
   {
     route: "/tables/edit-screen",
     component: <EditScreen />,
+  },
+  {
+    route: "/theatres/add-theatre",
+    component: <AddTheatre />,
   },
   {
     type: "collapse",
