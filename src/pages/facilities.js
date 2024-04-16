@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 // @mui material components
 import { Card, Grid } from '@mui/material';
+import AddBoxIcon from '@mui/icons-material/AddBox';
 
 // Material Dashboard 2 React components
 import MDBox from 'components/MDBox';
@@ -16,10 +17,10 @@ import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 
 // Data
-import ownersTableData from "layouts/tables/data/ownersTableData";
+import facilitiesTableData from "layouts/tables/data/facilitiesTableData";
 
 export default function Facilities() {
-    const { columns, rows } = ownersTableData();
+    const { columns, rows } = facilitiesTableData();
     const navigate = useNavigate();
     const openPage = (route) => {
         navigate(route);
@@ -48,7 +49,7 @@ export default function Facilities() {
                                     Facilities
                                 </MDTypography>
                                 <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
-                                    <MDButton onClick={() => openPage("")}></MDButton>
+                                    <MDButton onClick={() => openPage("/facilities/add-facilities")}><AddBoxIcon color='info' /></MDButton>
                                 </MDBox>
                             </MDBox>
                             <MDBox pt={3}>
