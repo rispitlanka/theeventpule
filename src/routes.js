@@ -54,12 +54,13 @@ import Theatres from "pages/theatres";
 import AddTheatre from "pages/addTheatre";
 import EditTheatre from "pages/editTheatre";
 import Languages from "pages/languages";
-import Theatres from "pages/theatres";
-import AddTheatre from "pages/addTheatre";
-import EditTheatre from "pages/editTheatre";import Languages from "pages/languages";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
+import { Movie } from "@mui/icons-material";
+import Movies from "pages/movies";
+import AddMovies from "pages/addMovies";
+import AddLanguages from "pages/addLanguages";
 import { Movie } from "@mui/icons-material";
 import Movies from "pages/movies";
 import AddMovies from "pages/addMovies";
@@ -137,6 +138,34 @@ const routes = [
     icon: <Icon fontSize="small">assignment</Icon>,
     route: "/facilities",
     component: <Facilities />,
+  },
+  {
+    type: "collapse",
+    name: "Movies",
+    key: "movies",
+    icon: <Icon fontSize="small">assignment</Icon>,
+    route: "/movies",
+    component: <Movies />,
+  },
+  {
+    type: "collapse",
+    name: "Languages",
+    key: "languages",
+    icon: <Icon fontSize="small">assignment</Icon>,
+    route: "/languages",
+    component: <Languages />,
+  },
+  {
+    route: "/facilities/add-facilities",
+    component: <AddFacilities />,
+  },
+  {
+    route: "/movies/add-movies",
+    component: <AddMovies />,
+  },
+  {
+    route: "/languages/add-languages",
+    component: <AddLanguages />,
   },
   {
     type: "collapse",
