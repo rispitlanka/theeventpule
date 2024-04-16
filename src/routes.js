@@ -51,6 +51,9 @@ import ManageOwner from "pages/manageOwner";
 import EditScreen from "pages/editScreen";
 import Facilities from "pages/facilities";
 import Languages from "pages/languages";
+import Theatres from "pages/theatres";
+import AddTheatre from "pages/addTheatre";
+import EditTheatre from "pages/editTheatre";import Languages from "pages/languages";
 
 import Theatres from "pages/theatres";
 import AddTheatre from "pages/addTheatre";
