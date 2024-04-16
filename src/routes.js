@@ -46,7 +46,6 @@ import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 import AddOwner from "pages/addOwner";
 import AddScreen from "pages/addScreen";
-// import AddFacilities from "pages/addFacilities";
 import ManageOwner from "pages/manageOwner";
 import EditScreen from "pages/editScreen";
 import Facilities from "pages/facilities";
@@ -54,13 +53,13 @@ import Theatres from "pages/theatres";
 import AddTheatre from "pages/addTheatre";
 import EditTheatre from "pages/editTheatre";
 import Languages from "pages/languages";
-
-// @mui icons
-import Icon from "@mui/material/Icon";
 import Movies from "pages/movies";
 import AddMovies from "pages/addMovies";
 import AddLanguages from "pages/addLanguages";
-import { Movie } from "@mui/icons-material";
+import SingleTheatre from "pages/singleTheatre";
+import SingleScreen from "pages/singleScreen";
+// @mui icons
+import Icon from "@mui/material/Icon";
 
 const routes = [
   {
@@ -168,16 +167,8 @@ const routes = [
     component: <AddOwner />,
   },
   {
-    route: "/tables/add-screen",
-    component: <AddScreen />,
-  },
-  {
     route: "/tables/manage-owner",
     component: <ManageOwner />,
-  },
-  {
-    route: "/tables/edit-screen",
-    component: <EditScreen />,
   },
   {
     route: "/theatres/add-theatre",
@@ -186,6 +177,22 @@ const routes = [
   {
     route: "/theatres/edit-theatre/:id",
     component: <EditTheatre />,
+  },
+  {
+    route: "/theatres/single-theatre/:id",
+    component: <SingleTheatre />,
+  },
+  {
+    route: "/theatres/single-theatre/add-screen/:id",
+    component: <AddScreen />,
+  },
+  {
+    route: "/theatres/single-theatre/single-screen/:screenId",
+    component: <SingleScreen />,
+  },
+  {
+    route: "/theatres/single-theatre/edit-screen/:screenId",
+    component: <EditScreen />,
   },
   {
     type: "collapse",

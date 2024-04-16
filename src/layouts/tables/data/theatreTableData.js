@@ -17,6 +17,7 @@ Coded by www.creative-tim.com
 
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { supabase } from "pages/supabaseClient";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -38,21 +39,37 @@ export default function data() {
   );
 
   const [theatreData, setTheatreData] = useState(null);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
   const openPage = (route) => {
     navigate(route);
   };
 
-  useEffect(() => {
-    const data = localStorage.getItem('theatreData');
-    if (data) {
-      setTheatreData(JSON.parse(data));
-    }
-    // eslint-disable-next-line
-  }, []);
+  
+    const fetchTheatreData = async () => {
+      try {
+        const { data, error } = await supabase.from('theatres').select();
+        console.log(data);
+        if (error) throw error;
+        setTheatreData(data);
+      } catch (error) {
+        setError(error);
+      }
+    };
+
+    useEffect(()=>{
+      fetchTheatreData();
+      // eslint-disable-next-line
+    },[])
+
+  const handleRowClick = (theatreId) => {
+    openPage(`/theatres/single-theatre/${theatreId}`);
+  };
 
   const rows = theatreData ? theatreData.map(theatre => ({
-    name: <Screen image={LogoAsana} name={theatre.name} />,
+    name: <div onClick={() => handleRowClick(theatre.id)} style={{ cursor: 'pointer' }}>
+      <Screen image={LogoAsana} name={theatre.name} />
+    </div>,
     address: (
       <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
         {theatre.address}
@@ -82,7 +99,7 @@ export default function data() {
       <MDButton onClick={() => openPage(`/theatres/edit-theatre/${theatre.id}`)} variant='text' size='small' color='info'>edit</MDButton>
     ),
 
-  })) : [{name: <MDTypography color='warning' fontWeight='bold'>No theatres found</MDTypography>}];
+  })) : [{ name: <MDTypography color='warning' fontWeight='bold'>{error}</MDTypography> }];
 
   return {
     columns: [
