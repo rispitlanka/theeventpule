@@ -49,7 +49,9 @@ import AddScreen from "pages/addScreen";
 import ManageOwner from "pages/manageOwner";
 import EditScreen from "pages/editScreen";
 import Facilities from "pages/facilities";
-
+import Theatres from "pages/theatres";
+import AddTheatre from "pages/addTheatre";
+import EditTheatre from "pages/editTheatre";
 // @mui icons
 import Icon from "@mui/material/Icon";
 
@@ -69,6 +71,14 @@ const routes = [
     icon: <Icon fontSize="small">table_view</Icon>,
     route: "/tables",
     component: <Tables />,
+  },
+  {
+    type: "collapse",
+    name: "Theatres",
+    key: "theatres",
+    icon: <Icon fontSize="small">table_view</Icon>,
+    route: "/theatres",
+    component: <Theatres />,
   },
   // {
   //   type: "collapse",
@@ -133,6 +143,14 @@ const routes = [
   {
     route: "/tables/edit-screen",
     component: <EditScreen />,
+  },
+  {
+    route: "/theatres/add-theatre",
+    component: <AddTheatre />,
+  },
+  {
+    route: "/theatres/edit-theatre/:id",
+    component: <EditTheatre />,
   },
   {
     type: "collapse",
