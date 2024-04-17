@@ -58,6 +58,7 @@ import AddMovies from "pages/addMovies";
 import AddLanguages from "pages/addLanguages";
 import SingleTheatre from "pages/singleTheatre";
 import SingleScreen from "pages/singleScreen";
+import AddZone from "pages/addZone";
 // @mui icons
 import Icon from "@mui/material/Icon";
 
@@ -193,6 +194,10 @@ const routes = [
   {
     route: "/theatres/single-theatre/edit-screen/:screenId",
     component: <EditScreen />,
+  },
+  {
+    route: "/theatres/single-theatre/single-screen/add-zone/:screenId",
+    component: <AddZone />,
   },
   {
     type: "collapse",

@@ -7,10 +7,12 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from './supabaseClient'
 import EditIcon from '@mui/icons-material/Edit';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 import Footer from 'examples/Footer'
 
 export default function SingleScreen() {
     const [screenData, setScreenData] = useState([]);
+    const [zonesData, setZonesData] = useState([]);
     const { screenId } = useParams();
     const navigate = useNavigate();
     const openPage = (route) => {
@@ -30,10 +32,25 @@ export default function SingleScreen() {
         }
     };
 
+    const fetchZonesData = async () => {
+        try {
+            const { data, error } = await supabase.from('zones').select().eq('screenId', screenId);
+            if (error) throw error;
+            if (data) {
+                setZonesData(data);
+                console.log(data);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     useEffect(() => {
         fetchSingleScreenData();
+        fetchZonesData();
         // eslint-disable-next-line
     }, [screenId])
+
     return (
         <DashboardLayout>
             <DashboardNavbar />
@@ -49,7 +66,7 @@ export default function SingleScreen() {
             >
                 {screenData.length > 0 &&
                     <Grid container spacing={3} alignItems="center">
-                        <Grid item>
+                        <Grid item xs={12}>
                             <MDBox p={2}>
                                 <MDTypography variant="h6" fontWeight="medium" textTransform="capitalize">
                                     Screen Informations
@@ -60,81 +77,120 @@ export default function SingleScreen() {
                                     </IconButton>
                                 </Tooltip>
                             </MDBox>
-                            <MDBox pt={1} pb={2} px={2} lineHeight={1.25}>
+                        </Grid>
+                        <Grid item xs={3}>
+                            <MDBox px={2} lineHeight={1.25}>
                                 <MDTypography variant="caption" fontWeight="bold" color="text" textTransform="uppercase">
                                     Name
                                 </MDTypography>
-                                <MDBox display="flex" alignItems="center" mb={0.5}>
-                                    <MDBox width="80%" ml={0.5}>
-                                        <MDTypography variant="button" fontWeight="regular" color="text">
-                                            {screenData[0].name}
-                                        </MDTypography>
-                                    </MDBox>
-                                </MDBox>
+                                <MDTypography variant="button" fontWeight="regular" color="text" ml={1}>
+                                    {screenData[0].name}
+                                </MDTypography>
                             </MDBox>
-                            <MDBox pt={1} pb={2} px={2} lineHeight={1.25}>
+                        </Grid>
+                        <Grid item xs={3}>
+                            <MDBox px={2} lineHeight={1.25}>
                                 <MDTypography variant="caption" fontWeight="bold" color="text" textTransform="uppercase">
                                     Width
                                 </MDTypography>
-                                <MDBox display="flex" alignItems="center" mb={0.5}>
-                                    <MDBox width="80%" ml={0.5}>
-                                        <MDTypography variant="button" fontWeight="regular" color="text">
-                                            {screenData[0].width}
-                                        </MDTypography>
-                                    </MDBox>
-                                </MDBox>
+                                <MDTypography variant="button" fontWeight="regular" color="text" ml={1}>
+                                    {screenData[0].width}
+                                </MDTypography>
                             </MDBox>
-                            <MDBox pt={1} pb={2} px={2} lineHeight={1.25}>
+                        </Grid>
+                        <Grid item xs={3}>
+                            <MDBox px={2} lineHeight={1.25}>
                                 <MDTypography variant="caption" fontWeight="bold" color="text" textTransform="uppercase">
                                     Height
                                 </MDTypography>
-                                <MDBox display="flex" alignItems="center" mb={0.5}>
-                                    <MDBox width="80%" ml={0.5}>
-                                        <MDTypography variant="button" fontWeight="regular" color="text">
-                                            {screenData[0].height}
-                                        </MDTypography>
-                                    </MDBox>
-                                </MDBox>
+                                <MDTypography variant="button" fontWeight="regular" color="text" ml={1}>
+                                    {screenData[0].height}
+                                </MDTypography>
                             </MDBox>
-                            <MDBox pt={1} pb={2} px={2} lineHeight={1.25}>
+                        </Grid>
+                        <Grid item xs={3}>
+                            <MDBox px={2} lineHeight={1.25}>
                                 <MDTypography variant="caption" fontWeight="bold" color="text" textTransform="uppercase">
                                     Sound Type
                                 </MDTypography>
-                                <MDBox display="flex" alignItems="center" mb={0.5}>
-                                    <MDBox width="80%" ml={0.5}>
-                                        <MDTypography variant="button" fontWeight="regular" color="text">
-                                            {screenData[0].soundType}
-                                        </MDTypography>
-                                    </MDBox>
-                                </MDBox>
+                                <MDTypography variant="button" fontWeight="regular" color="text" ml={1}>
+                                    {screenData[0].soundType}
+                                </MDTypography>
                             </MDBox>
-                            <MDBox pt={1} pb={2} px={2} lineHeight={1.25}>
+                        </Grid>
+                        <Grid item xs={3}>
+                            <MDBox px={2} lineHeight={1.25}>
                                 <MDTypography variant="caption" fontWeight="bold" color="text" textTransform="uppercase">
                                     Projection Type
                                 </MDTypography>
-                                <MDBox display="flex" alignItems="center" mb={0.5}>
-                                    <MDBox width="80%" ml={0.5}>
-                                        <MDTypography variant="button" fontWeight="regular" color="text">
-                                            {screenData[0].projectionType}
-                                        </MDTypography>
-                                    </MDBox>
-                                </MDBox>
+                                <MDTypography variant="button" fontWeight="regular" color="text" ml={1}>
+                                    {screenData[0].projectionType}
+                                </MDTypography>
                             </MDBox>
-                            <MDBox pt={1} pb={2} px={2} lineHeight={1.25}>
+                        </Grid>
+                        <Grid item xs={3}>
+                            <MDBox px={2} lineHeight={1.25}>
                                 <MDTypography variant="caption" fontWeight="bold" color="text" textTransform="uppercase">
                                     Facilities
                                 </MDTypography>
-                                <MDBox display="flex" alignItems="center" mb={0.5}>
-                                    <MDBox width="80%" ml={0.5}>
-                                        <MDTypography variant="button" fontWeight="regular" color="text">
-                                            {screenData[0].facilities}
-                                        </MDTypography>
-                                    </MDBox>
-                                </MDBox>
+                                <MDTypography variant="button" fontWeight="regular" color="text" ml={1}>
+                                    {screenData[0].facilities}
+                                </MDTypography>
                             </MDBox>
                         </Grid>
                     </Grid>
+
                 }
+
+                <MDBox pt={5} px={2} lineHeight={1.25}>
+                    <MDTypography variant="h6" fontWeight="medium">
+                        Zones
+                    </MDTypography>
+                    <MDBox mb={1}>
+                        <MDTypography variant="button" color="text">
+                            Customize your zones
+                        </MDTypography>
+                    </MDBox>
+                </MDBox>
+                <MDBox p={2}>
+                    <Grid container spacing={6}>
+                        {zonesData.map((zone, index) => (
+                            <Grid key={index} item xs={12} md={6} xl={3}>
+                                <Card
+                                    sx={{
+                                        backgroundColor: '#cfe0fd',
+                                        padding: '20px',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        height: '150px'
+                                    }}
+                                    onClick={null} style={{ cursor: 'pointer' }}
+                                >
+                                    <MDTypography>{zone.name}</MDTypography>
+                                </Card>
+                            </Grid>
+                        ))}
+                        <Grid item xs={12} md={6} xl={3}>
+                            <Card
+                                sx={{
+                                    backgroundColor: '#cfe0fd',
+                                    padding: '20px',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    height: '150px'
+                                }}>
+                                <IconButton onClick={() => openPage(`/theatres/single-theatre/single-screen/add-zone/${screenId}`)}>
+                                    <AddCircleIcon color='info' sx={{ fontSize: 48 }} />
+                                </IconButton>
+                                <MDTypography>Add New Zone</MDTypography>
+                            </Card>
+                        </Grid>
+                    </Grid>
+                </MDBox>
             </Card>
             <Footer />
         </DashboardLayout>
