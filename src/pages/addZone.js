@@ -10,6 +10,7 @@ import React, { useEffect, useState } from 'react'
 import { supabase } from './supabaseClient'
 import ChairIcon from '@mui/icons-material/Chair';
 import { useParams } from 'react-router-dom'
+import BlockIcon from '@mui/icons-material/Block';
 
 
 export default function AddZone() {
@@ -20,6 +21,8 @@ export default function AddZone() {
     const [rowHeads, setRowHeads] = useState([]);
     const [seatDetails, setSeatDetails] = useState([]);
     const [editedSeatNames, setEditedSeatNames] = useState({});
+    const [disabledColumns, setDisabledColumns] = useState([]);
+    const [disabledRows, setDisabledRows] = useState([]);
 
     useEffect(() => {
         if (columns > 0 && rows > 0 && columnHeads.length > 0 && rowHeads.length > 0) {
@@ -28,6 +31,12 @@ export default function AddZone() {
         }
         // eslint-disable-next-line
     }, [columns, rows, columnHeads, rowHeads]);
+
+    useEffect(() => {
+        setDisabledColumns([]);
+        setDisabledRows([]);
+        // eslint-disable-next-line
+    }, [rows, columns])
 
     const generateSeatDetails = () => {
         const seatDetails = [];
@@ -183,7 +192,31 @@ export default function AddZone() {
         }
     };
 
+    const handleColumnDisable = (columnIndex) => {
+        if (!disabledColumns.includes(columnIndex)) {
+            setDisabledColumns([...disabledColumns, columnIndex]);
+            const updatedSeatDetails = seatDetails.map(seatDetail => {
+                if (seatDetail.column === columnIndex + 1) {
+                    return { ...seatDetail, seatName: '' };
+                }
+                return seatDetail;
+            });
+            setSeatDetails(updatedSeatDetails);
+        }
+    };
 
+    const handleRowDisable = (rowIndex) => {
+        if (!disabledRows.includes(rowIndex)) {
+            setDisabledRows([...disabledRows, rowIndex]);
+            const updatedSeatDetails = seatDetails.map(seatDetail => {
+                if (seatDetail.row === rowIndex + 1) {
+                    return { ...seatDetail, seatName: '' };
+                }
+                return seatDetail;
+            });
+            setSeatDetails(updatedSeatDetails);
+        }
+    };
 
     return (
         <DashboardLayout>
@@ -292,6 +325,7 @@ export default function AddZone() {
                                         value={head}
                                         onChange={(event) => handleColumnHeadChange(index, event)}
                                     />
+                                    <IconButton onClick={() => handleColumnDisable(index)}><BlockIcon /></IconButton>
                                 </Grid>
                             ))}
                         </Grid>
@@ -309,24 +343,39 @@ export default function AddZone() {
                                             value={head}
                                             onChange={(event) => handleRowHeadChange(rowIndex, event)}
                                         />
+                                        <IconButton onClick={() => handleRowDisable(rowIndex)}><BlockIcon /></IconButton>
                                     </Grid>
                                     {columnHeads.map((_, columnIndex) => (
                                         <Grid key={columnIndex} item sx={{ m: 1 }}>
-                                            <Grid><IconButton><ChairIcon /></IconButton></Grid>
                                             <Grid>
-                                                {/* Find the corresponding seatDetail */}
-                                                {seatDetails.find(seatDetail => seatDetail.row === rowIndex + 1 && seatDetail.column === columnIndex + 1) && (
-                                                    <TextField
-                                                        size='small'
-                                                        id={`seat-name-${rowIndex}-${columnIndex}`}
-                                                        name='seatName'
-                                                        value={editedSeatNames[`${rowIndex}-${columnIndex}`] || `${rowHeads[rowIndex]}${columnHeads[columnIndex]}`}
-                                                        onChange={(event) => handleSeatNameChange(event, rowIndex, columnIndex)}
-                                                        onBlur={() => handleSaveSeatName(rowIndex, columnIndex)}
-                                                    // InputProps={{
-                                                    //     readOnly: !!(editedSeatNames[`${rowIndex}-${columnIndex}`]), // Making the input readOnly if seat name is being edited
-                                                    // }}
-                                                    />
+                                                {disabledColumns.includes(columnIndex) || disabledRows.includes(rowIndex) ? (
+                                                    <>
+                                                        <Grid><IconButton><ChairIcon style={{ color: 'white' }} /></IconButton></Grid>
+                                                        <TextField
+                                                            size='small'
+                                                            id={`seat-name-${rowIndex}-${columnIndex}`}
+                                                            name='seatName'
+                                                            value={editedSeatNames[`${rowIndex}-${columnIndex}`]}
+                                                            onChange={(event) => handleSeatNameChange(event, rowIndex, columnIndex)}
+                                                            onBlur={() => handleSaveSeatName(rowIndex, columnIndex)}
+                                                        />
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Grid><IconButton><ChairIcon style={{ color: 'green' }} /></IconButton></Grid>
+                                                        <Grid>
+                                                            {seatDetails.find(seatDetail => seatDetail.row === rowIndex + 1 && seatDetail.column === columnIndex + 1) && (
+                                                                <TextField
+                                                                    size='small'
+                                                                    id={`seat-name-${rowIndex}-${columnIndex}`}
+                                                                    name='seatName'
+                                                                    value={editedSeatNames[`${rowIndex}-${columnIndex}`] || `${rowHeads[rowIndex]}${columnHeads[columnIndex]}`}
+                                                                    onChange={(event) => handleSeatNameChange(event, rowIndex, columnIndex)}
+                                                                    onBlur={() => handleSaveSeatName(rowIndex, columnIndex)}
+                                                                />
+                                                            )}
+                                                        </Grid>
+                                                    </>
                                                 )}
                                             </Grid>
                                         </Grid>
