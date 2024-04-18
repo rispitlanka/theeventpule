@@ -13,16 +13,42 @@ import { useParams } from 'react-router-dom'
 
 
 export default function AddZone() {
-    const {screenId} = useParams();
+    const { screenId } = useParams();
     const [columns, setColumns] = useState(0);
     const [rows, setRows] = useState(0);
     const [columnHeads, setColumnHeads] = useState([]);
     const [rowHeads, setRowHeads] = useState([]);
-    const [seats, setSeats] = useState();
+    const [seatDetails, setSeatDetails] = useState([]);
+    const [editedSeatNames, setEditedSeatNames] = useState({});
 
     useEffect(() => {
+        if (columns > 0 && rows > 0 && columnHeads.length > 0 && rowHeads.length > 0) {
+            const newSeatDetails = generateSeatDetails();
+            setSeatDetails(newSeatDetails);
+        }
         // eslint-disable-next-line
     }, [columns, rows, columnHeads, rowHeads]);
+
+    const generateSeatDetails = () => {
+        const seatDetails = [];
+        rowHeads.forEach((rowHead, rowIndex) => {
+            columnHeads.forEach((columnHead, columnIndex) => {
+                // const id = `seat_${rowIndex}_${columnIndex}`;
+                const zoneID = 101;
+                const displayName = `${rowHead}${columnHead}`;
+                const seatName = `${rowIndex + 1}-${columnIndex + 1}`;
+                const seatDetail = {
+                    seatName: displayName,
+                    row: rowIndex + 1,
+                    column: columnIndex + 1,
+                    zoneId: zoneID,
+                };
+                seatDetails.push(seatDetail);
+            });
+        });
+        return seatDetails;
+    };
+    console.log(seatDetails);
 
     const newZone = useFormik({
         initialValues: {
@@ -42,7 +68,7 @@ export default function AddZone() {
                     price: values.price,
                     rows: rows,
                     columns: columns,
-                    screenId:screenId,
+                    screenId: screenId,
                 }
                 await addZoneData(zoneData);
             } catch (error) {
@@ -60,7 +86,7 @@ export default function AddZone() {
             if (error) {
                 throw error;
             }
-            
+
         } catch (error) {
             throw new Error('Error inserting data:', error.message);
         }
@@ -69,30 +95,31 @@ export default function AddZone() {
     const newSeat = useFormik({
         initialValues: {
             seatName: '',
-            zoneId:'',
+            zoneId: '',
         },
-
         onSubmit: async (values) => {
+            console.log(values);
             try {
                 // Iterate over each seat and insert its data into the database
-                seats.forEach((row, rowIndex) => {
-                    row.forEach((_, columnIndex) => {
-                        const seatData = {
-                            ...values, // Add other form values if needed                            
-                            seatName: `${rowHeads[rowIndex]}${columnHeads[columnIndex]}`,
-                            zoneId:101,
-                        };
-                        addSeatData(seatData);
-                    });
+                seatDetails.forEach((seatDetail) => {
+                    const seatData = {
+                        ...values, // Add other form values if needed                            
+                        seatName: seatDetail.seatName,
+                        zoneId: seatDetail.zoneId,
+                    };
+                    addSeatData(seatData);
                 });
+                console.log(values);
             } catch (error) {
                 console.error('Error submitting form:', error.message);
                 setError(error.message);
             }
         },
+
     });
-    
+
     const addSeatData = async (values) => {
+        console.log(values)
         try {
             const { data, error } = await supabase.from('seats').insert(values);
             if (data) {
@@ -108,11 +135,6 @@ export default function AddZone() {
 
 
     const handleShowClick = () => {
-        const newSeats = Array.from({ length: rows }, () =>
-            Array.from({ length: columns }, () => 'X')
-        );
-        setSeats(newSeats);
-
         const newColumnHeads = Array.from({ length: columns }, (_, index) => index + 1);
         setColumnHeads(newColumnHeads);
 
@@ -140,6 +162,25 @@ export default function AddZone() {
         const newRowHeads = [...rowHeads];
         newRowHeads[index] = event.target.value;
         setRowHeads(newRowHeads);
+    };
+
+    const handleSeatNameChange = (event, rowIndex, columnIndex) => {
+        const newEditedSeatNames = { ...editedSeatNames };
+        newEditedSeatNames[`${rowIndex}-${columnIndex}`] = event.target.value;
+        setEditedSeatNames(newEditedSeatNames);
+    };
+
+    const handleSaveSeatName = (rowIndex, columnIndex) => {
+        const editedSeatName = editedSeatNames[`${rowIndex}-${columnIndex}`];
+        if (editedSeatName) {
+            const updatedSeatDetails = seatDetails.map(seatDetail => {
+                if (seatDetail.row === rowIndex + 1 && seatDetail.column === columnIndex + 1) {
+                    return { ...seatDetail, seatName: editedSeatName };
+                }
+                return seatDetail;
+            });
+            setSeatDetails(updatedSeatDetails);
+        }
     };
 
 
@@ -256,35 +297,44 @@ export default function AddZone() {
                         </Grid>
 
                         <Grid container spacing={1}>
-                            {rowHeads.map((head, index) => (
-                                <Grid key={index} container item xs={12} alignItems="center">
+                            {rowHeads.map((head, rowIndex) => (
+                                <Grid key={rowIndex} container item xs={12} alignItems="center">
                                     <Grid item xs={1}>
                                         <TextField
                                             sx={{ width: '55px' }}
-                                            id={`row-head-${index}`}
-                                            label={`Row ${index + 1}`}
+                                            id={`row-head-${rowIndex}`}
+                                            label={`Row ${rowIndex + 1}`}
                                             variant="outlined"
                                             size="small"
                                             value={head}
-                                            onChange={(event) => handleRowHeadChange(index, event)}
+                                            onChange={(event) => handleRowHeadChange(rowIndex, event)}
                                         />
                                     </Grid>
-                                    {seats[index].map((seat, columnIndex) => (
+                                    {columnHeads.map((_, columnIndex) => (
                                         <Grid key={columnIndex} item sx={{ m: 1 }}>
                                             <Grid><IconButton><ChairIcon /></IconButton></Grid>
                                             <Grid>
-                                                <TextField
-                                                    size='small'
-                                                    id="outlined-basic"
-                                                    name='seatName'
-                                                    value={`${rowHeads[index]}${columnHeads[columnIndex]}`}                                        
-                                                />
+                                                {/* Find the corresponding seatDetail */}
+                                                {seatDetails.find(seatDetail => seatDetail.row === rowIndex + 1 && seatDetail.column === columnIndex + 1) && (
+                                                    <TextField
+                                                        size='small'
+                                                        id={`seat-name-${rowIndex}-${columnIndex}`}
+                                                        name='seatName'
+                                                        value={editedSeatNames[`${rowIndex}-${columnIndex}`] || `${rowHeads[rowIndex]}${columnHeads[columnIndex]}`}
+                                                        onChange={(event) => handleSeatNameChange(event, rowIndex, columnIndex)}
+                                                        onBlur={() => handleSaveSeatName(rowIndex, columnIndex)}
+                                                    // InputProps={{
+                                                    //     readOnly: !!(editedSeatNames[`${rowIndex}-${columnIndex}`]), // Making the input readOnly if seat name is being edited
+                                                    // }}
+                                                    />
+                                                )}
                                             </Grid>
                                         </Grid>
                                     ))}
                                 </Grid>
                             ))}
                         </Grid>
+
                     </Box>
                     <Button type="submit">Save</Button>
                 </form>
