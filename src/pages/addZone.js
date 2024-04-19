@@ -24,6 +24,7 @@ export default function AddZone() {
     const [disabledColumns, setDisabledColumns] = useState([]);
     const [disabledRows, setDisabledRows] = useState([]);
     const [disabledSeats, setDisabledSeats] = useState([]);
+    const [zoneID, setZoneID] = useState();
 
     useEffect(() => {
         if (columns > 0 && rows > 0 && columnHeads.length > 0 && rowHeads.length > 0) {
@@ -44,14 +45,13 @@ export default function AddZone() {
         const seatDetails = [];
         rowHeads.forEach((rowHead, rowIndex) => {
             columnHeads.forEach((columnHead, columnIndex) => {
-                // const id = `seat_${rowIndex}_${columnIndex}`;
-                const zoneID = 101;
                 const displayName = `${rowHead}${columnHead}`;
                 const seatDetail = {
                     seatName: displayName,
                     row: rowIndex + 1,
                     column: columnIndex + 1,
                     zoneId: zoneID,
+                    screenId: screenId,
                     type: 'enabled',
                 };
                 seatDetails.push(seatDetail);
@@ -90,9 +90,10 @@ export default function AddZone() {
     });
     const addZoneData = async (values) => {
         try {
-            const { data, error } = await supabase.from('zones').insert(values);
+            const { data, error } = await supabase.from('zones').insert(values).select('*');
             if (data) {
-                console.log('Data inserted successfully:', data);
+                setZoneID(data[0].id);
+                console.log('Data inserted successfully:', data[0].id);
             }
             if (error) {
                 throw error;
@@ -117,6 +118,9 @@ export default function AddZone() {
                         ...values,
                         seatName: seatDetail.seatName,
                         zoneId: seatDetail.zoneId,
+                        screenId: seatDetail.screenId,
+                        row: seatDetail.row,
+                        column: seatDetail.column,
                     };
                     addSeatData(seatData);
                 });
@@ -130,7 +134,6 @@ export default function AddZone() {
     });
 
     const addSeatData = async (values) => {
-        console.log(values)
         try {
             const { data, error } = await supabase.from('seats').insert(values);
             if (data) {
@@ -299,7 +302,7 @@ export default function AddZone() {
                                         Add New Zones
                                     </MDTypography>
                                     <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" rows="4rem" columns="4rem" mt={-3}>
-                                        <Button onClick={handleShowClick}>Show</Button>
+                                        {zoneID && <Button onClick={handleShowClick}>Show</Button>}
                                     </MDBox>
                                     <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" rows="4rem" columns="4rem" mt={-3}>
                                         <Button type='submit'>Save</Button>
@@ -442,7 +445,7 @@ export default function AddZone() {
                         </Grid>
 
                     </Box>
-                    <Button type="submit">Save</Button>
+                    {zoneID && <Button type="submit">Save</Button>}
                 </form>
             </MDBox>
             <Footer />
