@@ -40,11 +40,6 @@ export default function AddZone() {
         // eslint-disable-next-line
     }, [rows, columns])
 
-    useEffect(() => {
-        removeEmptySeatDetails();
-        // eslint-disable-next-line
-    }, [disabledSeats, disabledColumns, disabledRows]);
-
     const generateSeatDetails = () => {
         const seatDetails = [];
         rowHeads.forEach((rowHead, rowIndex) => {
@@ -57,6 +52,7 @@ export default function AddZone() {
                     row: rowIndex + 1,
                     column: columnIndex + 1,
                     zoneId: zoneID,
+                    type: 'enabled',
                 };
                 seatDetails.push(seatDetail);
             });
@@ -115,10 +111,10 @@ export default function AddZone() {
         onSubmit: async (values) => {
             console.log(values);
             try {
-                // Iterate over each seat and insert its data into the database
-                seatDetails.forEach((seatDetail) => {
+                const enabledSeatDetails = seatDetails.filter(seatDetail => seatDetail.type === 'enabled');
+                enabledSeatDetails.forEach((seatDetail) => {
                     const seatData = {
-                        ...values, // Add other form values if needed                            
+                        ...values,
                         seatName: seatDetail.seatName,
                         zoneId: seatDetail.zoneId,
                     };
@@ -185,11 +181,6 @@ export default function AddZone() {
         setEditedSeatNames(newEditedSeatNames);
     };
 
-    const removeEmptySeatDetails = () => {
-        const updatedSeatDetails = seatDetails.filter(seatDetail => seatDetail.seatName.trim() !== '');
-        setSeatDetails(updatedSeatDetails);
-    };
-
     const handleSaveSeatName = (rowIndex, columnIndex) => {
         const editedSeatName = editedSeatNames[`${rowIndex}-${columnIndex}`];
         if (editedSeatName) {
@@ -201,7 +192,6 @@ export default function AddZone() {
             });
             setSeatDetails(updatedSeatDetails);
         }
-        removeEmptySeatDetails();
     };
 
     const handleColumnDisable = (columnIndex) => {
@@ -209,15 +199,21 @@ export default function AddZone() {
             // If column is disabled, remove it from disabledColumns array
             const updatedDisabledColumns = disabledColumns.filter(colIndex => colIndex !== columnIndex);
             setDisabledColumns(updatedDisabledColumns);
+            // Update seatDetails to enable seats in the column
+            const updatedSeatDetails = seatDetails.map(seatDetail => {
+                if (seatDetail.column === columnIndex + 1) {
+                    return { ...seatDetail, type: 'enabled' };
+                }
+                return seatDetail;
+            });
+            setSeatDetails(updatedSeatDetails);
         } else {
             // If column is not disabled, add it to disabledColumns array
             setDisabledColumns([...disabledColumns, columnIndex]);
-        }
-        if (!disabledColumns.includes(columnIndex)) {
-            setDisabledColumns([...disabledColumns, columnIndex]);
+            // Update seatDetails to disable seats in the column
             const updatedSeatDetails = seatDetails.map(seatDetail => {
                 if (seatDetail.column === columnIndex + 1) {
-                    return { ...seatDetail, seatName: '' };
+                    return { ...seatDetail, type: 'disabled' };
                 }
                 return seatDetail;
             });
@@ -230,15 +226,21 @@ export default function AddZone() {
             // If row is disabled, remove it from disabledRows array
             const updatedDisabledRows = disabledRows.filter(rowIdx => rowIdx !== rowIndex);
             setDisabledRows(updatedDisabledRows);
+            // Update seatDetails to enable seats in the row
+            const updatedSeatDetails = seatDetails.map(seatDetail => {
+                if (seatDetail.row === rowIndex + 1) {
+                    return { ...seatDetail, type: 'enabled' };
+                }
+                return seatDetail;
+            });
+            setSeatDetails(updatedSeatDetails);
         } else {
             // If row is not disabled, add it to disabledRows array
             setDisabledRows([...disabledRows, rowIndex]);
-        }
-        if (!disabledRows.includes(rowIndex)) {
-            setDisabledRows([...disabledRows, rowIndex]);
+            // Update seatDetails to disable seats in the row
             const updatedSeatDetails = seatDetails.map(seatDetail => {
                 if (seatDetail.row === rowIndex + 1) {
-                    return { ...seatDetail, seatName: '' };
+                    return { ...seatDetail, type: 'disabled' };
                 }
                 return seatDetail;
             });
@@ -254,7 +256,7 @@ export default function AddZone() {
             setDisabledSeats(updatedDisabledSeats);
             const updatedSeatDetails = seatDetails.map(seatDetail => {
                 if (seatDetail.row === rowIndex + 1 && seatDetail.column === columnIndex + 1) {
-                    return { ...seatDetail, seatName: 'Seat Name' }; // Replace 'Seat Name' with the actual name if available
+                    return { ...seatDetail, type: 'enabled' }; // Replace 'Seat Name' with the actual name if available
                 }
                 return seatDetail;
             });
@@ -264,7 +266,7 @@ export default function AddZone() {
             setDisabledSeats([...disabledSeats, seatIndex]);
             const updatedSeatDetails = seatDetails.map(seatDetail => {
                 if (seatDetail.row === rowIndex + 1 && seatDetail.column === columnIndex + 1) {
-                    return { ...seatDetail, seatName: '' };
+                    return { ...seatDetail, type: 'disabled' };
                 }
                 return seatDetail;
             });
@@ -293,7 +295,7 @@ export default function AddZone() {
                                     display="flex"
                                     justifyContent="space-between"
                                 >
-                                    <MDTypography variant="h6" color="white">
+                                    <MDTypography variant="h6" color="grey">
                                         Add New Zones
                                     </MDTypography>
                                     <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" rows="4rem" columns="4rem" mt={-3}>
@@ -404,7 +406,7 @@ export default function AddZone() {
                                             <Grid>
                                                 {disabledColumns.includes(columnIndex) || disabledRows.includes(rowIndex) || disabledSeats.includes(rowIndex * columns + columnIndex) ? (
                                                     <>
-                                                        <Grid><IconButton onClick={() => handleSeatDisable(rowIndex, columnIndex)}><ChairIcon style={{ color: 'white' }} /></IconButton></Grid>
+                                                        <Grid><IconButton onClick={() => handleSeatDisable(rowIndex, columnIndex)}><ChairIcon style={{ color: 'grey' }} /></IconButton></Grid>
                                                         <TextField
                                                             size='small'
                                                             id={`seat-name-${rowIndex}-${columnIndex}`}
