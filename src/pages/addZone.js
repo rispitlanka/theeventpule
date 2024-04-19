@@ -40,6 +40,11 @@ export default function AddZone() {
         // eslint-disable-next-line
     }, [rows, columns])
 
+    useEffect(() => {
+        removeEmptySeatDetails();
+        // eslint-disable-next-line
+    }, [disabledSeats, disabledColumns, disabledRows]);
+
     const generateSeatDetails = () => {
         const seatDetails = [];
         rowHeads.forEach((rowHead, rowIndex) => {
@@ -180,6 +185,11 @@ export default function AddZone() {
         setEditedSeatNames(newEditedSeatNames);
     };
 
+    const removeEmptySeatDetails = () => {
+        const updatedSeatDetails = seatDetails.filter(seatDetail => seatDetail.seatName.trim() !== '');
+        setSeatDetails(updatedSeatDetails);
+    };
+
     const handleSaveSeatName = (rowIndex, columnIndex) => {
         const editedSeatName = editedSeatNames[`${rowIndex}-${columnIndex}`];
         if (editedSeatName) {
@@ -191,6 +201,7 @@ export default function AddZone() {
             });
             setSeatDetails(updatedSeatDetails);
         }
+        removeEmptySeatDetails();
     };
 
     const handleColumnDisable = (columnIndex) => {
