@@ -23,6 +23,7 @@ export default function AddZone() {
     const [editedSeatNames, setEditedSeatNames] = useState({});
     const [disabledColumns, setDisabledColumns] = useState([]);
     const [disabledRows, setDisabledRows] = useState([]);
+    const [disabledSeats, setDisabledSeats] = useState([]);
 
     useEffect(() => {
         if (columns > 0 && rows > 0 && columnHeads.length > 0 && rowHeads.length > 0) {
@@ -35,6 +36,7 @@ export default function AddZone() {
     useEffect(() => {
         setDisabledColumns([]);
         setDisabledRows([]);
+        setDisabledSeats([]);
         // eslint-disable-next-line
     }, [rows, columns])
 
@@ -45,7 +47,6 @@ export default function AddZone() {
                 // const id = `seat_${rowIndex}_${columnIndex}`;
                 const zoneID = 101;
                 const displayName = `${rowHead}${columnHead}`;
-                const seatName = `${rowIndex + 1}-${columnIndex + 1}`;
                 const seatDetail = {
                     seatName: displayName,
                     row: rowIndex + 1,
@@ -193,6 +194,14 @@ export default function AddZone() {
     };
 
     const handleColumnDisable = (columnIndex) => {
+        if (disabledColumns.includes(columnIndex)) {
+            // If column is disabled, remove it from disabledColumns array
+            const updatedDisabledColumns = disabledColumns.filter(colIndex => colIndex !== columnIndex);
+            setDisabledColumns(updatedDisabledColumns);
+        } else {
+            // If column is not disabled, add it to disabledColumns array
+            setDisabledColumns([...disabledColumns, columnIndex]);
+        }
         if (!disabledColumns.includes(columnIndex)) {
             setDisabledColumns([...disabledColumns, columnIndex]);
             const updatedSeatDetails = seatDetails.map(seatDetail => {
@@ -206,10 +215,44 @@ export default function AddZone() {
     };
 
     const handleRowDisable = (rowIndex) => {
+        if (disabledRows.includes(rowIndex)) {
+            // If row is disabled, remove it from disabledRows array
+            const updatedDisabledRows = disabledRows.filter(rowIdx => rowIdx !== rowIndex);
+            setDisabledRows(updatedDisabledRows);
+        } else {
+            // If row is not disabled, add it to disabledRows array
+            setDisabledRows([...disabledRows, rowIndex]);
+        }
         if (!disabledRows.includes(rowIndex)) {
             setDisabledRows([...disabledRows, rowIndex]);
             const updatedSeatDetails = seatDetails.map(seatDetail => {
                 if (seatDetail.row === rowIndex + 1) {
+                    return { ...seatDetail, seatName: '' };
+                }
+                return seatDetail;
+            });
+            setSeatDetails(updatedSeatDetails);
+        }
+    };
+
+    const handleSeatDisable = (rowIndex, columnIndex) => {
+        const seatIndex = rowIndex * columns + columnIndex;
+        if (disabledSeats.includes(seatIndex)) {
+            // Seat is already disabled, so enable it back
+            const updatedDisabledSeats = disabledSeats.filter(seat => seat !== seatIndex);
+            setDisabledSeats(updatedDisabledSeats);
+            const updatedSeatDetails = seatDetails.map(seatDetail => {
+                if (seatDetail.row === rowIndex + 1 && seatDetail.column === columnIndex + 1) {
+                    return { ...seatDetail, seatName: 'Seat Name' }; // Replace 'Seat Name' with the actual name if available
+                }
+                return seatDetail;
+            });
+            setSeatDetails(updatedSeatDetails);
+        } else {
+            // Seat is not disabled, so disable it
+            setDisabledSeats([...disabledSeats, seatIndex]);
+            const updatedSeatDetails = seatDetails.map(seatDetail => {
+                if (seatDetail.row === rowIndex + 1 && seatDetail.column === columnIndex + 1) {
                     return { ...seatDetail, seatName: '' };
                 }
                 return seatDetail;
@@ -348,9 +391,9 @@ export default function AddZone() {
                                     {columnHeads.map((_, columnIndex) => (
                                         <Grid key={columnIndex} item sx={{ m: 1 }}>
                                             <Grid>
-                                                {disabledColumns.includes(columnIndex) || disabledRows.includes(rowIndex) ? (
+                                                {disabledColumns.includes(columnIndex) || disabledRows.includes(rowIndex) || disabledSeats.includes(rowIndex * columns + columnIndex) ? (
                                                     <>
-                                                        <Grid><IconButton><ChairIcon style={{ color: 'white' }} /></IconButton></Grid>
+                                                        <Grid><IconButton onClick={() => handleSeatDisable(rowIndex, columnIndex)}><ChairIcon style={{ color: 'white' }} /></IconButton></Grid>
                                                         <TextField
                                                             size='small'
                                                             id={`seat-name-${rowIndex}-${columnIndex}`}
@@ -358,11 +401,12 @@ export default function AddZone() {
                                                             value={editedSeatNames[`${rowIndex}-${columnIndex}`]}
                                                             onChange={(event) => handleSeatNameChange(event, rowIndex, columnIndex)}
                                                             onBlur={() => handleSaveSeatName(rowIndex, columnIndex)}
+                                                            disabled
                                                         />
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <Grid><IconButton><ChairIcon style={{ color: 'green' }} /></IconButton></Grid>
+                                                        <Grid><IconButton onClick={() => handleSeatDisable(rowIndex, columnIndex)}><ChairIcon style={{ color: 'green' }} /></IconButton></Grid>
                                                         <Grid>
                                                             {seatDetails.find(seatDetail => seatDetail.row === rowIndex + 1 && seatDetail.column === columnIndex + 1) && (
                                                                 <TextField
