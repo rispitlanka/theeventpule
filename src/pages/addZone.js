@@ -283,32 +283,26 @@ export default function AddZone() {
             <MDBox pt={6} pb={3}>
                 <Grid container spacing={6}>
                     <Grid item xs={12}>
-                        <form onSubmit={newZone.handleSubmit}>
-                            <Card>
-                                <MDBox
-                                    mx={2}
-                                    mt={-3}
-                                    py={3}
-                                    px={2}
-                                    pt={1}
-                                    variant="gradient"
-                                    bgColor="info"
-                                    borderRadius="lg"
-                                    coloredShadow="info"
-                                    display="flex"
-                                    justifyContent="space-between"
-                                >
-                                    <MDTypography variant="h6" color="grey">
-                                        Add New Zones
-                                    </MDTypography>
-                                    <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" rows="4rem" columns="4rem" mt={-3}>
-                                        {zoneID && <Button onClick={handleShowClick}>Show</Button>}
-                                    </MDBox>
-                                    <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" rows="4rem" columns="4rem" mt={-3}>
-                                        <Button type='submit'>Save</Button>
-                                    </MDBox>
-                                </MDBox>
-                                <MDBox p={2}>
+                        <Card>
+                            <MDBox
+                                mx={2}
+                                mt={-3}
+                                py={3}
+                                px={2}
+                                pt={1}
+                                variant="gradient"
+                                bgColor="info"
+                                borderRadius="lg"
+                                coloredShadow="info"
+                                display="flex"
+                                justifyContent="space-between"
+                            >
+                                <MDTypography variant="h6" color="white">
+                                    Add New Zones
+                                </MDTypography>
+                            </MDBox>
+                            <MDBox p={2}>
+                                <form onSubmit={newZone.handleSubmit}>
                                     <MDBox p={1}>
                                         <TextField
                                             fullWidth
@@ -363,90 +357,92 @@ export default function AddZone() {
                                             helperText={newZone.touched.columns && newZone.errors.columns}
                                         />
                                     </MDBox>
-                                </MDBox>
-                            </Card>
-                        </form>
-                    </Grid>
-                </Grid>
-                <form onSubmit={newSeat.handleSubmit}>
-                    <Box sx={{ mt: 2 }}>
-                        <Typography variant="h6">Seat Setup</Typography>
-                        <Grid container spacing={1}>
-                            <Grid item xs={1}></Grid>
-                            {columnHeads.map((head, index) => (
-                                <Grid key={index} item sx={{ mb: 1 }}>
-                                    <TextField
-                                        sx={{ width: '55px', alignItems: 'center' }}
-                                        id={`column-head-${index}`}
-                                        label={`Column ${index + 1}`}
-                                        variant="outlined"
-                                        size="small"
-                                        value={head}
-                                        onChange={(event) => handleColumnHeadChange(index, event)}
-                                    />
-                                    <IconButton onClick={() => handleColumnDisable(index)}><BlockIcon /></IconButton>
-                                </Grid>
-                            ))}
-                        </Grid>
-
-                        <Grid container spacing={1}>
-                            {rowHeads.map((head, rowIndex) => (
-                                <Grid key={rowIndex} container item xs={12} alignItems="center">
-                                    <Grid item xs={1}>
-                                        <TextField
-                                            sx={{ width: '55px' }}
-                                            id={`row-head-${rowIndex}`}
-                                            label={`Row ${rowIndex + 1}`}
-                                            variant="outlined"
-                                            size="small"
-                                            value={head}
-                                            onChange={(event) => handleRowHeadChange(rowIndex, event)}
-                                        />
-                                        <IconButton onClick={() => handleRowDisable(rowIndex)}><BlockIcon /></IconButton>
-                                    </Grid>
-                                    {columnHeads.map((_, columnIndex) => (
-                                        <Grid key={columnIndex} item sx={{ m: 1 }}>
-                                            <Grid>
-                                                {disabledColumns.includes(columnIndex) || disabledRows.includes(rowIndex) || disabledSeats.includes(rowIndex * columns + columnIndex) ? (
-                                                    <>
-                                                        <Grid><IconButton onClick={() => handleSeatDisable(rowIndex, columnIndex)}><ChairIcon style={{ color: 'grey' }} /></IconButton></Grid>
+                                    <MDBox ml={-1}><Button type='submit'>Save Zone</Button></MDBox>
+                                </form>
+                                <MDBox ml={-2}><Button onClick={() => handleShowClick()}>Generate Seat Layout</Button></MDBox>
+                                <form onSubmit={newSeat.handleSubmit}>
+                                    <MDTypography m={1} variant="h6">Seat Layout</MDTypography>
+                                    <MDBox m={1} sx={{ overflowX: 'auto' }}>
+                                        <Grid container spacing={1}>
+                                            <Grid item xs={1}></Grid>
+                                            <Grid item xs={11} sx={{ display: 'flex' }}>
+                                                {columnHeads.map((head, index) => (
+                                                    <Grid key={index} item>
                                                         <TextField
-                                                            size='small'
-                                                            id={`seat-name-${rowIndex}-${columnIndex}`}
-                                                            name='seatName'
-                                                            value={editedSeatNames[`${rowIndex}-${columnIndex}`]}
-                                                            onChange={(event) => handleSeatNameChange(event, rowIndex, columnIndex)}
-                                                            onBlur={() => handleSaveSeatName(rowIndex, columnIndex)}
-                                                            disabled
+                                                            sx={{ minWidth: '55px', textAlign: 'center' }}
+                                                            id={`column-head-${index}`}
+                                                            label={`Column ${index + 1}`}
+                                                            variant="outlined"
+                                                            size="small"
+                                                            value={head}
+                                                            onChange={(event) => handleColumnHeadChange(index, event)}
                                                         />
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <Grid><IconButton onClick={() => handleSeatDisable(rowIndex, columnIndex)}><ChairIcon style={{ color: 'green' }} /></IconButton></Grid>
-                                                        <Grid>
-                                                            {seatDetails.find(seatDetail => seatDetail.row === rowIndex + 1 && seatDetail.column === columnIndex + 1) && (
-                                                                <TextField
-                                                                    size='small'
-                                                                    id={`seat-name-${rowIndex}-${columnIndex}`}
-                                                                    name='seatName'
-                                                                    value={editedSeatNames[`${rowIndex}-${columnIndex}`] || `${rowHeads[rowIndex]}${columnHeads[columnIndex]}`}
-                                                                    onChange={(event) => handleSeatNameChange(event, rowIndex, columnIndex)}
-                                                                    onBlur={() => handleSaveSeatName(rowIndex, columnIndex)}
-                                                                />
-                                                            )}
-                                                        </Grid>
-                                                    </>
-                                                )}
+                                                        <IconButton onClick={() => handleColumnDisable(index)}><BlockIcon /></IconButton>
+                                                    </Grid>
+                                                ))}
                                             </Grid>
                                         </Grid>
-                                    ))}
-                                </Grid>
-                            ))}
-                        </Grid>
-
-                    </Box>
-                    {zoneID && <Button type="submit">Save</Button>}
-                </form>
+                                        <div style={{ overflowX: 'auto' }}>
+                                            {rowHeads.map((head, rowIndex) => (
+                                                <Grid key={rowIndex} container spacing={1} alignItems="center">
+                                                    <Grid item xs={1}>
+                                                        <TextField
+                                                            sx={{ width: '55px', textAlign: 'center' }}
+                                                            id={`row-head-${rowIndex}`}
+                                                            label={`Row ${rowIndex + 1}`}
+                                                            variant="outlined"
+                                                            size="small"
+                                                            value={head}
+                                                            onChange={(event) => handleRowHeadChange(rowIndex, event)}
+                                                        />
+                                                        <IconButton onClick={() => handleRowDisable(rowIndex)}><BlockIcon /></IconButton>
+                                                    </Grid>
+                                                    <Grid item xs={11} sx={{ display: 'flex' }}>
+                                                        {columnHeads.map((_, columnIndex) => (
+                                                            <Grid key={columnIndex} item>
+                                                                <Grid container alignItems="center" justifyContent="center">
+                                                                    {disabledColumns.includes(columnIndex) || disabledRows.includes(rowIndex) || disabledSeats.includes(rowIndex * columns + columnIndex) ? (
+                                                                        <>
+                                                                            <IconButton onClick={() => handleSeatDisable(rowIndex, columnIndex)}><ChairIcon style={{ color: 'grey' }} /></IconButton>
+                                                                            <TextField
+                                                                                size='small'
+                                                                                id={`seat-name-${rowIndex}-${columnIndex}`}
+                                                                                name='seatName'
+                                                                                value={editedSeatNames[`${rowIndex}-${columnIndex}`]}
+                                                                                onChange={(event) => handleSeatNameChange(event, rowIndex, columnIndex)}
+                                                                                onBlur={() => handleSaveSeatName(rowIndex, columnIndex)}
+                                                                                disabled
+                                                                            />
+                                                                        </>
+                                                                    ) : (
+                                                                        <>
+                                                                            <IconButton onClick={() => handleSeatDisable(rowIndex, columnIndex)}><ChairIcon style={{ color: 'green' }} /></IconButton>
+                                                                            {seatDetails.find(seatDetail => seatDetail.row === rowIndex + 1 && seatDetail.column === columnIndex + 1) && (
+                                                                                <TextField
+                                                                                    size='small'
+                                                                                    id={`seat-name-${rowIndex}-${columnIndex}`}
+                                                                                    name='seatName'
+                                                                                    value={editedSeatNames[`${rowIndex}-${columnIndex}`] || `${rowHeads[rowIndex]}${columnHeads[columnIndex]}`}
+                                                                                    onChange={(event) => handleSeatNameChange(event, rowIndex, columnIndex)}
+                                                                                    onBlur={() => handleSaveSeatName(rowIndex, columnIndex)}
+                                                                                />
+                                                                            )}
+                                                                        </>
+                                                                    )}
+                                                                </Grid>
+                                                            </Grid>
+                                                        ))}
+                                                    </Grid>
+                                                </Grid>
+                                            ))}
+                                        </div>
+                                    </MDBox>
+                                    {zoneID && <MDBox><Button type='submit'>Save</Button></MDBox>}
+                                </form>
+                            </MDBox>
+                        </Card>
+                    </Grid>
+                </Grid>
             </MDBox>
             <Footer />
         </DashboardLayout>
