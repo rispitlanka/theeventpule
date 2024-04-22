@@ -39,7 +39,7 @@ Coded by www.creative-tim.com
 import Dashboard from "layouts/dashboard";
 import Tables from "layouts/tables";
 import Billing from "layouts/billing";
-import RTL from "layouts/rtl";
+// import RTL from "layouts/rtl";
 import Notifications from "layouts/notifications";
 import Profile from "layouts/profile";
 import SignIn from "layouts/authentication/sign-in";
@@ -59,6 +59,7 @@ import AddLanguages from "pages/addLanguages";
 import SingleTheatre from "pages/singleTheatre";
 import SingleScreen from "pages/singleScreen";
 import AddZone from "pages/addZone";
+import SingleZone from "pages/singleZone";
 // @mui icons
 import Icon from "@mui/material/Icon";
 
@@ -200,13 +201,17 @@ const routes = [
     component: <AddZone />,
   },
   {
-    type: "collapse",
-    name: "RTL",
-    key: "rtl",
-    icon: <Icon fontSize="small">format_textdirection_r_to_l</Icon>,
-    route: "/rtl",
-    component: <RTL />,
+    route: "/theatres/single-theatre/single-screen/single-zone",
+    component: <SingleZone />,
   },
+  // {
+  //   type: "collapse",
+  //   name: "RTL",
+  //   key: "rtl",
+  //   icon: <Icon fontSize="small">format_textdirection_r_to_l</Icon>,
+  //   route: "/rtl",
+  //   component: <RTL />,
+  // },
 ];
 
 export default routes;

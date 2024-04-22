@@ -166,7 +166,7 @@ export default function SingleScreen() {
                                         alignItems: 'center',
                                         height: '150px'
                                     }}
-                                    onClick={null} style={{ cursor: 'pointer' }}
+                                    onClick={()=>openPage("/theatres/single-theatre/single-screen/single-zone")} style={{ cursor: 'pointer' }}
                                 >
                                     <MDTypography>{zone.name}</MDTypography>
                                 </Card>
