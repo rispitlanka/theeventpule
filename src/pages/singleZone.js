@@ -54,9 +54,9 @@ export default function SingleZone() {
                     </MDTypography>
                     <MDBox p={2}>
                         <FixedSizeGrid
-                            columnCount={maxColumn}
+                            columnCount={maxColumn+1}
                             columnWidth={80}
-                            rowCount={maxRow}
+                            rowCount={maxRow+1}
                             rowHeight={80}
                             width={1600}
                             height={600}
