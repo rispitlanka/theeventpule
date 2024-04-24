@@ -1,4 +1,4 @@
-import {Button, Card, Grid, IconButton, TextField} from '@mui/material'
+import { Box, Button, Card, Grid, IconButton, TextField } from '@mui/material'
 import MDBox from 'components/MDBox'
 import MDTypography from 'components/MDTypography'
 import Footer from 'examples/Footer'
@@ -107,26 +107,23 @@ export default function AddZone() {
             seatName: '',
             zoneId: '',
         },
-        onSubmit: async (values,) => {
+        onSubmit: async (values) => {
             try {
                 const enabledSeatDetails = seatDetails.filter(seatDetail => seatDetail.type === 'enabled');
-                enabledSeatDetails.forEach((seatDetail) => {
-                    const seatData = {
-                        ...values,
-                        seatName: seatDetail.seatName,
-                        zoneId: currentZoneId,
-                        screenId: seatDetail.screenId,
-                        row: seatDetail.row,
-                        column: seatDetail.column,
-                    };
-                    addSeatData(seatData);
-                });
+                const seatDataArray = enabledSeatDetails.map(seatDetail => ({
+                    ...values,
+                    seatName: seatDetail.seatName,
+                    zoneId: currentZoneId,
+                    screenId: seatDetail.screenId,
+                    row: seatDetail.row,
+                    column: seatDetail.column,
+                }));
+                await addSeatData(seatDataArray);
             } catch (error) {
                 console.error('Error submitting form:', error.message);
                 setError(error.message);
             }
         },
-
     });
 
     const addSeatData = async (values) => {
@@ -148,7 +145,7 @@ export default function AddZone() {
         const newColumnHeads = Array.from({ length: columns }, (_, index) => index + 1);
         setColumnHeads(newColumnHeads);
 
-        const newRowHeads = Array.from({ length: rows }, (_, index) => 1 + index);
+        const newRowHeads = Array.from({ length: rows }, (_, index) => String.fromCharCode(65 + index));
         setRowHeads(newRowHeads);
     };
 
@@ -388,9 +385,9 @@ export default function AddZone() {
                                                         {isHeaderRow && isHeaderColumn ? (
                                                             <div></div>
                                                         ) : isHeaderRow ? (
-                                                            <>
+                                                            <Box sx={{m:1, display: 'flex', flexDirection:'column'}}>
                                                                 <TextField
-                                                                    sx={{ width: '55px', textAlign: 'center' }}
+                                                                    sx={{ width: '60px','& input':{textAlign: 'center'} }}
                                                                     id={`column-head-${columnIndex}`}
                                                                     label={`Col ${columnIndex}`}
                                                                     variant="outlined"
@@ -399,11 +396,11 @@ export default function AddZone() {
                                                                     onChange={(event) => handleColumnHeadChange(columnIndex - 1, event)}
                                                                 />
                                                                 <IconButton onClick={() => handleColumnDisable(columnIndex - 1)}><BlockIcon /></IconButton>
-                                                            </>
+                                                            </Box>
                                                         ) : isHeaderColumn ? (
                                                             <>
                                                                 <TextField
-                                                                    sx={{ width: '55px', textAlign: 'center', }}
+                                                                    sx={{ width: '55px', '& input':{textAlign: 'center'}}}
                                                                     id={`row-head-${rowIndex}`}
                                                                     label={`Row ${rowIndex}`}
                                                                     variant="outlined"
@@ -414,12 +411,12 @@ export default function AddZone() {
                                                                 <IconButton onClick={() => handleRowDisable(rowIndex - 1)}><BlockIcon /></IconButton>
                                                             </>
                                                         ) : (
-                                                            <Grid container alignItems="center" justifyContent="center">
+                                                            <Grid container alignItems="center" justifyContent="center" m={1}>
                                                                 {disabledColumns.includes(columnIndex - 1) || disabledRows.includes(rowIndex - 1) || disabledSeats.includes((rowIndex - 1) * columns + (columnIndex - 1)) ? (
                                                                     <>
                                                                         <IconButton onClick={() => handleSeatDisable(rowIndex - 1, columnIndex - 1)}><ChairIcon style={{ color: 'grey', mt: 3 }} /></IconButton>
                                                                         <TextField
-                                                                            sx={{ mt: -1 }}
+                                                                            sx={{ mt: -1}}
                                                                             size='small'
                                                                             id={`seat-name-${rowIndex - 1}-${columnIndex - 1}`}
                                                                             name='seatName'
@@ -434,7 +431,12 @@ export default function AddZone() {
                                                                         <IconButton onClick={() => handleSeatDisable(rowIndex - 1, columnIndex - 1)}><ChairIcon style={{ color: 'green' }} /></IconButton>
                                                                         {seatDetails.find(seatDetail => seatDetail.row === rowIndex && seatDetail.column === columnIndex) && (
                                                                             <TextField
-                                                                                sx={{ mt: -1 }}
+                                                                                sx={{
+                                                                                    mt: -1,
+                                                                                    '& input': {
+                                                                                        textAlign: 'center',
+                                                                                    }
+                                                                                }}
                                                                                 size='small'
                                                                                 id={`seat-name-${rowIndex - 1}-${columnIndex - 1}`}
                                                                                 name='seatName'

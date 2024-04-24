@@ -1,4 +1,4 @@
-import { Card, Grid, IconButton, Tooltip, } from '@mui/material'
+import {Card, Grid, IconButton, Tooltip,} from '@mui/material'
 import MDBox from 'components/MDBox'
 import MDTypography from 'components/MDTypography'
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout'
@@ -154,8 +154,24 @@ export default function SingleScreen() {
                 </MDBox>
                 <MDBox p={2}>
                     <Grid container spacing={6}>
+                        <Grid item xs={12} >
+                            <Card
+                                sx={{
+                                    backgroundColor: '#b8c7e0',
+                                    padding: '20px',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    height: '30px',                                
+                                }}
+
+                            >
+                                <MDTypography>Screen</MDTypography>
+                            </Card>
+                        </Grid>
                         {zonesData.map((zone, index) => (
-                            <Grid key={index} item xs={12} md={6} xl={3}>
+                            <Grid key={index} item xs={12}>
                                 <Card
                                     sx={{
                                         backgroundColor: '#cfe0fd',
@@ -166,13 +182,13 @@ export default function SingleScreen() {
                                         alignItems: 'center',
                                         height: '150px'
                                     }}
-                                    onClick={()=>openPage(`/theatres/single-theatre/single-screen/single-zone/${zone.id}`)} style={{ cursor: 'pointer' }}
+                                    onClick={() => openPage(`/theatres/single-theatre/single-screen/single-zone/${zone.id}`)} style={{ cursor: 'pointer' }}
                                 >
                                     <MDTypography>{zone.name}</MDTypography>
                                 </Card>
                             </Grid>
                         ))}
-                        <Grid item xs={12} md={6} xl={3}>
+                        <Grid item xs={12}>
                             <Card
                                 sx={{
                                     backgroundColor: '#cfe0fd',
