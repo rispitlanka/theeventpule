@@ -201,7 +201,7 @@ const routes = [
     component: <AddZone />,
   },
   {
-    route: "/theatres/single-theatre/single-screen/single-zone",
+    route: "/theatres/single-theatre/single-screen/single-zone/:id",
     component: <SingleZone />,
   },
   // {

@@ -7,8 +7,10 @@ import Footer from "examples/Footer";
 import ChairIcon from "@mui/icons-material/Chair";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
+import { useParams } from "react-router-dom";
 
 export default function SingleZone() {
+    const {id} = useParams();
     const [seatsData, setSeatsData] = useState([]);
 
     useEffect(() => {
@@ -17,7 +19,7 @@ export default function SingleZone() {
 
     const fetchSeatsData = async () => {
         try {
-            const { data, error } = await supabase.from('seats').select('*');
+            const { data, error } = await supabase.from('seats').select().eq('zoneId',id);
             if (error) throw error;
             if (data) {
                 console.log(data);
