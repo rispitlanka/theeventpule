@@ -6,7 +6,7 @@ import { supabase } from './supabaseClient';
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import { Button, TextField } from '@mui/material';
+import {TextField } from '@mui/material';
 
 // Material Dashboard 2 React example components
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout';
@@ -16,6 +16,7 @@ import MDBox from 'components/MDBox';
 import MDTypography from 'components/MDTypography';
 import MDSnackbar from 'components/MDSnackbar';
 import { useNavigate, useParams } from 'react-router-dom';
+import MDButton from 'components/MDButton';
 
 export default function AddScreen() {
 
@@ -24,8 +25,6 @@ export default function AddScreen() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const { id: theatreId } = useParams();
-  console.log(theatreId);
-
 
   const onSubmit = async (values, { resetForm }) => {
     try {
@@ -62,11 +61,14 @@ export default function AddScreen() {
 
   const addScreenData = async (values) => {
     try {
-      const { data, error } = await supabase.from('screens').insert([values]);
+      const { data, error } = await supabase.from('screens').insert([values]).select('*');
+      if(data) {
+        console.log('Data inserted successfully:', data);
+      }
       if (error) {
         throw error;
-      }
-      console.log('Data inserted successfully:', data);
+      }   
+         
     } catch (error) {
       throw new Error('Error inserting data:', error.message);
     }
@@ -88,7 +90,6 @@ export default function AddScreen() {
                   mt={-3}
                   py={3}
                   px={2}
-                  pt={1}
                   variant="gradient"
                   bgColor="info"
                   borderRadius="lg"
@@ -99,9 +100,6 @@ export default function AddScreen() {
                   <MDTypography variant="h6" color="white">
                     Add New Screens
                   </MDTypography>
-                  <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
-                    <Button type='submit'>Save</Button>
-                  </MDBox>
                 </MDBox>
                 <MDBox p={2}>
                   <MDBox p={1}>
@@ -180,6 +178,9 @@ export default function AddScreen() {
                       onBlur={newScreen.handleBlur}
                       error={newScreen.touched.facilities && Boolean(newScreen.errors.facilities)}
                       helperText={newScreen.touched.facilities && newScreen.errors.facilities} />
+                  </MDBox>
+                  <MDBox p={1}>
+                    <MDButton color='info' type='submit'>Save</MDButton>
                   </MDBox>
                 </MDBox>
               </Card>

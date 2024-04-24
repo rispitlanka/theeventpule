@@ -15,6 +15,7 @@ import Footer from "examples/Footer";
 import MDBox from 'components/MDBox';
 import MDTypography from 'components/MDTypography';
 import { useNavigate, useParams } from 'react-router-dom';
+import MDButton from 'components/MDButton';
 
 export default function EditScreen() {
   const navigate = useNavigate();
@@ -91,7 +92,6 @@ export default function EditScreen() {
                   mt={-3}
                   py={3}
                   px={2}
-                  pt={1}
                   variant="gradient"
                   bgColor="info"
                   borderRadius="lg"
@@ -102,9 +102,6 @@ export default function EditScreen() {
                   <MDTypography variant="h6" color="white">
                     Edit Screen
                   </MDTypography>
-                  <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
-                    <Button type='submit'>Save</Button>
-                  </MDBox>
                 </MDBox>
                 <MDBox p={2}>
                   <MDBox p={1}>
@@ -183,6 +180,9 @@ export default function EditScreen() {
                       onBlur={editScreen.handleBlur}
                       error={editScreen.touched.facilities && Boolean(editScreen.errors.facilities)}
                       helperText={editScreen.touched.facilities && editScreen.errors.facilities} />
+                  </MDBox>
+                  <MDBox p={1}>
+                    <MDButton color='info' type='submit'>Update</MDButton>
                   </MDBox>
                 </MDBox>
               </Card>

@@ -16,6 +16,7 @@ import Footer from "examples/Footer";
 import MDBox from 'components/MDBox';
 import MDTypography from 'components/MDTypography';
 import MDSnackbar from 'components/MDSnackbar';
+import MDButton from 'components/MDButton';
 
 export default function EditTheatre() {
 
@@ -121,7 +122,6 @@ export default function EditTheatre() {
                                 mt={-3}
                                 py={3}
                                 px={2}
-                                pt={1}
                                 variant="gradient"
                                 bgColor="info"
                                 borderRadius="lg"
@@ -132,9 +132,6 @@ export default function EditTheatre() {
                                 <MDTypography variant="h6" color="white">
                                     Manage Theatre
                                 </MDTypography>
-                                <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
-                                    <Button type='submit'>Update</Button>
-                                </MDBox>
                             </MDBox>
                             <MDBox p={2}>
                                 <MDBox p={1}>
@@ -213,6 +210,9 @@ export default function EditTheatre() {
                                         onBlur={editTheatre.handleBlur}
                                         error={editTheatre.touched.coordinatorMail && Boolean(editTheatre.errors.coordinatorMail)}
                                         helperText={editTheatre.touched.coordinatorMail && editTheatre.errors.coordinatorMail} />
+                                </MDBox>
+                                <MDBox p={1}>
+                                    <MDButton color='info' type='submit'>Update</MDButton>
                                 </MDBox>
                             </MDBox>
                         </Card>

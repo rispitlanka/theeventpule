@@ -9,9 +9,10 @@ import * as Yup from 'yup';
 import React, { useEffect, useState } from 'react'
 import { supabase } from './supabaseClient'
 import ChairIcon from '@mui/icons-material/Chair';
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import BlockIcon from '@mui/icons-material/Block';
 import { FixedSizeGrid } from 'react-window';
+import MDButton from 'components/MDButton'
 
 
 export default function AddZone() {
@@ -25,6 +26,7 @@ export default function AddZone() {
     const [disabledColumns, setDisabledColumns] = useState([]);
     const [disabledRows, setDisabledRows] = useState([]);
     const [disabledSeats, setDisabledSeats] = useState([]);
+    const navigate = useNavigate();
     let currentZoneId = '';
 
     useEffect(() => {
@@ -130,11 +132,12 @@ export default function AddZone() {
         try {
             const { data, error } = await supabase.from('seats').insert(values);
             if (data) {
-                console.log(data);
+                console.log(data);                
             }
             if (error) {
                 throw error;
             }
+            navigate(-1);
         } catch (error) {
             throw new Error('Error inserting data:', error.message);
         }
@@ -456,7 +459,7 @@ export default function AddZone() {
                                         </FixedSizeGrid>
                                     </MDBox>
                                 </form>
-                                <MDBox><Button onClick={handleFormsSubmit}>Save</Button></MDBox>
+                                <MDBox p={1}><MDButton color='info' onClick={handleFormsSubmit}>Save</MDButton></MDBox>
                             </MDBox>
                         </Card>
                     </Grid>
