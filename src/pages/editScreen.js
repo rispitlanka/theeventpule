@@ -6,7 +6,7 @@ import { supabase } from './supabaseClient';
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import { Button, TextField } from '@mui/material';
+import {TextField } from '@mui/material';
 
 // Material Dashboard 2 React example components
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout';
@@ -45,7 +45,6 @@ export default function EditScreen() {
     };
 
     fetchScreenData();
-    // eslint-disable-next-line
   }, [screenId]);
 
   const editScreen = useFormik({

@@ -68,6 +68,7 @@ import AddZone from "pages/addZone";
 import SingleZone from "pages/singleZone";
 import AddShowTime from "pages/addShowTime";
 import EditShowTime from "pages/editShowTime";
+import AddShows from "pages/addShows";
 // @mui icons
 import Icon from "@mui/material/Icon";
 import { Movie } from "@mui/icons-material";
@@ -96,9 +97,17 @@ const routes = [
     type: "collapse",
     name: "Theatres",
     key: "theatres",
-    icon: <Icon fontSize="small">table_view</Icon>,
+    icon: <Icon fontSize="small">theaters</Icon>,
     route: "/theatres",
     component: <Theatres />,
+  },
+  {
+    type: "collapse",
+    name: "Shows",
+    key: "shows",
+    icon: <Icon fontSize="small">slideshow</Icon>,
+    route: "/shows",
+    component: <AddShows />,
   },
   // {
   //   type: "collapse",
@@ -217,7 +226,7 @@ const routes = [
     component: <AddShowTime />,
   },
   {
-    route: "/theatres/single-theatre/single-screen/edit-showTime/:screenId",
+    route: "/theatres/single-theatre/single-screen/edit-showTime/:showTimeId",
     component: <EditShowTime />,
   },
   {

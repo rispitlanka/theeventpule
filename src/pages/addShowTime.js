@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { supabase } from './supabaseClient';
+import dayjs from 'dayjs';
 
 // @mui material components
 import Grid from "@mui/material/Grid";
@@ -17,15 +18,26 @@ import MDTypography from 'components/MDTypography';
 import { useNavigate, useParams } from 'react-router-dom';
 import MDButton from 'components/MDButton';
 
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { MobileTimePicker } from '@mui/x-date-pickers/MobileTimePicker';
+
 export default function AddShowTime() {
 
     const [error, setError] = useState(null);
     const { screenId } = useParams();
     const navigate = useNavigate();
+    const [selectedTime, setSelectedTime] = useState(null);
 
+    const handleTimeChange = (newTime) => {
+        setSelectedTime(newTime);
+    };
 
     const onSubmit = async (values, { resetForm }) => {
         try {
+            const formattedTime = dayjs(selectedTime).format('hh:mm A');
+            values.time = formattedTime;
             await addShowTimeData(values);
             resetForm();
             navigate(-1);
@@ -100,17 +112,16 @@ export default function AddShowTime() {
                                             helperText={newShowTime.touched.name && newShowTime.errors.name} />
                                     </MDBox>
                                     <MDBox p={1}>
-                                        <TextField
-                                            fullWidth
-                                            variant="outlined"
-                                            id="outlined-basic"
-                                            label="Time"
-                                            name="time"
-                                            value={newShowTime.values.time}
-                                            onChange={newShowTime.handleChange}
-                                            onBlur={newShowTime.handleBlur}
-                                            error={newShowTime.touched.width && Boolean(newShowTime.errors.width)}
-                                            helperText={newShowTime.touched.width && newShowTime.errors.width} />
+                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                            <DemoContainer components={['MobileTimePicker']}>
+                                                <MobileTimePicker
+                                                    label={'Time'}
+                                                    openTo="hours"
+                                                    value={selectedTime}
+                                                    onChange={handleTimeChange}
+                                                />
+                                            </DemoContainer>
+                                        </LocalizationProvider>
                                     </MDBox>
                                     <MDBox p={1}>
                                         <MDButton color='info' type='submit'>Save</MDButton>

@@ -38,7 +38,7 @@ export default function SingleScreen() {
 
     const fetchZonesData = async () => {
         try {
-            const { data, error } = await supabase.from('zones').select().eq('screenId', screenId);
+            const { data, error } = await supabase.from('zones').select('*').eq('screenId', screenId);
             if (error) throw error;
             if (data) {
                 setZonesData(data);

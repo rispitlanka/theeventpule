@@ -33,6 +33,11 @@ export default function data() {
     </MDBox>
   );
 
+  function formatTime(time) {
+    const [hours, minutes] = time.split(':');
+    return `${hours}.${minutes}`;
+  }
+
   const [showTimeData, setShowTimeData] = useState(null);
   const [error, setError] = useState(null);
   const { screenId } = useParams();
@@ -44,7 +49,7 @@ export default function data() {
 
   const fetchShowTimeData = async () => {
     try {
-      const { data, error } = await supabase.from('showTime').select('*');
+      const { data, error } = await supabase.from('showTime').select('*').eq('screenId', screenId);
       console.log(data);
       if (error) throw error;
       setShowTimeData(data);
@@ -55,11 +60,11 @@ export default function data() {
 
   useEffect(() => {
     fetchShowTimeData();
-  }, [])
+  }, [screenId])
 
-  const handleRowClick = (screenId) => {
-    openPage(`/theatres/single-theatre/single-screen/edit-showTime/${screenId}`);
-  };
+  // const handleRowClick = (screenId) => {
+  //   openPage(`/theatres/single-theatre/single-screen/edit-showTime/${screenId}`);
+  // };
 
   const rows = showTimeData ? showTimeData.map(showTime => ({
     name: <div onClick={() => handleRowClick(showTime.id)} style={{ cursor: 'pointer' }}>
@@ -67,11 +72,11 @@ export default function data() {
     </div>,
     time: (
       <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-        {showTime.time}
+        {formatTime(showTime.time)}
       </MDTypography>
     ),
     action: (
-      <MDButton onClick={() => openPage(`/theatres/single-theatre/single-screen/edit-showTime/${screenId}`)} variant='text' size='small' color='info'>edit</MDButton>
+      <MDButton onClick={() => openPage(`/theatres/single-theatre/single-screen/edit-showTime/${showTime.id}`)} variant='text' size='small' color='info'>Edit</MDButton>
     ),
 
   })) : [{ name: <MDTypography color='warning' fontWeight='bold'>{error}</MDTypography> }];
