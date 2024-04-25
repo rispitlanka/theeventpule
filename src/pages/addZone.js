@@ -65,8 +65,6 @@ export default function AddZone() {
         initialValues: {
             name: '',
             price: '',
-            rows: '',
-            columns: '',
             screenId: screenId,
         },
         validationSchema: Yup.object({
@@ -77,8 +75,6 @@ export default function AddZone() {
                 const zoneData = {
                     name: values.name,
                     price: values.price,
-                    rows: rows,
-                    columns: columns,
                     screenId: screenId,
                 }
                 await addZoneData(zoneData);
@@ -454,7 +450,6 @@ export default function AddZone() {
                                                         )}
                                                     </div>
                                                 );
-
                                             }}
                                         </FixedSizeGrid>
                                     </MDBox>

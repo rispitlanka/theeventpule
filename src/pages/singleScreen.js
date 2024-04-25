@@ -9,6 +9,7 @@ import { supabase } from './supabaseClient'
 import EditIcon from '@mui/icons-material/Edit';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import Footer from 'examples/Footer'
+import MDButton from 'components/MDButton'
 
 export default function SingleScreen() {
     const [screenData, setScreenData] = useState([]);
@@ -54,29 +55,31 @@ export default function SingleScreen() {
     return (
         <DashboardLayout>
             <DashboardNavbar />
-            <Card
-                sx={{
-                    position: "relative",
-                    mt: 5,
-                    mx: 3,
-                    py: 2,
-                    px: 2,
-                    mb: 2,
-                }}
-            >
+            <MDBox pt={6} pb={3}>
+            <Card>
+            <MDBox
+                mx={2}
+                mt={-3}
+                py={3}
+                px={2}
+                pt={1}
+                variant="gradient"
+                bgColor="info"
+                borderRadius="lg"
+                coloredShadow="info"
+                display="flex"
+                justifyContent="space-between"
+              >
+                <MDTypography variant="h6" color="white">
+                    Screen Informations
+                </MDTypography>
+                <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
+                  <MDButton onClick={() =>  openPage(`/theatres/single-theatre/edit-screen/${screenId}`)}><EditIcon color="info"/></MDButton>
+                </MDBox>
+              </MDBox>
                 {screenData.length > 0 &&
                     <Grid container spacing={3} alignItems="center">
                         <Grid item xs={12}>
-                            <MDBox p={2}>
-                                <MDTypography variant="h6" fontWeight="medium" textTransform="capitalize">
-                                    Screen Informations
-                                </MDTypography>
-                                <Tooltip title="Edit">
-                                    <IconButton onClick={() => openPage(`/theatres/single-theatre/edit-screen/${screenId}`)} style={{ position: 'absolute', top: 0, right: 0 }}>
-                                        <EditIcon />
-                                    </IconButton>
-                                </Tooltip>
-                            </MDBox>
                         </Grid>
                         <Grid item xs={3}>
                             <MDBox px={2} lineHeight={1.25}>
@@ -142,7 +145,7 @@ export default function SingleScreen() {
 
                 }
 
-                <MDBox pt={5} px={2} lineHeight={1.25}>
+                <MDBox mt={5} pt={3} px={2} lineHeight={1.25}>
                     <MDTypography variant="h6" fontWeight="medium">
                         Zones
                     </MDTypography>
@@ -152,7 +155,7 @@ export default function SingleScreen() {
                         </MDTypography>
                     </MDBox>
                 </MDBox>
-                <MDBox p={2}>
+                <MDBox p={2} mt={1}>
                     <Grid container spacing={6}>
                         <Grid item xs={12} >
                             <Card
@@ -208,6 +211,7 @@ export default function SingleScreen() {
                     </Grid>
                 </MDBox>
             </Card>
+            </MDBox>
             <Footer />
         </DashboardLayout>
     )
