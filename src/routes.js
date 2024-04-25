@@ -39,7 +39,7 @@ Coded by www.creative-tim.com
 import Dashboard from "layouts/dashboard";
 import Tables from "layouts/tables";
 import Billing from "layouts/billing";
-import RTL from "layouts/rtl";
+// import RTL from "layouts/rtl";
 import Notifications from "layouts/notifications";
 import Profile from "layouts/profile";
 import SignIn from "layouts/authentication/sign-in";
@@ -58,6 +58,16 @@ import EditTheatre from "pages/editTheatre";import Languages from "pages/languag
 import Theatres from "pages/theatres";
 import AddTheatre from "pages/addTheatre";
 import EditTheatre from "pages/editTheatre";
+import Languages from "pages/languages";
+import Movies from "pages/movies";
+import AddMovies from "pages/addMovies";
+import AddLanguages from "pages/addLanguages";
+import SingleTheatre from "pages/singleTheatre";
+import SingleScreen from "pages/singleScreen";
+import AddZone from "pages/addZone";
+import SingleZone from "pages/singleZone";
+import AddShowTime from "pages/addShowTime";
+import EditShowTime from "pages/editShowTime";
 // @mui icons
 import Icon from "@mui/material/Icon";
 import { Movie } from "@mui/icons-material";
@@ -166,21 +176,17 @@ const routes = [
     route: "/languages/add-languages",
     component: <AddLanguages />,
   },
+  // {
+  //   route: "/facilities/add-facilities",
+  //   component: <AddFacilities />,
+  // },
   {
     route: "/tables/add-owner",
     component: <AddOwner />,
   },
   {
-    route: "/tables/add-screen",
-    component: <AddScreen />,
-  },
-  {
     route: "/tables/manage-owner",
     component: <ManageOwner />,
-  },
-  {
-    route: "/tables/edit-screen",
-    component: <EditScreen />,
   },
   {
     route: "/theatres/add-theatre",
@@ -191,13 +197,45 @@ const routes = [
     component: <EditTheatre />,
   },
   {
-    type: "collapse",
-    name: "RTL",
-    key: "rtl",
-    icon: <Icon fontSize="small">format_textdirection_r_to_l</Icon>,
-    route: "/rtl",
-    component: <RTL />,
+    route: "/theatres/single-theatre/:id",
+    component: <SingleTheatre />,
   },
+  {
+    route: "/theatres/single-theatre/add-screen/:id",
+    component: <AddScreen />,
+  },
+  {
+    route: "/theatres/single-theatre/single-screen/:screenId",
+    component: <SingleScreen />,
+  },
+  {
+    route: "/theatres/single-theatre/edit-screen/:screenId",
+    component: <EditScreen />,
+  },
+  {
+    route: "/theatres/single-theatre/single-screen/add-showTime/:screenId",
+    component: <AddShowTime />,
+  },
+  {
+    route: "/theatres/single-theatre/single-screen/edit-showTime/:screenId",
+    component: <EditShowTime />,
+  },
+  {
+    route: "/theatres/single-theatre/single-screen/add-zone/:screenId",
+    component: <AddZone />,
+  },
+  {
+    route: "/theatres/single-theatre/single-screen/single-zone/:id",
+    component: <SingleZone />,
+  },
+  // {
+  //   type: "collapse",
+  //   name: "RTL",
+  //   key: "rtl",
+  //   icon: <Icon fontSize="small">format_textdirection_r_to_l</Icon>,
+  //   route: "/rtl",
+  //   component: <RTL />,
+  // },
 ];
 
 export default routes;
