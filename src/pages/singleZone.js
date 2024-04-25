@@ -20,7 +20,7 @@ export default function SingleZone() {
 
     const fetchSeatsData = async () => {
         try {
-            const { data, error } = await supabase.from('seats').select().eq('zoneId', id);
+            const { data, error } = await supabase.from('seats').select('*').eq('zoneId', id);
             if (error) throw error;
             if (data) {
                 console.log(data);
@@ -78,42 +78,17 @@ export default function SingleZone() {
 
                                 return (
                                     <div style={{ ...style, display: 'flex', alignItems: 'center', justifyContent: 'center', }}>
-                                        {isHeaderRow ? (
-                                            <TextField
-                                                sx={{ width: '60px', '& input': { textAlign: 'center' } }}
-                                                size="small"
-                                                value={columnHead}
-                                                disabled
-                                            />
-                                        ) : isHeaderColumn ? (
-                                            <TextField
-                                                sx={{ width: '60px', '& input': { textAlign: 'center' } }}
-                                                size="small"
-                                                value={rowHeadAlphabetic}
-                                                disabled
-                                            />
+                                        {isHeaderRow ? (                                         
+                                            <MDTypography>{columnHead}</MDTypography>
+                                        ) : isHeaderColumn ? (                                         
+                                            <MDTypography>{rowHeadAlphabetic}</MDTypography>
                                         ) : (
                                             <Grid container direction="column" alignItems="center" spacing={1} m={1}>
-                                                {seat ?
+                                                {seat &&
                                                     <>
                                                         <IconButton><ChairIcon style={{ color: 'green' }} /></IconButton>
-                                                        <TextField
-                                                            sx={{ mt: -1, '& input': { textAlign: 'center' } }}
-                                                            size="small"
-                                                            value={seatName}
-                                                            disabled
-                                                        />
-                                                    </>
-                                                    :
-                                                    <>
-                                                        <IconButton><ChairIcon /></IconButton>
-                                                        <TextField
-                                                            sx={{ mt: -1, '& input': { textAlign: 'center' } }}
-                                                            size="small"
-                                                            value={seatName}
-                                                            disabled
-                                                        />
-                                                    </>
+                                                        <MDTypography>{seatName}</MDTypography>
+                                                    </>                                                  
                                                 }
                                             </Grid>
                                         )}

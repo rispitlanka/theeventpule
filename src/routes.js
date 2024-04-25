@@ -60,6 +60,8 @@ import SingleTheatre from "pages/singleTheatre";
 import SingleScreen from "pages/singleScreen";
 import AddZone from "pages/addZone";
 import SingleZone from "pages/singleZone";
+import AddShowTime from "pages/addShowTime";
+import EditShowTime from "pages/editShowTime";
 // @mui icons
 import Icon from "@mui/material/Icon";
 
@@ -195,6 +197,14 @@ const routes = [
   {
     route: "/theatres/single-theatre/edit-screen/:screenId",
     component: <EditScreen />,
+  },
+  {
+    route: "/theatres/single-theatre/single-screen/add-showTime/:screenId",
+    component: <AddShowTime />,
+  },
+  {
+    route: "/theatres/single-theatre/single-screen/edit-showTime/:screenId",
+    component: <EditShowTime />,
   },
   {
     route: "/theatres/single-theatre/single-screen/add-zone/:screenId",
