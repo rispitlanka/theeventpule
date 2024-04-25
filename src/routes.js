@@ -46,9 +46,15 @@ import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 import AddOwner from "pages/addOwner";
 import AddScreen from "pages/addScreen";
+import AddFacilities from "pages/addFacilities";
 import ManageOwner from "pages/manageOwner";
 import EditScreen from "pages/editScreen";
 import Facilities from "pages/facilities";
+import Languages from "pages/languages";
+import Theatres from "pages/theatres";
+import AddTheatre from "pages/addTheatre";
+import EditTheatre from "pages/editTheatre";import Languages from "pages/languages";
+
 import Theatres from "pages/theatres";
 import AddTheatre from "pages/addTheatre";
 import EditTheatre from "pages/editTheatre";
@@ -64,6 +70,10 @@ import AddShowTime from "pages/addShowTime";
 import EditShowTime from "pages/editShowTime";
 // @mui icons
 import Icon from "@mui/material/Icon";
+import { Movie } from "@mui/icons-material";
+import Movies from "pages/movies";
+import AddMovies from "pages/addMovies";
+import AddLanguages from "pages/addLanguages";
 
 const routes = [
   {
@@ -153,6 +163,10 @@ const routes = [
     icon: <Icon fontSize="small">assignment</Icon>,
     route: "/languages",
     component: <Languages />,
+  },
+  {
+    route: "/facilities/add-facilities",
+    component: <AddFacilities />,
   },
   {
     route: "/movies/add-movies",
