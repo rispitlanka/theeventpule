@@ -1,11 +1,16 @@
 import { ArrowDropDown } from '@mui/icons-material'
-import { Box, Card, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, Typography } from '@mui/material'
+import { Box, Button, Card, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { supabase } from './supabaseClient';
+import PropTypes from 'prop-types';
+import MDButton from 'components/MDButton';
+import MDBox from 'components/MDBox';
 
-export default function ScreenMovieSelection() {
+export default function ScreenMovieSelection({ onNext, initialScreenId, initialMovieId }) {
   const [screensData, setScreensData] = useState([]);
   const [moviesData, setMoviesData] = useState([]);
+  const [selectedScreenId, setSelectedScreenId] = useState(initialScreenId);
+  const [selectedMovieId, setSelectedMovieId] = useState(initialMovieId);
 
   const fetchScreensData = async () => {
     try {
@@ -34,14 +39,25 @@ export default function ScreenMovieSelection() {
   useEffect(() => {
     fetchScreensData();
     fetchMoviesData();
+    selectedMovieId
+    selectedScreenId
   }, [])
+
+  const handleNext = () => {
+    onNext(selectedScreenId, selectedMovieId);
+  };
+
   return (
 
     <Box m={6}>
       <Typography pb={2} variant="h6" gutterBottom>Select Movie & Screen</Typography>
       <FormControl fullWidth mb={3}>
         <InputLabel>Select Screen</InputLabel>
-        <Select sx={{ height: '45px', mb: 3 }} InputProps={{
+        <Select 
+          value={selectedScreenId}
+          onChange={(e) => setSelectedScreenId(e.target.value)}
+          sx={{ height: '45px', mb: 3 }} 
+          InputProps={{
           endAdornment: (
             <InputAdornment position="end">
               <IconButton>
@@ -60,7 +76,10 @@ export default function ScreenMovieSelection() {
       </FormControl>
       <FormControl fullWidth>
         <InputLabel>Select Movie</InputLabel>
-        <Select sx={{ height: '45px' }}>
+        <Select 
+          value={selectedMovieId}
+          onChange={(e) => setSelectedMovieId(e.target.value)}
+          sx={{ height: '45px' }}>
           {moviesData.map((movie) => (
             <MenuItem key={movie.id} value={movie.id}>
               {movie.title}
@@ -68,7 +87,14 @@ export default function ScreenMovieSelection() {
           ))}
         </Select>
       </FormControl>
+      <MDBox mt={3}><MDButton color='info' onClick={handleNext}>Next</MDButton></MDBox>
     </Box>
 
   )
+}
+
+ScreenMovieSelection.propTypes ={
+  onNext:PropTypes.isRequired,
+  initialMovieId:PropTypes.isRequired,
+  initialScreenId:PropTypes.isRequired
 }

@@ -22,7 +22,6 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 export default function EditShowTime() {
-
     const { showTimeId } = useParams();
     const navigate = useNavigate();
     const [selectedTime, setSelectedTime] = useState();
@@ -45,9 +44,8 @@ export default function EditShowTime() {
                         name: showTime.name,
                         time: showTime.time,
                     });
-                    const formattedTime = (dayjs(showTime.time)).format('hh:mm A');
-                    setInitialTime(formattedTime);
-                    setSelectedTime(formattedTime);
+                    setInitialTime(showTime.time);
+                    setSelectedTime(showTime.time);
                 }
             } catch (error) {
                 console.error('Error fetching showTime data:', error.message);
@@ -60,7 +58,6 @@ export default function EditShowTime() {
     const editShowTime = useFormik({
         initialValues: {
             name: '',
-            time: '',
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
