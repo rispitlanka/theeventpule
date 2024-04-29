@@ -6,8 +6,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import MDBox from 'components/MDBox'
-import { Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import MDTypography from 'components/MDTypography';
+import { Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { supabase } from "pages/supabaseClient";
 import PropTypes from 'prop-types';
 import MDButton from 'components/MDButton';
@@ -18,6 +17,7 @@ export default function ShowDateSetup({ screenId, movieId }) {
     const [startDate, setStartDate] = useState();
     const [endDate, setEndDate] = useState();
     const [showsData, setShowsData] = useState([]);
+    const [checked, setChecked] = useState(false);
 
     const fetchShowTimeData = async () => {
         try {
@@ -44,8 +44,7 @@ export default function ShowDateSetup({ screenId, movieId }) {
     };
 
     const handleStartDateChange = (date) => {
-        console.log(date)
-        setStartDate(date);
+        setStartDate((date));
     }
 
     const handleEndDateChange = (date) => {
@@ -58,32 +57,73 @@ export default function ShowDateSetup({ screenId, movieId }) {
     }, [screenId]);
 
     useEffect(() => {
-        if (startDate && endDate && showTimeData) {
+        if (startDate && endDate !== null && showTimeData) {
             const dates = {};
             const start = new Date(startDate);
             const end = new Date(endDate);
 
-            while (start <= end) {
+            while (start < end) {
                 const formattedDate = start.toLocaleDateString('en-US');
                 dates[formattedDate] = showTimeData.map(item => ({ name: item.name, time: item.time }));
                 start.setDate(start.getDate() + 1);
             }
             setShowsData(dates);
-        }
-    }, [startDate, endDate, showTimeData]);
 
-    const handleSaveShows = async ()=>{
-        try {
-            const { data, error } = await supabase.from('shows').insert().select('*');
-            if (data) {
-                console.log(data);
+        } else if (startDate && checked && showTimeData) {
+            const dates = {};
+            const start = new Date(startDate);
+
+            while (start >= new Date()) {
+                const formattedDate = start.toLocaleDateString('en-US');
+                dates[formattedDate] = showTimeData.map(item => ({ name: item.name, time: item.time }));
+                start.setDate(start.getDate() + 1);
+                break;
             }
-            if (error) throw error;
+            setShowsData(dates);
+        }
+    }, [startDate, endDate, showTimeData, checked]);
+
+    const handleSaveShows = async () => {
+        try {
+            const dates = Object.keys(showsData);
+            const lastDate = dates.length > 1 ? dates[dates.length - 1] : null;
+
+            const dataToInsert = [];
+            Object.entries(showsData).forEach(([date, shows]) => {
+                shows.forEach(show => {
+                    const startDate = new Date(`${date} UTC`);
+                    const endDate = new Date(`${lastDate} UTC`);
+                    dataToInsert.push({
+                        startDate,
+                        endDate,
+                        movieId: movieId,
+                        screenId: screenId,
+                    });
+                });
+            });
+
+            const { data, error } = await supabase.from('shows').insert(dataToInsert).select('*');
+            if (data) {
+                console.log('Data saved successfully:', data);   
+                setShowsData('');         
+            }
+            if (error) {
+                throw error;
+            }
         } catch (error) {
-            console.log('Error in saving data', error);
+            console.log('Error in saving data:', error.message);
         }
     };
 
+
+    const handleCheckboxChange = (event) => {
+        setChecked(event.target.checked);
+        if (event.target.checked) {
+            setEndDate(null);
+        }
+    };
+
+    const maxShowsCount = Math.max(...Object.values(showsData).map(shows => shows.length));
 
     return (
         <>
@@ -107,38 +147,41 @@ export default function ShowDateSetup({ screenId, movieId }) {
                                     label="Select End Date"
                                     value={endDate}
                                     onChange={handleEndDateChange}
+                                    disabled={checked}
                                 />
                             </DemoContainer>
                         </LocalizationProvider>
-                        <FormControlLabel sx={{ ml: 1 }} control={<Checkbox />} label="Do not set end date" />
+                        <FormControlLabel sx={{ ml: 1 }} control={<Checkbox checked={checked} onChange={handleCheckboxChange} />} label="Do not set end date" />
                     </Grid>
                 </MDBox>
             </Grid>
-            <TableContainer>
-                <Table>
-                    <TableHead>
+            <MDBox mt={3}>
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableHead>
+                        </TableHead>
                         <TableRow>
                             <TableCell>Date</TableCell>
-                            <TableCell>Show Times</TableCell>
+                            {Array.from({ length: maxShowsCount }, (_, index) => (
+                                <TableCell key={index}>Show {index + 1}</TableCell>
+                            ))}
                         </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {Object.keys(showsData).map(date => (
-                            <TableRow key={date}>
-                                <TableCell>{date}</TableCell>
-                                <TableCell>
+                        <TableBody>
+                            {Object.keys(showsData).map(date => (
+                                <TableRow key={date}>
+                                    <TableCell>{date}</TableCell>
                                     {showsData[date].map((show, index) => (
-                                        <span key={index}>
-                                            {show.name} at {show.time}<br />
-                                        </span>
+                                        <TableCell key={`${date}-${index}`}>
+                                            {show.name} at {show.time}
+                                        </TableCell>
                                     ))}
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-                <MDBox m={2}><MDButton onClick={handleSaveShows} disabled color='info'>Save</MDButton></MDBox>
-            </TableContainer>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                    <MDBox m={2}><MDButton onClick={handleSaveShows} color='info'>Save</MDButton></MDBox>
+                </TableContainer>
+            </MDBox>
         </>
     )
 }
