@@ -35,15 +35,15 @@ export default function AddTheatre() {
       address: Yup.string().required('Required'),
       coordinatorName: Yup.string().required('Required'),
       coordinatorMobile: Yup.string()
-      .required('Required')
-      // .matches(phoneRegExp, 'Mobile number is not valid')
-      .min(10, 'Not a valid mobile number')
-      .max(10, 'Not a valid mobile number'),
+        .required('Required')
+        // .matches(phoneRegExp, 'Mobile number is not valid')
+        .min(10, 'Not a valid mobile number')
+        .max(10, 'Not a valid mobile number'),
       telephone: Yup.string()
-      .required('Required')
-      // .matches(phoneRegExp, 'Telephone number is not valid')
-      .min(10, 'Not a valid telephone number')
-      .max(10, 'Not a valid telephone number'),
+        .required('Required')
+        // .matches(phoneRegExp, 'Telephone number is not valid')
+        .min(10, 'Not a valid telephone number')
+        .max(10, 'Not a valid telephone number'),
       coordinatorMail: Yup.string().required('Email is required').email('Enter a valid email'),
     }),
     onSubmit: (values, { resetForm }) => {
@@ -57,7 +57,7 @@ export default function AddTheatre() {
   const saveDataToLocal = (data) => {
     const id = uuidv4();
     let newData = JSON.parse(localStorage.getItem('theatreData')) || [];
-    newData.push({id,...data});
+    newData.push({ id, ...data });
     localStorage.setItem('theatreData', JSON.stringify(newData));
   }
 
@@ -101,7 +101,7 @@ export default function AddTheatre() {
                     name="name"
                     value={newTheatre.values.name}
                     onChange={newTheatre.handleChange}
-                    onBlur={newTheatre.handleBlur} 
+                    onBlur={newTheatre.handleBlur}
                     error={newTheatre.touched.name && Boolean(newTheatre.errors.name)}
                     helperText={newTheatre.touched.name && newTheatre.errors.name} />
                 </MDBox>
@@ -114,7 +114,7 @@ export default function AddTheatre() {
                     name="address"
                     value={newTheatre.values.address}
                     onChange={newTheatre.handleChange}
-                    onBlur={newTheatre.handleBlur} 
+                    onBlur={newTheatre.handleBlur}
                     error={newTheatre.touched.address && Boolean(newTheatre.errors.address)}
                     helperText={newTheatre.touched.address && newTheatre.errors.address} />
                 </MDBox>
@@ -127,7 +127,7 @@ export default function AddTheatre() {
                     name="telephone"
                     value={newTheatre.values.telephone}
                     onChange={newTheatre.handleChange}
-                    onBlur={newTheatre.handleBlur} 
+                    onBlur={newTheatre.handleBlur}
                     error={newTheatre.touched.telephone && Boolean(newTheatre.errors.telephone)}
                     helperText={newTheatre.touched.telephone && newTheatre.errors.telephone} />
                 </MDBox>
@@ -140,7 +140,7 @@ export default function AddTheatre() {
                     name="coordinatorName"
                     value={newTheatre.values.coordinatorName}
                     onChange={newTheatre.handleChange}
-                    onBlur={newTheatre.handleBlur} 
+                    onBlur={newTheatre.handleBlur}
                     error={newTheatre.touched.coordinatorName && Boolean(newTheatre.errors.coordinatorName)}
                     helperText={newTheatre.touched.coordinatorName && newTheatre.errors.coordinatorName} />
                 </MDBox>
@@ -153,7 +153,7 @@ export default function AddTheatre() {
                     name="coordinatorMobile"
                     value={newTheatre.values.coordinatorMobile}
                     onChange={newTheatre.handleChange}
-                    onBlur={newTheatre.handleBlur} 
+                    onBlur={newTheatre.handleBlur}
                     error={newTheatre.touched.coordinatorMobile && Boolean(newTheatre.errors.coordinatorMobile)}
                     helperText={newTheatre.touched.coordinatorMobile && newTheatre.errors.coordinatorMobile} />
                 </MDBox>
@@ -165,7 +165,7 @@ export default function AddTheatre() {
                     name="coordinatorMail"
                     value={newTheatre.values.coordinatorMail}
                     onChange={newTheatre.handleChange}
-                    onBlur={newTheatre.handleBlur} 
+                    onBlur={newTheatre.handleBlur}
                     error={newTheatre.touched.coordinatorMail && Boolean(newTheatre.errors.coordinatorMail)}
                     helperText={newTheatre.touched.coordinatorMail && newTheatre.errors.coordinatorMail} />
                 </MDBox>

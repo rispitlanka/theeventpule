@@ -17,43 +17,44 @@ import Footer from "examples/Footer";
 import MDBox from 'components/MDBox';
 import MDTypography from 'components/MDTypography';
 import MDSnackbar from 'components/MDSnackbar';
+// Data
+import facilitiesTableData from "layouts/tables/data/facilitiesTableData";
 
-
-export default function AddLanguages() {
+export default function AddFacilities() {
 
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarType, setSnackbarType] = useState('');
 
-    const newLanguage = useFormik({
+    const newFacility = useFormik({
         initialValues: {
-            language_name: '',
+            facility_name: '',
         },
         validationSchema: Yup.object({
-            language_name: Yup.string().required('Required'),
+            facility_name: Yup.string().required('Required'),
         }),
         onSubmit: (values, { resetForm }) => {
-            saveLanguage(values);
+            saveFacility(values);
             setSnackbarOpen(true);
             setSnackbarType('success');
             resetForm();
         },
     });
 
-    const saveLanguage = async (language) => {
+    const saveFacility = async (facility) => {
         try {
             const { data, error } = await supabase
-                .from('languages')
-                .insert({ language_name: language.language_name }); // Extract facility_name from the facility object
+                .from('facilities')
+                .insert({ facility_name: facility.facility_name }); // Extract facility_name from the facility object
 
             if (error) {
                 throw error;
             } else {
-                console.log('Language added successfully:', data);
+                console.log('Facility added successfully:', data);
                 setSnackbarOpen(true);
                 setSnackbarType('success');
             }
         } catch (error) {
-            console.error('Error adding language:', error.message);
+            console.error('Error adding facility:', error.message);
             setSnackbarOpen(true);
             setSnackbarType('error');
         }
@@ -68,7 +69,7 @@ export default function AddLanguages() {
         <DashboardLayout><DashboardNavbar /> <MDBox pt={6} pb={3}>
             <Grid container spacing={6}>
                 <Grid item xs={12}>
-                    <form onSubmit={newLanguage.handleSubmit}>
+                    <form onSubmit={newFacility.handleSubmit}>
                         <Card>
                             <MDBox
                                 mx={2}
@@ -84,9 +85,8 @@ export default function AddLanguages() {
                                 justifyContent="space-between"
                             >
                                 <MDTypography variant="h6" color="white">
-                                    Add New Languages
+                                    Add New Facilities
                                 </MDTypography>
-
                             </MDBox>
                             <MDBox p={2}>
                                 <MDBox p={1}>
@@ -94,13 +94,13 @@ export default function AddLanguages() {
                                         fullWidth
                                         variant="outlined"
                                         id="outlined-basic"
-                                        label="Language"
-                                        name="language_name"
-                                        value={newLanguage.values.language_name}
-                                        onChange={newLanguage.handleChange}
-                                        onBlur={newLanguage.handleBlur}
-                                        error={newLanguage.touched.language_name && Boolean(newLanguage.errors.language_name)}
-                                        helperText={newLanguage.touched.language_name && newLanguage.errors.language_name} />
+                                        label="Facility Name"
+                                        name="facility_name"
+                                        value={newFacility.values.facility_name}
+                                        onChange={newFacility.handleChange}
+                                        onBlur={newFacility.handleBlur}
+                                        error={newFacility.touched.facility_name && Boolean(newFacility.errors.facility_name)}
+                                        helperText={newFacility.touched.facility_name && newFacility.errors.name} />
                                 </MDBox>
                                 <MDBox mt={-3} p={4}>
                                     <Button
@@ -109,7 +109,7 @@ export default function AddLanguages() {
                                         variant="contained"
                                         color="primary"
                                     >
-                                        <span style={{ color: 'white' }}>Save</span>
+                                        <span style={{ color: 'white' }}>Update</span>
                                     </Button>
                                 </MDBox>
                             </MDBox>
@@ -123,7 +123,7 @@ export default function AddLanguages() {
                 color={snackbarType}
                 icon={snackbarType === 'success' ? 'check' : 'warning'}
                 title={snackbarType === 'success' ? 'Success' : 'Error'}
-                content={snackbarType === 'success' ? 'New language has been added successfully!' : 'Failed to add new language!'}
+                content={snackbarType === 'success' ? 'New facility has been added successfully!' : 'Failed to add new facility!'}
                 open={snackbarOpen}
                 close={handleCloseSnackbar}
                 time={2500}

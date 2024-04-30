@@ -17,43 +17,44 @@ import Footer from "examples/Footer";
 import MDBox from 'components/MDBox';
 import MDTypography from 'components/MDTypography';
 import MDSnackbar from 'components/MDSnackbar';
+import SoundSystem from './soundSystemType';
 
 
-export default function AddLanguages() {
+export default function AddSoundSystem() {
 
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarType, setSnackbarType] = useState('');
 
-    const newLanguage = useFormik({
+    const newSoundSystem = useFormik({
         initialValues: {
-            language_name: '',
+            soundsystem_type: '',
         },
         validationSchema: Yup.object({
-            language_name: Yup.string().required('Required'),
+            soundsystem_type: Yup.string().required('Required'),
         }),
         onSubmit: (values, { resetForm }) => {
-            saveLanguage(values);
+            saveSoundSystem(values);
             setSnackbarOpen(true);
             setSnackbarType('success');
             resetForm();
         },
     });
 
-    const saveLanguage = async (language) => {
+    const saveSoundSystem = async (soundsys) => {
         try {
             const { data, error } = await supabase
-                .from('languages')
-                .insert({ language_name: language.language_name }); // Extract facility_name from the facility object
+                .from('soundsystem_types')
+                .insert({ soundsystem_type: soundsys.soundsystem_type }); // Extract facility_name from the facility object
 
             if (error) {
                 throw error;
             } else {
-                console.log('Language added successfully:', data);
+                console.log('Sound system added successfully:', data);
                 setSnackbarOpen(true);
                 setSnackbarType('success');
             }
         } catch (error) {
-            console.error('Error adding language:', error.message);
+            console.error('Error adding sound system type:', error.message);
             setSnackbarOpen(true);
             setSnackbarType('error');
         }
@@ -68,7 +69,7 @@ export default function AddLanguages() {
         <DashboardLayout><DashboardNavbar /> <MDBox pt={6} pb={3}>
             <Grid container spacing={6}>
                 <Grid item xs={12}>
-                    <form onSubmit={newLanguage.handleSubmit}>
+                    <form onSubmit={newSoundSystem.handleSubmit}>
                         <Card>
                             <MDBox
                                 mx={2}
@@ -84,7 +85,7 @@ export default function AddLanguages() {
                                 justifyContent="space-between"
                             >
                                 <MDTypography variant="h6" color="white">
-                                    Add New Languages
+                                    Add New Sound System types
                                 </MDTypography>
 
                             </MDBox>
@@ -94,13 +95,13 @@ export default function AddLanguages() {
                                         fullWidth
                                         variant="outlined"
                                         id="outlined-basic"
-                                        label="Language"
-                                        name="language_name"
-                                        value={newLanguage.values.language_name}
-                                        onChange={newLanguage.handleChange}
-                                        onBlur={newLanguage.handleBlur}
-                                        error={newLanguage.touched.language_name && Boolean(newLanguage.errors.language_name)}
-                                        helperText={newLanguage.touched.language_name && newLanguage.errors.language_name} />
+                                        label="Sound System "
+                                        name="soundsystem_type"
+                                        value={newSoundSystem.values.soundsystem_type}
+                                        onChange={newSoundSystem.handleChange}
+                                        onBlur={newSoundSystem.handleBlur}
+                                        error={newSoundSystem.touched.soundsystem_type && Boolean(newSoundSystem.errors.soundsystem_type)}
+                                        helperText={newSoundSystem.touched.soundsystem_type && newSoundSystem.errors.soundsystem_type} />
                                 </MDBox>
                                 <MDBox mt={-3} p={4}>
                                     <Button
@@ -123,7 +124,7 @@ export default function AddLanguages() {
                 color={snackbarType}
                 icon={snackbarType === 'success' ? 'check' : 'warning'}
                 title={snackbarType === 'success' ? 'Success' : 'Error'}
-                content={snackbarType === 'success' ? 'New language has been added successfully!' : 'Failed to add new language!'}
+                content={snackbarType === 'success' ? 'New Sound system type has been added successfully!' : 'Failed to add new Sound system type!'}
                 open={snackbarOpen}
                 close={handleCloseSnackbar}
                 time={2500}

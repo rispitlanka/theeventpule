@@ -17,43 +17,44 @@ import Footer from "examples/Footer";
 import MDBox from 'components/MDBox';
 import MDTypography from 'components/MDTypography';
 import MDSnackbar from 'components/MDSnackbar';
+import SoundSystem from './soundSystemType';
 
 
-export default function AddLanguages() {
+export default function AddProjectionType() {
 
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarType, setSnackbarType] = useState('');
 
-    const newLanguage = useFormik({
+    const newProjectionType = useFormik({
         initialValues: {
-            language_name: '',
+            projection_type: '',
         },
         validationSchema: Yup.object({
-            language_name: Yup.string().required('Required'),
+            projection_type: Yup.string().required('Required'),
         }),
         onSubmit: (values, { resetForm }) => {
-            saveLanguage(values);
+            saveProjectionType(values);
             setSnackbarOpen(true);
             setSnackbarType('success');
             resetForm();
         },
     });
 
-    const saveLanguage = async (language) => {
+    const saveProjectionType = async (projtyp) => {
         try {
             const { data, error } = await supabase
-                .from('languages')
-                .insert({ language_name: language.language_name }); // Extract facility_name from the facility object
+                .from('projection_types')
+                .insert({ projection_type: projtyp.projection_type }); // Extract facility_name from the facility object
 
             if (error) {
                 throw error;
             } else {
-                console.log('Language added successfully:', data);
+                console.log('Projection Type added successfully:', data);
                 setSnackbarOpen(true);
                 setSnackbarType('success');
             }
         } catch (error) {
-            console.error('Error adding language:', error.message);
+            console.error('Error adding Projection type:', error.message);
             setSnackbarOpen(true);
             setSnackbarType('error');
         }
@@ -68,7 +69,7 @@ export default function AddLanguages() {
         <DashboardLayout><DashboardNavbar /> <MDBox pt={6} pb={3}>
             <Grid container spacing={6}>
                 <Grid item xs={12}>
-                    <form onSubmit={newLanguage.handleSubmit}>
+                    <form onSubmit={newProjectionType.handleSubmit}>
                         <Card>
                             <MDBox
                                 mx={2}
@@ -84,7 +85,7 @@ export default function AddLanguages() {
                                 justifyContent="space-between"
                             >
                                 <MDTypography variant="h6" color="white">
-                                    Add New Languages
+                                    Add New Projection types
                                 </MDTypography>
 
                             </MDBox>
@@ -94,13 +95,13 @@ export default function AddLanguages() {
                                         fullWidth
                                         variant="outlined"
                                         id="outlined-basic"
-                                        label="Language"
-                                        name="language_name"
-                                        value={newLanguage.values.language_name}
-                                        onChange={newLanguage.handleChange}
-                                        onBlur={newLanguage.handleBlur}
-                                        error={newLanguage.touched.language_name && Boolean(newLanguage.errors.language_name)}
-                                        helperText={newLanguage.touched.language_name && newLanguage.errors.language_name} />
+                                        label="Projection Type"
+                                        name="projection_type"
+                                        value={newProjectionType.values.projection_type}
+                                        onChange={newProjectionType.handleChange}
+                                        onBlur={newProjectionType.handleBlur}
+                                        error={newProjectionType.touched.projection_type && Boolean(newProjectionType.errors.projection_type)}
+                                        helperText={newProjectionType.touched.projection_type && newProjectionType.errors.projection_type} />
                                 </MDBox>
                                 <MDBox mt={-3} p={4}>
                                     <Button
@@ -123,7 +124,7 @@ export default function AddLanguages() {
                 color={snackbarType}
                 icon={snackbarType === 'success' ? 'check' : 'warning'}
                 title={snackbarType === 'success' ? 'Success' : 'Error'}
-                content={snackbarType === 'success' ? 'New language has been added successfully!' : 'Failed to add new language!'}
+                content={snackbarType === 'success' ? 'New Projection type has been added successfully!' : 'Failed to add new Projection type!'}
                 open={snackbarOpen}
                 close={handleCloseSnackbar}
                 time={2500}

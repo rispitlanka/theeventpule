@@ -29,10 +29,11 @@ import MDButton from "components/MDButton";
 import { supabase } from "pages/supabaseClient";
 
 // Images
-import LogoAsana from "assets/images/small-logos/facilities.png";
+import LogoAsana from "assets/images/small-logos/genre.png";
+
 
 export default function data() {
-    const FacilityIcon = ({ image, name }) => (
+    const GenreIcon = ({ image, name }) => (
         <MDBox display="flex" alignItems="center" lineHeight={1}>
             <MDAvatar src={image} name={name} size="sm" variant="rounded" />
             <MDTypography display="block" variant="button" fontWeight="medium" ml={1} lineHeight={1}>
@@ -41,38 +42,38 @@ export default function data() {
         </MDBox>
     );
 
-    const [facilityData, setFacilityData] = useState(null);
+    const [censorData, setCensorData] = useState(null);
     const navigate = useNavigate();
     const openPage = (route) => {
         navigate(route);
     };
 
     useEffect(() => {
-        getFacilities();
+        getCensorTypes();
     }, []);
 
-    const getFacilities = async () => {
+    const getCensorTypes = async () => {
         try {
             const { data, error } = await supabase
-                .from('facilities')
+                .from('censor_types')
                 .select('*');
 
             if (error) throw error;
             if (data != null) {
-                setFacilityData(data);
+                setCensorData(data);
                 console.log(data)
             }
 
         } catch (error) {
-            console.error('Error fetching questions:', error.message);
+            console.error('Error fetching Censor types:', error.message);
         }
     };
-    async function deleteGenre(genre) {
+    async function deleteCensorTypes(censor) {
         try {
             const response = await supabase
-                .from("genres")
+                .from("censor_types")
                 .delete()
-                .eq("id", genre.id);
+                .eq("id", censor.id);
 
             if (response.error) throw response.error;
             window.location.reload();
@@ -81,25 +82,24 @@ export default function data() {
         }
     }
 
-
-    const rows = facilityData ? facilityData.map(facility => ({
-        facility_name: <FacilityIcon image={LogoAsana} name={facility.facility_name} />,
+    const rows = censorData ? censorData.map(censor => ({
+        censor_type: <GenreIcon image={LogoAsana} name={censor.censor_type} />,
 
         action: (
-            <MDButton onClick={() => openPage(`/facilities/edit-facilities/${facility.id}`)} variant='text' size='small' color='info'>edit</MDButton>
+            <MDButton onClick={() => openPage(`/censor-types/edit-censor-types/${censor.id}`)} variant='text' size='small' color='info'>edit</MDButton>
         ),
         action2: (
-            <MDButton onClick={() => deleteGenre(facility)} variant='text' size='small' color='info'>delete</MDButton>
+            <MDButton onClick={() => deleteCensorTypes(censor)} variant='text' size='small' color='info'>delete</MDButton>
         ),
 
-    })) : [{ name: <MDTypography color='warning' fontWeight='bold'>No Facilities founded</MDTypography> }];
+    })) : [{ censor_type: <MDTypography color='warning' fontWeight='bold'>No Censor Types founded</MDTypography> }];
 
     return {
         columns: [
-            { Header: "facility name", accessor: "facility_name", width: "50%", align: "left" },
+            { Header: "Censor Types ", accessor: "censor_type", width: "50%", align: "left" },
 
-            { Header: "edit", accessor: "action", align: "center" },
-            { Header: "delete", accessor: "action2", align: "center" },
+            { Header: "Edit", accessor: "action", align: "center" },
+            { Header: "Delete", accessor: "action2", align: "center" },
         ],
 
         rows: rows,

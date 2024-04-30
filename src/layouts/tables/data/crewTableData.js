@@ -1,5 +1,3 @@
-
-
 /* eslint-disable react/prop-types */
 /* eslint-disable react/function-component-definition */
 /**
@@ -28,51 +26,39 @@ import MDButton from "components/MDButton";
 
 import { supabase } from "pages/supabaseClient";
 
-// Images
-import LogoAsana from "assets/images/small-logos/facilities.png";
-
 export default function data() {
-    const FacilityIcon = ({ image, name }) => (
-        <MDBox display="flex" alignItems="center" lineHeight={1}>
-            <MDAvatar src={image} name={name} size="sm" variant="rounded" />
-            <MDTypography display="block" variant="button" fontWeight="medium" ml={1} lineHeight={1}>
-                {name}
-            </MDTypography>
-        </MDBox>
-    );
-
-    const [facilityData, setFacilityData] = useState(null);
+    const [crewData, setCrewData] = useState(null);
     const navigate = useNavigate();
     const openPage = (route) => {
         navigate(route);
     };
 
     useEffect(() => {
-        getFacilities();
+        getCrews();
     }, []);
 
-    const getFacilities = async () => {
+    const getCrews = async () => {
         try {
             const { data, error } = await supabase
-                .from('facilities')
+                .from('crew')
                 .select('*');
 
             if (error) throw error;
             if (data != null) {
-                setFacilityData(data);
+                setCrewData(data);
                 console.log(data)
             }
 
         } catch (error) {
-            console.error('Error fetching questions:', error.message);
+            console.error('Error fetching crew:', error.message);
         }
     };
-    async function deleteGenre(genre) {
+    async function deleteCrew(crew) {
         try {
             const response = await supabase
-                .from("genres")
+                .from("crew")
                 .delete()
-                .eq("id", genre.id);
+                .eq("id", crew.id);
 
             if (response.error) throw response.error;
             window.location.reload();
@@ -81,25 +67,36 @@ export default function data() {
         }
     }
 
-
-    const rows = facilityData ? facilityData.map(facility => ({
-        facility_name: <FacilityIcon image={LogoAsana} name={facility.facility_name} />,
+    const rows = crewData ? crewData.map(crew => ({
+        name: (
+            <MDBox display="flex" alignItems="center" lineHeight={1}>
+                <MDAvatar src={crew.image} name={crew.name} size="sm" variant="rounded" />
+                <MDTypography display="block" variant="button" fontWeight="medium" ml={1} lineHeight={1}>
+                    {crew.name}
+                </MDTypography>
+            </MDBox>
+        ),
+        category: (
+            <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+                {crew.category}
+            </MDTypography>
+        ),
 
         action: (
-            <MDButton onClick={() => openPage(`/facilities/edit-facilities/${facility.id}`)} variant='text' size='small' color='info'>edit</MDButton>
+            <MDButton onClick={() => openPage(`/crew/edit-crew/${crew.id}`)} variant='text' size='small' color='info'>edit</MDButton>
         ),
         action2: (
-            <MDButton onClick={() => deleteGenre(facility)} variant='text' size='small' color='info'>delete</MDButton>
+            <MDButton onClick={() => deleteCrew(crew)} variant='text' size='small' color='info'>delete</MDButton>
         ),
 
-    })) : [{ name: <MDTypography color='warning' fontWeight='bold'>No Facilities founded</MDTypography> }];
+    })) : [{ name: <MDTypography color='warning' fontWeight='bold'>No Crew founded</MDTypography> }];
 
     return {
         columns: [
-            { Header: "facility name", accessor: "facility_name", width: "50%", align: "left" },
-
-            { Header: "edit", accessor: "action", align: "center" },
-            { Header: "delete", accessor: "action2", align: "center" },
+            { Header: "Crew", accessor: "name", width: "30%", align: "left" },
+            { Header: "Category ", accessor: "category", width: "30%", align: "left" },
+            { Header: "Edit", accessor: "action", align: "center" },
+            { Header: "Delete", accessor: "action2", align: "center" },
         ],
 
         rows: rows,
