@@ -18,6 +18,7 @@ export default function ShowDateSetup({ screenId, movieId }) {
     const [endDate, setEndDate] = useState();
     const [showsData, setShowsData] = useState([]);
     const [checked, setChecked] = useState(false);
+    const [fetchedShowsData, setFetchedShowsData] = useState();
 
     const fetchShowTimeData = async () => {
         try {
@@ -43,6 +44,18 @@ export default function ShowDateSetup({ screenId, movieId }) {
         }
     };
 
+    const fetchShowsData = async () => {
+        try {
+            const { data, error } = await supabase.from('shows').select('*');
+            if (data) {
+                setFetchedShowsData(data);
+            }
+            if (error) throw error;
+        } catch (error) {
+            console.log('Error in fetching data', error);
+        }
+    };
+
     const handleStartDateChange = (date) => {
         setStartDate((date));
     }
@@ -54,17 +67,24 @@ export default function ShowDateSetup({ screenId, movieId }) {
     useEffect(() => {
         fetchShowTimeData();
         fetchMovieData();
-    }, [screenId]);
+        fetchShowsData();
+    }, [screenId, movieId]);
 
     useEffect(() => {
+        const existingDates = fetchedShowsData && fetchedShowsData.map(show => show.date);
         if (startDate && endDate !== null && showTimeData) {
             const dates = {};
             const start = new Date(startDate);
             const end = new Date(endDate);
 
             while (start < end) {
-                const formattedDate = start.toLocaleDateString('en-US');
-                dates[formattedDate] = showTimeData.map(item => ({ name: item.name, time: item.time }));
+                const formattedExistingDates = existingDates.map(date => new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }));
+                const formattedDate = start.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+                if (formattedExistingDates.includes(formattedDate)) {
+                    dates[formattedDate] = [{ name: 'No shows available', time: '-' }];
+                } else {
+                    dates[formattedDate] = showTimeData.map(item => ({ name: item.name, time: item.time }));
+                }
                 start.setDate(start.getDate() + 1);
             }
             setShowsData(dates);
@@ -74,8 +94,13 @@ export default function ShowDateSetup({ screenId, movieId }) {
             const start = new Date(startDate);
 
             while (start >= new Date()) {
-                const formattedDate = start.toLocaleDateString('en-US');
-                dates[formattedDate] = showTimeData.map(item => ({ name: item.name, time: item.time }));
+                const formattedExistingDates = existingDates.map(date => new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }));
+                const formattedDate = start.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+                if (formattedExistingDates.includes(formattedDate)) {
+                    dates[formattedDate] = [{ name: 'No shows available', time: '-' }];
+                } else {
+                    dates[formattedDate] = showTimeData.map(item => ({ name: item.name, time: item.time }));
+                }
                 start.setDate(start.getDate() + 1);
                 break;
             }
@@ -86,29 +111,37 @@ export default function ShowDateSetup({ screenId, movieId }) {
     const handleSaveShows = async () => {
         try {
             const dates = Object.keys(showsData);
-            const lastDate = dates.length > 1 ? dates[dates.length - 1] : null;
+            const dataToInsert = dates.map(date => ({
+                date: date,
+                movieId: movieId,
+                screenId: screenId,
+            }));
 
-            const dataToInsert = [];
-            Object.entries(showsData).forEach(([date, shows]) => {
-                shows.forEach(show => {
-                    const startDate = new Date(`${date} UTC`);
-                    const endDate = new Date(`${lastDate} UTC`);
-                    dataToInsert.push({
-                        startDate,
-                        endDate,
-                        movieId: movieId,
-                        screenId: screenId,
-                    });
-                });
-            });
+            const { data: showsDataResponse, error: showsDataError } = await supabase.from('shows').insert(dataToInsert).select('*');
+            if (showsDataResponse) {
+                console.log('Shows data saved successfully:', showsDataResponse);
+                setShowsData('');
 
-            const { data, error } = await supabase.from('shows').insert(dataToInsert).select('*');
-            if (data) {
-                console.log('Data saved successfully:', data);   
-                setShowsData('');         
+                const showIds = showsDataResponse.map(show => show.id);
+                const showScheduleDataToInsert = showIds.flatMap(showId =>
+                    showTimeData.map(showTime => ({
+                        showId: showId,
+                        showTimeId: showTime.id,
+                    }))
+                );
+
+                const { data: showScheduleDataResponse, error: showScheduleError } = await supabase.from('showsShedule').insert(showScheduleDataToInsert).select('*');
+                if (showScheduleDataResponse) {
+                    console.log('Show schedule data saved successfully:', showScheduleDataResponse);
+                }
+
+                if (showScheduleError) {
+                    throw showScheduleError;
+                }
             }
-            if (error) {
-                throw error;
+
+            if (showsDataError) {
+                throw showsDataError;
             }
         } catch (error) {
             console.log('Error in saving data:', error.message);
