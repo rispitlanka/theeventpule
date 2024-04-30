@@ -3,11 +3,12 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { supabase } from './supabaseClient';
+import dayjs from 'dayjs';
 
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import { Button, TextField } from '@mui/material';
+import { TextField } from '@mui/material';
 
 // Material Dashboard 2 React example components
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout';
@@ -16,16 +17,24 @@ import Footer from "examples/Footer";
 import MDBox from 'components/MDBox';
 import MDTypography from 'components/MDTypography';
 import MDButton from 'components/MDButton';
+import { LocalizationProvider, MobileTimePicker } from '@mui/x-date-pickers';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 export default function EditShowTime() {
-
-    const { screenId } = useParams();
+    const { showTimeId } = useParams();
     const navigate = useNavigate();
+    const [selectedTime, setSelectedTime] = useState();
+    const [initialTime, setInitialTime] = useState();
+
+    const handleTimeChange = (newTime) => {
+        setSelectedTime(newTime);
+    };
 
     useEffect(() => {
         const fetchShowTimeData = async () => {
             try {
-                const { data, error } = await supabase.from('showTime').select('*').eq('screenId', screenId);
+                const { data, error } = await supabase.from('showTime').select('*').eq('id', showTimeId);
                 if (error) {
                     throw error;
                 }
@@ -35,6 +44,8 @@ export default function EditShowTime() {
                         name: showTime.name,
                         time: showTime.time,
                     });
+                    setInitialTime(showTime.time);
+                    setSelectedTime(showTime.time);
                 }
             } catch (error) {
                 console.error('Error fetching showTime data:', error.message);
@@ -42,17 +53,18 @@ export default function EditShowTime() {
         };
 
         fetchShowTimeData();
-    }, [screenId]);
+    }, [showTimeId]);
 
     const editShowTime = useFormik({
         initialValues: {
             name: '',
-            time: '',
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
         }),
         onSubmit: async (values, { resetForm }) => {
+            const formattedTime = (dayjs(selectedTime)).format('hh:mm A');
+            values.time = formattedTime;
             await editShowTimeData(values);
             resetForm();
         },
@@ -60,7 +72,7 @@ export default function EditShowTime() {
 
     const editShowTimeData = async (values) => {
         try {
-            const { error } = await supabase.from('showTime').update(values).eq('screenId', screenId);
+            const { error } = await supabase.from('showTime').update(values).eq('id', showTimeId);
             if (error) {
                 throw error;
             }
@@ -91,7 +103,7 @@ export default function EditShowTime() {
                                 justifyContent="space-between"
                             >
                                 <MDTypography variant="h6" color="white">
-                                    Manage Theatre
+                                    Edit Show Time
                                 </MDTypography>
                             </MDBox>
                             <MDBox p={2}>
@@ -109,17 +121,16 @@ export default function EditShowTime() {
                                         helperText={editShowTime.touched.name && editShowTime.errors.name} />
                                 </MDBox>
                                 <MDBox p={1}>
-                                    <TextField
-                                        fullWidth
-                                        variant="outlined"
-                                        screenId="outlined-basic"
-                                        label="Address"
-                                        name="time"
-                                        value={editShowTime.values.time}
-                                        onChange={editShowTime.handleChange}
-                                        onBlur={editShowTime.handleBlur}
-                                        error={editShowTime.touched.time && Boolean(editShowTime.errors.time)}
-                                        helperText={editShowTime.touched.time && editShowTime.errors.time} />
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <DemoContainer components={['MobileTimePicker']}>
+                                            <MobileTimePicker
+                                                label={'Time'}
+                                                openTo="hours"
+                                                value={selectedTime ? dayjs(selectedTime) : dayjs(initialTime)}
+                                                onChange={handleTimeChange}
+                                            />
+                                        </DemoContainer>
+                                    </LocalizationProvider>
                                 </MDBox>
                                 <MDBox p={1}>
                                     <MDButton color='info' type='submit'>Update</MDButton>
