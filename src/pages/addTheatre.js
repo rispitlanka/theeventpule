@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { v4 as uuidv4 } from 'uuid';
+import { supabase } from './supabaseClient';
 
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import { Button, TextField } from '@mui/material';
+import { TextField } from '@mui/material';
 
 // Material Dashboard 2 React example components
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout';
@@ -15,11 +15,26 @@ import Footer from "examples/Footer";
 import MDBox from 'components/MDBox';
 import MDTypography from 'components/MDTypography';
 import MDSnackbar from 'components/MDSnackbar';
+import MDButton from 'components/MDButton';
 
 export default function AddTheatre() {
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarType, setSnackbarType] = useState('');
+
+  const onSubmit = async (values, { resetForm }) => {
+    try {
+      await addTheatreData(values);
+      setSnackbarOpen(true);
+      setSnackbarType('success');
+      resetForm();
+    } catch (error) {
+      console.error('Error submitting form:', error.message);
+      setSnackbarOpen(true);
+      setSnackbarType('error');
+      setError(error.message);
+    }
+  };
 
   const newTheatre = useFormik({
     initialValues: {
@@ -46,20 +61,23 @@ export default function AddTheatre() {
         .max(10, 'Not a valid telephone number'),
       coordinatorMail: Yup.string().required('Email is required').email('Enter a valid email'),
     }),
-    onSubmit: (values, { resetForm }) => {
-      saveDataToLocal(values);
-      setSnackbarOpen(true);
-      setSnackbarType('success');
-      resetForm();
-    },
+    onSubmit,
   });
 
-  const saveDataToLocal = (data) => {
-    const id = uuidv4();
-    let newData = JSON.parse(localStorage.getItem('theatreData')) || [];
-    newData.push({ id, ...data });
-    localStorage.setItem('theatreData', JSON.stringify(newData));
-  }
+  const addTheatreData = async (values) => {
+    try {
+      const { data, error } = await supabase.from('theatres').insert([values]).select('*');
+      if (data) {
+        console.log('Data added succesfully:', data);
+      }
+      if (error) {
+        throw error;
+      }
+    } catch (error) {
+      throw new Error('Error inserting data:', error.message);
+    }
+  };
+
 
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
@@ -76,7 +94,6 @@ export default function AddTheatre() {
                 mt={-3}
                 py={3}
                 px={2}
-                pt={1}
                 variant="gradient"
                 bgColor="info"
                 borderRadius="lg"
@@ -87,9 +104,6 @@ export default function AddTheatre() {
                 <MDTypography variant="h6" color="white">
                   Add New Theatres
                 </MDTypography>
-                <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
-                  <Button type='submit'>Save</Button>
-                </MDBox>
               </MDBox>
               <MDBox p={2}>
                 <MDBox p={1}>
@@ -168,6 +182,9 @@ export default function AddTheatre() {
                     onBlur={newTheatre.handleBlur}
                     error={newTheatre.touched.coordinatorMail && Boolean(newTheatre.errors.coordinatorMail)}
                     helperText={newTheatre.touched.coordinatorMail && newTheatre.errors.coordinatorMail} />
+                </MDBox>
+                <MDBox p={1}>
+                  <MDButton color='info' type='submit'>Save</MDButton>
                 </MDBox>
               </MDBox>
             </Card>

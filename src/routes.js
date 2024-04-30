@@ -39,22 +39,32 @@ Coded by www.creative-tim.com
 import Dashboard from "layouts/dashboard";
 import Tables from "layouts/tables";
 import Billing from "layouts/billing";
-import RTL from "layouts/rtl";
+// import RTL from "layouts/rtl";
 import Notifications from "layouts/notifications";
 import Profile from "layouts/profile";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 import AddOwner from "pages/addOwner";
 import AddScreen from "pages/addScreen";
-import AddFacilities from "pages/addFacilities";
+// import AddFacilities from "pages/addFacilities";
 import ManageOwner from "pages/manageOwner";
 import EditScreen from "pages/editScreen";
 import Facilities from "pages/facilities";
 import Languages from "pages/languages";
+<<<<<<< HEAD
 
+=======
+>>>>>>> 719ce6b039e0c7e04bc16a5969124575337825c1
 import Theatres from "pages/theatres";
 import AddTheatre from "pages/addTheatre";
 import EditTheatre from "pages/editTheatre";
+import SingleTheatre from "pages/singleTheatre";
+import SingleScreen from "pages/singleScreen";
+import AddZone from "pages/addZone";
+import SingleZone from "pages/singleZone";
+import AddShowTime from "pages/addShowTime";
+import EditShowTime from "pages/editShowTime";
+import AddShows from "pages/addShows";
 // @mui icons
 import Icon from "@mui/material/Icon";
 import { Movie } from "@mui/icons-material";
@@ -98,11 +108,34 @@ const routes = [
     type: "collapse",
     name: "Theatres",
     key: "theatres",
-    icon: <Icon fontSize="small">table_view</Icon>,
+    icon: <Icon fontSize="small">theaters</Icon>,
     route: "/theatres",
     component: <Theatres />,
   },
-
+  {
+    type: "collapse",
+    name: "Shows",
+    key: "shows",
+    icon: <Icon fontSize="small">slideshow</Icon>,
+    route: "/shows",
+    component: <AddShows />,
+  },
+  // {
+  //   type: "collapse",
+  //   name: "Billing",
+  //   key: "billing",
+  //   icon: <Icon fontSize="small">receipt_long</Icon>,
+  //   route: "/billing",
+  //   component: <Billing />,
+  // },
+  // {
+  //   type: "collapse",
+  //   name: "Notifications",
+  //   key: "notifications",
+  //   icon: <Icon fontSize="small">notifications</Icon>,
+  //   route: "/notifications",
+  //   component: <Notifications />,
+  // },
   {
     type: "collapse",
     name: "Profile",
@@ -211,6 +244,10 @@ const routes = [
     route: "/languages/add-languages",
     component: <AddLanguages />,
   },
+  // {
+  //   route: "/facilities/add-facilities",
+  //   component: <AddFacilities />,
+  // },
   {
     route: "/cast/add-cast",
     component: <AddCastList />,
@@ -260,16 +297,8 @@ const routes = [
     component: <AddOwner />,
   },
   {
-    route: "/tables/add-screen",
-    component: <AddScreen />,
-  },
-  {
     route: "/tables/manage-owner",
     component: <ManageOwner />,
-  },
-  {
-    route: "/tables/edit-screen",
-    component: <EditScreen />,
   },
   {
     route: "/theatres/add-theatre",
@@ -307,6 +336,46 @@ const routes = [
     route: "/rtl",
     component: <RTL />,
   },
+  {
+    route: "/theatres/single-theatre/:id",
+    component: <SingleTheatre />,
+  },
+  {
+    route: "/theatres/single-theatre/add-screen/:id",
+    component: <AddScreen />,
+  },
+  {
+    route: "/theatres/single-theatre/single-screen/:screenId",
+    component: <SingleScreen />,
+  },
+  {
+    route: "/theatres/single-theatre/edit-screen/:screenId",
+    component: <EditScreen />,
+  },
+  {
+    route: "/theatres/single-theatre/single-screen/add-showTime/:screenId",
+    component: <AddShowTime />,
+  },
+  {
+    route: "/theatres/single-theatre/single-screen/edit-showTime/:showTimeId",
+    component: <EditShowTime />,
+  },
+  {
+    route: "/theatres/single-theatre/single-screen/add-zone/:screenId",
+    component: <AddZone />,
+  },
+  {
+    route: "/theatres/single-theatre/single-screen/single-zone/:id",
+    component: <SingleZone />,
+  },
+  // {
+  //   type: "collapse",
+  //   name: "RTL",
+  //   key: "rtl",
+  //   icon: <Icon fontSize="small">format_textdirection_r_to_l</Icon>,
+  //   route: "/rtl",
+  //   component: <RTL />,
+  // },
 ];
 
 export default routes;

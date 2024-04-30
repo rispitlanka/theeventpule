@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { supabase } from './supabaseClient';
 
 // @mui material components
 import Grid from "@mui/material/Grid";
@@ -15,6 +16,7 @@ import Footer from "examples/Footer";
 import MDBox from 'components/MDBox';
 import MDTypography from 'components/MDTypography';
 import MDSnackbar from 'components/MDSnackbar';
+import MDButton from 'components/MDButton';
 
 export default function EditTheatre() {
 
@@ -30,21 +32,29 @@ export default function EditTheatre() {
     };
 
     useEffect(() => {
-        const data = localStorage.getItem('theatreData');
-        if (data) {
-            const fetchedData = JSON.parse(data);
-            const theatre = fetchedData.find(theatre => theatre.id === id);
-            if (theatre) {
-                editTheatre.setValues({
-                    name: theatre.name,
-                    address: theatre.address,
-                    telephone: theatre.telephone,
-                    coordinatorName: theatre.coordinatorName,
-                    coordinatorMobile: theatre.coordinatorMobile,
-                    coordinatorMail: theatre.coordinatorMail,
-                });
+        const fetchTheatreData = async () => {
+            try {
+                const { data, error } = await supabase.from('theatres').select('*').eq('id', id);
+                if (error) {
+                    throw error;
+                }
+                if (data && data.length > 0) {
+                    const theatre = data[0];
+                    editTheatre.setValues({
+                        name: theatre.name,
+                        address: theatre.address,
+                        telephone: theatre.telephone,
+                        coordinatorName: theatre.coordinatorName,
+                        coordinatorMobile: theatre.coordinatorMobile,
+                        coordinatorMail: theatre.coordinatorMail,
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching theatre data:', error.message);
             }
-        }
+        };
+
+        fetchTheatreData();
         // eslint-disable-next-line
     }, [id]);
 
@@ -73,26 +83,28 @@ export default function EditTheatre() {
                 .max(10, 'Not a valid telephone number'),
             coordinatorMail: Yup.string().required('Email is required').email('Enter a valid email'),
         }),
-        onSubmit: (values, { resetForm }) => {
-            saveDataToLocal(values);
+        onSubmit: async (values, { resetForm }) => {
+            await editTheatreData(values);
             setSnackbarOpen(true);
             setSnackbarType('success');
             resetForm();
             navigateWithDelay();
-
         },
     });
 
-    const saveDataToLocal = (data) => {
-        const updatedData = JSON.parse(localStorage.getItem('theatreData')).map(item => {
-            if (item.id === id) {
-                return { ...data, id: item.id };
-            } else {
-                return item;
+    const editTheatreData = async (values) => {
+        try {
+            const { error } = await supabase.from('theatres').update(values).eq('id', id);
+            if (error) {
+                throw error;
             }
-        });
-        localStorage.setItem('theatreData', JSON.stringify(updatedData));
-    }
+            console.log('Data updated successfully');
+        } catch (error) {
+            console.error('Error updating data:', error.message);
+            throw new Error('Error updating data:', error.message);
+        }
+    };
+
 
 
     const handleCloseSnackbar = () => {
@@ -110,7 +122,6 @@ export default function EditTheatre() {
                                 mt={-3}
                                 py={3}
                                 px={2}
-                                pt={1}
                                 variant="gradient"
                                 bgColor="info"
                                 borderRadius="lg"
@@ -121,9 +132,6 @@ export default function EditTheatre() {
                                 <MDTypography variant="h6" color="white">
                                     Manage Theatre
                                 </MDTypography>
-                                <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
-                                    <Button type='submit'>Update</Button>
-                                </MDBox>
                             </MDBox>
                             <MDBox p={2}>
                                 <MDBox p={1}>
@@ -202,6 +210,9 @@ export default function EditTheatre() {
                                         onBlur={editTheatre.handleBlur}
                                         error={editTheatre.touched.coordinatorMail && Boolean(editTheatre.errors.coordinatorMail)}
                                         helperText={editTheatre.touched.coordinatorMail && editTheatre.errors.coordinatorMail} />
+                                </MDBox>
+                                <MDBox p={1}>
+                                    <MDButton color='info' type='submit'>Update</MDButton>
                                 </MDBox>
                             </MDBox>
                         </Card>
