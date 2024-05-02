@@ -70,18 +70,18 @@ export default function ShowDateSetup({ screenId, movieId }) {
         fetchShowsData();
     }, [screenId, movieId]);
 
+    const existingDates = fetchedShowsData && fetchedShowsData.map(show => new Date(show.date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }));
+
     useEffect(() => {
-        const existingDates = fetchedShowsData && fetchedShowsData.map(show => show.date);
         if (startDate && endDate !== null && showTimeData) {
             const dates = {};
             const start = new Date(startDate);
             const end = new Date(endDate);
 
-            while (start < end) {
-                const formattedExistingDates = existingDates.map(date => new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }));
+            while (start <= end) {
                 const formattedDate = start.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
-                if (formattedExistingDates.includes(formattedDate)) {
-                    dates[formattedDate] = [{ name: 'No shows available', time: '-' }];
+                if (existingDates.includes(formattedDate)) {
+                    dates[formattedDate] = [{ name: '', time: '' }];
                 } else {
                     dates[formattedDate] = showTimeData.map(item => ({ name: item.name, time: item.time }));
                 }
@@ -92,12 +92,12 @@ export default function ShowDateSetup({ screenId, movieId }) {
         } else if (startDate && checked && showTimeData) {
             const dates = {};
             const start = new Date(startDate);
+            const currentDate = new Date();
 
-            while (start >= new Date()) {
-                const formattedExistingDates = existingDates.map(date => new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }));
+            while (start >= currentDate) {
                 const formattedDate = start.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
-                if (formattedExistingDates.includes(formattedDate)) {
-                    dates[formattedDate] = [{ name: 'No shows available', time: '-' }];
+                if (existingDates.includes(formattedDate)) {
+                    dates[formattedDate] = [{ name: '', time: '' }];
                 } else {
                     dates[formattedDate] = showTimeData.map(item => ({ name: item.name, time: item.time }));
                 }
@@ -110,8 +110,11 @@ export default function ShowDateSetup({ screenId, movieId }) {
 
     const handleSaveShows = async () => {
         try {
-            const dates = Object.keys(showsData);
-            const dataToInsert = dates.map(date => ({
+            const datesToSave = Object.keys(showsData).filter(date => {
+                const formattedDate = new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+                return !existingDates.includes(formattedDate);
+            });
+            const dataToInsert = datesToSave.map(date => ({
                 date: date,
                 movieId: movieId,
                 screenId: screenId,
@@ -147,7 +150,6 @@ export default function ShowDateSetup({ screenId, movieId }) {
             console.log('Error in saving data:', error.message);
         }
     };
-
 
     const handleCheckboxChange = (event) => {
         setChecked(event.target.checked);
@@ -204,10 +206,15 @@ export default function ShowDateSetup({ screenId, movieId }) {
                                 <TableRow key={date}>
                                     <TableCell>{date}</TableCell>
                                     {showsData[date].map((show, index) => (
-                                        <TableCell key={`${date}-${index}`}>
-                                            {show.name} at {show.time}
+                                        <TableCell key={`${date}-${index}`} align="center">
+                                            {show.name && show.time && `${show.name} at ${show.time}`}
                                         </TableCell>
                                     ))}
+                                    {!showsData[date].some(show => show.name && show.time) && (
+                                        <TableCell align="center" colSpan={maxShowsCount}>
+                                            No shows
+                                        </TableCell>
+                                    )}
                                 </TableRow>
                             ))}
                         </TableBody>
