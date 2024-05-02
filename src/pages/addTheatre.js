@@ -6,7 +6,7 @@ import { supabase } from './supabaseClient';
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import {TextField } from '@mui/material';
+import { TextField } from '@mui/material';
 
 // Material Dashboard 2 React example components
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout';
@@ -67,7 +67,7 @@ export default function AddTheatre() {
   const addTheatreData = async (values) => {
     try {
       const { data, error } = await supabase.from('theatres').insert([values]).select('*');
-      if(data) {
+      if (data) {
         console.log('Data added succesfully:', data);
       }
       if (error) {
@@ -103,7 +103,7 @@ export default function AddTheatre() {
               >
                 <MDTypography variant="h6" color="white">
                   Add New Theatres
-                </MDTypography>  
+                </MDTypography>
               </MDBox>
               <MDBox p={2}>
                 <MDBox p={1}>

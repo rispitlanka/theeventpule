@@ -67,6 +67,29 @@ import { Movie } from "@mui/icons-material";
 import Movies from "pages/movies";
 import AddMovies from "pages/addMovies";
 import AddLanguages from "pages/addLanguages";
+import EditFacilities from "pages/editFacilities";
+import Genre from "pages/genre";
+import AddGenre from "pages/addGenre";
+import EditGenre from "pages/editGenre";
+import AddSoundSystem from "pages/addSoundSystemType";
+import SoundSystem from "pages/soundSystemType";
+import EditSoundSystem from "pages/editSoundSystemType";
+import ProjectionType from "pages/projectionType";
+import AddProjectionType from "pages/addProjectionType";
+import EditLanguage from "pages/editLanguages";
+import EditProjectionType from "pages/editProjectionType";
+import CastList from "pages/castList";
+import AddCastList from "pages/addCastList";
+import EditCastList from "pages/editCastList";
+import AddCrewList from "pages/addCrewList";
+import CrewList from "pages/crewList";
+import EditCrewList from "pages/editCrewList";
+import EditMovies from "pages/editMovies";
+import ViewMovie from "pages/viewMovie";
+import CensorTypes from "pages/censorTypes";
+import AddCensorType from "pages/addCensorType";
+import EditCensorType from "pages/editCensorType";
+
 
 const routes = [
   {
@@ -76,14 +99,6 @@ const routes = [
     icon: <Icon fontSize="small">dashboard</Icon>,
     route: "/dashboard",
     component: <Dashboard />,
-  },
-  {
-    type: "collapse",
-    name: "Tables",
-    key: "tables",
-    icon: <Icon fontSize="small">table_view</Icon>,
-    route: "/tables",
-    component: <Tables />,
   },
   {
     type: "collapse",
@@ -145,7 +160,7 @@ const routes = [
     type: "collapse",
     name: "Facilities",
     key: "facilities",
-    icon: <Icon fontSize="small">assignment</Icon>,
+    icon: <Icon fontSize="small">door_sliding</Icon>,
     route: "/facilities",
     component: <Facilities />,
   },
@@ -153,7 +168,7 @@ const routes = [
     type: "collapse",
     name: "Movies",
     key: "movies",
-    icon: <Icon fontSize="small">assignment</Icon>,
+    icon: <Icon fontSize="small">movie</Icon>,
     route: "/movies",
     component: <Movies />,
   },
@@ -161,16 +176,64 @@ const routes = [
     type: "collapse",
     name: "Languages",
     key: "languages",
-    icon: <Icon fontSize="small">assignment</Icon>,
+    icon: <Icon fontSize="small">translate</Icon>,
     route: "/languages",
     component: <Languages />,
   },
-  // {
-  //   route: "/facilities/add-facilities",
-  //   component: <AddFacilities />,
-  // },
   {
-    route: "/movies/add-movies",
+    type: "collapse",
+    name: "Genres",
+    key: "genre",
+    icon: <Icon fontSize="small">dehaze</Icon>,
+    route: "/genre",
+    component: <Genre />,
+  },
+  {
+    type: "collapse",
+    name: "Censor Types",
+    key: "censor-types",
+    icon: <Icon fontSize="small">dehaze</Icon>,
+    route: "/censor-types",
+    component: <CensorTypes />,
+  },
+  {
+    type: "collapse",
+    name: "Sound System",
+    key: "soundsystem",
+    icon: <Icon fontSize="small">speaker</Icon>,
+    route: "/soundsystem",
+    component: <SoundSystem />,
+  },
+  {
+    type: "collapse",
+    name: "Projection Types",
+    key: "projection-type",
+    icon: <Icon fontSize="small">view_in_ar</Icon>,
+    route: "/projection-type",
+    component: <ProjectionType />,
+  },
+  {
+    type: "collapse",
+    name: "Cast",
+    key: "cast",
+    icon: <Icon fontSize="small">group</Icon>,
+    route: "/cast",
+    component: <CastList />,
+  },
+  {
+    type: "collapse",
+    name: "Crew",
+    key: "crew",
+    icon: <Icon fontSize="small">handyman</Icon>,
+    route: "/crew",
+    component: <CrewList />,
+  },
+  {
+    route: "/facilities/add-facilities",
+    component: <AddFacilities />,
+  },
+  {
+    route: "/movies/add-movie",
     component: <AddMovies />,
   },
   {
@@ -181,6 +244,50 @@ const routes = [
   //   route: "/facilities/add-facilities",
   //   component: <AddFacilities />,
   // },
+  {
+    route: "/cast/add-cast",
+    component: <AddCastList />,
+  },
+  {
+    route: "/crew/add-crew",
+    component: <AddCrewList />,
+  },
+  {
+    route: "/genre/add-genre",
+    component: <AddGenre />,
+  },
+  {
+    route: "/censor-types/add-censor-types",
+    component: <AddCensorType />,
+  },
+  {
+    route: "/languages/edit-languages/:id",
+    component: <EditLanguage />,
+  },
+  {
+    route: "/cast/edit-cast/:id",
+    component: <EditCastList />,
+  },
+  {
+    route: "/movies/edit-movie/:id",
+    component: <EditMovies />,
+  },
+  {
+    route: "/movies/view-movie/:id",
+    component: <ViewMovie />,
+  },
+  {
+    route: "/crew/edit-crew/:id",
+    component: <EditCrewList />,
+  },
+  {
+    route: "/soundsystem/add-soundsystem",
+    component: <AddSoundSystem />,
+  },
+  {
+    route: "/projection-type/add-projection-type",
+    component: <AddProjectionType />,
+  },
   {
     route: "/tables/add-owner",
     component: <AddOwner />,
@@ -196,6 +303,34 @@ const routes = [
   {
     route: "/theatres/edit-theatre/:id",
     component: <EditTheatre />,
+  },
+  {
+    route: "/facilities/edit-facilities/:id",
+    component: <EditFacilities />,
+  },
+  {
+    route: "/genre/edit-genre/:id",
+    component: <EditGenre />,
+  },
+  {
+    route: "/censor-types/edit-censor-types/:id",
+    component: <EditCensorType />,
+  },
+  {
+    route: "/soundsystem/edit-soundsystem/:id",
+    component: <EditSoundSystem />,
+  },
+  {
+    route: "/projection-type/edit-projection-type/:id",
+    component: <EditProjectionType />,
+  },
+  {
+    type: "collapse",
+    name: "RTL",
+    key: "rtl",
+    icon: <Icon fontSize="small">format_textdirection_r_to_l</Icon>,
+    route: "/rtl",
+    component: <RTL />,
   },
   {
     route: "/theatres/single-theatre/:id",

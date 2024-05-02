@@ -28,51 +28,50 @@ import MDButton from "components/MDButton";
 
 import { supabase } from "pages/supabaseClient";
 
-// Images
-import LogoAsana from "assets/images/small-logos/facilities.png";
+import { Icon } from '@iconify/react';
+import soundOneIcon from '@iconify-icons/icon-park-twotone/sound-one';
 
 export default function data() {
-    const FacilityIcon = ({ image, name }) => (
+    const SoundIcon = ({ name }) => (
         <MDBox display="flex" alignItems="center" lineHeight={1}>
-            <MDAvatar src={image} name={name} size="sm" variant="rounded" />
+            <Icon icon={soundOneIcon} width={24} height={24} />
             <MDTypography display="block" variant="button" fontWeight="medium" ml={1} lineHeight={1}>
                 {name}
             </MDTypography>
         </MDBox>
     );
-
-    const [facilityData, setFacilityData] = useState(null);
+    const [soundSystemData, setSoundSystemData] = useState(null);
     const navigate = useNavigate();
     const openPage = (route) => {
         navigate(route);
     };
 
     useEffect(() => {
-        getFacilities();
+        getSoundSystem();
     }, []);
 
-    const getFacilities = async () => {
+    const getSoundSystem = async () => {
         try {
             const { data, error } = await supabase
-                .from('facilities')
+                .from('soundsystem_types')
                 .select('*');
 
             if (error) throw error;
             if (data != null) {
-                setFacilityData(data);
+                setSoundSystemData(data);
                 console.log(data)
             }
 
         } catch (error) {
-            console.error('Error fetching questions:', error.message);
+            console.error('Error fetching sound system types:', error.message);
         }
     };
-    async function deleteGenre(genre) {
+    async function deleteSoundSystem(soundsys) {
         try {
             const response = await supabase
-                .from("genres")
+                .from("soundsystem_types")
                 .delete()
-                .eq("id", genre.id);
+                .eq("id", soundsys.id);
 
             if (response.error) throw response.error;
             window.location.reload();
@@ -81,25 +80,24 @@ export default function data() {
         }
     }
 
-
-    const rows = facilityData ? facilityData.map(facility => ({
-        facility_name: <FacilityIcon image={LogoAsana} name={facility.facility_name} />,
+    const rows = soundSystemData ? soundSystemData.map(soundsys => ({
+        soundsystem_type: <SoundIcon name={soundsys.soundsystem_type} />,
 
         action: (
-            <MDButton onClick={() => openPage(`/facilities/edit-facilities/${facility.id}`)} variant='text' size='small' color='info'>edit</MDButton>
+            <MDButton onClick={() => openPage(`/soundsystem/edit-soundsystem/${soundsys.id}`)} variant='text' size='small' color='info'>edit</MDButton>
         ),
         action2: (
-            <MDButton onClick={() => deleteGenre(facility)} variant='text' size='small' color='info'>delete</MDButton>
+            <MDButton onClick={() => deleteSoundSystem(soundsys)} variant='text' size='small' color='info'>delete</MDButton>
         ),
 
-    })) : [{ name: <MDTypography color='warning' fontWeight='bold'>No Facilities founded</MDTypography> }];
+    })) : [{ name: <MDTypography color='warning' fontWeight='bold'>No sound system types founded</MDTypography> }];
 
     return {
         columns: [
-            { Header: "facility name", accessor: "facility_name", width: "50%", align: "left" },
+            { Header: "Sound Systems ", accessor: "soundsystem_type", width: "50%", align: "left" },
 
-            { Header: "edit", accessor: "action", align: "center" },
-            { Header: "delete", accessor: "action2", align: "center" },
+            { Header: "Edit", accessor: "action", align: "center" },
+            { Header: "Delete", accessor: "action2", align: "center" },
         ],
 
         rows: rows,

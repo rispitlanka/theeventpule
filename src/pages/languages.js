@@ -1,80 +1,30 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Grid, Typography, Button, TextField } from '@mui/material';
+
+// @mui material components
+import { Card, Grid } from '@mui/material';
 import AddBoxIcon from '@mui/icons-material/AddBox';
+
+// Material Dashboard 2 React components
 import MDBox from 'components/MDBox';
-import MDTypography from 'components/MDTypography';
 import MDButton from 'components/MDButton';
+import MDTypography from 'components/MDTypography';
+
+// Material Dashboard 2 React example components
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout';
 import DashboardNavbar from 'examples/Navbars/DashboardNavbar';
-import Footer from 'examples/Footer';
-import { supabase } from './supabaseClient';
+import Footer from "examples/Footer";
+import DataTable from "examples/Tables/DataTable";
+
+// Data
+import languagesTableData from "layouts/tables/data/languagesTableData";
 
 export default function Languages() {
-    const [languages, setLanguages] = useState([]);
-    const [language, setLanguage] = useState("");
-    const [editing, setEditing] = useState(false);
+    const { columns, rows } = languagesTableData();
     const navigate = useNavigate();
     const openPage = (route) => {
         navigate(route);
     };
-
-    useEffect(() => {
-        getLanguages();
-    }, []);
-
-    const getLanguages = async () => {
-        try {
-            const { data, error } = await supabase
-                .from('languages')
-                .select('*')
-                .order('id', true);
-
-            if (error) throw error;
-            if (data != null) {
-                setLanguages(data);
-                console.log(data);
-            }
-        } catch (error) {
-            console.error('Error fetching languages:', error.message);
-        }
-    };
-
-    const handleUpdate = (language) => {
-        setEditing(true);
-        setLanguage(language);
-    };
-
-    async function updateLanguage() {
-        try {
-            const response = await supabase
-                .from('languages')
-                .update({ Languages: language })
-                .eq("id", languageData.id);
-
-            if (response.error) throw response.error;
-            console.log('Language updated successfully:', response);
-            setLanguage('');
-            setEditing(false);
-        } catch (error) {
-            console.error('Error updating language:', error.message);
-        }
-    }
-
-    async function deleteLanguage(language) {
-        try {
-            const response = await supabase
-                .from("languages")
-                .delete()
-                .eq("id", language.id);
-
-            if (response.error) throw response.error;
-            window.location.reload();
-        } catch (error) {
-            alert(error.message);
-        }
-    }
-
     return (
         <DashboardLayout>
             <DashboardNavbar />
@@ -103,27 +53,13 @@ export default function Languages() {
                                 </MDBox>
                             </MDBox>
                             <MDBox pt={3}>
-                                {editing ? (
-                                    <>
-                                        <Typography variant="h6">Editing Language</Typography>
-                                        <Button onClick={() => setEditing(false)}>Go Back</Button>
-                                        <Typography variant="h5">Add Language Here</Typography>
-                                        <TextField required multiline maxRows={4} label="Language" fullWidth sx={{ paddingBottom: 6 }} value={language} onChange={(e) => setLanguage(e.target.value)} />
-                                        <Button variant="contained" onClick={() => updateLanguage()}>Update Language</Button>
-                                    </>
-                                ) : (
-                                    <>
-                                        {languages && languages.length !== 0 &&
-                                            languages.map((language, index) => (
-                                                <div key={index} style={{ display: 'flex', alignItems: 'center' }}>
-                                                    <Typography variant="h5" style={{ marginRight: '8px' }}>{language.Languages}</Typography>
-                                                    <Button onClick={() => handleUpdate(language)} style={{ marginRight: '8px' }}>Edit</Button>
-                                                    <Button onClick={() => deleteLanguage(language)}>Delete</Button>
-                                                </div>
-                                            ))
-                                        }
-                                    </>
-                                )}
+                                <DataTable
+                                    table={{ columns, rows }}
+                                    isSorted={false}
+                                    entriesPerPage={false}
+                                    showTotalEntries={false}
+                                    noEndBorder
+                                />
                             </MDBox>
                         </Card>
                     </Grid>
@@ -131,5 +67,5 @@ export default function Languages() {
             </MDBox>
             <Footer />
         </DashboardLayout>
-    );
+    )
 }

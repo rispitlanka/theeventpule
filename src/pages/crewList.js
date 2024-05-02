@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // @mui material components
@@ -16,21 +16,15 @@ import DashboardNavbar from 'examples/Navbars/DashboardNavbar';
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 
-//supabase client
-import { supabase } from './supabaseClient';
-
 // Data
-import moviesTableData from "layouts/tables/data/moviesTableData";
+import crewTableData from "layouts/tables/data/crewTableData";
 
-export default function Movies() {
-    const { columns, rows } = moviesTableData();
+export default function CrewList() {
+    const { columns, rows } = crewTableData();
     const navigate = useNavigate();
     const openPage = (route) => {
         navigate(route);
     };
-
-
-
     return (
         <DashboardLayout>
             <DashboardNavbar />
@@ -52,14 +46,13 @@ export default function Movies() {
                                 justifyContent="space-between"
                             >
                                 <MDTypography variant="h6" color="white">
-                                    Movies
+                                    Crew
                                 </MDTypography>
                                 <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
-                                    <MDButton onClick={() => openPage("/movies/add-movie")}><AddBoxIcon color='info' /></MDButton>
+                                    <MDButton onClick={() => openPage("/crew/add-crew")}><AddBoxIcon color='info' /></MDButton>
                                 </MDBox>
                             </MDBox>
                             <MDBox pt={3}>
-
                                 <DataTable
                                     table={{ columns, rows }}
                                     isSorted={false}
@@ -68,13 +61,10 @@ export default function Movies() {
                                     noEndBorder
                                 />
                             </MDBox>
-
                         </Card>
                     </Grid>
                 </Grid>
-
             </MDBox>
-
             <Footer />
         </DashboardLayout>
     )

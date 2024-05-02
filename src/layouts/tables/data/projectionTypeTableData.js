@@ -28,51 +28,52 @@ import MDButton from "components/MDButton";
 
 import { supabase } from "pages/supabaseClient";
 
-// Images
-import LogoAsana from "assets/images/small-logos/facilities.png";
+import { Icon } from '@iconify/react';
+import cubeSolid from '@iconify-icons/fa-solid/cube';
 
 export default function data() {
-    const FacilityIcon = ({ image, name }) => (
+    const ProjectionIcon = ({ name }) => (
         <MDBox display="flex" alignItems="center" lineHeight={1}>
-            <MDAvatar src={image} name={name} size="sm" variant="rounded" />
+            <Icon icon={cubeSolid} width={24} height={24} />
             <MDTypography display="block" variant="button" fontWeight="medium" ml={1} lineHeight={1}>
                 {name}
             </MDTypography>
         </MDBox>
     );
 
-    const [facilityData, setFacilityData] = useState(null);
+
+    const [projectionTypeData, setProjectionTypeData] = useState(null);
     const navigate = useNavigate();
     const openPage = (route) => {
         navigate(route);
     };
 
     useEffect(() => {
-        getFacilities();
+        getProjectionTypes();
     }, []);
 
-    const getFacilities = async () => {
+    const getProjectionTypes = async () => {
         try {
             const { data, error } = await supabase
-                .from('facilities')
+                .from('projection_types')
                 .select('*');
 
             if (error) throw error;
             if (data != null) {
-                setFacilityData(data);
+                setProjectionTypeData(data);
                 console.log(data)
             }
 
         } catch (error) {
-            console.error('Error fetching questions:', error.message);
+            console.error('Error fetching projection types:', error.message);
         }
     };
-    async function deleteGenre(genre) {
+    async function deleteProjectionType(projtyp) {
         try {
             const response = await supabase
-                .from("genres")
+                .from("projection_types")
                 .delete()
-                .eq("id", genre.id);
+                .eq("id", projtyp.id);
 
             if (response.error) throw response.error;
             window.location.reload();
@@ -81,25 +82,24 @@ export default function data() {
         }
     }
 
-
-    const rows = facilityData ? facilityData.map(facility => ({
-        facility_name: <FacilityIcon image={LogoAsana} name={facility.facility_name} />,
+    const rows = projectionTypeData ? projectionTypeData.map(projtyp => ({
+        projection_type: <ProjectionIcon name={projtyp.projection_type} />,
 
         action: (
-            <MDButton onClick={() => openPage(`/facilities/edit-facilities/${facility.id}`)} variant='text' size='small' color='info'>edit</MDButton>
+            <MDButton onClick={() => openPage(`/projection-type/edit-projection-type/${projtyp.id}`)} variant='text' size='small' color='info'>edit</MDButton>
         ),
         action2: (
-            <MDButton onClick={() => deleteGenre(facility)} variant='text' size='small' color='info'>delete</MDButton>
+            <MDButton onClick={() => deleteProjectionType(projtyp)} variant='text' size='small' color='info'>delete</MDButton>
         ),
 
-    })) : [{ name: <MDTypography color='warning' fontWeight='bold'>No Facilities founded</MDTypography> }];
+    })) : [{ name: <MDTypography color='warning' fontWeight='bold'>No Projection types founded</MDTypography> }];
 
     return {
         columns: [
-            { Header: "facility name", accessor: "facility_name", width: "50%", align: "left" },
+            { Header: "Projection Types ", accessor: "projection_type", width: "50%", align: "left" },
 
-            { Header: "edit", accessor: "action", align: "center" },
-            { Header: "delete", accessor: "action2", align: "center" },
+            { Header: "Edit", accessor: "action", align: "center" },
+            { Header: "Delete", accessor: "action2", align: "center" },
         ],
 
         rows: rows,

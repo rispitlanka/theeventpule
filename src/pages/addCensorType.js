@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
@@ -17,48 +18,59 @@ import Footer from "examples/Footer";
 import MDBox from 'components/MDBox';
 import MDTypography from 'components/MDTypography';
 import MDSnackbar from 'components/MDSnackbar';
+import Genre from './genre';
+import CensorTypes from './censorTypes';
+import { useNavigate } from 'react-router-dom';
 
 
-export default function AddLanguages() {
+export default function AddCensorType() {
 
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarType, setSnackbarType] = useState('');
 
-    const newLanguage = useFormik({
+    const navigate = useNavigate();
+
+    const newCensorType = useFormik({
         initialValues: {
-            language_name: '',
+            censor_type: '',
         },
         validationSchema: Yup.object({
-            language_name: Yup.string().required('Required'),
+            censor_type: Yup.string().required('Required'),
         }),
         onSubmit: (values, { resetForm }) => {
-            saveLanguage(values);
+            saveCensorType(values);
             setSnackbarOpen(true);
             setSnackbarType('success');
             resetForm();
+            navigateWithDelay();
         },
     });
 
-    const saveLanguage = async (language) => {
+    const saveCensorType = async (censor) => {
         try {
             const { data, error } = await supabase
-                .from('languages')
-                .insert({ language_name: language.language_name }); // Extract facility_name from the facility object
+                .from('censor_types')
+                .insert({ censor_type: censor.censor_type });
 
             if (error) {
                 throw error;
             } else {
-                console.log('Language added successfully:', data);
+                console.log('Censor Types added successfully:', data);
                 setSnackbarOpen(true);
                 setSnackbarType('success');
             }
         } catch (error) {
-            console.error('Error adding language:', error.message);
+            console.error('Error adding Censor Types:', error.message);
             setSnackbarOpen(true);
             setSnackbarType('error');
         }
     };
 
+    const navigateWithDelay = () => {
+        setTimeout(() => {
+            navigate(-1);
+        }, 2500);
+    };
 
     const handleCloseSnackbar = () => {
         setSnackbarOpen(false);
@@ -68,7 +80,7 @@ export default function AddLanguages() {
         <DashboardLayout><DashboardNavbar /> <MDBox pt={6} pb={3}>
             <Grid container spacing={6}>
                 <Grid item xs={12}>
-                    <form onSubmit={newLanguage.handleSubmit}>
+                    <form onSubmit={newCensorType.handleSubmit}>
                         <Card>
                             <MDBox
                                 mx={2}
@@ -84,7 +96,7 @@ export default function AddLanguages() {
                                 justifyContent="space-between"
                             >
                                 <MDTypography variant="h6" color="white">
-                                    Add New Languages
+                                    Add New Censor Types
                                 </MDTypography>
 
                             </MDBox>
@@ -94,13 +106,13 @@ export default function AddLanguages() {
                                         fullWidth
                                         variant="outlined"
                                         id="outlined-basic"
-                                        label="Language"
-                                        name="language_name"
-                                        value={newLanguage.values.language_name}
-                                        onChange={newLanguage.handleChange}
-                                        onBlur={newLanguage.handleBlur}
-                                        error={newLanguage.touched.language_name && Boolean(newLanguage.errors.language_name)}
-                                        helperText={newLanguage.touched.language_name && newLanguage.errors.language_name} />
+                                        label="Censor-Type"
+                                        name="censor_type"
+                                        value={newCensorType.values.censor_type}
+                                        onChange={newCensorType.handleChange}
+                                        onBlur={newCensorType.handleBlur}
+                                        error={newCensorType.touched.censor_type && Boolean(newCensorType.errors.censor_type)}
+                                        helperText={newCensorType.touched.censor_type && newCensorType.errors.censor_type} />
                                 </MDBox>
                                 <MDBox mt={-3} p={4}>
                                     <Button
@@ -123,7 +135,7 @@ export default function AddLanguages() {
                 color={snackbarType}
                 icon={snackbarType === 'success' ? 'check' : 'warning'}
                 title={snackbarType === 'success' ? 'Success' : 'Error'}
-                content={snackbarType === 'success' ? 'New language has been added successfully!' : 'Failed to add new language!'}
+                content={snackbarType === 'success' ? 'New Censor Type has been added successfully!' : 'Failed to add Censor Type!'}
                 open={snackbarOpen}
                 close={handleCloseSnackbar}
                 time={2500}
