@@ -51,6 +51,7 @@ export default function AddShowTime() {
         initialValues: {
             name: '',
             time: '',
+            type: 'default',
             screenId: screenId,
         },
         validationSchema: Yup.object({

@@ -182,7 +182,7 @@ export default function SingleScreen() {
                                         height: '30px',
                                     }}
                                 >
-                                    <MDTypography>Screen</MDTypography>
+                                    <MDTypography>Screen This Way !</MDTypography>
                                 </Card>
                             </Grid>
                             {zonesData.map((zone, index) => (
