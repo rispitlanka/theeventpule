@@ -11,6 +11,7 @@ import { supabase } from "pages/supabaseClient";
 import PropTypes from 'prop-types';
 import MDButton from 'components/MDButton';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 export default function ShowDateSetup({ screenId, movieId }) {
     const [showTimeData, setShowTimeData] = useState(null);
@@ -21,6 +22,7 @@ export default function ShowDateSetup({ screenId, movieId }) {
     const [checked, setChecked] = useState(false);
     const [fetchedShowsData, setFetchedShowsData] = useState();
     const [disabledColumns, setDisabledColumns] = useState([]);
+    const [disableSingleShow, setDisableSingleShow] = useState();
 
     const fetchShowTimeData = async () => {
         try {
@@ -175,6 +177,14 @@ export default function ShowDateSetup({ screenId, movieId }) {
         }
     }
 
+    const handleDisableSingleShow = (date, index) => {
+        const updatedShowsData = { ...showsData };
+        const currentShow = updatedShowsData[date][index];
+        updatedShowsData[date][index] = { ...currentShow, disabled: !currentShow.disabled };
+        setShowsData(updatedShowsData);
+    };
+
+
     const maxShowsCount = Math.max(...Object.values(showsData).map(shows => shows.length));
 
     return (
@@ -215,10 +225,10 @@ export default function ShowDateSetup({ screenId, movieId }) {
                         <TableRow>
                             <TableCell sx={{ textAlign: 'center' }}>Date</TableCell>
                             {Array.from({ length: maxShowsCount }, (_, index) => (
-                                <TableCell key={index} sx={{ textAlign: 'center', verticalAlign: 'middle', position: 'relative' }}>
+                                <TableCell key={index} sx={{ textAlign: 'center', position: 'relative' }}>
                                     Show {index + 1}
                                     <IconButton onClick={() => handleDisableColumn(index)} sx={{ position: 'absolute', top: '47%', transform: 'translateY(-50%)' }}>
-                                        <RemoveCircleOutlineIcon />
+                                        {disabledColumns.includes(index) ? <AddCircleOutlineIcon color='success' /> : <RemoveCircleOutlineIcon color='primary' />}
                                     </IconButton>
                                 </TableCell>
                             ))}
@@ -228,8 +238,13 @@ export default function ShowDateSetup({ screenId, movieId }) {
                                 <TableRow key={date}>
                                     <TableCell sx={{ textAlign: 'center' }}>{date}</TableCell>
                                     {showsData[date].map((show, index) => (
-                                        <TableCell key={`${date}-${index}`} align="center" sx={{ textDecoration: disabledColumns.includes(index) ? 'line-through' : 'none' }}>
+                                        <TableCell key={`${date}-${index}`} align="center" sx={{ textDecoration: disabledColumns.includes(index) || show.disabled ? 'line-through' : 'none', position: 'relative' }}>
                                             {show.name && show.time && `${show.name} at ${show.time}`}
+                                            {(show.name && show.time) && (
+                                                <IconButton onClick={() => handleDisableSingleShow(date, index)} sx={{ position: 'absolute', top: '47%', transform: 'translateY(-50%)' }}>
+                                                    {show.disabled ? <AddCircleOutlineIcon /> : <RemoveCircleOutlineIcon />}
+                                                </IconButton>
+                                            )}
                                         </TableCell>
                                     ))}
                                     {!showsData[date].some(show => show.name && show.time) && (
