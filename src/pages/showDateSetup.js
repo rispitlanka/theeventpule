@@ -6,10 +6,11 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import MDBox from 'components/MDBox'
-import { Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Grid, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { supabase } from "pages/supabaseClient";
 import PropTypes from 'prop-types';
 import MDButton from 'components/MDButton';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 
 export default function ShowDateSetup({ screenId, movieId }) {
     const [showTimeData, setShowTimeData] = useState(null);
@@ -19,6 +20,7 @@ export default function ShowDateSetup({ screenId, movieId }) {
     const [showsData, setShowsData] = useState([]);
     const [checked, setChecked] = useState(false);
     const [fetchedShowsData, setFetchedShowsData] = useState();
+    const [disabledColumns, setDisabledColumns] = useState([]);
 
     const fetchShowTimeData = async () => {
         try {
@@ -126,16 +128,23 @@ export default function ShowDateSetup({ screenId, movieId }) {
                 setShowsData('');
 
                 const showIds = showsDataResponse.map(show => show.id);
-                const showScheduleDataToInsert = showIds.flatMap(showId =>
-                    showTimeData.map(showTime => ({
-                        showId: showId,
-                        showTimeId: showTime.id,
-                    }))
-                );
+                const showScheduleDataToInsert = showIds.flatMap((showId, showIndex) => {
+                    return showTimeData.map((showTime, timeIndex) => {
+                        const isDisabled = disabledColumns.includes(timeIndex);
+                        if (!isDisabled) {
+                            return {
+                                showId: showId,
+                                showTimeId: showTime.id,
+                            };
+                        }
+                        return null;
+                    }).filter(Boolean);
+                });
 
                 const { data: showScheduleDataResponse, error: showScheduleError } = await supabase.from('showsShedule').insert(showScheduleDataToInsert).select('*');
                 if (showScheduleDataResponse) {
                     console.log('Show schedule data saved successfully:', showScheduleDataResponse);
+                    setDisabledColumns([]);
                 }
 
                 if (showScheduleError) {
@@ -157,6 +166,14 @@ export default function ShowDateSetup({ screenId, movieId }) {
             setEndDate(null);
         }
     };
+
+    const handleDisableColumn = (index) => {
+        if (disabledColumns.includes(index)) {
+            setDisabledColumns(disabledColumns.filter((colIndex) => colIndex !== index));
+        } else {
+            setDisabledColumns([...disabledColumns, index]);
+        }
+    }
 
     const maxShowsCount = Math.max(...Object.values(showsData).map(shows => shows.length));
 
@@ -196,23 +213,28 @@ export default function ShowDateSetup({ screenId, movieId }) {
                         <TableHead>
                         </TableHead>
                         <TableRow>
-                            <TableCell>Date</TableCell>
+                            <TableCell sx={{ textAlign: 'center' }}>Date</TableCell>
                             {Array.from({ length: maxShowsCount }, (_, index) => (
-                                <TableCell key={index}>Show {index + 1}</TableCell>
+                                <TableCell key={index} sx={{ textAlign: 'center', verticalAlign: 'middle', position: 'relative' }}>
+                                    Show {index + 1}
+                                    <IconButton onClick={() => handleDisableColumn(index)} sx={{ position: 'absolute', top: '47%', transform: 'translateY(-50%)' }}>
+                                        <RemoveCircleOutlineIcon />
+                                    </IconButton>
+                                </TableCell>
                             ))}
                         </TableRow>
                         <TableBody>
                             {Object.keys(showsData).map(date => (
                                 <TableRow key={date}>
-                                    <TableCell>{date}</TableCell>
+                                    <TableCell sx={{ textAlign: 'center' }}>{date}</TableCell>
                                     {showsData[date].map((show, index) => (
-                                        <TableCell key={`${date}-${index}`} align="center">
+                                        <TableCell key={`${date}-${index}`} align="center" sx={{ textDecoration: disabledColumns.includes(index) ? 'line-through' : 'none' }}>
                                             {show.name && show.time && `${show.name} at ${show.time}`}
                                         </TableCell>
                                     ))}
                                     {!showsData[date].some(show => show.name && show.time) && (
                                         <TableCell align="center" colSpan={maxShowsCount}>
-                                            No shows
+                                            No shows available
                                         </TableCell>
                                     )}
                                 </TableRow>
