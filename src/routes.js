@@ -46,7 +46,6 @@ import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 import AddOwner from "pages/addOwner";
 import AddScreen from "pages/addScreen";
-// import AddFacilities from "pages/addFacilities";
 import ManageOwner from "pages/manageOwner";
 import EditScreen from "pages/editScreen";
 import Facilities from "pages/facilities";
@@ -89,6 +88,7 @@ import ViewMovie from "pages/viewMovie";
 import CensorTypes from "pages/censorTypes";
 import AddCensorType from "pages/addCensorType";
 import EditCensorType from "pages/editCensorType";
+import AddFacilities from "pages/addFacilities";
 
 
 const routes = [
@@ -240,10 +240,6 @@ const routes = [
     route: "/languages/add-languages",
     component: <AddLanguages />,
   },
-  // {
-  //   route: "/facilities/add-facilities",
-  //   component: <AddFacilities />,
-  // },
   {
     route: "/cast/add-cast",
     component: <AddCastList />,
@@ -324,14 +320,14 @@ const routes = [
     route: "/projection-type/edit-projection-type/:id",
     component: <EditProjectionType />,
   },
-  {
-    type: "collapse",
-    name: "RTL",
-    key: "rtl",
-    icon: <Icon fontSize="small">format_textdirection_r_to_l</Icon>,
-    route: "/rtl",
-    component: <RTL />,
-  },
+  // {
+  //   type: "collapse",
+  //   name: "RTL",
+  //   key: "rtl",
+  //   icon: <Icon fontSize="small">format_textdirection_r_to_l</Icon>,
+  //   route: "/rtl",
+  //   component: <RTL />,
+  // },
   {
     route: "/theatres/single-theatre/:id",
     component: <SingleTheatre />,
