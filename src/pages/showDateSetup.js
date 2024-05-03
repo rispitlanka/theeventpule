@@ -13,7 +13,7 @@ import MDButton from 'components/MDButton';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
-export default function ShowDateSetup({ screenId, movieId }) {
+export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
     const [showTimeData, setShowTimeData] = useState(null);
     const [movieData, setMovieData] = useState();
     const [startDate, setStartDate] = useState();
@@ -126,7 +126,6 @@ export default function ShowDateSetup({ screenId, movieId }) {
             const { data: showsDataResponse, error: showsDataError } = await supabase.from('shows').insert(dataToInsert).select('*');
             if (showsDataResponse) {
                 console.log('Shows data saved successfully:', showsDataResponse);
-                setShowsData('');
 
                 const showIds = showsDataResponse.map(show => show.id);
                 const showScheduleDataToInsert = showIds.flatMap((showId, showIndex) => {
@@ -147,13 +146,14 @@ export default function ShowDateSetup({ screenId, movieId }) {
                 if (showScheduleDataResponse) {
                     console.log('Show schedule data saved successfully:', showScheduleDataResponse);
                     setDisabledColumns([]);
+                    if (showsDataResponse && showScheduleDataResponse) {
+                        afterShowsSaved();
+                    }
                 }
-
                 if (showScheduleError) {
                     throw showScheduleError;
                 }
             }
-
             if (showsDataError) {
                 throw showsDataError;
             }
@@ -184,8 +184,12 @@ export default function ShowDateSetup({ screenId, movieId }) {
         setShowsData(updatedShowsData);
     };
 
-
     const maxShowsCount = Math.max(...Object.values(showsData).map(shows => shows.length));
+
+    function formatTime(time) {
+        const [hours, minutes] = time.split(':');
+        return `${hours}.${minutes}`;
+    }
 
     return (
         <>
@@ -239,7 +243,7 @@ export default function ShowDateSetup({ screenId, movieId }) {
                                     <TableCell sx={{ textAlign: 'center' }}>{date}</TableCell>
                                     {showsData[date].map((show, index) => (
                                         <TableCell key={`${date}-${index}`} align="center" sx={{ textDecoration: disabledColumns.includes(index) || show.disabled ? 'line-through' : 'none', position: 'relative' }}>
-                                            {show.name && show.time && `${show.name} at ${show.time}`}
+                                            {show.name && show.time && `${show.name} at ${formatTime(show.time)}`}
                                             {(show.name && show.time) && (
                                                 <IconButton onClick={() => handleDisableSingleShow(date, index)} sx={{ position: 'absolute', top: '47%', transform: 'translateY(-50%)', p: 3 }}>
                                                     {show.disabled ? <AddCircleOutlineIcon /> : <RemoveCircleOutlineIcon />}
@@ -265,5 +269,6 @@ export default function ShowDateSetup({ screenId, movieId }) {
 
 ShowDateSetup.propTypes = {
     screenId: PropTypes.isRequired,
-    movieId: PropTypes.isRequired
+    movieId: PropTypes.isRequired,
+    afterShowsSaved: PropTypes.func.isRequired
 };
