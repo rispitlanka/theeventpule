@@ -22,7 +22,6 @@ export default function ShowDateSetup({ screenId, movieId }) {
     const [checked, setChecked] = useState(false);
     const [fetchedShowsData, setFetchedShowsData] = useState();
     const [disabledColumns, setDisabledColumns] = useState([]);
-    const [disableSingleShow, setDisableSingleShow] = useState();
 
     const fetchShowTimeData = async () => {
         try {
@@ -133,7 +132,8 @@ export default function ShowDateSetup({ screenId, movieId }) {
                 const showScheduleDataToInsert = showIds.flatMap((showId, showIndex) => {
                     return showTimeData.map((showTime, timeIndex) => {
                         const isDisabled = disabledColumns.includes(timeIndex);
-                        if (!isDisabled) {
+                        const date = Object.keys(showsData)[showIndex];
+                        if (!isDisabled && !showsData[date][timeIndex].disabled) {
                             return {
                                 showId: showId,
                                 showTimeId: showTime.id,
@@ -241,7 +241,7 @@ export default function ShowDateSetup({ screenId, movieId }) {
                                         <TableCell key={`${date}-${index}`} align="center" sx={{ textDecoration: disabledColumns.includes(index) || show.disabled ? 'line-through' : 'none', position: 'relative' }}>
                                             {show.name && show.time && `${show.name} at ${show.time}`}
                                             {(show.name && show.time) && (
-                                                <IconButton onClick={() => handleDisableSingleShow(date, index)} sx={{ position: 'absolute', top: '47%', transform: 'translateY(-50%)' }}>
+                                                <IconButton onClick={() => handleDisableSingleShow(date, index)} sx={{ position: 'absolute', top: '47%', transform: 'translateY(-50%)', p: 3 }}>
                                                     {show.disabled ? <AddCircleOutlineIcon /> : <RemoveCircleOutlineIcon />}
                                                 </IconButton>
                                             )}
