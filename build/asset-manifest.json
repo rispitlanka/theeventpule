@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.js": "/static/js/main.b88a7503.js",
+    "main.js": "/static/js/main.cfde0348.js",
     "static/js/952.681afc32.chunk.js": "/static/js/952.681afc32.chunk.js",
     "static/media/pattern-tree.svg": "/static/media/pattern-tree.156bb943ac7fd244f10c115d085e085e.svg",
     "static/media/home-decor-3.jpg": "/static/media/home-decor-3.74d13fcbd3c631fc7908.jpg",
@@ -28,10 +28,10 @@
     "static/media/logo-jira.svg": "/static/media/logo-jira.c19fd4e416babfbd0fdb0a794188c601.svg",
     "static/media/logo-atlassian.svg": "/static/media/logo-atlassian.f2b0e8570a4b4ce768854ff3dad1a6e1.svg",
     "index.html": "/index.html",
-    "main.b88a7503.js.map": "/static/js/main.b88a7503.js.map",
+    "main.cfde0348.js.map": "/static/js/main.cfde0348.js.map",
     "952.681afc32.chunk.js.map": "/static/js/952.681afc32.chunk.js.map"
   },
   "entrypoints": [
-    "static/js/main.b88a7503.js"
+    "static/js/main.cfde0348.js"
   ]
 }
