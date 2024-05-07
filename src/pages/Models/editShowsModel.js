@@ -97,7 +97,7 @@ export default function EditShowsModel({ open, onClose, showsDataProps, onUpdate
                 ))}
             </List>
             <DialogTitle> Add Show</DialogTitle>
-            <form ref={newShowTimeFormRef} onSubmit={newShowTime.handleSubmit}>
+            <form onSubmit={newShowTime.handleSubmit}>
                 <Grid sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', mb: 1 }}>
                     <MDBox sx={{ p: 1, mr: 3 }}>
                         <TextField
