@@ -13,7 +13,7 @@ import { MobileTimePicker } from '@mui/x-date-pickers/MobileTimePicker';
 import MDButton from 'components/MDButton';
 import { useNavigate } from 'react-router-dom';
 
-export default function EditShowsModel({ open, onClose, showsDataProps, onUpdateShowsData, newShowTimeFormRef}) {
+export default function EditShowsModel({ open, onClose, showsDataProps, onUpdateShowsData }) {
     const [selectedTime, setSelectedTime] = useState(null);
     const navigate = useNavigate();
     const handleTimeChange = (newTime) => {
@@ -63,7 +63,8 @@ export default function EditShowsModel({ open, onClose, showsDataProps, onUpdate
         const newData = {
             name: newShowTime.values.name,
             time: dayjs(selectedTime).format('hh:mm A'),
-            screenId: showsDataProps && showsDataProps.shows && showsDataProps.shows.length > 0 ? showsDataProps.shows[0].screenId : null
+            screenId: showsDataProps && showsDataProps.shows && showsDataProps.shows.length > 0 ? showsDataProps.shows[0].screenId : null,
+            type: 'special',
         };
         const updatedData = showsDataProps
             ? {
@@ -75,6 +76,7 @@ export default function EditShowsModel({ open, onClose, showsDataProps, onUpdate
             };
         onUpdateShowsData(updatedData);
         newShowTime.resetForm();
+
     }
 
     useEffect(() => {
@@ -135,5 +137,4 @@ EditShowsModel.propTypes = {
     onClose: PropTypes.isRequired,
     showsDataProps: PropTypes.isRequired,
     onUpdateShowsData: PropTypes.isRequired,
-    newShowTimeFormRef: PropTypes.isRequired
 };

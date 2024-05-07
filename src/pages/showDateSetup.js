@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -26,7 +26,7 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
     const [fetchedShowsData, setFetchedShowsData] = useState();
     const [disabledColumns, setDisabledColumns] = useState([]);
     const [openEditDialogBox, setOpenEditDialogBox] = useState();
-    const [slectedShowsData, setSelectedShowsData] = useState();
+    const [selectedShowsData, setSelectedShowsData] = useState();
 
     const fetchShowTimeData = async () => {
         try {
@@ -116,14 +116,6 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
         }
     }, [startDate, endDate, showTimeData, checked]);
 
-    const pnewShowTimeFormRef = useRef();
-    const handleSubmitChildForm = () => {
-        if (pnewShowTimeFormRef.current) {
-            console.log('inside if')
-            pnewShowTimeFormRef.current.submitForm();
-        }
-    };
-
     const handleSaveShows = async () => {
         try {
             const datesToSave = Object.keys(showsData).filter(date => {
@@ -139,9 +131,37 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
             const { data: showsDataResponse, error: showsDataError } = await supabase.from('shows').insert(dataToInsert).select('*');
             if (showsDataResponse) {
                 console.log('Shows data saved successfully:', showsDataResponse);
+                let showScheduleDataToInsert = [];
+                if (selectedShowsData) {
+                    for (const date in showsData) {
+                        const specialShows = showsData[date].filter(show => show.type === 'special');
+                        const dataToInsert = specialShows && specialShows.map(show => ({
+                            name: show.name,
+                            time: show.time,
+                            type: show.type,
+                            screenId: show.screenId
+                        }));
+                        const { data: showTimeResponse, error: showTimeError } = await supabase.from('showTime').insert(dataToInsert).select('*');
+                        if (showTimeResponse) {
+                            console.log('Show Time added', showTimeResponse);
+                            const showTimeIds = showTimeResponse.map(show => show.id);
+                            for (const showTimeId of showTimeIds) {
+                                const showIndex = Object.keys(showsData).indexOf(date);
+                                const timeIndex = showsData[date].findIndex(show => show.time === showTimeResponse.find(res => res.id === showTimeId).time);
+                                showScheduleDataToInsert.push({
+                                    showId: showsDataResponse[showIndex].id,
+                                    showTimeId: showTimeId,
+                                });
+                            }
+                        }
+                        if (showTimeError) {
+                            throw showTimeError;
+                        }
+                    }
+                }
 
                 const showIds = showsDataResponse.map(show => show.id);
-                const showScheduleDataToInsert = showIds.flatMap((showId, showIndex) => {
+                const additionalShowScheduleData = showIds.flatMap((showId, showIndex) => {
                     return showTimeData.map((showTime, timeIndex) => {
                         const isDisabled = disabledColumns.includes(timeIndex);
                         const date = Object.keys(showsData)[showIndex];
@@ -154,7 +174,7 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
                         return null;
                     }).filter(Boolean);
                 });
-
+                showScheduleDataToInsert = showScheduleDataToInsert.concat(additionalShowScheduleData);
                 const { data: showScheduleDataResponse, error: showScheduleError } = await supabase.from('showsShedule').insert(showScheduleDataToInsert).select('*');
                 if (showScheduleDataResponse) {
                     console.log('Show schedule data saved successfully:', showScheduleDataResponse);
@@ -170,7 +190,6 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
             if (showsDataError) {
                 throw showsDataError;
             }
-            handleSubmitChildForm();
         } catch (error) {
             console.log('Error in saving data:', error.message);
         }
@@ -213,12 +232,12 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
     };
 
     useEffect(() => {
-        slectedShowsData
+        selectedShowsData
     }, [openEditDialogBox])
 
     const updateShowsData = () => {
-        if (slectedShowsData && slectedShowsData.date && slectedShowsData.shows) {
-            const { date, shows } = slectedShowsData;
+        if (selectedShowsData && selectedShowsData.date && selectedShowsData.shows) {
+            const { date, shows } = selectedShowsData;
             const updatedShowsData = { ...showsData };
             const formattedDate = dayjs(date, 'MM/DD/YYYY').format('MM/DD/YYYY');
             updatedShowsData[formattedDate] = shows;
@@ -308,10 +327,8 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
                         <EditShowsModel
                             open={openEditDialogBox}
                             onClose={handleEditDialogClose}
-                            showsDataProps={slectedShowsData}
+                            showsDataProps={selectedShowsData}
                             onUpdateShowsData={setSelectedShowsData}
-                            newShowTimeFormRef={pnewShowTimeFormRef}
-
                         />
                     </Table>
                     <MDBox m={2}><MDButton onClick={handleSaveShows} color='info'>Save</MDButton></MDBox>
