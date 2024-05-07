@@ -328,7 +328,6 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
                             open={openEditDialogBox}
                             onClose={handleEditDialogClose}
                             showsDataProps={selectedShowsData}
-                            onUpdateShowsData={setSelectedShowsData}
                         />
                     </Table>
                     <MDBox m={2}><MDButton onClick={handleSaveShows} color='info'>Save</MDButton></MDBox>
