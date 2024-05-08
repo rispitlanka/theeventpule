@@ -89,7 +89,10 @@ import CensorTypes from "pages/censorTypes";
 import AddCensorType from "pages/addCensorType";
 import EditCensorType from "pages/editCensorType";
 import AddFacilities from "pages/addFacilities";
-
+import Users from "pages/users";
+import AddUser from "pages/addUser";
+import EditUser from "pages/editUser";
+import SingleUser from "pages/singleUser";
 
 const routes = [
   {
@@ -99,6 +102,14 @@ const routes = [
     icon: <Icon fontSize="small">dashboard</Icon>,
     route: "/dashboard",
     component: <Dashboard />,
+  },
+  {
+    type: "collapse",
+    name: "Users",
+    key: "users",
+    icon: <Icon fontSize="small">peoplealticon</Icon>,
+    route: "/users",
+    component: <Users />,
   },
   {
     type: "collapse",
@@ -359,6 +370,18 @@ const routes = [
   {
     route: "/theatres/single-theatre/single-screen/single-zone/:id",
     component: <SingleZone />,
+  },
+  {
+    route: "/users/add-user",
+    component: <AddUser />,
+  },
+  {
+    route: "/users/edit-user/:id",
+    component: <EditUser />,
+  },
+  {
+    route: "/users/single-user/:id",
+    component: <SingleUser />,
   },
   // {
   //   type: "collapse",
