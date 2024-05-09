@@ -34,15 +34,16 @@ function Basic() {
 
   const handleSignIn = async () => {
     try {
-      const { user, error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
         console.error('Sign-in error:', error.message);
-      } else {
-        console.log('Sign-in successful:', user);
+      } else if (data) {
+        console.log('Sign-in successful:', data);
+        localStorage.setItem('userEmail', JSON.stringify(data.user.email));
         openPage(`/dashboard`);
       }
     } catch (error) {
