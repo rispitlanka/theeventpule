@@ -55,6 +55,7 @@ import brandDark from "assets/images/logo-ct-dark.png";
 import useUserRoutes from "userRoutes";
 
 export default function App() {
+  const userEmail = localStorage.getItem('userEmail');
   const [controller, dispatch] = useMaterialUIController();
   const {
     miniSidenav,
@@ -112,7 +113,7 @@ export default function App() {
   }, [pathname]);
 
   const getRoutes = (allRoutes) =>
-    allRoutes.map((route) => {
+    allRoutes && allRoutes.map((route) => {
       if (route.collapse) {
         return getRoutes(route.collapse);
       }
@@ -121,6 +122,10 @@ export default function App() {
       }
       return null;
     });
+
+  useEffect(() => {
+    getRoutes()
+  }, [userRoutes])
 
   const configsButton = (
     <MDBox
@@ -174,25 +179,37 @@ export default function App() {
   ) : (
     <ThemeProvider theme={darkMode ? themeDark : theme}>
       <CssBaseline />
-      {layout === "dashboard" && (
+      {userEmail ?
         <>
-          <Sidenav
-            color={sidenavColor}
-            brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
-            brandName="Theatre Booking"
-            routes={userRoutes}
-            onMouseEnter={handleOnMouseEnter}
-            onMouseLeave={handleOnMouseLeave}
-          />
-          <Configurator />
-          {configsButton}
+          {layout === "dashboard" && (
+            <>
+              <Sidenav
+                color={sidenavColor}
+                brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
+                brandName="Theatre Booking"
+                routes={userRoutes}
+                onMouseEnter={handleOnMouseEnter}
+                onMouseLeave={handleOnMouseLeave}
+              />
+              <Configurator />
+              {configsButton}
+            </>
+          )}
+          {layout === "vr" && <Configurator />}
+          <Routes>
+            {getRoutes(userRoutes)}
+            <Route path="*" element={<Navigate to="/dashboard" />} />
+          </Routes>
         </>
-      )}
-      {layout === "vr" && <Configurator />}
-      <Routes>
-        {getRoutes(userRoutes)}
-        <Route path="*" element={<Navigate to="/dashboard" />} />
-      </Routes>
+        :
+        <>
+          {layout === "vr" && <Configurator />}
+          <Routes>
+            {getRoutes(userRoutes)}
+            <Route path="*" element={<Navigate to="/authentication/sign-in" />} />
+          </Routes>
+        </>
+      }
     </ThemeProvider>
   );
 }
