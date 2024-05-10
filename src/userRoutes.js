@@ -22,15 +22,24 @@ export default function useUserRoutes() {
               return (
                 route.route !== '/authentication/sign-in' &&
                 route.route !== '/authentication/sign-up' &&
-                route.route !== '/theatres'
-                && route.route !== '/shows'
+                route.route !== '/theatres' &&
+                route.route !== '/shows'
               );
             };
             if (userRole === 'admin') {
               return (
                 route.route !== '/authentication/sign-in' &&
                 route.route !== '/authentication/sign-up' &&
-                route.route !== '/users'
+                route.route !== '/facilities' &&
+                route.route !== '/movies' &&
+                route.route !== '/languages' &&
+                route.route !== '/genre' &&
+                route.route !== '/censor-types' &&
+                route.route !== '/soundsystem' &&
+                route.route !== '/projection-type' &&
+                route.route !== '/cast' &&
+                route.route !== '/crew' &&
+                route.route !== '/facilities'
               );
             }
             return route.route === '/dashboard';
