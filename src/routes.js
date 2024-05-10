@@ -93,6 +93,7 @@ import Users from "pages/users";
 import AddUser from "pages/addUser";
 import EditUser from "pages/editUser";
 import SingleUser from "pages/singleUser";
+import Bookings from "pages/bookings";
 
 const routes = [
   {
@@ -126,6 +127,14 @@ const routes = [
     icon: <Icon fontSize="small">slideshow</Icon>,
     route: "/shows",
     component: <AddShows />,
+  },
+  {
+    type: "collapse",
+    name: "Bookings",
+    key: "bookings",
+    icon: <Icon fontSize="small">booking</Icon>,
+    route: "/bookings",
+    component: <Bookings />,
   },
   // {
   //   type: "collapse",
