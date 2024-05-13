@@ -94,6 +94,7 @@ import AddUser from "pages/addUser";
 import EditUser from "pages/editUser";
 import SingleUser from "pages/singleUser";
 import Bookings from "pages/bookings";
+import BookSeats from "components/TicketBooking/bookSeats";
 
 const routes = [
   {
@@ -391,6 +392,10 @@ const routes = [
   {
     route: "/users/single-user/:id",
     component: <SingleUser />,
+  },
+  {
+    route: "/bookings/book-seats",
+    component: <BookSeats />,
   },
   // {
   //   type: "collapse",

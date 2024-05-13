@@ -85,13 +85,7 @@ export default function Bookings() {
                         </Grid>
                     </Card>
                     <MDBox mt={5} mb={3}>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12} md={6} xl={4}>
-                                <Card sx={{ boxShadow: "none" }}>
-                                    <ShowsOnDate date={formattedDate} />
-                                </Card>
-                            </Grid>
-                        </Grid>
+                        <ShowsOnDate date={formattedDate} />
                     </MDBox>
                 </>
 
