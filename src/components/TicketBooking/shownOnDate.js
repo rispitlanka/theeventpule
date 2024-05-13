@@ -90,27 +90,44 @@ export default function ShowsOnDate(date) {
                     Show Details
                 </MDTypography>
                 {shows && shows.length > 0 ? (
-                    shows.map((show) => {
-                        const movie = movies && movies.length > 0 && movies.find((movie) => movie.id === show.movieId);
-                        const screen = screens && screens.length > 0 && screens.find((screen) => screen.id === show.screenId);
-                        const times = showTime && showTime.length > 0 && showTime.filter((time) => time.screenId === show.screenId);
+                    Object.values(
+                        shows.reduce((group, show) => {
+                            if (!group[show.movieId]) {
+                                group[show.movieId] = [];
+                            }
+                            group[show.movieId].push(show);
+                            return group;
+                        }, {})
+                    ).map((movieShows) => {
+                        const movieId = movieShows[0].movieId;
+                        const movie = movies && movies.length > 0 && movies.find((movie) => movie.id === movieId);
+
                         return (
-                            <MDBox key={show.id}>
+                            <MDBox key={movieId}>
                                 <MDTypography>{movie ? movie.title : 'Unknown Movie'}</MDTypography>
-                                <MDTypography>{screen ? screen.name : 'Unknown Screen'}</MDTypography>
-                                {times && times.length > 0 ? (
-                                    times.map((time) => (
-                                        <MDTypography key={time.id}>{time.time}</MDTypography>
-                                    ))
-                                ) : (
-                                    <MDTypography>No show times available</MDTypography>
-                                )}
+                                {movieShows.map((show) => {
+                                    const screen = screens && screens.length > 0 && screens.find((screen) => screen.id === show.screenId);
+                                    const times = showTime && showTime.length > 0 && showTime.filter((time) => time.screenId === show.screenId);
+                                    return (
+                                        <div key={show.id}>
+                                            <MDTypography>{screen ? screen.name : 'Unknown Screen'}</MDTypography>
+                                            {times && times.length > 0 ? (
+                                                times.map((time) => (
+                                                    <MDTypography key={time.id}>{time.time}</MDTypography>
+                                                ))
+                                            ) : (
+                                                <MDTypography>No show times available</MDTypography>
+                                            )}
+                                        </div>
+                                    );
+                                })}
                             </MDBox>
                         );
                     })
                 ) : (
                     <MDTypography>No Shows Available</MDTypography>
                 )}
+
             </MDBox>
         </>
     )
