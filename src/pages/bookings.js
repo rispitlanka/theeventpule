@@ -12,10 +12,9 @@ import ShowsOnDate from 'components/TicketBooking/shownOnDate'
 export default function Bookings() {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const formattedDate = new Date(selectedDate).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
-    console.log(formattedDate);
     const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const today = new Date();
-    const currentDayOfWeek = today.getDay(); // 0 for Sunday, 1 for Monday, etc.
+    const currentDayOfWeek = today.getDay();
     const currentDate = today.getDate();
 
     const getCurrentWeekDates = () => {

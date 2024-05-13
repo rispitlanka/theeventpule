@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -15,8 +15,11 @@ import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import EditIcon from '@mui/icons-material/Edit';
 import EditShowsModel from './Models/editShowsModel';
+import { UserDataContext } from 'context';
 
 export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
+    const userDetails = useContext(UserDataContext);
+    const userTheatreId = userDetails[0].theatreId;
     const [showTimeData, setShowTimeData] = useState(null);
     const [movieData, setMovieData] = useState();
     const [startDate, setStartDate] = useState();
@@ -54,7 +57,7 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
 
     const fetchShowsData = async () => {
         try {
-            const { data, error } = await supabase.from('shows').select('*');
+            const { data, error } = await supabase.from('shows').select('*').eq('screenId', screenId);
             if (data) {
                 setFetchedShowsData(data);
             }
@@ -126,6 +129,7 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
                 date: date,
                 movieId: movieId,
                 screenId: screenId,
+                theatreId: userTheatreId,
             }));
 
             const { data: showsDataResponse, error: showsDataError } = await supabase.from('shows').insert(dataToInsert).select('*');
