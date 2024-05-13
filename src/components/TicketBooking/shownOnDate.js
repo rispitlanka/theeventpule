@@ -148,6 +148,6 @@ export default function ShowsOnDate(date) {
         </>
     )
 }
-ShowsOnDate.prototype = {
+ShowsOnDate.propTypes = {
     date: PropTypes.isRequired,
 };
