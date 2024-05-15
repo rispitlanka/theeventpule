@@ -95,6 +95,7 @@ import EditUser from "pages/editUser";
 import SingleUser from "pages/singleUser";
 import Bookings from "pages/bookings";
 import BookSeats from "components/TicketBooking/bookSeats";
+import GetTickets from "components/TicketBooking/getTickets";
 
 const routes = [
   {
@@ -396,6 +397,10 @@ const routes = [
   {
     route: "/bookings/book-seats",
     component: <BookSeats />,
+  },
+  {
+    route: "/bookings/book-seats/get-tickets",
+    component: <GetTickets />,
   },
   // {
   //   type: "collapse",

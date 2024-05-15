@@ -11,6 +11,7 @@ export default function ShowsOnDate(date) {
     const [movies, setMovies] = useState();
     const [screens, setScreens] = useState();
     const [showTime, setShowTime] = useState();
+    const [showsShedule, setShowsShedule] = useState();
     const navigate = useNavigate();
 
     const fetchShowsOnDate = async () => {
@@ -77,15 +78,39 @@ export default function ShowsOnDate(date) {
         }
     }
 
+    const fetchShowsShedule = async () => {
+        try {
+            const { data, error } = await supabase.from('showsShedule').select('*');
+            if (data) {
+                setShowsShedule(data);
+                console.log('show shedule', data);
+            }
+            if (error) {
+                console.log(error);
+            }
+        }
+        catch (error) {
+            console.log('Error in fetching shows shedule', error)
+        }
+    }
+
     useEffect(() => {
         fetchShowsOnDate();
         fetchMovies();
         fetchScreens();
         fetchShowTime();
+        fetchShowsShedule();
     }, [eqDate])
 
-    const handleChipClick = () => {
-        navigate("/bookings/book-seats");
+    const handleChipClick = (show, time, screen, movie) => {
+        navigate("/bookings/book-seats", {
+            state: {
+                date: show.date,
+                title: movie.title,
+                time: time.time,
+                screenName: screen.name
+            }
+        });
     }
 
     return (
@@ -117,7 +142,8 @@ export default function ShowsOnDate(date) {
                                     <Grid item xs={12} sm={10}>
                                         {movieShows.map((show) => {
                                             const screen = screens && screens.length > 0 && screens.find((screen) => screen.id === show.screenId);
-                                            const times = showTime && showTime.length > 0 && showTime.filter((time) => time.screenId === show.screenId);
+                                            const showsSheduleFiltered = showsShedule && showsShedule.length > 0 && showsShedule.filter((sched) => sched.showId === show.id);
+                                            const times = showTime && showTime.length > 0 && showTime.filter((time) => showsSheduleFiltered && showsSheduleFiltered.some(sched => sched.showTimeId === time.id && time.screenId === show.screenId));
                                             return (
                                                 <Box key={show.id} mt={2}>
                                                     <MDTypography variant="h6" gutterBottom>
@@ -126,7 +152,7 @@ export default function ShowsOnDate(date) {
                                                     {times && times.length > 0 ? (
                                                         <Box>
                                                             {times.map((time, index) => (
-                                                                <Chip label={time.time} variant="outlined" onClick={handleChipClick} key={index} sx={{ mr: 1 }} />
+                                                                <Chip label={time.time} variant="outlined" onClick={() => handleChipClick(show, time, screen, movie)} key={index} sx={{ mr: 1 }} />
                                                             ))}
                                                         </Box>
                                                     ) : (
@@ -139,7 +165,6 @@ export default function ShowsOnDate(date) {
                                 </Grid>
                             </CardContent>
                         </Card>
-
                     );
                 })
             ) : (
@@ -148,6 +173,7 @@ export default function ShowsOnDate(date) {
         </>
     )
 }
+
 ShowsOnDate.propTypes = {
     date: PropTypes.isRequired,
 };

@@ -9,10 +9,18 @@ import DashboardNavbar from 'examples/Navbars/DashboardNavbar'
 import React, { useEffect, useState } from 'react'
 import { FixedSizeGrid } from 'react-window';
 import ChairIcon from "@mui/icons-material/Chair";
+import MDButton from 'components/MDButton';
+import { useLocation, useNavigate } from 'react-router-dom';
+import GetTickets from './getTickets';
 
 export default function BookSeats() {
   const [zonesData, setZonesData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [bookedSeats, setBookedSeats] = useState([]);
+  const [clicked, setClicked] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { date, title, time, screenName } = location.state || {};
 
   useEffect(() => {
     fetchZonesData();
@@ -31,6 +39,19 @@ export default function BookSeats() {
     }
   };
 
+  const updateBookedSeats = (newBookedSeats) => {
+    console.log('Updating booked seats:', newBookedSeats);
+    setBookedSeats(newBookedSeats);
+  };
+
+  const handleProceed = () => {
+    setClicked(true);
+    navigate('/bookings/book-seats/get-tickets', { state: { bookedSeats, date, title, time, screenName } });
+  }
+
+  useEffect(() => {
+  }, [clicked, bookedSeats]);
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -43,21 +64,29 @@ export default function BookSeats() {
           position: 'relative',
           mt: 5,
           mb: 2,
+          pb: 2,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
         }}>
           {zonesData.map(zone => (
-            <ZoneSeatLayout key={zone.id} zone={zone} />
+            <ZoneSeatLayout key={zone.id} zone={zone} updateBookedSeats={updateBookedSeats} />
           ))}
-
+          <MDButton color={'info'} sx={{ width: '10%' }} onClick={handleProceed} disabled={bookedSeats.length <= 0}>Proceed</MDButton>
         </Card>
       )}
       <Footer />
+      {clicked && bookedSeats.length > 0 && (
+        <GetTickets/>)
+      }
     </DashboardLayout>
   );
 }
 
-function ZoneSeatLayout({ zone }) {
+function ZoneSeatLayout({ zone, updateBookedSeats }) {
   const [seatsData, setSeatsData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [bookedSeats, setBookedSeats] = useState([]);
 
   useEffect(() => {
     fetchSeatsData();
@@ -100,6 +129,32 @@ function ZoneSeatLayout({ zone }) {
     return String.fromCharCode(65 + index);
   };
 
+  const handleSeatClick = (rowIndex, columnIndex) => {
+    const seatIndex = bookedSeats.findIndex(seat => seat.rowIndex === rowIndex && seat.columnIndex === columnIndex);
+    if (seatIndex !== -1) {
+      // Seat is already booked, so deselect it
+      const updatedSeats = [...bookedSeats];
+      updatedSeats.splice(seatIndex, 1);
+      setBookedSeats(updatedSeats);
+      // Invoke the callback function to update bookedSeats in the parent component
+      updateBookedSeats(updatedSeats);
+    } else {
+      // Seat is not booked, so book it
+      const seat = seatsData.find(seat => parseInt(seat.row) === rowIndex && parseInt(seat.column) === columnIndex);
+      if (seat) {
+        const newBookedSeat = {
+          rowIndex,
+          columnIndex,
+          seatName: seat.seatName,
+        };
+        const updatedSeats = [...bookedSeats, newBookedSeat];
+        setBookedSeats(updatedSeats);
+        // Invoke the callback function to update bookedSeats in the parent component
+        updateBookedSeats(updatedSeats);
+      }
+    }
+  };
+
   return (
     <Stack>
       <MDBox>
@@ -136,6 +191,7 @@ function ZoneSeatLayout({ zone }) {
                   seat => seat.row === rowHead && seat.column === columnHead
                 );
                 const seatName = seat ? seat.seatName : '';
+                const isBooked = bookedSeats.some(seat => seat.rowIndex === rowIndex && seat.columnIndex === columnIndex);
 
                 return (
                   <div
@@ -154,8 +210,8 @@ function ZoneSeatLayout({ zone }) {
                       <Grid container direction="column" alignItems="center" spacing={0}>
                         {seat && (
                           <>
-                            <IconButton size="small">
-                              <ChairIcon style={{ color: 'green' }} />
+                            <IconButton size="small" onClick={() => handleSeatClick(rowIndex, columnIndex)}>
+                              <ChairIcon style={{ color: isBooked ? 'black' : 'green' }} />
                             </IconButton>
                             <MDTypography variant="body2">{seatName}</MDTypography>
                           </>
@@ -179,5 +235,5 @@ ZoneSeatLayout.propTypes = {
     id: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
   }).isRequired,
+  updateBookedSeats: PropTypes.func.isRequired,
 };
-
