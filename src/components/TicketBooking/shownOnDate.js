@@ -108,8 +108,6 @@ export default function ShowsOnDate(date) {
     const handleChipClick = (show, time, screen, movie, showsSheduleFiltered) => {
         const selectedShowSchedule = showsSheduleFiltered.find(sched => sched.showTimeId === time.id);
         const showScheduleId = selectedShowSchedule ? selectedShowSchedule.id : null;
-        console.log(screen.id)
-        console.log(showScheduleId)
         openPage(`/bookings/book-seats/${showScheduleId}/${screen.id}?date=${show.date}&movie=${movie.title}`);
     }
 

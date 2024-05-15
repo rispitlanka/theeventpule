@@ -31,7 +31,7 @@ export default function BookSeats() {
   useEffect(() => {
     fetchZonesData();
     fetchShowsSheduleAndTime();
-    // fetchOtherShows();
+    fetchOtherShows();
     fetchScreens();
   }, []);
 
@@ -54,12 +54,12 @@ export default function BookSeats() {
         .from('showsShedule')
         .select('*, showTime(*)')
         .eq('id', showSheduleId);
-  
+
       if (data) {
         setShowsShedule(data);
         console.log('show schedule and time', data);
       }
-  
+
       if (error) {
         console.log(error);
       }
@@ -68,51 +68,88 @@ export default function BookSeats() {
     }
   }
 
-  // const fetchOtherShows = async () => {
-  //   try {
-  //     const { data, error } = await supabase
-  //       .from('shows')
-  //       .select('*, showTime(*)')
-  //       .eq('id', showSheduleId);
-  
-  //     if (data) {
-  //       setShowsShedule(data);
-  //       console.log('show schedule and time', data);
-  //     }
-  
-  //     if (error) {
-  //       console.log(error);
-  //     }
-  //   } catch (error) {
-  //     console.log('Error in fetching shows schedule and time', error);
-  //   }
-  // }  
+  const fetchOtherShows = async () => {
+    try {
+      const { data: showsData, error: showsError } = await supabase
+        .from('shows')
+        .select('*')
+        .eq('date', date)
+        .eq('screenId', screenId);
+
+      if (showsError) {
+        console.log(showsError);
+        return;
+      }
+
+      if (!showsData || showsData.length === 0) {
+        console.log('No shows found for the given date and screen.');
+        return;
+      }
+
+      const showIds = showsData.map(show => show.id);
+
+      const { data: showsScheduleData, error: showsScheduleError } = await supabase
+        .from('showsShedule')
+        .select('*')
+        .in('showId', showIds);
+
+      if (showsScheduleError) {
+        console.log(showsScheduleError);
+        return;
+      }
+
+      const showTimeIds = showsScheduleData.map(schedule => schedule.showTimeId);
+
+      const { data: showTimesData, error: showTimesError } = await supabase
+        .from('showTime')
+        .select('*')
+        .in('id', showTimeIds);
+
+      if (showTimesData) {
+        setOtherShowTimes(showTimesData);
+      }
+
+      if (showTimesError) {
+        console.log(showTimesError);
+        return;
+      }
+
+      console.log('Show Schedule and Times:', {
+        shows: showsData,
+        showSchedule: showsScheduleData,
+        showTimes: showTimesData
+      });
+
+    } catch (error) {
+      console.log('Error in fetching other shows', error);
+    }
+  }
 
   const fetchScreens = async () => {
     try {
-      if(screenId){
+      if (screenId) {
         const { data, error } = await supabase.from('screens').select('*').eq('id', screenId);
         if (data) {
-            setScreens(data);
-            console.log('screens', data);
+          setScreens(data);
+          console.log('screens', data);
         }
         if (error) {
-            console.log(error);
+          console.log(error);
         }
       }
     }
     catch (error) {
-        console.log('Error in fetching screens', error)
+      console.log('Error in fetching screens', error)
     }
-}
+  }
 
   const updateBookedSeats = (newBookedSeats) => {
     console.log('Updating booked seats:', newBookedSeats);
     setBookedSeats(newBookedSeats);
   };
 
-  const screenName = screens && screens.length>0 ? screens[0].name: '';
-  const time = showsShedule && showsShedule.length>0 ? showsShedule[0].showTime.time :'';
+  const screenName = screens && screens.length > 0 ? screens[0].name : '';
+  const time = showsShedule && showsShedule.length > 0 ? showsShedule[0].showTime.time : '';
 
   const handleProceed = () => {
     setClicked(true);
@@ -135,7 +172,7 @@ export default function BookSeats() {
             sx={{
               position: "relative",
               mt: 2,
-              p:2,
+              p: 2,
             }}
           >
             <Grid>
@@ -145,8 +182,17 @@ export default function BookSeats() {
               </MDBox>
               <MDBox>
                 <Grid display={'flex'} flexDirection={'row'}>
-                  <MDTypography sx={{mr:2}}>{date}</MDTypography>
+                  <MDTypography sx={{ mr: 2 }}>{date}</MDTypography>
                   <MDTypography>{time}</MDTypography>
+                </Grid>
+              </MDBox>
+              <MDBox>
+                <Grid display={'flex'} flexDirection={'row'}>
+                  {otherShowTimes && otherShowTimes
+                    .filter(otherTime => otherTime.time !== time)
+                    .map(times => (
+                      <MDTypography sx={{ mr: 2 }} key={times.id}>{times.time}</MDTypography>
+                    ))}
                 </Grid>
               </MDBox>
             </Grid>

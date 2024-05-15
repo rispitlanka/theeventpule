@@ -9,7 +9,7 @@ import { useLocation } from 'react-router-dom';
 export default function GetTickets() {
   const location = useLocation();
   const { bookedSeats, date, title, time, screenName } = location.state || { bookedSeats: [] };
-  console.log('Booked Tickets in GetTickets:', bookedSeats, date, title, time, screenName);
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
