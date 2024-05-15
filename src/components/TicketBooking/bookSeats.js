@@ -10,25 +10,34 @@ import React, { useEffect, useState } from 'react'
 import { FixedSizeGrid } from 'react-window';
 import ChairIcon from "@mui/icons-material/Chair";
 import MDButton from 'components/MDButton';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import GetTickets from './getTickets';
 
 export default function BookSeats() {
   const [zonesData, setZonesData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [bookedSeats, setBookedSeats] = useState([]);
+  const [showsShedule, setShowsShedule] = useState([]);
+  const [screens, setScreens] = useState([]);
+  const [otherShowTimes, setOtherShowTimes] = useState([]);
   const [clicked, setClicked] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { date, title, time, screenName } = location.state || {};
+  const { showSheduleId, screenId } = useParams();
+  const queryParams = new URLSearchParams(location.search);
+  const date = queryParams.get('date');
+  const title = queryParams.get('movie');
 
   useEffect(() => {
     fetchZonesData();
+    fetchShowsSheduleAndTime();
+    // fetchOtherShows();
+    fetchScreens();
   }, []);
 
   const fetchZonesData = async () => {
     try {
-      const { data, error } = await supabase.from('zones').select('*').eq('screenId', 37);
+      const { data, error } = await supabase.from('zones').select('*').eq('screenId', screenId);
       if (error) throw error;
       if (data) {
         setZonesData(data);
@@ -39,10 +48,71 @@ export default function BookSeats() {
     }
   };
 
+  const fetchShowsSheduleAndTime = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('showsShedule')
+        .select('*, showTime(*)')
+        .eq('id', showSheduleId);
+  
+      if (data) {
+        setShowsShedule(data);
+        console.log('show schedule and time', data);
+      }
+  
+      if (error) {
+        console.log(error);
+      }
+    } catch (error) {
+      console.log('Error in fetching shows schedule and time', error);
+    }
+  }
+
+  // const fetchOtherShows = async () => {
+  //   try {
+  //     const { data, error } = await supabase
+  //       .from('shows')
+  //       .select('*, showTime(*)')
+  //       .eq('id', showSheduleId);
+  
+  //     if (data) {
+  //       setShowsShedule(data);
+  //       console.log('show schedule and time', data);
+  //     }
+  
+  //     if (error) {
+  //       console.log(error);
+  //     }
+  //   } catch (error) {
+  //     console.log('Error in fetching shows schedule and time', error);
+  //   }
+  // }  
+
+  const fetchScreens = async () => {
+    try {
+      if(screenId){
+        const { data, error } = await supabase.from('screens').select('*').eq('id', screenId);
+        if (data) {
+            setScreens(data);
+            console.log('screens', data);
+        }
+        if (error) {
+            console.log(error);
+        }
+      }
+    }
+    catch (error) {
+        console.log('Error in fetching screens', error)
+    }
+}
+
   const updateBookedSeats = (newBookedSeats) => {
     console.log('Updating booked seats:', newBookedSeats);
     setBookedSeats(newBookedSeats);
   };
+
+  const screenName = screens && screens.length>0 ? screens[0].name: '';
+  const time = showsShedule && showsShedule.length>0 ? showsShedule[0].showTime.time :'';
 
   const handleProceed = () => {
     setClicked(true);
@@ -60,24 +130,46 @@ export default function BookSeats() {
           <CircularProgress color="info" />
         </Box>
       ) : (
-        <Card sx={{
-          position: 'relative',
-          mt: 5,
-          mb: 2,
-          pb: 2,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}>
-          {zonesData.map(zone => (
-            <ZoneSeatLayout key={zone.id} zone={zone} updateBookedSeats={updateBookedSeats} />
-          ))}
-          <MDButton color={'info'} sx={{ width: '10%' }} onClick={handleProceed} disabled={bookedSeats.length <= 0}>Proceed</MDButton>
-        </Card>
+        <>
+          <Card
+            sx={{
+              position: "relative",
+              mt: 2,
+              p:2,
+            }}
+          >
+            <Grid>
+              <MDBox>
+                <MDTypography>{title}</MDTypography>
+                <MDTypography>{screenName}</MDTypography>
+              </MDBox>
+              <MDBox>
+                <Grid display={'flex'} flexDirection={'row'}>
+                  <MDTypography sx={{mr:2}}>{date}</MDTypography>
+                  <MDTypography>{time}</MDTypography>
+                </Grid>
+              </MDBox>
+            </Grid>
+          </Card>
+          <Card sx={{
+            position: 'relative',
+            mt: 5,
+            mb: 2,
+            pb: 2,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}>
+            {zonesData.map(zone => (
+              <ZoneSeatLayout key={zone.id} zone={zone} updateBookedSeats={updateBookedSeats} />
+            ))}
+            <MDButton color={'info'} sx={{ width: '10%' }} onClick={handleProceed} disabled={bookedSeats.length <= 0}>Proceed</MDButton>
+          </Card>
+        </>
       )}
       <Footer />
       {clicked && bookedSeats.length > 0 && (
-        <GetTickets/>)
+        <GetTickets />)
       }
     </DashboardLayout>
   );

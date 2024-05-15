@@ -395,7 +395,7 @@ const routes = [
     component: <SingleUser />,
   },
   {
-    route: "/bookings/book-seats",
+    route: "/bookings/book-seats/:showSheduleId/:screenId",
     component: <BookSeats />,
   },
   {

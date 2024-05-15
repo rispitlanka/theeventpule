@@ -13,6 +13,9 @@ export default function ShowsOnDate(date) {
     const [showTime, setShowTime] = useState();
     const [showsShedule, setShowsShedule] = useState();
     const navigate = useNavigate();
+    const openPage = (route) => {
+        navigate(route);
+    };
 
     const fetchShowsOnDate = async () => {
         try {
@@ -102,15 +105,12 @@ export default function ShowsOnDate(date) {
         fetchShowsShedule();
     }, [eqDate])
 
-    const handleChipClick = (show, time, screen, movie) => {
-        navigate("/bookings/book-seats", {
-            state: {
-                date: show.date,
-                title: movie.title,
-                time: time.time,
-                screenName: screen.name
-            }
-        });
+    const handleChipClick = (show, time, screen, movie, showsSheduleFiltered) => {
+        const selectedShowSchedule = showsSheduleFiltered.find(sched => sched.showTimeId === time.id);
+        const showScheduleId = selectedShowSchedule ? selectedShowSchedule.id : null;
+        console.log(screen.id)
+        console.log(showScheduleId)
+        openPage(`/bookings/book-seats/${showScheduleId}/${screen.id}?date=${show.date}&movie=${movie.title}`);
     }
 
     return (
@@ -152,7 +152,7 @@ export default function ShowsOnDate(date) {
                                                     {times && times.length > 0 ? (
                                                         <Box>
                                                             {times.map((time, index) => (
-                                                                <Chip label={time.time} variant="outlined" onClick={() => handleChipClick(show, time, screen, movie)} key={index} sx={{ mr: 1 }} />
+                                                                <Chip label={time.time} variant="outlined" onClick={() => handleChipClick(show, time, screen, movie, showsSheduleFiltered)} key={index} sx={{ mr: 1 }} />
                                                             ))}
                                                         </Box>
                                                     ) : (

@@ -9,10 +9,10 @@ import { useLocation } from 'react-router-dom';
 export default function GetTickets() {
   const location = useLocation();
   const { bookedSeats, date, title, time, screenName } = location.state || { bookedSeats: [] };
-  console.log('Booked Tickets in GetTickets:', bookedSeats,date,title,time,screenName);
+  console.log('Booked Tickets in GetTickets:', bookedSeats, date, title, time, screenName);
   return (
     <DashboardLayout>
-      <DashboardNavbar/>
+      <DashboardNavbar />
       <Box sx={{ flexGrow: 1, mt: 5, mb: 2 }}>
         <Grid container spacing={2} justifyContent="center">
           {bookedSeats.map((seat, index) => (
@@ -25,7 +25,7 @@ export default function GetTickets() {
                 <MDTypography variant='h6'>{title}</MDTypography>
                 <MDTypography>{screenName}</MDTypography>
                 <MDTypography >{date}</MDTypography>
-                <MDTypography >{time}</MDTypography>                
+                <MDTypography >{time}</MDTypography>
                 <Typography variant="h1" gutterBottom>{seat.seatName}</Typography>
                 <MDTypography >Theatre Name</MDTypography>
                 <MDTypography >Price</MDTypography>
@@ -34,7 +34,7 @@ export default function GetTickets() {
           ))}
         </Grid>
       </Box>
-      <Footer/>
+      <Footer />
     </DashboardLayout>
   )
 }
