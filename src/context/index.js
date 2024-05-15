@@ -120,6 +120,8 @@ const setDirection = (dispatch, value) => dispatch({ type: "DIRECTION", value })
 const setLayout = (dispatch, value) => dispatch({ type: "LAYOUT", value });
 const setDarkMode = (dispatch, value) => dispatch({ type: "DARKMODE", value });
 
+const UserDataContext = createContext();
+
 export {
   MaterialUIControllerProvider,
   useMaterialUIController,
@@ -133,4 +135,5 @@ export {
   setDirection,
   setLayout,
   setDarkMode,
+  UserDataContext
 };

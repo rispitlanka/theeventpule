@@ -17,6 +17,7 @@ import { useState, useEffect, useMemo } from "react";
 
 // react-router components
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { supabase } from "pages/supabaseClient";
 
 // @mui material components
 import { ThemeProvider } from "@mui/material/styles";
@@ -47,7 +48,7 @@ import createCache from "@emotion/cache";
 import routes from "routes";
 
 // Material Dashboard 2 React contexts
-import { useMaterialUIController, setMiniSidenav, setOpenConfigurator } from "context";
+import { useMaterialUIController, setMiniSidenav, setOpenConfigurator, UserDataContext } from "context";
 
 // Images
 import brandWhite from "assets/images/logo-ct.png";
@@ -55,6 +56,7 @@ import brandDark from "assets/images/logo-ct-dark.png";
 import useUserRoutes from "userRoutes";
 
 export default function App() {
+  const userEmail = localStorage.getItem('userEmail');
   const [controller, dispatch] = useMaterialUIController();
   const {
     miniSidenav,
@@ -70,6 +72,30 @@ export default function App() {
   const [rtlCache, setRtlCache] = useState(null);
   const { pathname } = useLocation();
   const userRoutes = useUserRoutes();
+  const [userData, setUserData] = useState();
+
+  const fetchUser = async () => {
+    try {
+      const userEmailModified = userEmail && userEmail.substring(1, userEmail.length - 1);
+      if (userEmailModified) {
+        const { data, error } = await supabase.from('theatreOwners').select('*').eq('email', userEmailModified);
+        if (data) {
+          setUserData(data);
+          console.log('fetched user data', data);
+        }
+        if (error) {
+          console.log(error);
+        }
+      }
+    }
+    catch (error) {
+
+    }
+  }
+
+  useEffect(() => {
+    fetchUser()
+  }, [userEmail])
 
   // Cache for the rtl
   useMemo(() => {
@@ -112,7 +138,7 @@ export default function App() {
   }, [pathname]);
 
   const getRoutes = (allRoutes) =>
-    allRoutes.map((route) => {
+    allRoutes && allRoutes.map((route) => {
       if (route.collapse) {
         return getRoutes(route.collapse);
       }
@@ -121,6 +147,10 @@ export default function App() {
       }
       return null;
     });
+
+  useEffect(() => {
+    getRoutes()
+  }, [userRoutes])
 
   const configsButton = (
     <MDBox
@@ -146,53 +176,47 @@ export default function App() {
     </MDBox>
   );
 
-  return direction === "rtl" ? (
-    <CacheProvider value={rtlCache}>
-      <ThemeProvider theme={darkMode ? themeDarkRTL : themeRTL}>
-        <CssBaseline />
-        {layout === "dashboard" && (
-          <>
-            <Sidenav
-              color={sidenavColor}
-              brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
-              brandName="Material Dashboard 2"
-              routes={userRoutes}
-              onMouseEnter={handleOnMouseEnter}
-              onMouseLeave={handleOnMouseLeave}
-            />
-            <Configurator />
-            {configsButton}
-          </>
-        )}
-        {layout === "vr" && <Configurator />}
-        <Routes>
-          {getRoutes(userRoutes)}
-          <Route path="*" element={<Navigate to="/dashboard" />} />
-        </Routes>
-      </ThemeProvider>
-    </CacheProvider>
-  ) : (
+  const contextValue = useMemo(
+    () => userData,
+    [userData]
+  );
+
+  return (
     <ThemeProvider theme={darkMode ? themeDark : theme}>
       <CssBaseline />
-      {layout === "dashboard" && (
-        <>
-          <Sidenav
-            color={sidenavColor}
-            brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
-            brandName="Theatre Booking"
-            routes={userRoutes}
-            onMouseEnter={handleOnMouseEnter}
-            onMouseLeave={handleOnMouseLeave}
-          />
-          <Configurator />
-          {configsButton}
-        </>
-      )}
-      {layout === "vr" && <Configurator />}
-      <Routes>
-        {getRoutes(userRoutes)}
-        <Route path="*" element={<Navigate to="/dashboard" />} />
-      </Routes>
+      <UserDataContext.Provider value={contextValue}>
+        {userEmail ?
+          <>
+            {layout === "dashboard" && (
+              <>
+                <Sidenav
+                  color={sidenavColor}
+                  brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
+                  brandName={userData && userData[0].name}
+                  routes={userRoutes}
+                  onMouseEnter={handleOnMouseEnter}
+                  onMouseLeave={handleOnMouseLeave}
+                />
+                <Configurator />
+                {configsButton}
+              </>
+            )}
+            {layout === "vr" && <Configurator />}
+            <Routes>
+              {getRoutes(userRoutes)}
+              <Route path="*" element={<Navigate to="/dashboard" />} />
+            </Routes>
+          </>
+          :
+          <>
+            {layout === "vr" && <Configurator />}
+            <Routes>
+              {getRoutes(userRoutes)}
+              <Route path="*" element={<Navigate to="/authentication/sign-in" />} />
+            </Routes>
+          </>
+        }
+      </UserDataContext.Provider>
     </ThemeProvider>
   );
 }

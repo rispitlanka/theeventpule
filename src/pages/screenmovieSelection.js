@@ -1,12 +1,15 @@
 import { ArrowDropDown } from '@mui/icons-material'
 import { Box, Button, Card, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, Typography } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { supabase } from './supabaseClient';
+import { UserDataContext } from 'context';
 import PropTypes from 'prop-types';
 import MDButton from 'components/MDButton';
 import MDBox from 'components/MDBox';
 
 export default function ScreenMovieSelection({ onNext, initialScreenId, initialMovieId }) {
+  const userDetails = useContext(UserDataContext);
+  const userTheatreId = userDetails[0].theatreId;
   const [screensData, setScreensData] = useState([]);
   const [moviesData, setMoviesData] = useState([]);
   const [selectedScreenId, setSelectedScreenId] = useState(initialScreenId);
@@ -14,7 +17,7 @@ export default function ScreenMovieSelection({ onNext, initialScreenId, initialM
 
   const fetchScreensData = async () => {
     try {
-      const { data, error } = await supabase.from('screens').select('*');
+      const { data, error } = await supabase.from('screens').select('*').eq('theatreId', userTheatreId);
       if (error) throw error;
       if (data) {
         setScreensData(data);
@@ -53,19 +56,10 @@ export default function ScreenMovieSelection({ onNext, initialScreenId, initialM
       <Typography pb={2} variant="h6" gutterBottom>Select Movie & Screen</Typography>
       <FormControl fullWidth mb={3}>
         <InputLabel>Select Screen</InputLabel>
-        <Select 
+        <Select
           value={selectedScreenId}
           onChange={(e) => setSelectedScreenId(e.target.value)}
-          sx={{ height: '45px', mb: 3 }} 
-          InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton>
-                <ArrowDropDown />
-              </IconButton>
-            </InputAdornment>
-          )
-        }}
+          sx={{ height: '45px', mb: 3 }}
         >
           {screensData.map((screen) => (
             <MenuItem key={screen.id} value={screen.id}>
@@ -76,7 +70,7 @@ export default function ScreenMovieSelection({ onNext, initialScreenId, initialM
       </FormControl>
       <FormControl fullWidth>
         <InputLabel>Select Movie</InputLabel>
-        <Select 
+        <Select
           value={selectedMovieId}
           onChange={(e) => setSelectedMovieId(e.target.value)}
           sx={{ height: '45px' }}>
@@ -93,8 +87,8 @@ export default function ScreenMovieSelection({ onNext, initialScreenId, initialM
   )
 }
 
-ScreenMovieSelection.propTypes ={
-  onNext:PropTypes.isRequired,
-  initialMovieId:PropTypes.isRequired,
-  initialScreenId:PropTypes.isRequired
+ScreenMovieSelection.propTypes = {
+  onNext: PropTypes.isRequired,
+  initialMovieId: PropTypes.isRequired,
+  initialScreenId: PropTypes.isRequired
 }

@@ -19,10 +19,28 @@ export default function useUserRoutes() {
           };
           filteredRoutes = routes && routes.filter(route => {
             if (userRole === 'superAdmin') {
-              return route.route === '/theatres' || route.route === '/users' || route.route === '/dashboard';
+              return (
+                route.route !== '/authentication/sign-in' &&
+                route.route !== '/authentication/sign-up' &&
+                route.route !== '/theatres' &&
+                route.route !== '/shows'
+              );
             };
             if (userRole === 'admin') {
-              return route.route === '/dashboard' || route.route === '/shows';
+              return (
+                route.route !== '/authentication/sign-in' &&
+                route.route !== '/authentication/sign-up' &&
+                route.route !== '/facilities' &&
+                route.route !== '/movies' &&
+                route.route !== '/languages' &&
+                route.route !== '/genre' &&
+                route.route !== '/censor-types' &&
+                route.route !== '/soundsystem' &&
+                route.route !== '/projection-type' &&
+                route.route !== '/cast' &&
+                route.route !== '/crew' &&
+                route.route !== '/facilities'
+              );
             }
             return route.route === '/dashboard';
           });
@@ -30,7 +48,7 @@ export default function useUserRoutes() {
         }
         else if (!userEmail) {
           filteredRoutes = routes && routes.filter(route => {
-            return route.route === '/dashboard' || route.route === '/authentication/sign-in';
+            return route.route === '/authentication/sign-in';
           });
           setUserRoutes(filteredRoutes);
         }

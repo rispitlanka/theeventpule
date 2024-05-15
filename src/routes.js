@@ -93,6 +93,9 @@ import Users from "pages/users";
 import AddUser from "pages/addUser";
 import EditUser from "pages/editUser";
 import SingleUser from "pages/singleUser";
+import Bookings from "pages/bookings";
+import BookSeats from "components/TicketBooking/bookSeats";
+import GetTickets from "components/TicketBooking/getTickets";
 
 const routes = [
   {
@@ -127,6 +130,14 @@ const routes = [
     route: "/shows",
     component: <AddShows />,
   },
+  {
+    type: "collapse",
+    name: "Bookings",
+    key: "bookings",
+    icon: <Icon fontSize="small">booking</Icon>,
+    route: "/bookings",
+    component: <Bookings />,
+  },
   // {
   //   type: "collapse",
   //   name: "Billing",
@@ -143,14 +154,14 @@ const routes = [
   //   route: "/notifications",
   //   component: <Notifications />,
   // },
-  {
-    type: "collapse",
-    name: "Profile",
-    key: "profile",
-    icon: <Icon fontSize="small">person</Icon>,
-    route: "/profile",
-    component: <Profile />,
-  },
+  // {
+  //   type: "collapse",
+  //   name: "Profile",
+  //   key: "profile",
+  //   icon: <Icon fontSize="small">person</Icon>,
+  //   route: "/profile",
+  //   component: <Profile />,
+  // },
   {
     type: "collapse",
     name: "Sign In",
@@ -382,6 +393,14 @@ const routes = [
   {
     route: "/users/single-user/:id",
     component: <SingleUser />,
+  },
+  {
+    route: "/bookings/book-seats/:showSheduleId/:screenId",
+    component: <BookSeats />,
+  },
+  {
+    route: "/bookings/book-seats/get-tickets",
+    component: <GetTickets />,
   },
   // {
   //   type: "collapse",
