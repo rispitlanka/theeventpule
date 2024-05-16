@@ -11,7 +11,7 @@ export default function ShowsOnDate(date) {
     const [movies, setMovies] = useState();
     const [screens, setScreens] = useState();
     const [showTime, setShowTime] = useState();
-    const [showsShedule, setShowsShedule] = useState();
+    const [showsSchedule, setShowsSchedule] = useState();
     const navigate = useNavigate();
     const openPage = (route) => {
         navigate(route);
@@ -81,19 +81,19 @@ export default function ShowsOnDate(date) {
         }
     }
 
-    const fetchShowsShedule = async () => {
+    const fetchShowsSchedule = async () => {
         try {
-            const { data, error } = await supabase.from('showsShedule').select('*');
+            const { data, error } = await supabase.from('showsSchedule').select('*');
             if (data) {
-                setShowsShedule(data);
-                console.log('show shedule', data);
+                setShowsSchedule(data);
+                console.log('show schedule', data);
             }
             if (error) {
                 console.log(error);
             }
         }
         catch (error) {
-            console.log('Error in fetching shows shedule', error)
+            console.log('Error in fetching shows schedule', error)
         }
     }
 
@@ -102,14 +102,12 @@ export default function ShowsOnDate(date) {
         fetchMovies();
         fetchScreens();
         fetchShowTime();
-        fetchShowsShedule();
+        fetchShowsSchedule();
     }, [eqDate])
 
     const handleChipClick = (show, time, screen, movie, showsSheduleFiltered) => {
         const selectedShowSchedule = showsSheduleFiltered.find(sched => sched.showTimeId === time.id);
         const showScheduleId = selectedShowSchedule ? selectedShowSchedule.id : null;
-        console.log(screen.id)
-        console.log(showScheduleId)
         openPage(`/bookings/book-seats/${showScheduleId}/${screen.id}?date=${show.date}&movie=${movie.title}`);
     }
 
@@ -142,7 +140,7 @@ export default function ShowsOnDate(date) {
                                     <Grid item xs={12} sm={10}>
                                         {movieShows.map((show) => {
                                             const screen = screens && screens.length > 0 && screens.find((screen) => screen.id === show.screenId);
-                                            const showsSheduleFiltered = showsShedule && showsShedule.length > 0 && showsShedule.filter((sched) => sched.showId === show.id);
+                                            const showsSheduleFiltered = showsSchedule && showsSchedule.length > 0 && showsSchedule.filter((sched) => sched.showId === show.id);
                                             const times = showTime && showTime.length > 0 && showTime.filter((time) => showsSheduleFiltered && showsSheduleFiltered.some(sched => sched.showTimeId === time.id && time.screenId === show.screenId));
                                             return (
                                                 <Box key={show.id} mt={2}>
