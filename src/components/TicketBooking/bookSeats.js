@@ -17,10 +17,11 @@ export default function BookSeats() {
   const [zonesData, setZonesData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [bookedSeats, setBookedSeats] = useState([]);
-  const [showsShedule, setShowsShedule] = useState([]);
+  const [showsSchedule, setShowsSchedule] = useState([]);
   const [screens, setScreens] = useState([]);
   const [otherShowTimes, setOtherShowTimes] = useState([]);
   const [clicked, setClicked] = useState(false);
+  const [seatResponses, setSeatResponses] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
   const { showSheduleId, screenId } = useParams();
@@ -51,12 +52,12 @@ export default function BookSeats() {
   const fetchShowsSheduleAndTime = async () => {
     try {
       const { data, error } = await supabase
-        .from('showsShedule')
+        .from('showsSchedule')
         .select('*, showTime(*)')
         .eq('id', showSheduleId);
 
       if (data) {
-        setShowsShedule(data);
+        setShowsSchedule(data);
         console.log('show schedule and time', data);
       }
 
@@ -89,7 +90,7 @@ export default function BookSeats() {
       const showIds = showsData.map(show => show.id);
 
       const { data: showsScheduleData, error: showsScheduleError } = await supabase
-        .from('showsShedule')
+        .from('showsSchedule')
         .select('*')
         .in('showId', showIds);
 
@@ -142,14 +143,85 @@ export default function BookSeats() {
       console.log('Error in fetching screens', error)
     }
   }
+  
+  const showScheduleId = showsSchedule && showsSchedule.length > 0 ? showsSchedule[0].id : '';
+
+  useEffect(() => {
+    const fetchBookedTickets = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('tickets')
+          .select('*')
+          .eq('showScheduleId', showScheduleId);
+
+        if (data) {
+          console.log('booked tickets', data);
+          const seatIds = data.map(ticket => ticket.seatId);
+          const seatResponses = await Promise.all(
+            seatIds.map(async seatId => {
+              const { data: seatData, error: seatError } = await supabase
+                .from('seats')
+                .select('zoneId, row, column')
+                .eq('id', seatId);
+              if (seatData) {
+                return seatData[0];
+              }
+              if (seatError) {
+                console.log('Error fetching seat:', seatError);
+                return null;
+              }
+            })
+          );
+          console.log('Seat details:', seatResponses);
+          setSeatResponses(seatResponses);
+        }
+
+        if (error) {
+          console.log(error);
+        }
+      } catch (error) {
+        console.log('Error in fetching booked tickets', error);
+      }
+    };
+
+    fetchBookedTickets();
+  }, [showScheduleId]);
+
 
   const updateBookedSeats = (newBookedSeats) => {
     console.log('Updating booked seats:', newBookedSeats);
     setBookedSeats(newBookedSeats);
   };
 
+  const handleSeatClick = (zoneId, zoneName, price, rowIndex, columnIndex, seatData) => {
+    console.log(seatData)
+    const seatIndex = bookedSeats.findIndex(seat => seat.zoneId === zoneId && seat.rowIndex === rowIndex && seat.columnIndex === columnIndex);
+    if (seatIndex !== -1) {
+      // Seat is already booked, so deselect it
+      const updatedSeats = [...bookedSeats];
+      updatedSeats.splice(seatIndex, 1);
+      setBookedSeats(updatedSeats);
+      updateBookedSeats(updatedSeats);
+    } else {
+      // Seat is not booked, so book it
+      const newBookedSeat = {
+        zoneId,
+        zoneName,
+        price,
+        rowIndex,
+        columnIndex,
+        seatId: seatData.id,
+        seatName: seatData.seatName,
+        showScheduleId: showScheduleId,
+      };
+      const updatedSeats = [...bookedSeats, newBookedSeat];
+      setBookedSeats(updatedSeats);
+      updateBookedSeats(updatedSeats);
+    }
+  };
+
   const screenName = screens && screens.length > 0 ? screens[0].name : '';
-  const time = showsShedule && showsShedule.length > 0 ? showsShedule[0].showTime.time : '';
+  const time = showsSchedule && showsSchedule.length > 0 ? showsSchedule[0].showTime.time : '';
 
   const handleProceed = () => {
     setClicked(true);
@@ -207,7 +279,7 @@ export default function BookSeats() {
             alignItems: 'center',
           }}>
             {zonesData.map(zone => (
-              <ZoneSeatLayout key={zone.id} zone={zone} updateBookedSeats={updateBookedSeats} />
+              <ZoneSeatLayout key={zone.id} zone={zone} bookedSeats={bookedSeats} handleSeatClick={handleSeatClick} seatResponses={seatResponses} />
             ))}
             <MDButton color={'info'} sx={{ width: '10%' }} onClick={handleProceed} disabled={bookedSeats.length <= 0}>Proceed</MDButton>
           </Card>
@@ -221,10 +293,9 @@ export default function BookSeats() {
   );
 }
 
-function ZoneSeatLayout({ zone, updateBookedSeats }) {
+function ZoneSeatLayout({ zone, bookedSeats, handleSeatClick, seatResponses }) {
   const [seatsData, setSeatsData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [bookedSeats, setBookedSeats] = useState([]);
 
   useEffect(() => {
     fetchSeatsData();
@@ -267,31 +338,6 @@ function ZoneSeatLayout({ zone, updateBookedSeats }) {
     return String.fromCharCode(65 + index);
   };
 
-  const handleSeatClick = (rowIndex, columnIndex) => {
-    const seatIndex = bookedSeats.findIndex(seat => seat.rowIndex === rowIndex && seat.columnIndex === columnIndex);
-    if (seatIndex !== -1) {
-      // Seat is already booked, so deselect it
-      const updatedSeats = [...bookedSeats];
-      updatedSeats.splice(seatIndex, 1);
-      setBookedSeats(updatedSeats);
-      // Invoke the callback function to update bookedSeats in the parent component
-      updateBookedSeats(updatedSeats);
-    } else {
-      // Seat is not booked, so book it
-      const seat = seatsData.find(seat => parseInt(seat.row) === rowIndex && parseInt(seat.column) === columnIndex);
-      if (seat) {
-        const newBookedSeat = {
-          rowIndex,
-          columnIndex,
-          seatName: seat.seatName,
-        };
-        const updatedSeats = [...bookedSeats, newBookedSeat];
-        setBookedSeats(updatedSeats);
-        // Invoke the callback function to update bookedSeats in the parent component
-        updateBookedSeats(updatedSeats);
-      }
-    }
-  };
 
   return (
     <Stack>
@@ -329,7 +375,7 @@ function ZoneSeatLayout({ zone, updateBookedSeats }) {
                   seat => seat.row === rowHead && seat.column === columnHead
                 );
                 const seatName = seat ? seat.seatName : '';
-                const isBooked = bookedSeats.some(seat => seat.rowIndex === rowIndex && seat.columnIndex === columnIndex);
+                const isBooked = bookedSeats.some(seat => seat.zoneId === zone.id && seat.rowIndex === rowIndex && seat.columnIndex === columnIndex);
 
                 return (
                   <div
@@ -348,8 +394,8 @@ function ZoneSeatLayout({ zone, updateBookedSeats }) {
                       <Grid container direction="column" alignItems="center" spacing={0}>
                         {seat && (
                           <>
-                            <IconButton size="small" onClick={() => handleSeatClick(rowIndex, columnIndex)}>
-                              <ChairIcon style={{ color: isBooked ? 'black' : 'green' }} />
+                            <IconButton size="small" onClick={() => handleSeatClick(zone.id, zone.name, zone.price, rowIndex, columnIndex, seat)} disabled={seatResponses.some(response => response.zoneId === zone.id && response.row === rowIndex.toString() && response.column === columnIndex.toString())}>
+                              <ChairIcon style={{ color: seatResponses.some(response => response.zoneId === zone.id && response.row === rowIndex.toString() && response.column === columnIndex.toString()) ? 'grey' : (isBooked ? 'black' : 'green') }} />
                             </IconButton>
                             <MDTypography variant="body2">{seatName}</MDTypography>
                           </>
@@ -371,7 +417,20 @@ function ZoneSeatLayout({ zone, updateBookedSeats }) {
 ZoneSeatLayout.propTypes = {
   zone: PropTypes.shape({
     id: PropTypes.number.isRequired,
+    price: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
   }).isRequired,
-  updateBookedSeats: PropTypes.func.isRequired,
+  bookedSeats: PropTypes.arrayOf(
+    PropTypes.shape({
+      zoneId: PropTypes.number.isRequired,
+      zoneName: PropTypes.string.isRequired,
+      price: PropTypes.string.isRequired,
+      rowIndex: PropTypes.number.isRequired,
+      columnIndex: PropTypes.number.isRequired,
+      seatName: PropTypes.string.isRequired,
+      showScheduleId: PropTypes.isRequired,
+    })
+  ).isRequired,
+  handleSeatClick: PropTypes.func.isRequired,
+  seatResponses: PropTypes.isRequired
 };

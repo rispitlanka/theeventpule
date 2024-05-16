@@ -179,7 +179,7 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
                     }).filter(Boolean);
                 });
                 showScheduleDataToInsert = showScheduleDataToInsert.concat(additionalShowScheduleData);
-                const { data: showScheduleDataResponse, error: showScheduleError } = await supabase.from('showsShedule').insert(showScheduleDataToInsert).select('*');
+                const { data: showScheduleDataResponse, error: showScheduleError } = await supabase.from('showsSchedule').insert(showScheduleDataToInsert).select('*');
                 if (showScheduleDataResponse) {
                     console.log('Show schedule data saved successfully:', showScheduleDataResponse);
                     setDisabledColumns([]);
