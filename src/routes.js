@@ -124,6 +124,14 @@ const routes = [
   },
   {
     type: "collapse",
+    name: "Theatre",
+    key: "theatre",
+    icon: <Icon fontSize="small">theaters</Icon>,
+    route: "/theatre",
+    component: <SingleTheatre />,
+  },
+  {
+    type: "collapse",
     name: "Shows",
     key: "shows",
     icon: <Icon fontSize="small">slideshow</Icon>,

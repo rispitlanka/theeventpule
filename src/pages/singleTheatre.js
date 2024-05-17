@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from './supabaseClient';
 
@@ -21,19 +21,23 @@ import Footer from "examples/Footer";
 
 // Images
 import backgroundImage from "assets/images/bg-profile.jpeg";
+import { UserDataContext } from 'context';
 
 export default function SingleTheatre() {
+  const userDetails = useContext(UserDataContext);
+  const userTheatreId = userDetails[0].theatreId;
   const [theatreData, setTheatreData] = useState([]);
   const [screensData, setScreensData] = useState([]);
   const navigate = useNavigate();
   const openPage = (route) => {
     navigate(route);
   };
-  const { id } = useParams();
+  const {id} = useParams(); 
+  const theatreID = userTheatreId ? userTheatreId : id;
 
   const fetchSingleTheatreData = async () => {
     try {
-      const { data, error } = await supabase.from('theatres').select().eq('id', id);
+      const { data, error } = await supabase.from('theatres').select().eq('id', theatreID );
       if (error) throw error;
       if (data) {
         setTheatreData(data);
@@ -46,7 +50,7 @@ export default function SingleTheatre() {
 
   const fetchScreensData = async () => {
     try {
-      const { data, error } = await supabase.from('screens').select().eq('theatreId', id);
+      const { data, error } = await supabase.from('screens').select().eq('theatreId', theatreID);
       if (error) throw error;
       if (data) {
         setScreensData(data);
@@ -60,8 +64,7 @@ export default function SingleTheatre() {
   useEffect(() => {
     fetchSingleTheatreData();
     fetchScreensData();
-    // eslint-disable-next-line
-  }, [id])
+  }, [theatreID])
 
   return (
     <DashboardLayout>

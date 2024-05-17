@@ -16,9 +16,8 @@ Coded by www.creative-tim.com
 */
 
 import { useNavigate } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "pages/supabaseClient";
-import { UserDataContext } from "context";
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
@@ -38,8 +37,6 @@ export default function data() {
     </MDBox>
   );
 
-  const userDetails = useContext(UserDataContext);
-  const userTheatreId = userDetails[0].theatreId;
   const [theatreData, setTheatreData] = useState(null);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -50,7 +47,7 @@ export default function data() {
 
   const fetchTheatreData = async () => {
     try {
-      const { data, error } = await supabase.from('theatres').select('*').eq('id', userTheatreId);
+      const { data, error } = await supabase.from('theatres').select('*');
       console.log(data);
       if (error) throw error;
       setTheatreData(data);
@@ -61,7 +58,6 @@ export default function data() {
 
   useEffect(() => {
     fetchTheatreData();
-    // eslint-disable-next-line
   }, [])
 
   const handleRowClick = (theatreId) => {
