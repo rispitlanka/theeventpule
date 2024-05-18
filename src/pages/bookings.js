@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-import { Card, Grid, Typography } from '@mui/material'
-import MDAvatar from 'components/MDAvatar'
+import { Card, Grid } from '@mui/material'
 import MDBox from 'components/MDBox'
 import MDTypography from 'components/MDTypography'
 import Footer from 'examples/Footer'
@@ -53,7 +52,6 @@ export default function Bookings() {
                         overflow: "hidden",
                     }}
                 />
-
                 <>
                     <Card
                         sx={{
@@ -70,15 +68,16 @@ export default function Bookings() {
                                     <MDBox
                                         style={{
                                             textAlign: 'center',
-                                            backgroundColor: selectedDate && selectedDate.getDate() === date.getDate() ? 'grey' : 'transparent',
-                                            borderRadius: '50%',
+                                            backgroundColor: selectedDate && selectedDate.getDate() === date.getDate() ? '#0288d1' : 'transparent',
+                                            borderRadius: '10px',
                                             padding: '8px',
                                             cursor: 'pointer',
+                                            minWidth: 80,
                                         }}
                                         onClick={() => handleDateClick(date)}
                                     >
-                                        <MDTypography variant="h4">{date.getDate()}</MDTypography>
-                                        <MDTypography variant="caption">{daysOfWeek[date.getDay()]}</MDTypography>
+                                        <MDTypography variant="h4" color={selectedDate && selectedDate.getDate() === date.getDate() ? 'white' : 'inherit'}>{date.getDate()}</MDTypography>
+                                        <MDTypography variant="caption" color={selectedDate && selectedDate.getDate() === date.getDate() ? 'white' : 'inherit'}>{daysOfWeek[date.getDay()]}</MDTypography>
                                     </MDBox>
                                 </Grid>
                             ))}
@@ -88,7 +87,6 @@ export default function Bookings() {
                         <ShowsOnDate date={formattedDate} />
                     </MDBox>
                 </>
-
             </MDBox>
             <Footer />
         </DashboardLayout>

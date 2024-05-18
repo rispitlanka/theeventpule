@@ -1,4 +1,4 @@
-import { Box, Card, CircularProgress, Divider, Grid, IconButton, Stack } from '@mui/material';
+import { Box, Card, Chip, CircularProgress, Divider, Grid, IconButton, Stack } from '@mui/material';
 import { supabase } from 'pages/supabaseClient';
 import PropTypes from 'prop-types';
 import MDBox from 'components/MDBox';
@@ -143,7 +143,7 @@ export default function BookSeats() {
       console.log('Error in fetching screens', error)
     }
   }
-  
+
   const showScheduleId = showsSchedule && showsSchedule.length > 0 ? showsSchedule[0].id : '';
 
   useEffect(() => {
@@ -231,6 +231,11 @@ export default function BookSeats() {
   useEffect(() => {
   }, [clicked, bookedSeats]);
 
+  const formattedTime = (time) => {
+    const [hours, minutes] = time.split(':');
+    return `${hours}.${minutes}`;
+  };
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -249,21 +254,23 @@ export default function BookSeats() {
           >
             <Grid>
               <MDBox>
-                <MDTypography>{title}</MDTypography>
-                <MDTypography>{screenName}</MDTypography>
-              </MDBox>
-              <MDBox>
                 <Grid display={'flex'} flexDirection={'row'}>
-                  <MDTypography sx={{ mr: 2 }}>{date}</MDTypography>
-                  <MDTypography>{time}</MDTypography>
+                  <MDTypography variant='h4' sx={{ mr: 2 }}>{title} </MDTypography>
+                  <MDTypography> - {screenName}</MDTypography>
                 </Grid>
               </MDBox>
               <MDBox>
                 <Grid display={'flex'} flexDirection={'row'}>
+                  <MDTypography sx={{ mr: 2 }}>{date}</MDTypography>
+                  <MDTypography>{formattedTime(time)}</MDTypography>
+                </Grid>
+              </MDBox>
+              <MDBox sx={{ position: 'absolute', bottom: 16, right: 16, }}>
+                <Grid display={'flex'} flexDirection={'row'}>
                   {otherShowTimes && otherShowTimes
                     .filter(otherTime => otherTime.time !== time)
                     .map(times => (
-                      <MDTypography sx={{ mr: 2 }} key={times.id}>{times.time}</MDTypography>
+                      <Chip label={formattedTime(times.time)} sx={{ mr: 1 }} key={times.id} />
                     ))}
                 </Grid>
               </MDBox>
@@ -278,9 +285,11 @@ export default function BookSeats() {
             flexDirection: 'column',
             alignItems: 'center',
           }}>
-            {zonesData.map(zone => (
-              <ZoneSeatLayout key={zone.id} zone={zone} bookedSeats={bookedSeats} handleSeatClick={handleSeatClick} seatResponses={seatResponses} />
-            ))}
+            <Grid container sx={{ overflowX: 'auto' }}>
+              {zonesData.map(zone => (
+                <ZoneSeatLayout key={zone.id} zone={zone} bookedSeats={bookedSeats} handleSeatClick={handleSeatClick} seatResponses={seatResponses} />
+              ))}
+            </Grid>
             <MDButton color={'info'} sx={{ width: '10%' }} onClick={handleProceed} disabled={bookedSeats.length <= 0}>Proceed</MDButton>
           </Card>
         </>
