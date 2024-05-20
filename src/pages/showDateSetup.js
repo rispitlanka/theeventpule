@@ -30,12 +30,14 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
     const [disabledColumns, setDisabledColumns] = useState([]);
     const [openEditDialogBox, setOpenEditDialogBox] = useState();
     const [selectedShowsData, setSelectedShowsData] = useState();
+    const [fetchedShowTimes, setfetchedShowTimes] = useState([]);
 
     const fetchShowTimeData = async () => {
         try {
             const { data, error } = await supabase.from('showTime').select('*').eq('screenId', screenId);
             if (data) {
                 setShowTimeData(data);
+                console.log(data)
             }
             if (error) throw error;
         } catch (error) {
@@ -57,11 +59,40 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
 
     const fetchShowsData = async () => {
         try {
-            const { data, error } = await supabase.from('shows').select('*').eq('screenId', screenId);
-            if (data) {
-                setFetchedShowsData(data);
+            const { data: fetchedShows, error } = await supabase.from('shows').select('*').eq('screenId', screenId);
+            if (error) {
+                console.log(error)
+            };
+            setFetchedShowsData(fetchedShows);
+            console.log('fetched Shows', fetchedShows)
+            const showIds = fetchedShows.map(show => show.id)
+
+            const { data: showsScheduleData, error: showsScheduleError } = await supabase
+                .from('showsSchedule')
+                .select('*')
+                .in('showId', showIds);
+            if (showsScheduleError) {
+                console.log(showsScheduleError);
+                return;
             }
-            if (error) throw error;
+
+            const showTimeIds = showsScheduleData.map(schedule => schedule.showTimeId);
+
+            const { data: showTimesData, error: showTimesError } = await supabase
+                .from('showTime')
+                .select('*')
+                .in('id', showTimeIds);
+
+            if (showTimesData) {
+                setfetchedShowTimes(showTimesData);
+                console.log('fetched show times', showTimesData)
+            }
+
+            if (showTimesError) {
+                console.log(showTimesError);
+                return;
+            }
+
         } catch (error) {
             console.log('Error in fetching data', error);
         }
@@ -82,6 +113,8 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
     }, [screenId, movieId]);
 
     const existingDates = fetchedShowsData && fetchedShowsData.map(show => new Date(show.date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }));
+    const existingShowTimes = fetchedShowTimes && fetchedShowTimes.map(show => show.time);
+    console.log(existingDates)
 
     useEffect(() => {
         if (startDate && endDate !== null && showTimeData) {
@@ -91,11 +124,14 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
 
             while (start <= end) {
                 const formattedDate = start.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
-                if (existingDates.includes(formattedDate)) {
-                    dates[formattedDate] = [{ name: '', time: '' }];
-                } else {
-                    dates[formattedDate] = showTimeData.map(item => ({ name: item.name, time: item.time, screenId: item.screenId }));
-                }
+                dates[formattedDate] = showTimeData.map(item => {
+                    if (existingDates.includes(formattedDate) && existingShowTimes.includes(item.time)) {
+                        return { name: '', time: '' };
+                    } else {
+                        return { name: item.name, time: item.time, screenId: item.screenId };
+                    }
+                });
+                console.log(dates)
                 start.setDate(start.getDate() + 1);
             }
             setShowsData(dates);
@@ -107,11 +143,14 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
 
             while (start >= currentDate) {
                 const formattedDate = start.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
-                if (existingDates.includes(formattedDate)) {
-                    dates[formattedDate] = [{ name: '', time: '' }];
-                } else {
-                    dates[formattedDate] = showTimeData.map(item => ({ name: item.name, time: item.time, screenId: item.screenId }));
-                }
+                dates[formattedDate] = showTimeData.map(item => {
+                    if (existingDates.includes(formattedDate) && existingShowTimes.includes(item.time)) {
+                        return { name: '', time: '' };
+                    } else {
+                        return { name: item.name, time: item.time, screenId: item.screenId };
+                    }
+                });
+                console.log(dates)
                 start.setDate(start.getDate() + 1);
                 break;
             }
@@ -146,7 +185,19 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
                             screenId: show.screenId
                         }));
                         const { data: showTimeResponse, error: showTimeError } = await supabase.from('showTime').insert(dataToInsert).select('*');
-                        if (showTimeResponse) {
+                        // if (showTimeResponse) {
+                        //     console.log('Show Time added', showTimeResponse);
+                        //     const showTimeIds = showTimeResponse.map(show => show.id);
+                        //     for (const showTimeId of showTimeIds) {
+                        //         const showIndex = Object.keys(showsData).indexOf(date);
+                        //         const timeIndex = showsData[date].findIndex(show => show.time === showTimeResponse.find(res => res.id === showTimeId).time);
+                        //         showScheduleDataToInsert.push({
+                        //             showId: showsDataResponse[showIndex].id,
+                        //             showTimeId: showTimeId,
+                        //         });
+                        //     }
+                        // }
+                        if (showTimeResponse.length>0) {
                             console.log('Show Time added', showTimeResponse);
                             const showTimeIds = showTimeResponse.map(show => show.id);
                             for (const showTimeId of showTimeIds) {
@@ -156,6 +207,23 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
                                     showId: showsDataResponse[showIndex].id,
                                     showTimeId: showTimeId,
                                 });
+                            }
+                        } else {
+                            // If showTimeResponse is empty, use the showId from fetchedShows
+                            const fetchedShow = fetchedShowsData.find(show => new Date(show.date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) === date);
+                            console.log(fetchedShow)
+                            if (fetchedShow) {
+                                const showIndex = Object.keys(showsData).indexOf(date);
+                                const showTimesForDate = showsData[date];
+                                for (const showTime of showTimesForDate) {
+                                    if (showTime.name && showTime.time) {
+                                        const timeIndex = showTimesForDate.findIndex(show => show.time === showTime.time);
+                                        showScheduleDataToInsert.push({
+                                            showId: fetchedShow.id,
+                                            showTimeId: 1,  // Set showTimeId as null or handle accordingly if not needed
+                                        });
+                                    }
+                                }
                             }
                         }
                         if (showTimeError) {
@@ -179,6 +247,7 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
                     }).filter(Boolean);
                 });
                 showScheduleDataToInsert = showScheduleDataToInsert.concat(additionalShowScheduleData);
+                console.log(showScheduleDataToInsert)
                 const { data: showScheduleDataResponse, error: showScheduleError } = await supabase.from('showsSchedule').insert(showScheduleDataToInsert).select('*');
                 if (showScheduleDataResponse) {
                     console.log('Show schedule data saved successfully:', showScheduleDataResponse);
@@ -197,6 +266,7 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
         } catch (error) {
             console.log('Error in saving data:', error.message);
         }
+
     };
 
     const handleCheckboxChange = (event) => {
@@ -302,7 +372,7 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
                                 </TableCell>
                             ))}
                         </TableRow>
-                        <TableBody>
+                        {/* <TableBody>
                             {Object.keys(showsData).map(date => (
                                 <TableRow key={date}>
                                     <TableCell sx={{ textAlign: 'center', position: 'relative' }}>{date}
@@ -325,6 +395,32 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
                                             No shows available
                                         </TableCell>
                                     )}
+                                </TableRow>
+                            ))}
+                        </TableBody> */}
+                        <TableBody>
+                            {Object.keys(showsData).map(date => (
+                                <TableRow key={date}>
+                                    <TableCell sx={{ textAlign: 'center', position: 'relative' }}>{date}
+                                        <IconButton onClick={() => handleDialogBox(date)} sx={{ position: 'absolute', top: '47%', transform: 'translateY(-50%)', p: 2 }}>
+                                            <EditIcon />
+                                        </IconButton>
+                                    </TableCell>
+                                    {showsData[date].map((show, index) => (
+                                        <TableCell key={`${date}-${index}`} align="center" sx={{ textDecoration: disabledColumns.includes(index) || show.disabled ? 'line-through' : 'none', position: 'relative' }}>
+                                            {show.name && show.time ? `${show.name} at ${formatTime(show.time)}` : 'No shows available'}
+                                            {(show.name && show.time) && (
+                                                <IconButton onClick={() => handleDisableSingleShow(date, index)} sx={{ position: 'absolute', top: '47%', transform: 'translateY(-50%)', p: 3 }}>
+                                                    {show.disabled ? <AddCircleOutlineIcon /> : <RemoveCircleOutlineIcon />}
+                                                </IconButton>
+                                            )}
+                                        </TableCell>
+                                    ))}
+                                    {/* {!showsData[date].some(show => show.name && show.time) && (
+                                        <TableCell align="center">
+                                            No shows available
+                                        </TableCell>
+                                    )} */}
                                 </TableRow>
                             ))}
                         </TableBody>
