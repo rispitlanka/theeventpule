@@ -2,7 +2,7 @@ import Footer from 'examples/Footer'
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout'
 import DashboardNavbar from 'examples/Navbars/DashboardNavbar'
 import React, { useContext, useEffect, useState } from 'react'
-import { Box, Card, Grid, Typography } from '@mui/material';
+import { Box, Card, Grid } from '@mui/material';
 import MDTypography from 'components/MDTypography';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from 'pages/supabaseClient';
@@ -90,6 +90,10 @@ export default function GetTickets() {
     }
   }
 
+  const currentDate = () => {
+    return (new Date()).toLocaleString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true }).replace(',', '');
+  }
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -99,21 +103,52 @@ export default function GetTickets() {
         p: 2,
       }}>
         <Box sx={{ flexGrow: 1, mt: 5, mb: 2 }}>
-          <Grid container spacing={2} justifyContent="center">
+          <Grid container spacing={3} justifyContent="center">
             {bookedSeats.map((seat, index) => (
               <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
                 <Card sx={{
                   position: 'relative',
                   p: 2,
-                  textAlign: 'center',
+                  border: '2px solid',
+                  borderRadius: 0,
+                  boxSizing: 'border-box',
+                  width: '100%',
                 }}>
-                  <MDTypography variant='h6'>{title}</MDTypography>
-                  <MDTypography>{screenName}-{seat.zoneName}</MDTypography>
-                  <MDTypography >{date}</MDTypography>
-                  <MDTypography >{time}</MDTypography>
-                  <Typography variant="h1" gutterBottom>{seat.seatName}</Typography>
-                  <MDTypography >{theatreName}</MDTypography>
-                  <MDTypography >{seat.price}</MDTypography>
+                  <Box sx={{ backgroundColor: '#e0e0e0', textAlign: 'center', mt: 1, mb: 3 }}>
+                    <MDTypography variant="h2" sx={{ fontSize: { xs: '1.5rem', md: '2rem' } }}>{theatreName}</MDTypography>
+                  </Box>
+                  <MDTypography variant='body2' sx={{ position: 'absolute', top: { xs: 60, md: 75 }, right: { xs: 1, md: 20 }, fontSize: { xs: '0.75rem', md: '1rem' } }}>
+                    Transaction Number : 0001
+                  </MDTypography>
+                  <Box display="flex" alignItems='center' mt={3}>
+                    <MDTypography sx={{ mr: 1 }}>Movie:</MDTypography>
+                    <MDTypography variant='h4' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{title}</MDTypography>
+                  </Box>
+                  <Box display="flex" alignItems='center' mt={1}>
+                    <MDTypography sx={{ mr: 1 }}>Time:</MDTypography>
+                    <MDTypography variant='h4' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{date} at {time}</MDTypography>
+                  </Box>
+                  <Box display="flex" alignItems='center' mt={1}>
+                    <MDTypography sx={{ mr: 1 }}>Screen:</MDTypography>
+                    <MDTypography variant='h4' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{screenName}-{seat.zoneName}</MDTypography>
+                  </Box>
+                  <Box display="flex" alignItems='center' mt={1}>
+                    <MDTypography sx={{ mr: 1 }}>Price:</MDTypography>
+                    <MDTypography variant='h4' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{seat.price}</MDTypography>
+                  </Box>
+                  <Box display="flex" alignItems='center' mt={1}>
+                    <MDTypography sx={{ mr: 1 }}>Seat:</MDTypography>
+                    <MDTypography variant='h4' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{seat.seatName}</MDTypography>
+                  </Box>
+                  <Grid container mt={3}>
+                    <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: { xs: 'center', sm: 'flex-start' } }}>
+                      <MDTypography sx={{ fontSize: { xs: '0.75rem', md: '1rem' } }}>{currentDate()}</MDTypography>
+                      <MDTypography sx={{ fontSize: { xs: '0.75rem', md: '1rem' } }}>theEventPulse</MDTypography>
+                    </Grid>
+                    <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                      <img src="https://skrymerdev.files.wordpress.com/2012/09/qrcode.png" alt="qr" style={{ height: '200px', width: '200px', border: '1px solid', maxWidth: '100%' }} />
+                    </Grid>
+                  </Grid>
                 </Card>
               </Grid>
             ))}
