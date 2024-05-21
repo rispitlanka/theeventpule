@@ -47,10 +47,10 @@ export default function AddShows() {
         <Grid container spacing={6}>
           <Grid item xs={12}>
             <Card>
-              <Box sx={{ width: '100%' }}>
+              <Box sx={{ width: '100%', pl: 2, pr: 2, mt: -3 }}>
                 <Stepper nonLinear activeStep={activeStep}>
                   {steps.map((label, index) => (
-                    <Step key={label} completed={completed.has(index)}>
+                    <Step key={label} completed={completed.has(index)} sx={{ ml: 5, mr: 5, }}>
                       <StepButton onClick={() => setActiveStep(index)}>
                         {label}
                       </StepButton>

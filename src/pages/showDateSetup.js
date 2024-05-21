@@ -16,12 +16,14 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import EditIcon from '@mui/icons-material/Edit';
 import EditShowsModel from './Models/editShowsModel';
 import { UserDataContext } from 'context';
+import MDTypography from 'components/MDTypography';
 
 export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
     const userDetails = useContext(UserDataContext);
     const userTheatreId = userDetails[0].theatreId;
     const [showTimeData, setShowTimeData] = useState(null);
     const [movieData, setMovieData] = useState();
+    const [screenData, setScreenData] = useState();
     const [startDate, setStartDate] = useState();
     const [endDate, setEndDate] = useState();
     const [showsData, setShowsData] = useState([]);
@@ -31,6 +33,19 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
     const [openEditDialogBox, setOpenEditDialogBox] = useState();
     const [selectedShowsData, setSelectedShowsData] = useState();
     const [fetchedShowTimes, setfetchedShowTimes] = useState([]);
+
+    const fetchScreenData = async () => {
+        try {
+            const { data, error } = await supabase.from('screens').select('*').eq('id', screenId);
+            if (data) {
+                setScreenData(data);
+                console.log('screenData', data)
+            }
+            if (error) throw error;
+        } catch (error) {
+            console.log('Error in fetching data', error);
+        }
+    };
 
     const fetchShowTimeData = async () => {
         try {
@@ -50,6 +65,7 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
             const { data, error } = await supabase.from('movies').select('*').eq('id', movieId);
             if (data) {
                 setMovieData(data);
+                console.log('movieData',data)
             }
             if (error) throw error;
         } catch (error) {
@@ -107,6 +123,7 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
     }
 
     useEffect(() => {
+        fetchScreenData();
         fetchShowTimeData();
         fetchMovieData();
         fetchShowsData();
@@ -306,6 +323,10 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
 
     return (
         <>
+            <Grid sx={{pt:3,pl:3}}>
+                <MDTypography variant='body2'>Screen: {screenData && screenData.length>0 && screenData[0].name}</MDTypography>
+                <MDTypography variant='body2'>Movie: {movieData && movieData.length>0 && movieData[0].title}</MDTypography>
+            </Grid>
             <Grid sx={{ display: 'flex', flexDirection: 'row' }}>
                 <MDBox p={3} >
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
