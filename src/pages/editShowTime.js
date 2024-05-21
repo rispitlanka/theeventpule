@@ -4,6 +4,8 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { supabase } from './supabaseClient';
 import dayjs from 'dayjs';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // @mui material components
 import Grid from "@mui/material/Grid";
@@ -77,7 +79,10 @@ export default function EditShowTime() {
                 throw error;
             }
             console.log('Data updated successfully');
-            navigate(-1);
+            toast.info('Show Time has been successfully updated!');
+            setTimeout(() => {
+                navigate(-1);
+            }, 1500);
         } catch (error) {
             console.error('Error updating data:', error.message);
             throw new Error('Error updating data:', error.message);
@@ -142,6 +147,18 @@ export default function EditShowTime() {
             </Grid>
         </MDBox>
             <Footer />
+            <ToastContainer
+                position="bottom-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
         </DashboardLayout>
     )
 }

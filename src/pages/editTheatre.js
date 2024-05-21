@@ -3,11 +3,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { supabase } from './supabaseClient';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import { Button, TextField } from '@mui/material';
+import { TextField } from '@mui/material';
 
 // Material Dashboard 2 React example components
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout';
@@ -15,21 +17,11 @@ import DashboardNavbar from 'examples/Navbars/DashboardNavbar';
 import Footer from "examples/Footer";
 import MDBox from 'components/MDBox';
 import MDTypography from 'components/MDTypography';
-import MDSnackbar from 'components/MDSnackbar';
 import MDButton from 'components/MDButton';
 
 export default function EditTheatre() {
-
-    const [snackbarOpen, setSnackbarOpen] = useState(false);
-    const [snackbarType, setSnackbarType] = useState('');
     const { id } = useParams();
     const navigate = useNavigate();
-
-    const navigateWithDelay = () => {
-        setTimeout(() => {
-            navigate(-1);
-        }, 1500);
-    };
 
     useEffect(() => {
         const fetchTheatreData = async () => {
@@ -85,10 +77,11 @@ export default function EditTheatre() {
         }),
         onSubmit: async (values, { resetForm }) => {
             await editTheatreData(values);
-            setSnackbarOpen(true);
-            setSnackbarType('success');
             resetForm();
-            navigateWithDelay();
+            toast.info('Theatre has been successfully updated!');
+            setTimeout(() => {
+                navigate(-1);
+            }, 1500);
         },
     });
 
@@ -103,12 +96,6 @@ export default function EditTheatre() {
             console.error('Error updating data:', error.message);
             throw new Error('Error updating data:', error.message);
         }
-    };
-
-
-
-    const handleCloseSnackbar = () => {
-        setSnackbarOpen(false);
     };
 
     return (
@@ -221,15 +208,17 @@ export default function EditTheatre() {
             </Grid>
         </MDBox>
             <Footer />
-            <MDSnackbar
-                color={snackbarType}
-                icon={snackbarType === 'success' ? 'check' : 'warning'}
-                title={snackbarType === 'success' ? 'Success' : 'Error'}
-                content={snackbarType === 'success' ? 'Theatre has been edited successfully!' : 'Failed to edit theatre!'}
-                open={snackbarOpen}
-                close={handleCloseSnackbar}
-                time={2500}
-                bgWhite
+            <ToastContainer
+                position="bottom-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
             />
         </DashboardLayout>
     )

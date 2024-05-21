@@ -255,7 +255,7 @@ export default function SingleTheatre() {
                   alignItems: 'center',
                   height: '150px'
                 }}>
-                <IconButton onClick={() => openPage(`/theatres/single-theatre/add-screen/${id}`)}>
+                <IconButton onClick={() => openPage(`/theatres/single-theatre/add-screen/${theatreID}`)}>
                   <AddCircleIcon color='info' sx={{ fontSize: 48 }} />
                 </IconButton>
                 <MDTypography>Add New Screen</MDTypography>

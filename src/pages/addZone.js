@@ -13,6 +13,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import BlockIcon from '@mui/icons-material/Block';
 import { FixedSizeGrid } from 'react-window';
 import MDButton from 'components/MDButton'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 export default function AddZone() {
@@ -139,7 +141,10 @@ export default function AddZone() {
             if (error) {
                 throw error;
             }
-            navigate(-1);
+            toast.info('Zone has been successfully created!');
+            setTimeout(() => {
+                navigate(-1);
+            }, 1500);
         } catch (error) {
             throw new Error('Error inserting data:', error.message);
         }
@@ -466,7 +471,6 @@ export default function AddZone() {
                                                 }}
                                             </FixedSizeGrid>
                                         }
-
                                     </MDBox>
                                 </form>
                                 <MDBox p={1} sx={{ display: 'flex', alignItems: 'center' }}>
@@ -479,6 +483,18 @@ export default function AddZone() {
                 </Grid>
             </MDBox>
             <Footer />
+            <ToastContainer
+                position="bottom-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
         </DashboardLayout>
     )
 }

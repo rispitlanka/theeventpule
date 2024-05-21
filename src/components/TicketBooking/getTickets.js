@@ -9,6 +9,8 @@ import { supabase } from 'pages/supabaseClient';
 import MDButton from 'components/MDButton';
 import MDBox from 'components/MDBox';
 import { UserDataContext } from 'context';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function GetTickets() {
   const userDetails = useContext(UserDataContext);
@@ -79,7 +81,10 @@ export default function GetTickets() {
       const { data, error } = await supabase.from('tickets').insert(dataToInsert).select('*');
       if (data) {
         console.log('tickets booked', data);
-        navigate(-1);
+        toast.info('Tickets have been successfully booked!');
+        setTimeout(() => {
+          navigate(-1);
+        }, 1500);
       }
       if (error) {
         console.log(error);
@@ -167,6 +172,18 @@ export default function GetTickets() {
         </Box>
       </MDBox>
       <Footer />
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </DashboardLayout>
   )
 }

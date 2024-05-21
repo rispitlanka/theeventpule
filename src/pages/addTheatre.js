@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { supabase } from './supabaseClient';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // @mui material components
 import Grid from "@mui/material/Grid";
@@ -14,24 +16,22 @@ import DashboardNavbar from 'examples/Navbars/DashboardNavbar';
 import Footer from "examples/Footer";
 import MDBox from 'components/MDBox';
 import MDTypography from 'components/MDTypography';
-import MDSnackbar from 'components/MDSnackbar';
 import MDButton from 'components/MDButton';
+import { useNavigate } from 'react-router-dom';
 
 export default function AddTheatre() {
-
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarType, setSnackbarType] = useState('');
+  const navigate = useNavigate();
 
   const onSubmit = async (values, { resetForm }) => {
     try {
       await addTheatreData(values);
-      setSnackbarOpen(true);
-      setSnackbarType('success');
       resetForm();
+      toast.info('Theatre has been successfully created!');
+      setTimeout(() => {
+        navigate(-1);
+      }, 1500);
     } catch (error) {
       console.error('Error submitting form:', error.message);
-      setSnackbarOpen(true);
-      setSnackbarType('error');
       setError(error.message);
     }
   };
@@ -76,11 +76,6 @@ export default function AddTheatre() {
     } catch (error) {
       throw new Error('Error inserting data:', error.message);
     }
-  };
-
-
-  const handleCloseSnackbar = () => {
-    setSnackbarOpen(false);
   };
 
   return (
@@ -193,15 +188,17 @@ export default function AddTheatre() {
       </Grid>
     </MDBox>
       <Footer />
-      <MDSnackbar
-        color={snackbarType}
-        icon={snackbarType === 'success' ? 'check' : 'warning'}
-        title={snackbarType === 'success' ? 'Success' : 'Error'}
-        content={snackbarType === 'success' ? 'New theatre has been added successfully!' : 'Failed to add new theatre!'}
-        open={snackbarOpen}
-        close={handleCloseSnackbar}
-        time={2500}
-        bgWhite
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
       />
     </DashboardLayout>
   )
