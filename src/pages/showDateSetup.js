@@ -65,7 +65,7 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
             const { data, error } = await supabase.from('movies').select('*').eq('id', movieId);
             if (data) {
                 setMovieData(data);
-                console.log('movieData',data)
+                console.log('movieData', data)
             }
             if (error) throw error;
         } catch (error) {
@@ -129,9 +129,9 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
         fetchShowsData();
     }, [screenId, movieId]);
 
-    const existingDates = fetchedShowsData && fetchedShowsData.map(show => new Date(show.date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }));
+    const existingDates = fetchedShowsData && fetchedShowsData.map(show => show.date);
     const existingShowTimes = fetchedShowTimes && fetchedShowTimes.map(show => show.time);
-    console.log(existingDates)
+    console.log('existingDates', existingDates)
 
     useEffect(() => {
         if (startDate && endDate !== null && showTimeData) {
@@ -140,7 +140,7 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
             const end = new Date(endDate);
 
             while (start <= end) {
-                const formattedDate = start.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+                const formattedDate = start.toLocaleDateString('en-CA');
                 dates[formattedDate] = showTimeData.map(item => {
                     if (existingDates.includes(formattedDate) && existingShowTimes.includes(item.time)) {
                         return { name: '', time: '' };
@@ -148,7 +148,6 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
                         return { name: item.name, time: item.time, screenId: item.screenId };
                     }
                 });
-                console.log(dates)
                 start.setDate(start.getDate() + 1);
             }
             setShowsData(dates);
@@ -159,7 +158,7 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
             const currentDate = new Date();
 
             while (start >= currentDate) {
-                const formattedDate = start.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+                const formattedDate = start.toLocaleDateString('en-CA');
                 dates[formattedDate] = showTimeData.map(item => {
                     if (existingDates.includes(formattedDate) && existingShowTimes.includes(item.time)) {
                         return { name: '', time: '' };
@@ -167,7 +166,6 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
                         return { name: item.name, time: item.time, screenId: item.screenId };
                     }
                 });
-                console.log(dates)
                 start.setDate(start.getDate() + 1);
                 break;
             }
@@ -175,11 +173,17 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
         }
     }, [startDate, endDate, showTimeData, checked]);
 
+    console.log('showsData', showsData);
+
     const handleSaveShows = async () => {
         try {
             const datesToSave = Object.keys(showsData).filter(date => {
-                const formattedDate = new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
-                return !existingDates.includes(formattedDate);
+                // return !existingDates.includes(date);
+                if (existingDates.includes(date)){
+                    return !(fetchedShowsData && fetchedShowsData.length > 0 && fetchedShowsData.some(show => show.movieId === movieId));
+                } else {
+                    return true;
+                }
             });
             const dataToInsert = datesToSave.map(date => ({
                 date: date,
@@ -221,7 +225,8 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
                     }
                 }
 
-                const showIds = showsDataResponse.map(show => show.id);
+                const showIds = showsDataResponse && showsDataResponse.length>0 ? showsDataResponse.map(show => show.id) : fetchedShowsData && fetchedShowsData.length > 0 && fetchedShowsData.filter(show => Object.keys(showsData).includes(show.date)).map(show => show.id);
+                console.log('showIds',showIds)
                 const additionalShowScheduleData = showIds.flatMap((showId, showIndex) => {
                     return showTimeData.map((showTime, timeIndex) => {
                         const isDisabled = disabledColumns.includes(timeIndex);
@@ -317,15 +322,15 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
         return date.toLocaleTimeString('en-US', options);
     };
 
-    const formatDate = (time) =>{
+    const formatDate = (time) => {
         return dayjs(time).format('DD/MM/YYYY');
     }
 
     return (
         <>
-            <Grid sx={{pt:3,pl:3}}>
-                <MDTypography variant='body2'>Screen: {screenData && screenData.length>0 && screenData[0].name}</MDTypography>
-                <MDTypography variant='body2'>Movie: {movieData && movieData.length>0 && movieData[0].title}</MDTypography>
+            <Grid sx={{ pt: 3, pl: 3 }}>
+                <MDTypography variant='body2'>Screen: {screenData && screenData.length > 0 && screenData[0].name}</MDTypography>
+                <MDTypography variant='body2'>Movie: {movieData && movieData.length > 0 && movieData[0].title}</MDTypography>
             </Grid>
             <Grid sx={{ display: 'flex', flexDirection: 'row' }}>
                 <MDBox p={3} >
