@@ -33,10 +33,12 @@ export default function data() {
     </MDBox>
   );
 
-  function formatTime(time) {
-    const [hours, minutes] = time.split(':');
-    return `${hours}.${minutes}`;
-  }
+  const formattedTime = (time) => {
+    const [hours, minutes, seconds] = time.split(':');
+    const date = new Date(0, 0, 0, hours, minutes, seconds);
+    const options = { hour: '2-digit', minute: '2-digit' };
+    return date.toLocaleTimeString('en-US', options);
+  };
 
   const [showTimeData, setShowTimeData] = useState(null);
   const [error, setError] = useState(null);
@@ -67,12 +69,12 @@ export default function data() {
   // };
 
   const rows = showTimeData ? showTimeData.map(showTime => ({
-    name: <div onClick={() => handleRowClick(showTime.id)} style={{ cursor: 'pointer' }}>
+    name: <div>
       <Screen name={showTime.name} />
     </div>,
     time: (
       <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-        {formatTime(showTime.time)}
+        {formattedTime(showTime.time)}
       </MDTypography>
     ),
     action: (

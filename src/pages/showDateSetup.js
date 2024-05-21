@@ -185,19 +185,7 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
                             screenId: show.screenId
                         }));
                         const { data: showTimeResponse, error: showTimeError } = await supabase.from('showTime').insert(dataToInsert).select('*');
-                        // if (showTimeResponse) {
-                        //     console.log('Show Time added', showTimeResponse);
-                        //     const showTimeIds = showTimeResponse.map(show => show.id);
-                        //     for (const showTimeId of showTimeIds) {
-                        //         const showIndex = Object.keys(showsData).indexOf(date);
-                        //         const timeIndex = showsData[date].findIndex(show => show.time === showTimeResponse.find(res => res.id === showTimeId).time);
-                        //         showScheduleDataToInsert.push({
-                        //             showId: showsDataResponse[showIndex].id,
-                        //             showTimeId: showTimeId,
-                        //         });
-                        //     }
-                        // }
-                        if (showTimeResponse.length>0) {
+                        if (showTimeResponse) {
                             console.log('Show Time added', showTimeResponse);
                             const showTimeIds = showTimeResponse.map(show => show.id);
                             for (const showTimeId of showTimeIds) {
@@ -208,24 +196,8 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
                                     showTimeId: showTimeId,
                                 });
                             }
-                        } else {
-                            // If showTimeResponse is empty, use the showId from fetchedShows
-                            const fetchedShow = fetchedShowsData.find(show => new Date(show.date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) === date);
-                            console.log(fetchedShow)
-                            if (fetchedShow) {
-                                const showIndex = Object.keys(showsData).indexOf(date);
-                                const showTimesForDate = showsData[date];
-                                for (const showTime of showTimesForDate) {
-                                    if (showTime.name && showTime.time) {
-                                        const timeIndex = showTimesForDate.findIndex(show => show.time === showTime.time);
-                                        showScheduleDataToInsert.push({
-                                            showId: fetchedShow.id,
-                                            showTimeId: 1,  // Set showTimeId as null or handle accordingly if not needed
-                                        });
-                                    }
-                                }
-                            }
                         }
+                       
                         if (showTimeError) {
                             throw showTimeError;
                         }
@@ -321,9 +293,15 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
 
     const maxShowsCount = Math.max(...Object.values(showsData).map(shows => shows.length));
 
-    function formatTime(time) {
-        const [hours, minutes] = time.split(':');
-        return `${hours}.${minutes}`;
+    const formattedTime = (time) => {
+        const [hours, minutes, seconds] = time.split(':');
+        const date = new Date(0, 0, 0, hours, minutes, seconds);
+        const options = { hour: '2-digit', minute: '2-digit' };
+        return date.toLocaleTimeString('en-US', options);
+    };
+
+    const formatDate = (time) =>{
+        return dayjs(time).format('DD/MM/YYYY');
     }
 
     return (
@@ -401,14 +379,14 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
                         <TableBody>
                             {Object.keys(showsData).map(date => (
                                 <TableRow key={date}>
-                                    <TableCell sx={{ textAlign: 'center', position: 'relative' }}>{date}
+                                    <TableCell sx={{ textAlign: 'center', position: 'relative' }}>{formatDate(date)}
                                         <IconButton onClick={() => handleDialogBox(date)} sx={{ position: 'absolute', top: '47%', transform: 'translateY(-50%)', p: 2 }}>
                                             <EditIcon />
                                         </IconButton>
                                     </TableCell>
                                     {showsData[date].map((show, index) => (
                                         <TableCell key={`${date}-${index}`} align="center" sx={{ textDecoration: disabledColumns.includes(index) || show.disabled ? 'line-through' : 'none', position: 'relative' }}>
-                                            {show.name && show.time ? `${show.name} at ${formatTime(show.time)}` : 'No shows available'}
+                                            {show.name && show.time ? `${show.name} at ${formattedTime(show.time)}` : 'No shows available'}
                                             {(show.name && show.time) && (
                                                 <IconButton onClick={() => handleDisableSingleShow(date, index)} sx={{ position: 'absolute', top: '47%', transform: 'translateY(-50%)', p: 3 }}>
                                                     {show.disabled ? <AddCircleOutlineIcon /> : <RemoveCircleOutlineIcon />}

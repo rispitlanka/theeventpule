@@ -232,8 +232,10 @@ export default function BookSeats() {
   }, [clicked, bookedSeats]);
 
   const formattedTime = (time) => {
-    const [hours, minutes] = time.split(':');
-    return `${hours}.${minutes}`;
+    const [hours, minutes, seconds] = time.split(':');
+    const date = new Date(0, 0, 0, hours, minutes, seconds);
+    const options = { hour: '2-digit', minute: '2-digit' };
+    return date.toLocaleTimeString('en-US', options);
   };
 
   return (

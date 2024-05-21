@@ -111,6 +111,13 @@ export default function ShowsOnDate(date) {
         openPage(`/bookings/book-seats/${showScheduleId}/${screen.id}?date=${show.date}&movie=${movie.title}`);
     }
 
+    const formattedTime = (time) => {
+        const [hours, minutes, seconds] = time.split(':');
+        const date = new Date(0, 0, 0, hours, minutes, seconds);
+        const options = { hour: '2-digit', minute: '2-digit' };
+        return date.toLocaleTimeString('en-US', options);
+    };
+
     return (
         <>
             {shows && shows.length > 0 ? (
@@ -150,7 +157,7 @@ export default function ShowsOnDate(date) {
                                                     {times && times.length > 0 ? (
                                                         <Box>
                                                             {times.map((time, index) => (
-                                                                <Chip label={time.time} variant="outlined" onClick={() => handleChipClick(show, time, screen, movie, showsSheduleFiltered)} key={index} sx={{ mr: 1 }} />
+                                                                <Chip label={formattedTime(time.time)} variant="outlined" onClick={() => handleChipClick(show, time, screen, movie, showsSheduleFiltered)} key={index} sx={{ mr: 1 }} />
                                                             ))}
                                                         </Box>
                                                     ) : (

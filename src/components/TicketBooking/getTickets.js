@@ -94,6 +94,13 @@ export default function GetTickets() {
     return (new Date()).toLocaleString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true }).replace(',', '');
   }
 
+  const formattedTime = (time) => {
+    const [hours, minutes, seconds] = time.split(':');
+    const date = new Date(0, 0, 0, hours, minutes, seconds);
+    const options = { hour: '2-digit', minute: '2-digit' };
+    return date.toLocaleTimeString('en-US', options);
+  };
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -122,23 +129,23 @@ export default function GetTickets() {
                   </MDTypography>
                   <Box display="flex" alignItems='center' mt={3}>
                     <MDTypography sx={{ mr: 1 }}>Movie:</MDTypography>
-                    <MDTypography variant='h4' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{title}</MDTypography>
+                    <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{title}</MDTypography>
                   </Box>
                   <Box display="flex" alignItems='center' mt={1}>
                     <MDTypography sx={{ mr: 1 }}>Time:</MDTypography>
-                    <MDTypography variant='h4' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{date} at {time}</MDTypography>
+                    <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{date} at {formattedTime(time)}</MDTypography>
                   </Box>
                   <Box display="flex" alignItems='center' mt={1}>
                     <MDTypography sx={{ mr: 1 }}>Screen:</MDTypography>
-                    <MDTypography variant='h4' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{screenName}-{seat.zoneName}</MDTypography>
+                    <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{screenName}-{seat.zoneName}</MDTypography>
                   </Box>
                   <Box display="flex" alignItems='center' mt={1}>
                     <MDTypography sx={{ mr: 1 }}>Price:</MDTypography>
-                    <MDTypography variant='h4' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{seat.price}</MDTypography>
+                    <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{seat.price}</MDTypography>
                   </Box>
                   <Box display="flex" alignItems='center' mt={1}>
                     <MDTypography sx={{ mr: 1 }}>Seat:</MDTypography>
-                    <MDTypography variant='h4' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{seat.seatName}</MDTypography>
+                    <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{seat.seatName}</MDTypography>
                   </Box>
                   <Grid container mt={3}>
                     <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: { xs: 'center', sm: 'flex-start' } }}>
@@ -154,8 +161,10 @@ export default function GetTickets() {
             ))}
           </Grid>
         </Box>
-        <MDTypography sx={{ mb: 2 }}>Total Price: LKR {calculateTotalPrice()}</MDTypography>
-        <MDButton color='info' onClick={handleBookTickets}>Book Tickets</MDButton>
+        <Box sx={{ mt: 'auto', textAlign: 'right', p: 2 }}>
+          <MDTypography sx={{ mb: 2 }}>Total Price: LKR {calculateTotalPrice()}</MDTypography>
+          <MDButton color='info' onClick={handleBookTickets}>Book Tickets</MDButton>
+        </Box>
       </MDBox>
       <Footer />
     </DashboardLayout>
