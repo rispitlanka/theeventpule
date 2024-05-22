@@ -179,7 +179,7 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
         try {
             const datesToSave = Object.keys(showsData).filter(date => {
                 // return !existingDates.includes(date);
-                if (existingDates.includes(date)){
+                if (existingDates.includes(date)) {
                     return !(fetchedShowsData && fetchedShowsData.length > 0 && fetchedShowsData.some(show => show.movieId === movieId));
                 } else {
                     return true;
@@ -218,17 +218,25 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
                                 });
                             }
                         }
-                       
+
                         if (showTimeError) {
                             throw showTimeError;
                         }
                     }
                 }
 
-                const showIds = showsDataResponse && showsDataResponse.length>0 ? showsDataResponse.map(show => show.id) : fetchedShowsData && fetchedShowsData.length > 0 && fetchedShowsData.filter(show => Object.keys(showsData).includes(show.date)).map(show => show.id);
-                console.log('showIds',showIds)
+                const showIds = showsDataResponse && showsDataResponse.length > 0 ? showsDataResponse.map(show => show.id) : fetchedShowsData && fetchedShowsData.length > 0 && fetchedShowsData.filter(show => Object.keys(showsData).includes(show.date)).map(show => show.id);
                 const additionalShowScheduleData = showIds.flatMap((showId, showIndex) => {
-                    return showTimeData.map((showTime, timeIndex) => {
+                    const showTimes = new Set();
+                    Object.values(showsData).forEach(dateShows => {
+                        dateShows.forEach(show => {
+                            if (show.time) {
+                                showTimes.add(show.time);
+                            }
+                        });
+                    });
+                    const filteredShowTimeData = showTimeData.filter(showTime => showTimes.has(showTime.time));
+                    return filteredShowTimeData.map((showTime, timeIndex) => {
                         const isDisabled = disabledColumns.includes(timeIndex);
                         const date = Object.keys(showsData)[showIndex];
                         if (!isDisabled && !showsData[date][timeIndex].disabled) {
