@@ -17,12 +17,10 @@ export default function GetTickets() {
   const userTheatreId = userDetails[0].theatreId;
   const navigate = useNavigate();
   const location = useLocation();
-  const { bookedSeats, date, title, time, screenName } = location.state || { bookedSeats: [] };
-  const [showsSchedule, setShowsSchedule] = useState([]);
+  const { bookedSeats, showDate, movieId, movieTitle, time, screenName } = location.state || { bookedSeats: [] };
   const [theatreName, setTheatreName] = useState([]);
 
   useEffect(() => {
-    fetchMovieFromShowSchedule();
     fetchTheatre();
   }, [bookedSeats])
 
@@ -38,26 +36,6 @@ export default function GetTickets() {
     }
   };
 
-  const fetchMovieFromShowSchedule = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('showsSchedule')
-        .select('*, shows(*)')
-        .eq('id', bookedSeats[0].showScheduleId);
-
-      if (data) {
-        setShowsSchedule(data);
-        console.log('show schedule', data);
-      }
-
-      if (error) {
-        console.log(error);
-      }
-    } catch (error) {
-      console.log('Error in fetching movie', error);
-    }
-  }
-
   const calculateTotalPrice = () => {
     let totalPrice = 0;
     bookedSeats.forEach(seat => {
@@ -71,8 +49,8 @@ export default function GetTickets() {
     try {
       const dataToInsert = bookedSeats && bookedSeats.length > 0 && bookedSeats.map(seat => ({
         seatId: seat.seatId,
-        showScheduleId: seat.showScheduleId,
-        movieId: showsSchedule && showsSchedule.length > 0 && showsSchedule[0].shows.movieId,
+        showId: seat.showId,
+        movieId: movieId,
         theatreId: userTheatreId,
         bookedBy: '',
         totalPrice: calculateTotalPrice(),
@@ -101,9 +79,9 @@ export default function GetTickets() {
 
   const formattedTime = (time) => {
     const [hours, minutes, seconds] = time.split(':');
-    const date = new Date(0, 0, 0, hours, minutes, seconds);
+    const showDate = new Date(0, 0, 0, hours, minutes, seconds);
     const options = { hour: '2-digit', minute: '2-digit' };
-    return date.toLocaleTimeString('en-US', options);
+    return showDate.toLocaleTimeString('en-US', options);
   };
 
   return (
@@ -134,11 +112,11 @@ export default function GetTickets() {
                   </MDTypography>
                   <Box display="flex" alignItems='center' mt={3}>
                     <MDTypography sx={{ mr: 1 }}>Movie:</MDTypography>
-                    <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{title}</MDTypography>
+                    <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{movieTitle}</MDTypography>
                   </Box>
                   <Box display="flex" alignItems='center' mt={1}>
                     <MDTypography sx={{ mr: 1 }}>Time:</MDTypography>
-                    <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{date} at {formattedTime(time)}</MDTypography>
+                    <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{showDate} at {formattedTime(time)}</MDTypography>
                   </Box>
                   <Box display="flex" alignItems='center' mt={1}>
                     <MDTypography sx={{ mr: 1 }}>Screen:</MDTypography>

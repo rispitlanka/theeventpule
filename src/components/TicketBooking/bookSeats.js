@@ -17,21 +17,24 @@ export default function BookSeats() {
   const [zonesData, setZonesData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [bookedSeats, setBookedSeats] = useState([]);
-  const [showsSchedule, setShowsSchedule] = useState([]);
   const [screens, setScreens] = useState([]);
   const [otherShowTimes, setOtherShowTimes] = useState([]);
   const [clicked, setClicked] = useState(false);
   const [seatResponses, setSeatResponses] = useState([]);
+  const [showData, setShowData] = useState([]);
+  const [movieData, setMovieData] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
-  const { showSheduleId, screenId } = useParams();
+  const { showId, screenId } = useParams();
   const queryParams = new URLSearchParams(location.search);
   const date = queryParams.get('date');
-  const title = queryParams.get('movie');
+  const movieId = queryParams.get('movieId');
+  console.log('showId', showId)
 
   useEffect(() => {
+    fetchMovieData();
     fetchZonesData();
-    fetchShowsSheduleAndTime();
+    fetchShowData();
     fetchOtherShows();
     fetchScreens();
   }, []);
@@ -49,77 +52,62 @@ export default function BookSeats() {
     }
   };
 
-  const fetchShowsSheduleAndTime = async () => {
+  const fetchMovieData = async () => {
     try {
-      const { data, error } = await supabase
-        .from('showsSchedule')
-        .select('*, showTime(*)')
-        .eq('id', showSheduleId);
-
+      const { data, error } = await supabase.from('movies').select('*').eq('id', movieId);
+      if (error) throw error;
       if (data) {
-        setShowsSchedule(data);
-        console.log('show schedule and time', data);
-      }
-
-      if (error) {
-        console.log(error);
+        setMovieData(data);
+        setIsLoading(false);
       }
     } catch (error) {
-      console.log('Error in fetching shows schedule and time', error);
+      console.log(error);
     }
-  }
+  };
+
+  const fetchShowData = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('shows')
+        .select('*, showTime(*)')
+        .eq('id', showId);
+
+      if (error) throw error;
+
+      if (data) {
+        setShowData(data);
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const fetchOtherShows = async () => {
     try {
-      const { data: showsData, error: showsError } = await supabase
+      const { data: otherShowsDataResponse, error: otherShowsDataResponseError } = await supabase
         .from('shows')
         .select('*')
         .eq('date', date)
-        .eq('screenId', screenId);
+        .eq('screenId', screenId)
+        .eq('movieId', movieId);
 
-      if (showsError) {
-        console.log(showsError);
+      if (otherShowsDataResponseError) {
+        console.log(otherShowsDataResponseError);
         return;
       }
 
-      if (!showsData || showsData.length === 0) {
-        console.log('No shows found for the given date and screen.');
-        return;
-      }
+      const otherShowsTimeIds = otherShowsDataResponse.map(show => show.showTimeId);
 
-      const showIds = showsData.map(show => show.id);
-
-      const { data: showsScheduleData, error: showsScheduleError } = await supabase
-        .from('showsSchedule')
-        .select('*')
-        .in('showId', showIds);
-
-      if (showsScheduleError) {
-        console.log(showsScheduleError);
-        return;
-      }
-
-      const showTimeIds = showsScheduleData.map(schedule => schedule.showTimeId);
-
-      const { data: showTimesData, error: showTimesError } = await supabase
+      const { data: otherShowsTimeDataResponse, error: otherShowsTimeDataResponseError } = await supabase
         .from('showTime')
         .select('*')
-        .in('id', showTimeIds);
+        .in('id', otherShowsTimeIds);
 
-      if (showTimesData) {
-        setOtherShowTimes(showTimesData);
-      }
-
-      if (showTimesError) {
-        console.log(showTimesError);
+      if (otherShowsTimeDataResponseError) {
         return;
       }
-
-      console.log('Show Schedule and Times:', {
-        shows: showsData,
-        showSchedule: showsScheduleData,
-        showTimes: showTimesData
-      });
+      setOtherShowTimes(otherShowsTimeDataResponse);
 
     } catch (error) {
       console.log('Error in fetching other shows', error);
@@ -144,7 +132,6 @@ export default function BookSeats() {
     }
   }
 
-  const showScheduleId = showsSchedule && showsSchedule.length > 0 ? showsSchedule[0].id : '';
 
   useEffect(() => {
     const fetchBookedTickets = async () => {
@@ -152,7 +139,7 @@ export default function BookSeats() {
         const { data, error } = await supabase
           .from('tickets')
           .select('*')
-          .eq('showScheduleId', showScheduleId);
+          .eq('showId', showId);
 
         if (data) {
           console.log('booked tickets', data);
@@ -185,7 +172,7 @@ export default function BookSeats() {
     };
 
     fetchBookedTickets();
-  }, [showScheduleId]);
+  }, [showId]);
 
 
   const updateBookedSeats = (newBookedSeats) => {
@@ -212,7 +199,7 @@ export default function BookSeats() {
         columnIndex,
         seatId: seatData.id,
         seatName: seatData.seatName,
-        showScheduleId: showScheduleId,
+        showId: showId,
       };
       const updatedSeats = [...bookedSeats, newBookedSeat];
       setBookedSeats(updatedSeats);
@@ -221,11 +208,13 @@ export default function BookSeats() {
   };
 
   const screenName = screens && screens.length > 0 ? screens[0].name : '';
-  const time = showsSchedule && showsSchedule.length > 0 ? showsSchedule[0].showTime.time : '';
+  const time = showData && showData.length > 0 ? showData[0].showTime.time : '';
+  const showDate = showData && showData.length > 0 ? showData[0].date : '';
+  const movieTitle = movieData && movieData.length > 0 ? movieData[0].title : '';
 
   const handleProceed = () => {
     setClicked(true);
-    navigate('/bookings/book-seats/get-tickets', { state: { bookedSeats, date, title, time, screenName } });
+    navigate('/bookings/book-seats/get-tickets', { state: { bookedSeats, showDate, movieId, movieTitle, time, screenName } });
   }
 
   useEffect(() => {
@@ -257,13 +246,13 @@ export default function BookSeats() {
             <Grid>
               <MDBox>
                 <Grid display={'flex'} flexDirection={'row'}>
-                  <MDTypography variant='h4' sx={{ mr: 2 }}>{title} </MDTypography>
+                  <MDTypography variant='h4' sx={{ mr: 2 }}>{movieTitle} </MDTypography>
                   <MDTypography> - {screenName}</MDTypography>
                 </Grid>
               </MDBox>
               <MDBox>
                 <Grid display={'flex'} flexDirection={'row'}>
-                  <MDTypography sx={{ mr: 2 }}>{date}</MDTypography>
+                  <MDTypography sx={{ mr: 2 }}>{showDate}</MDTypography>
                   <MDTypography>{formattedTime(time)}</MDTypography>
                 </Grid>
               </MDBox>
@@ -439,7 +428,7 @@ ZoneSeatLayout.propTypes = {
       rowIndex: PropTypes.number.isRequired,
       columnIndex: PropTypes.number.isRequired,
       seatName: PropTypes.string.isRequired,
-      showScheduleId: PropTypes.isRequired,
+      showId: PropTypes.isRequired,
     })
   ).isRequired,
   handleSeatClick: PropTypes.func.isRequired,

@@ -32,7 +32,6 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
     const [disabledColumns, setDisabledColumns] = useState([]);
     const [openEditDialogBox, setOpenEditDialogBox] = useState();
     const [selectedShowsData, setSelectedShowsData] = useState();
-    const [fetchedShowTimes, setfetchedShowTimes] = useState([]);
 
     const fetchScreenData = async () => {
         try {
@@ -81,26 +80,14 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
             };
             setFetchedShowsData(fetchedShows);
             console.log('fetched Shows', fetchedShows)
-            const showIds = fetchedShows.map(show => show.id)
 
-            const { data: showsScheduleData, error: showsScheduleError } = await supabase
-                .from('showsSchedule')
-                .select('*')
-                .in('showId', showIds);
-            if (showsScheduleError) {
-                console.log(showsScheduleError);
-                return;
-            }
-
-            const showTimeIds = showsScheduleData.map(schedule => schedule.showTimeId);
-
+            const showTimeIds = fetchedShows.map(show => show.showTimeId);
             const { data: showTimesData, error: showTimesError } = await supabase
                 .from('showTime')
                 .select('*')
                 .in('id', showTimeIds);
 
             if (showTimesData) {
-                setfetchedShowTimes(showTimesData);
                 console.log('fetched show times', showTimesData)
             }
 
@@ -129,10 +116,6 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
         fetchShowsData();
     }, [screenId, movieId]);
 
-    const existingDates = fetchedShowsData && fetchedShowsData.map(show => show.date);
-    const existingShowTimes = fetchedShowTimes && fetchedShowTimes.map(show => show.time);
-    console.log('existingDates', existingDates)
-
     useEffect(() => {
         if (startDate && endDate !== null && showTimeData) {
             const dates = {};
@@ -142,11 +125,13 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
             while (start <= end) {
                 const formattedDate = start.toLocaleDateString('en-CA');
                 dates[formattedDate] = showTimeData.map(item => {
-                    if (existingDates.includes(formattedDate) && existingShowTimes.includes(item.time)) {
+                    const isExistingShow = fetchedShowsData.some(show =>
+                        show.date === formattedDate && show.showTimeId === item.id
+                    );
+                    if (isExistingShow) {
                         return { name: '', time: '' };
-                    } else {
-                        return { name: item.name, time: item.time, screenId: item.screenId };
                     }
+                    return { name: item.name, time: item.time, screenId: item.screenId, showTimeId: item.id };
                 });
                 start.setDate(start.getDate() + 1);
             }
@@ -160,11 +145,13 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
             while (start >= currentDate) {
                 const formattedDate = start.toLocaleDateString('en-CA');
                 dates[formattedDate] = showTimeData.map(item => {
-                    if (existingDates.includes(formattedDate) && existingShowTimes.includes(item.time)) {
+                    const isExistingShow = fetchedShowsData.some(show =>
+                        show.date === formattedDate && show.showTimeId === item.id
+                    );
+                    if (isExistingShow) {
                         return { name: '', time: '' };
-                    } else {
-                        return { name: item.name, time: item.time, screenId: item.screenId };
                     }
+                    return { name: item.name, time: item.time, screenId: item.screenId, showTimeId: item.id };
                 });
                 start.setDate(start.getDate() + 1);
                 break;
@@ -175,23 +162,26 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
 
     console.log('showsData', showsData);
 
-    const handleSaveShows = async () => {
+    const newHandleSaveShows = async () => {
         try {
             const datesToSave = Object.keys(showsData).filter(date => {
-                // return !existingDates.includes(date);
-                if (existingDates.includes(date)) {
-                    return !(fetchedShowsData && fetchedShowsData.length > 0 && fetchedShowsData.some(show => show.movieId === movieId));
-                } else {
-                    return true;
-                }
+                return date;
             });
-            const dataToInsert = datesToSave.map(date => ({
-                date: date,
-                movieId: movieId,
-                screenId: screenId,
-                theatreId: userTheatreId,
-            }));
-
+            const dataToInsert = datesToSave.flatMap(date => {
+                const showsOnDate = showsData[date]
+                    .filter((show, timeIndex) => {
+                        const isDisabled = disabledColumns.includes(timeIndex);
+                        return !isDisabled && !show.disabled;
+                    })
+                    .filter(show => show.name !== '' && show.time !== '');
+                return showsOnDate.map(show => ({
+                    date: date,
+                    movieId: movieId,
+                    screenId: screenId,
+                    showTimeId: show.showTimeId,
+                    theatreId: userTheatreId,
+                }));
+            });
             const { data: showsDataResponse, error: showsDataError } = await supabase.from('shows').insert(dataToInsert).select('*');
             if (showsDataResponse) {
                 console.log('Shows data saved successfully:', showsDataResponse);
@@ -224,43 +214,11 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
                         }
                     }
                 }
-
-                const showIds = showsDataResponse && showsDataResponse.length > 0 ? showsDataResponse.map(show => show.id) : fetchedShowsData && fetchedShowsData.length > 0 && fetchedShowsData.filter(show => Object.keys(showsData).includes(show.date)).map(show => show.id);
-                const additionalShowScheduleData = showIds.flatMap((showId, showIndex) => {
-                    const showTimes = new Set();
-                    Object.values(showsData).forEach(dateShows => {
-                        dateShows.forEach(show => {
-                            if (show.time) {
-                                showTimes.add(show.time);
-                            }
-                        });
-                    });
-                    const filteredShowTimeData = showTimeData.filter(showTime => showTimes.has(showTime.time));
-                    return filteredShowTimeData.map((showTime, timeIndex) => {
-                        const isDisabled = disabledColumns.includes(timeIndex);
-                        const date = Object.keys(showsData)[showIndex];
-                        if (!isDisabled && !showsData[date][timeIndex].disabled) {
-                            return {
-                                showId: showId,
-                                showTimeId: showTime.id,
-                            };
-                        }
-                        return null;
-                    }).filter(Boolean);
-                });
-                showScheduleDataToInsert = showScheduleDataToInsert.concat(additionalShowScheduleData);
-                console.log(showScheduleDataToInsert)
-                const { data: showScheduleDataResponse, error: showScheduleError } = await supabase.from('showsSchedule').insert(showScheduleDataToInsert).select('*');
-                if (showScheduleDataResponse) {
-                    console.log('Show schedule data saved successfully:', showScheduleDataResponse);
+                if (showsDataResponse) {
                     setDisabledColumns([]);
-                    if (showsDataResponse && showScheduleDataResponse) {
-                        afterShowsSaved();
-                    }
+                    afterShowsSaved();
                 }
-                if (showScheduleError) {
-                    throw showScheduleError;
-                }
+
             }
             if (showsDataError) {
                 throw showsDataError;
@@ -333,6 +291,102 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
     const formatDate = (time) => {
         return dayjs(time).format('DD/MM/YYYY');
     }
+
+    // const handleSaveShows = async () => {
+    //     try {
+    //         const datesToSave = Object.keys(showsData).filter(date => {
+    //             // return !existingDates.includes(date);
+    //             if (existingDates.includes(date)) {
+    //                 return !(fetchedShowsData && fetchedShowsData.length > 0 && fetchedShowsData.some(show => show.movieId === movieId));
+    //             } else {
+    //                 return true;
+    //             }
+    //         });
+    //         const dataToInsert = datesToSave.map(date => ({
+    //             date: date,
+    //             movieId: movieId,
+    //             screenId: screenId,
+    //             theatreId: userTheatreId,
+    //         }));
+
+    //         const { data: showsDataResponse, error: showsDataError } = await supabase.from('shows').insert(dataToInsert).select('*');
+    //         if (showsDataResponse) {
+    //             console.log('Shows data saved successfully:', showsDataResponse);
+    //             let showScheduleDataToInsert = [];
+    //             if (selectedShowsData) {
+    //                 for (const date in showsData) {
+    //                     const specialShows = showsData[date].filter(show => show.type === 'special');
+    //                     const dataToInsert = specialShows && specialShows.map(show => ({
+    //                         name: show.name,
+    //                         time: show.time,
+    //                         type: show.type,
+    //                         screenId: show.screenId
+    //                     }));
+    //                     const { data: showTimeResponse, error: showTimeError } = await supabase.from('showTime').insert(dataToInsert).select('*');
+    //                     if (showTimeResponse) {
+    //                         console.log('Show Time added', showTimeResponse);
+    //                         const showTimeIds = showTimeResponse.map(show => show.id);
+    //                         for (const showTimeId of showTimeIds) {
+    //                             const showIndex = Object.keys(showsData).indexOf(date);
+    //                             const timeIndex = showsData[date].findIndex(show => show.time === showTimeResponse.find(res => res.id === showTimeId).time);
+    //                             showScheduleDataToInsert.push({
+    //                                 showId: showsDataResponse[showIndex].id,
+    //                                 showTimeId: showTimeId,
+    //                             });
+    //                         }
+    //                     }
+
+    //                     if (showTimeError) {
+    //                         throw showTimeError;
+    //                     }
+    //                 }
+    //             }
+
+    //             const showIds = showsDataResponse && showsDataResponse.length > 0 ? showsDataResponse.map(show => show.id) : fetchedShowsData && fetchedShowsData.length > 0 && fetchedShowsData.filter(show => Object.keys(showsData).includes(show.date)).map(show => show.id);
+    //             const additionalShowScheduleData = showIds.flatMap((showId, showIndex) => {
+    //                 const showTimes = new Set();
+    //                 Object.values(showsData).forEach(dateShows => {
+    //                     dateShows.forEach(show => {
+    //                         if (show.time) {
+    //                             showTimes.add(show.time);
+    //                         }
+    //                     });
+    //                 });
+    //                 const filteredShowTimeData = showTimeData.filter(showTime => showTimes.has(showTime.time));
+    //                 return filteredShowTimeData.map((showTime, timeIndex) => {
+    //                     const isDisabled = disabledColumns.includes(timeIndex);
+    //                     const date = Object.keys(showsData)[showIndex];
+    //                     if (!isDisabled && !showsData[date][timeIndex].disabled) {
+    //                         return {
+    //                             showId: showId,
+    //                             showTimeId: showTime.id,
+    //                         };
+    //                     }
+    //                     return null;
+    //                 }).filter(Boolean);
+    //             });
+    //             showScheduleDataToInsert = showScheduleDataToInsert.concat(additionalShowScheduleData);
+    //             console.log(showScheduleDataToInsert)
+    //             const { data: showScheduleDataResponse, error: showScheduleError } = await supabase.from('showsSchedule').insert(showScheduleDataToInsert).select('*');
+    //             if (showScheduleDataResponse) {
+    //                 console.log('Show schedule data saved successfully:', showScheduleDataResponse);
+    //                 setDisabledColumns([]);
+    //                 if (showsDataResponse && showScheduleDataResponse) {
+    //                     afterShowsSaved();
+    //                 }
+    //             }
+    //             if (showScheduleError) {
+    //                 throw showScheduleError;
+    //             }
+    //         }
+    //         if (showsDataError) {
+    //             throw showsDataError;
+    //         }
+    //     } catch (error) {
+    //         console.log('Error in saving data:', error.message);
+    //     }
+
+    // };
 
     return (
         <>
@@ -442,7 +496,7 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
                             showsDataProps={selectedShowsData}
                         />
                     </Table>
-                    <MDBox m={2}><MDButton onClick={handleSaveShows} color='info'>Save</MDButton></MDBox>
+                    <MDBox m={2}><MDButton onClick={newHandleSaveShows} color='info'>Save</MDButton></MDBox>
                 </TableContainer>
             </MDBox>
         </>

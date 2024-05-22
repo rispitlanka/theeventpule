@@ -403,7 +403,7 @@ const routes = [
     component: <SingleUser />,
   },
   {
-    route: "/bookings/book-seats/:showSheduleId/:screenId",
+    route: "/bookings/book-seats/:showId/:screenId",
     component: <BookSeats />,
   },
   {
