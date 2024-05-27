@@ -10,6 +10,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { MobileTimePicker } from '@mui/x-date-pickers/MobileTimePicker';
 import MDButton from 'components/MDButton';
+import MDTypography from 'components/MDTypography';
 
 export default function EditShowsModel({ open, onClose, showsDataProps }) {
     const [selectedTime, setSelectedTime] = useState(null);
@@ -64,13 +65,13 @@ export default function EditShowsModel({ open, onClose, showsDataProps }) {
 
     function convertTo24HourFormat(timeStr) {
         const [time, modifier] = timeStr.split(' ');
-        let [hours, minutes] = time.split(':');    
+        let [hours, minutes] = time.split(':');
         if (modifier === 'PM' && hours !== '12') {
             hours = parseInt(hours, 10) + 12;
-        }    
+        }
         if (modifier === 'AM' && hours === '12') {
             hours = '00';
-        }    
+        }
         return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}:00`;
     }
 
@@ -124,7 +125,9 @@ export default function EditShowsModel({ open, onClose, showsDataProps }) {
             <List>
                 {showsDataProps && showsDataProps.shows.map((show, index) => (
                     <ListItem disableGutters key={index}>
-                        <ListItemText primary={`${show.name}`} secondary={`${formattedTime(show.time)}`} sx={{ ml: 2 }} />
+                        {show.name !== '' && show.time !== '' &&
+                            <ListItemText primary={`${show.name}`} secondary={`${formattedTime(show.time)}`} sx={{ ml: 2 }} />
+                        }
                     </ListItem>
                 ))}
                 {listOfShows && listOfShows.map((show, index) => (

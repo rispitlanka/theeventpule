@@ -96,6 +96,7 @@ import SingleUser from "pages/singleUser";
 import Bookings from "pages/bookings";
 import BookSeats from "components/TicketBooking/bookSeats";
 import GetTickets from "components/TicketBooking/getTickets";
+import ViewTickets from "pages/viewTickets";
 
 const routes = [
   {
@@ -145,6 +146,14 @@ const routes = [
     icon: <Icon fontSize="small">booking</Icon>,
     route: "/bookings",
     component: <Bookings />,
+  },
+  {
+    type: "collapse",
+    name: "ViewTickets",
+    key: "viewTickets",
+    icon: <Icon fontSize="small">receipt-long</Icon>,
+    route: "/view-tickets",
+    component: <ViewTickets />,
   },
   // {
   //   type: "collapse",

@@ -24,6 +24,7 @@ export default function useUserRoutes() {
                 route.route !== '/authentication/sign-up' &&
                 route.route !== '/theatres' &&
                 route.route !== '/theatre' &&
+                route.route !== '/view-tickets' &&
                 route.route !== '/shows'
               );
             };
