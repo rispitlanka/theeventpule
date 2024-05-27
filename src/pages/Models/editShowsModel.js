@@ -16,10 +16,12 @@ export default function EditShowsModel({ open, onClose, showsDataProps }) {
     const [showFormFields, setShowFormFields] = useState(false);
     const [listOfShows, setListOfShows] = useState([]);
 
-    function formatTime(time) {
-        const [hours, minutes] = time.split(':');
-        return `${hours}.${minutes}`;
-    }
+    const formattedTime = (time) => {
+        const [hours, minutes, seconds] = time.split(':');
+        const date = new Date(0, 0, 0, hours, minutes, seconds);
+        const options = { hour: '2-digit', minute: '2-digit' };
+        return date.toLocaleTimeString('en-US', options);
+    };
 
     const handleTimeChange = (newTime) => {
         setSelectedTime(newTime);
@@ -60,13 +62,25 @@ export default function EditShowsModel({ open, onClose, showsDataProps }) {
         setShowFormFields(true);
     }
 
+    function convertTo24HourFormat(timeStr) {
+        const [time, modifier] = timeStr.split(' ');
+        let [hours, minutes] = time.split(':');    
+        if (modifier === 'PM' && hours !== '12') {
+            hours = parseInt(hours, 10) + 12;
+        }    
+        if (modifier === 'AM' && hours === '12') {
+            hours = '00';
+        }    
+        return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}:00`;
+    }
+
     const handleSave = async () => {
         try {
             if (listOfShows && showsDataProps && showsDataProps.shows) {
                 listOfShows.forEach(show => {
                     const newShow = {
                         name: show.name,
-                        time: show.time,
+                        time: convertTo24HourFormat(show.time),
                         screenId: show.screenId,
                         type: show.type
                     };
@@ -83,7 +97,7 @@ export default function EditShowsModel({ open, onClose, showsDataProps }) {
         try {
             const newShow = {
                 name: newShowTime.values.name,
-                time: dayjs(selectedTime).format('HH:mm'),
+                time: dayjs(selectedTime).format('HH:mm A'),
                 screenId: showsDataProps && showsDataProps.shows && showsDataProps.shows.length > 0 ? showsDataProps.shows[0].screenId : null,
                 type: 'special',
             };
@@ -110,7 +124,7 @@ export default function EditShowsModel({ open, onClose, showsDataProps }) {
             <List>
                 {showsDataProps && showsDataProps.shows.map((show, index) => (
                     <ListItem disableGutters key={index}>
-                        <ListItemText primary={`${show.name}`} secondary={`${formatTime(show.time)}`} sx={{ ml: 2 }} />
+                        <ListItemText primary={`${show.name}`} secondary={`${formattedTime(show.time)}`} sx={{ ml: 2 }} />
                     </ListItem>
                 ))}
                 {listOfShows && listOfShows.map((show, index) => (
