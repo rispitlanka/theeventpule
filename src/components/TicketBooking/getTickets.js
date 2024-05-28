@@ -1,7 +1,7 @@
 import Footer from 'examples/Footer'
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout'
 import DashboardNavbar from 'examples/Navbars/DashboardNavbar'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { Box, Card, Grid } from '@mui/material';
 import MDTypography from 'components/MDTypography';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -11,14 +11,17 @@ import MDBox from 'components/MDBox';
 import { UserDataContext } from 'context';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ReactToPrint from 'react-to-print';
 
 export default function GetTickets() {
+  const componentRef = useRef();
   const userDetails = useContext(UserDataContext);
   const userTheatreId = userDetails[0].theatreId;
   const navigate = useNavigate();
   const location = useLocation();
   const { bookedSeats, showDate, movieId, movieTitle, time, screenName } = location.state || { bookedSeats: [] };
   const [theatreName, setTheatreName] = useState([]);
+  const [bookedTicketsData, setBookedTicketsData] = useState([]);
 
   useEffect(() => {
     fetchTheatre();
@@ -60,9 +63,10 @@ export default function GetTickets() {
       if (data) {
         console.log('tickets booked', data);
         toast.info('Tickets have been successfully booked!');
-        setTimeout(() => {
-          navigate(-1);
-        }, 1500);
+        setBookedTicketsData(data);
+        // setTimeout(() => {
+        //   navigate(-1);
+        // }, 1500);
       }
       if (error) {
         console.log(error);
@@ -93,60 +97,65 @@ export default function GetTickets() {
         p: 2,
       }}>
         <Box sx={{ flexGrow: 1, mt: 5, mb: 2 }}>
-          <Grid container spacing={3} justifyContent="center">
-            {bookedSeats.map((seat, index) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
-                <Card sx={{
-                  position: 'relative',
-                  p: 2,
-                  border: '2px solid',
-                  borderRadius: 0,
-                  boxSizing: 'border-box',
-                  width: '100%',
-                }}>
-                  <Box sx={{ backgroundColor: '#e0e0e0', textAlign: 'center', mt: 1, mb: 3 }}>
-                    <MDTypography variant="h2" sx={{ fontSize: { xs: '1.5rem', md: '2rem' } }}>{theatreName}</MDTypography>
-                  </Box>
-                  <MDTypography variant='body2' sx={{ position: 'absolute', top: { xs: 60, md: 75 }, right: { xs: 1, md: 20 }, fontSize: { xs: '0.75rem', md: '1rem' } }}>
-                    Transaction Number : 0001
-                  </MDTypography>
-                  <Box display="flex" alignItems='center' mt={3}>
-                    <MDTypography sx={{ mr: 1 }}>Movie:</MDTypography>
-                    <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{movieTitle}</MDTypography>
-                  </Box>
-                  <Box display="flex" alignItems='center' mt={1}>
-                    <MDTypography sx={{ mr: 1 }}>Time:</MDTypography>
-                    <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{showDate} at {formattedTime(time)}</MDTypography>
-                  </Box>
-                  <Box display="flex" alignItems='center' mt={1}>
-                    <MDTypography sx={{ mr: 1 }}>Screen:</MDTypography>
-                    <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{screenName}-{seat.zoneName}</MDTypography>
-                  </Box>
-                  <Box display="flex" alignItems='center' mt={1}>
-                    <MDTypography sx={{ mr: 1 }}>Price:</MDTypography>
-                    <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{seat.price}</MDTypography>
-                  </Box>
-                  <Box display="flex" alignItems='center' mt={1}>
-                    <MDTypography sx={{ mr: 1 }}>Seat:</MDTypography>
-                    <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{seat.seatName}</MDTypography>
-                  </Box>
-                  <Grid container mt={3}>
-                    <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: { xs: 'center', sm: 'flex-start' } }}>
-                      <MDTypography sx={{ fontSize: { xs: '0.75rem', md: '1rem' } }}>{currentDate()}</MDTypography>
-                      <MDTypography sx={{ fontSize: { xs: '0.75rem', md: '1rem' } }}>theEventPulse</MDTypography>
+          <div ref={componentRef}>
+            <Grid container spacing={3} justifyContent="center">
+              {bookedSeats.map((seat, index) => (
+                <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+                  <Card sx={{
+                    position: 'relative',
+                    p: 2,
+                    border: '2px solid',
+                    borderRadius: 0,
+                    boxSizing: 'border-box',
+                    width: '100%',
+                  }}>
+                    <Box sx={{ backgroundColor: '#e0e0e0', textAlign: 'center', mt: 1, mb: 3 }}>
+                      <MDTypography variant="h2" sx={{ fontSize: { xs: '1.5rem', md: '2rem' } }}>{theatreName}</MDTypography>
+                    </Box>
+                    {bookedTicketsData.length > 0 && (
+                      <MDTypography variant='body2' sx={{ position: 'absolute', top: { xs: 60, md: 75 }, right: { xs: 15, md: 20 }, fontSize: { xs: '0.75rem', md: '1rem' } }}>
+                        Ticket ID : {bookedTicketsData[index]?.id}
+                      </MDTypography>
+                    )}
+                    <Box display="flex" alignItems='center' mt={3}>
+                      <MDTypography sx={{ mr: 1 }}>Movie:</MDTypography>
+                      <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{movieTitle}</MDTypography>
+                    </Box>
+                    <Box display="flex" alignItems='center' mt={1}>
+                      <MDTypography sx={{ mr: 1 }}>Time:</MDTypography>
+                      <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{showDate} at {formattedTime(time)}</MDTypography>
+                    </Box>
+                    <Box display="flex" alignItems='center' mt={1}>
+                      <MDTypography sx={{ mr: 1 }}>Screen:</MDTypography>
+                      <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{screenName}-{seat.zoneName}</MDTypography>
+                    </Box>
+                    <Box display="flex" alignItems='center' mt={1}>
+                      <MDTypography sx={{ mr: 1 }}>Price:</MDTypography>
+                      <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{seat.price}</MDTypography>
+                    </Box>
+                    <Box display="flex" alignItems='center' mt={1}>
+                      <MDTypography sx={{ mr: 1 }}>Seat:</MDTypography>
+                      <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{seat.seatName}</MDTypography>
+                    </Box>
+                    <Grid container mt={3}>
+                      <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: { xs: 'center', sm: 'flex-start' } }}>
+                        <MDTypography sx={{ fontSize: { xs: '0.75rem', md: '1rem' } }}>{currentDate()}</MDTypography>
+                        <MDTypography sx={{ fontSize: { xs: '0.75rem', md: '1rem' } }}>theEventPulse</MDTypography>
+                      </Grid>
+                      <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: { xs: 'center', sm: 'flex-end' } }}>
+                        <img src="https://skrymerdev.files.wordpress.com/2012/09/qrcode.png" alt="qr" style={{ height: '200px', width: '200px', border: '1px solid', maxWidth: '100%' }} />
+                      </Grid>
                     </Grid>
-                    <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                      <img src="https://skrymerdev.files.wordpress.com/2012/09/qrcode.png" alt="qr" style={{ height: '200px', width: '200px', border: '1px solid', maxWidth: '100%' }} />
-                    </Grid>
-                  </Grid>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          </div>
         </Box>
         <Box sx={{ mt: 'auto', textAlign: 'right', p: 2 }}>
           <MDTypography sx={{ mb: 2 }}>Total Price: LKR {calculateTotalPrice()}</MDTypography>
-          <MDButton color='info' onClick={handleBookTickets}>Book Tickets</MDButton>
+          <MDButton color='info' onClick={handleBookTickets} disabled={bookedTicketsData.length > 0} sx={{ mr: 2 }}>Book Tickets</MDButton>
+          <ReactToPrint trigger={() => <MDButton color='info' disabled={bookedTicketsData.length <= 0}>Print Tickets</MDButton>} content={() => componentRef.current} />
         </Box>
       </MDBox>
       <Footer />

@@ -23,21 +23,31 @@ export default function BookSeats() {
   const [seatResponses, setSeatResponses] = useState([]);
   const [showData, setShowData] = useState([]);
   const [movieData, setMovieData] = useState([]);
+  const [otherShows, setOtherShows] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
   const { showId, screenId } = useParams();
   const queryParams = new URLSearchParams(location.search);
   const date = queryParams.get('date');
   const movieId = queryParams.get('movieId');
-  console.log('showId', showId)
+
+  const openPage = (route) => {
+    navigate(route);
+  };
 
   useEffect(() => {
-    fetchMovieData();
-    fetchZonesData();
-    fetchShowData();
-    fetchOtherShows();
-    fetchScreens();
-  }, []);
+    const fetchData = async () => {
+      setIsLoading(true);
+      await fetchMovieData();
+      await fetchZonesData();
+      await fetchShowData();
+      await fetchBookedTickets();
+      await fetchOtherShows();
+      await fetchScreens();
+      setIsLoading(false);
+    };
+    fetchData();
+  }, [showId]);
 
   const fetchZonesData = async () => {
     try {
@@ -96,6 +106,7 @@ export default function BookSeats() {
         console.log(otherShowsDataResponseError);
         return;
       }
+      setOtherShows(otherShowsDataResponse);
 
       const otherShowsTimeIds = otherShowsDataResponse.map(show => show.showTimeId);
 
@@ -132,48 +143,42 @@ export default function BookSeats() {
     }
   }
 
+  const fetchBookedTickets = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('tickets')
+        .select('*')
+        .eq('showId', showId);
 
-  useEffect(() => {
-    const fetchBookedTickets = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('tickets')
-          .select('*')
-          .eq('showId', showId);
-
-        if (data) {
-          console.log('booked tickets', data);
-          const seatIds = data.map(ticket => ticket.seatId);
-          const seatResponses = await Promise.all(
-            seatIds.map(async seatId => {
-              const { data: seatData, error: seatError } = await supabase
-                .from('seats')
-                .select('zoneId, row, column')
-                .eq('id', seatId);
-              if (seatData) {
-                return seatData[0];
-              }
-              if (seatError) {
-                console.log('Error fetching seat:', seatError);
-                return null;
-              }
-            })
-          );
-          console.log('Seat details:', seatResponses);
-          setSeatResponses(seatResponses);
-        }
-
-        if (error) {
-          console.log(error);
-        }
-      } catch (error) {
-        console.log('Error in fetching booked tickets', error);
+      if (data) {
+        console.log('booked tickets', data);
+        const seatIds = data.map(ticket => ticket.seatId);
+        const seatResponses = await Promise.all(
+          seatIds.map(async seatId => {
+            const { data: seatData, error: seatError } = await supabase
+              .from('seats')
+              .select('zoneId, row, column')
+              .eq('id', seatId);
+            if (seatData) {
+              return seatData[0];
+            }
+            if (seatError) {
+              console.log('Error fetching seat:', seatError);
+              return null;
+            }
+          })
+        );
+        console.log('Seat details:', seatResponses);
+        setSeatResponses(seatResponses);
       }
-    };
 
-    fetchBookedTickets();
-  }, [showId]);
-
+      if (error) {
+        console.log(error);
+      }
+    } catch (error) {
+      console.log('Error in fetching booked tickets', error);
+    }
+  };
 
   const updateBookedSeats = (newBookedSeats) => {
     console.log('Updating booked seats:', newBookedSeats);
@@ -217,6 +222,11 @@ export default function BookSeats() {
     navigate('/bookings/book-seats/get-tickets', { state: { bookedSeats, showDate, movieId, movieTitle, time, screenName } });
   }
 
+  const handleOtherShows = (showTimeId) => {
+    const showId = otherShows.find((show) => show.showTimeId === showTimeId)?.id;
+    openPage(`/bookings/book-seats/${showId}/${screenId}?date=${date}&movieId=${movieId}`);
+  }
+
   useEffect(() => {
   }, [clicked, bookedSeats]);
 
@@ -257,11 +267,12 @@ export default function BookSeats() {
                 </Grid>
               </MDBox>
               <MDBox sx={{ position: 'absolute', bottom: 16, right: 16, }}>
+                <MDTypography variant='body2' p={1}>Other Shows</MDTypography>
                 <Grid display={'flex'} flexDirection={'row'}>
                   {otherShowTimes && otherShowTimes
                     .filter(otherTime => otherTime.time !== time)
                     .map(times => (
-                      <Chip label={formattedTime(times.time)} sx={{ mr: 1 }} key={times.id} />
+                      <Chip label={formattedTime(times.time)} sx={{ mr: 1 }} key={times.id} onClick={() => handleOtherShows(times.id)} />
                     ))}
                 </Grid>
               </MDBox>

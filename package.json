@@ -38,6 +38,7 @@
     "react-router-dom": "6.11.0",
     "react-scripts": "5.0.1",
     "react-table": "7.8.0",
+    "react-to-print": "^2.15.1",
     "react-toastify": "^10.0.5",
     "react-window": "^1.8.10",
     "stylis": "4.1.4",
