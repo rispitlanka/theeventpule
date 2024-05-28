@@ -59,9 +59,6 @@ export default function ViewTickets() {
                 <MDTypography variant="h6" color="white">
                   Tickets
                 </MDTypography>
-                {/* <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
-                  <MDButton ><AddIcon color="info" /></MDButton>
-                </MDBox> */}
               </MDBox>
               <MDBox pt={3}>
                 <DataTable
