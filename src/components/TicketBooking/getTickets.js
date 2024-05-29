@@ -2,7 +2,7 @@ import Footer from 'examples/Footer'
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout'
 import DashboardNavbar from 'examples/Navbars/DashboardNavbar'
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { Box, Card, Grid } from '@mui/material';
+import { Box, Button, Card, Grid } from '@mui/material';
 import MDTypography from 'components/MDTypography';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from 'pages/supabaseClient';
@@ -12,6 +12,7 @@ import { UserDataContext } from 'context';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ReactToPrint from 'react-to-print';
+import QRCode from 'qrcode';
 
 export default function GetTickets() {
   const componentRef = useRef();
@@ -22,6 +23,7 @@ export default function GetTickets() {
   const { bookedSeats, showDate, movieId, movieTitle, time, screenName } = location.state || { bookedSeats: [] };
   const [theatreName, setTheatreName] = useState([]);
   const [bookedTicketsData, setBookedTicketsData] = useState([]);
+  const [qrCodes, setQrCodes] = useState({});
 
   useEffect(() => {
     fetchTheatre();
@@ -88,6 +90,15 @@ export default function GetTickets() {
     return showDate.toLocaleTimeString('en-US', options);
   };
 
+  const generateQRCode = async (id) => {
+    try {
+      const qrCodeDataUrl = await QRCode.toDataURL(String(id));
+      setQrCodes(prevState => ({ ...prevState, [id]: qrCodeDataUrl }));
+    } catch (err) {
+      console.log('Error generating QR code:', err);
+    }
+  };
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -143,7 +154,9 @@ export default function GetTickets() {
                         <MDTypography sx={{ fontSize: { xs: '0.75rem', md: '1rem' } }}>theEventPulse</MDTypography>
                       </Grid>
                       <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: { xs: 'center', sm: 'flex-end' } }}>
-                        <img src="https://skrymerdev.files.wordpress.com/2012/09/qrcode.png" alt="qr" style={{ height: '200px', width: '200px', border: '1px solid', maxWidth: '100%' }} />
+                        {qrCodes[bookedTicketsData[index]?.id] && (
+                          <img src={qrCodes[bookedTicketsData[index]?.id]} alt="qr" style={{ height: '200px', width: '200px', border: '1px solid', maxWidth: '100%' }} />
+                        )}
                       </Grid>
                     </Grid>
                   </Card>
@@ -156,6 +169,9 @@ export default function GetTickets() {
           <MDTypography sx={{ mb: 2 }}>Total Price: LKR {calculateTotalPrice()}</MDTypography>
           <MDButton color='info' onClick={handleBookTickets} disabled={bookedTicketsData.length > 0} sx={{ mr: 2 }}>Book Tickets</MDButton>
           <ReactToPrint trigger={() => <MDButton color='info' disabled={bookedTicketsData.length <= 0}>Print Tickets</MDButton>} content={() => componentRef.current} />
+          <MDButton color='info' onClick={() => bookedTicketsData.forEach(ticket => generateQRCode(ticket.id))} disabled={bookedTicketsData.length <= 0} sx={{ mr: 2 }}>
+            Generate QR Code
+          </MDButton>
         </Box>
       </MDBox>
       <Footer />
