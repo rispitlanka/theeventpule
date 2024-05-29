@@ -96,6 +96,7 @@ import SingleUser from "pages/singleUser";
 import Bookings from "pages/bookings";
 import BookSeats from "components/TicketBooking/bookSeats";
 import GetTickets from "components/TicketBooking/getTickets";
+import ViewTickets from "pages/viewTickets";
 
 const routes = [
   {
@@ -124,6 +125,14 @@ const routes = [
   },
   {
     type: "collapse",
+    name: "Theatre",
+    key: "theatre",
+    icon: <Icon fontSize="small">theaters</Icon>,
+    route: "/theatre",
+    component: <SingleTheatre />,
+  },
+  {
+    type: "collapse",
     name: "Shows",
     key: "shows",
     icon: <Icon fontSize="small">slideshow</Icon>,
@@ -137,6 +146,14 @@ const routes = [
     icon: <Icon fontSize="small">booking</Icon>,
     route: "/bookings",
     component: <Bookings />,
+  },
+  {
+    type: "collapse",
+    name: "ViewTickets",
+    key: "viewTickets",
+    icon: <Icon fontSize="small">receipt-long</Icon>,
+    route: "/view-tickets",
+    component: <ViewTickets />,
   },
   // {
   //   type: "collapse",
@@ -395,7 +412,7 @@ const routes = [
     component: <SingleUser />,
   },
   {
-    route: "/bookings/book-seats/:showSheduleId/:screenId",
+    route: "/bookings/book-seats/:showId/:screenId",
     component: <BookSeats />,
   },
   {

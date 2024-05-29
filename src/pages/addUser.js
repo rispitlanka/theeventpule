@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { supabase } from './supabaseClient';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // @mui material components
 import Grid from "@mui/material/Grid";
@@ -72,7 +74,10 @@ export default function AddUser() {
             const { data, error } = await supabase.from('theatreOwners').insert([values]).select('*');
             if (data) {
                 console.log('Data added succesfully:', data);
-                navigate(-1);
+                toast.info('User has been successfully created!');
+                setTimeout(() => {
+                    navigate(-1);
+                }, 1500);
             }
             if (error) {
                 throw error;
@@ -182,6 +187,18 @@ export default function AddUser() {
             </Grid>
         </MDBox>
             <Footer />
+            <ToastContainer
+                position="bottom-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
         </DashboardLayout>
     )
 }

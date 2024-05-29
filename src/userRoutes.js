@@ -23,6 +23,8 @@ export default function useUserRoutes() {
                 route.route !== '/authentication/sign-in' &&
                 route.route !== '/authentication/sign-up' &&
                 route.route !== '/theatres' &&
+                route.route !== '/theatre' &&
+                route.route !== '/view-tickets' &&
                 route.route !== '/shows'
               );
             };
@@ -30,6 +32,7 @@ export default function useUserRoutes() {
               return (
                 route.route !== '/authentication/sign-in' &&
                 route.route !== '/authentication/sign-up' &&
+                route.route !== '/theatres' &&
                 route.route !== '/facilities' &&
                 route.route !== '/movies' &&
                 route.route !== '/languages' &&

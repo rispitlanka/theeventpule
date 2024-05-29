@@ -3,6 +3,8 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { supabase } from './supabaseClient';
 import dayjs from 'dayjs';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // @mui material components
 import Grid from "@mui/material/Grid";
@@ -40,7 +42,10 @@ export default function AddShowTime() {
             values.time = formattedTime;
             await addShowTimeData(values);
             resetForm();
-            navigate(-1);
+            toast.info('Show Time has been added successfully!');
+            setTimeout(() => {
+                navigate(-1);
+            }, 1500);
         } catch (error) {
             console.error('Error submitting form:', error.message);
             setError(error.message);
@@ -134,6 +139,18 @@ export default function AddShowTime() {
                 </Grid>
             </MDBox>
             <Footer />
+            <ToastContainer
+                position="bottom-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
         </DashboardLayout>
     )
 }

@@ -11,7 +11,6 @@ export default function ShowsOnDate(date) {
     const [movies, setMovies] = useState();
     const [screens, setScreens] = useState();
     const [showTime, setShowTime] = useState();
-    const [showsSchedule, setShowsSchedule] = useState();
     const navigate = useNavigate();
     const openPage = (route) => {
         navigate(route);
@@ -81,35 +80,23 @@ export default function ShowsOnDate(date) {
         }
     }
 
-    const fetchShowsSchedule = async () => {
-        try {
-            const { data, error } = await supabase.from('showsSchedule').select('*');
-            if (data) {
-                setShowsSchedule(data);
-                console.log('show schedule', data);
-            }
-            if (error) {
-                console.log(error);
-            }
-        }
-        catch (error) {
-            console.log('Error in fetching shows schedule', error)
-        }
-    }
-
     useEffect(() => {
         fetchShowsOnDate();
         fetchMovies();
         fetchScreens();
         fetchShowTime();
-        fetchShowsSchedule();
     }, [eqDate])
 
-    const handleChipClick = (show, time, screen, movie, showsSheduleFiltered) => {
-        const selectedShowSchedule = showsSheduleFiltered.find(sched => sched.showTimeId === time.id);
-        const showScheduleId = selectedShowSchedule ? selectedShowSchedule.id : null;
-        openPage(`/bookings/book-seats/${showScheduleId}/${screen.id}?date=${show.date}&movie=${movie.title}`);
+    const handleChipClick = (show, screen, movie) => {
+        openPage(`/bookings/book-seats/${show.id}/${screen.id}?date=${show.date}&movieId=${movie.id}`);
     }
+
+    const formattedTime = (time) => {
+        const [hours, minutes, seconds] = time.split(':');
+        const date = new Date(0, 0, 0, hours, minutes, seconds);
+        const options = { hour: '2-digit', minute: '2-digit' };
+        return date.toLocaleTimeString('en-US', options);
+    };
 
     return (
         <>
@@ -138,19 +125,28 @@ export default function ShowsOnDate(date) {
                                         </Box>
                                     </Grid>
                                     <Grid item xs={12} sm={10}>
-                                        {movieShows.map((show) => {
-                                            const screen = screens && screens.length > 0 && screens.find((screen) => screen.id === show.screenId);
-                                            const showsSheduleFiltered = showsSchedule && showsSchedule.length > 0 && showsSchedule.filter((sched) => sched.showId === show.id);
-                                            const times = showTime && showTime.length > 0 && showTime.filter((time) => showsSheduleFiltered && showsSheduleFiltered.some(sched => sched.showTimeId === time.id && time.screenId === show.screenId));
+                                        {Object.values(
+                                            movieShows.reduce((group, show) => {
+                                                if (!group[show.screenId]) {
+                                                    group[show.screenId] = [];
+                                                }
+                                                group[show.screenId].push(show);
+                                                return group;
+                                            }, {})
+                                        ).map((screenShows) => {
+                                            const screenId = screenShows[0].screenId;
+                                            const screen = screens && screens.length > 0 && screens.find((screen) => screen.id === screenId);
+                                            const times = showTime && showTime.length > 0 && showTime.filter((time) => screenShows.some(sched => sched.showTimeId === time.id && time.screenId === screenId));
+
                                             return (
-                                                <Box key={show.id} mt={2}>
+                                                <Box key={screenId} mt={2}>
                                                     <MDTypography variant="h6" gutterBottom>
                                                         {screen ? screen.name : 'Unknown Screen'}
                                                     </MDTypography>
                                                     {times && times.length > 0 ? (
                                                         <Box>
                                                             {times.map((time, index) => (
-                                                                <Chip label={time.time} variant="outlined" onClick={() => handleChipClick(show, time, screen, movie, showsSheduleFiltered)} key={index} sx={{ mr: 1 }} />
+                                                                <Chip label={formattedTime(time.time)} variant="outlined" onClick={() => handleChipClick(screenShows.find(sched => sched.showTimeId === time.id), screen, movie)} key={index} sx={{ mr: 1 }} />
                                                             ))}
                                                         </Box>
                                                     ) : (
@@ -159,6 +155,7 @@ export default function ShowsOnDate(date) {
                                                 </Box>
                                             );
                                         })}
+
                                     </Grid>
                                 </Grid>
                             </CardContent>

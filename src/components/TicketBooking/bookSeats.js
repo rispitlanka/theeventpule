@@ -1,4 +1,4 @@
-import { Box, Card, CircularProgress, Divider, Grid, IconButton, Stack } from '@mui/material';
+import { Box, Card, Chip, CircularProgress, Divider, Grid, IconButton, Stack } from '@mui/material';
 import { supabase } from 'pages/supabaseClient';
 import PropTypes from 'prop-types';
 import MDBox from 'components/MDBox';
@@ -17,24 +17,37 @@ export default function BookSeats() {
   const [zonesData, setZonesData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [bookedSeats, setBookedSeats] = useState([]);
-  const [showsSchedule, setShowsSchedule] = useState([]);
   const [screens, setScreens] = useState([]);
   const [otherShowTimes, setOtherShowTimes] = useState([]);
   const [clicked, setClicked] = useState(false);
   const [seatResponses, setSeatResponses] = useState([]);
+  const [showData, setShowData] = useState([]);
+  const [movieData, setMovieData] = useState([]);
+  const [otherShows, setOtherShows] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
-  const { showSheduleId, screenId } = useParams();
+  const { showId, screenId } = useParams();
   const queryParams = new URLSearchParams(location.search);
   const date = queryParams.get('date');
-  const title = queryParams.get('movie');
+  const movieId = queryParams.get('movieId');
+
+  const openPage = (route) => {
+    navigate(route);
+  };
 
   useEffect(() => {
-    fetchZonesData();
-    fetchShowsSheduleAndTime();
-    fetchOtherShows();
-    fetchScreens();
-  }, []);
+    const fetchData = async () => {
+      setIsLoading(true);
+      await fetchMovieData();
+      await fetchZonesData();
+      await fetchShowData();
+      await fetchBookedTickets();
+      await fetchOtherShows();
+      await fetchScreens();
+      setIsLoading(false);
+    };
+    fetchData();
+  }, [showId]);
 
   const fetchZonesData = async () => {
     try {
@@ -49,77 +62,63 @@ export default function BookSeats() {
     }
   };
 
-  const fetchShowsSheduleAndTime = async () => {
+  const fetchMovieData = async () => {
     try {
-      const { data, error } = await supabase
-        .from('showsSchedule')
-        .select('*, showTime(*)')
-        .eq('id', showSheduleId);
-
+      const { data, error } = await supabase.from('movies').select('*').eq('id', movieId);
+      if (error) throw error;
       if (data) {
-        setShowsSchedule(data);
-        console.log('show schedule and time', data);
-      }
-
-      if (error) {
-        console.log(error);
+        setMovieData(data);
+        setIsLoading(false);
       }
     } catch (error) {
-      console.log('Error in fetching shows schedule and time', error);
+      console.log(error);
     }
-  }
+  };
+
+  const fetchShowData = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('shows')
+        .select('*, showTime(*)')
+        .eq('id', showId);
+
+      if (error) throw error;
+
+      if (data) {
+        setShowData(data);
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const fetchOtherShows = async () => {
     try {
-      const { data: showsData, error: showsError } = await supabase
+      const { data: otherShowsDataResponse, error: otherShowsDataResponseError } = await supabase
         .from('shows')
         .select('*')
         .eq('date', date)
-        .eq('screenId', screenId);
+        .eq('screenId', screenId)
+        .eq('movieId', movieId);
 
-      if (showsError) {
-        console.log(showsError);
+      if (otherShowsDataResponseError) {
+        console.log(otherShowsDataResponseError);
         return;
       }
+      setOtherShows(otherShowsDataResponse);
 
-      if (!showsData || showsData.length === 0) {
-        console.log('No shows found for the given date and screen.');
-        return;
-      }
+      const otherShowsTimeIds = otherShowsDataResponse.map(show => show.showTimeId);
 
-      const showIds = showsData.map(show => show.id);
-
-      const { data: showsScheduleData, error: showsScheduleError } = await supabase
-        .from('showsSchedule')
-        .select('*')
-        .in('showId', showIds);
-
-      if (showsScheduleError) {
-        console.log(showsScheduleError);
-        return;
-      }
-
-      const showTimeIds = showsScheduleData.map(schedule => schedule.showTimeId);
-
-      const { data: showTimesData, error: showTimesError } = await supabase
+      const { data: otherShowsTimeDataResponse, error: otherShowsTimeDataResponseError } = await supabase
         .from('showTime')
         .select('*')
-        .in('id', showTimeIds);
+        .in('id', otherShowsTimeIds);
 
-      if (showTimesData) {
-        setOtherShowTimes(showTimesData);
-      }
-
-      if (showTimesError) {
-        console.log(showTimesError);
+      if (otherShowsTimeDataResponseError) {
         return;
       }
-
-      console.log('Show Schedule and Times:', {
-        shows: showsData,
-        showSchedule: showsScheduleData,
-        showTimes: showTimesData
-      });
+      setOtherShowTimes(otherShowsTimeDataResponse);
 
     } catch (error) {
       console.log('Error in fetching other shows', error);
@@ -143,50 +142,43 @@ export default function BookSeats() {
       console.log('Error in fetching screens', error)
     }
   }
-  
-  const showScheduleId = showsSchedule && showsSchedule.length > 0 ? showsSchedule[0].id : '';
 
-  useEffect(() => {
-    const fetchBookedTickets = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('tickets')
-          .select('*')
-          .eq('showScheduleId', showScheduleId);
+  const fetchBookedTickets = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('tickets')
+        .select('*')
+        .eq('showId', showId);
 
-        if (data) {
-          console.log('booked tickets', data);
-          const seatIds = data.map(ticket => ticket.seatId);
-          const seatResponses = await Promise.all(
-            seatIds.map(async seatId => {
-              const { data: seatData, error: seatError } = await supabase
-                .from('seats')
-                .select('zoneId, row, column')
-                .eq('id', seatId);
-              if (seatData) {
-                return seatData[0];
-              }
-              if (seatError) {
-                console.log('Error fetching seat:', seatError);
-                return null;
-              }
-            })
-          );
-          console.log('Seat details:', seatResponses);
-          setSeatResponses(seatResponses);
-        }
-
-        if (error) {
-          console.log(error);
-        }
-      } catch (error) {
-        console.log('Error in fetching booked tickets', error);
+      if (data) {
+        console.log('booked tickets', data);
+        const seatIds = data.map(ticket => ticket.seatId);
+        const seatResponses = await Promise.all(
+          seatIds.map(async seatId => {
+            const { data: seatData, error: seatError } = await supabase
+              .from('seats')
+              .select('zoneId, row, column')
+              .eq('id', seatId);
+            if (seatData) {
+              return seatData[0];
+            }
+            if (seatError) {
+              console.log('Error fetching seat:', seatError);
+              return null;
+            }
+          })
+        );
+        console.log('Seat details:', seatResponses);
+        setSeatResponses(seatResponses);
       }
-    };
 
-    fetchBookedTickets();
-  }, [showScheduleId]);
-
+      if (error) {
+        console.log(error);
+      }
+    } catch (error) {
+      console.log('Error in fetching booked tickets', error);
+    }
+  };
 
   const updateBookedSeats = (newBookedSeats) => {
     console.log('Updating booked seats:', newBookedSeats);
@@ -212,7 +204,7 @@ export default function BookSeats() {
         columnIndex,
         seatId: seatData.id,
         seatName: seatData.seatName,
-        showScheduleId: showScheduleId,
+        showId: showId,
       };
       const updatedSeats = [...bookedSeats, newBookedSeat];
       setBookedSeats(updatedSeats);
@@ -221,15 +213,29 @@ export default function BookSeats() {
   };
 
   const screenName = screens && screens.length > 0 ? screens[0].name : '';
-  const time = showsSchedule && showsSchedule.length > 0 ? showsSchedule[0].showTime.time : '';
+  const time = showData && showData.length > 0 ? showData[0].showTime.time : '';
+  const showDate = showData && showData.length > 0 ? showData[0].date : '';
+  const movieTitle = movieData && movieData.length > 0 ? movieData[0].title : '';
 
   const handleProceed = () => {
     setClicked(true);
-    navigate('/bookings/book-seats/get-tickets', { state: { bookedSeats, date, title, time, screenName } });
+    navigate('/bookings/book-seats/get-tickets', { state: { bookedSeats, showDate, movieId, movieTitle, time, screenName } });
+  }
+
+  const handleOtherShows = (showTimeId) => {
+    const showId = otherShows.find((show) => show.showTimeId === showTimeId)?.id;
+    openPage(`/bookings/book-seats/${showId}/${screenId}?date=${date}&movieId=${movieId}`);
   }
 
   useEffect(() => {
   }, [clicked, bookedSeats]);
+
+  const formattedTime = (time) => {
+    const [hours, minutes, seconds] = time.split(':');
+    const date = new Date(0, 0, 0, hours, minutes, seconds);
+    const options = { hour: '2-digit', minute: '2-digit' };
+    return date.toLocaleTimeString('en-US', options);
+  };
 
   return (
     <DashboardLayout>
@@ -249,21 +255,24 @@ export default function BookSeats() {
           >
             <Grid>
               <MDBox>
-                <MDTypography>{title}</MDTypography>
-                <MDTypography>{screenName}</MDTypography>
-              </MDBox>
-              <MDBox>
                 <Grid display={'flex'} flexDirection={'row'}>
-                  <MDTypography sx={{ mr: 2 }}>{date}</MDTypography>
-                  <MDTypography>{time}</MDTypography>
+                  <MDTypography variant='h4' sx={{ mr: 2 }}>{movieTitle} </MDTypography>
+                  <MDTypography> - {screenName}</MDTypography>
                 </Grid>
               </MDBox>
               <MDBox>
                 <Grid display={'flex'} flexDirection={'row'}>
+                  <MDTypography sx={{ mr: 2 }}>{showDate}</MDTypography>
+                  <MDTypography>{formattedTime(time)}</MDTypography>
+                </Grid>
+              </MDBox>
+              <MDBox sx={{ position: 'absolute', bottom: 16, right: 16, }}>
+                <MDTypography variant='body2' p={1}>Other Shows</MDTypography>
+                <Grid display={'flex'} flexDirection={'row'}>
                   {otherShowTimes && otherShowTimes
                     .filter(otherTime => otherTime.time !== time)
                     .map(times => (
-                      <MDTypography sx={{ mr: 2 }} key={times.id}>{times.time}</MDTypography>
+                      <Chip label={formattedTime(times.time)} sx={{ mr: 1 }} key={times.id} onClick={() => handleOtherShows(times.id)} />
                     ))}
                 </Grid>
               </MDBox>
@@ -278,9 +287,11 @@ export default function BookSeats() {
             flexDirection: 'column',
             alignItems: 'center',
           }}>
-            {zonesData.map(zone => (
-              <ZoneSeatLayout key={zone.id} zone={zone} bookedSeats={bookedSeats} handleSeatClick={handleSeatClick} seatResponses={seatResponses} />
-            ))}
+            <Grid container sx={{ overflowX: 'auto' }}>
+              {zonesData.map(zone => (
+                <ZoneSeatLayout key={zone.id} zone={zone} bookedSeats={bookedSeats} handleSeatClick={handleSeatClick} seatResponses={seatResponses} />
+              ))}
+            </Grid>
             <MDButton color={'info'} sx={{ width: '10%' }} onClick={handleProceed} disabled={bookedSeats.length <= 0}>Proceed</MDButton>
           </Card>
         </>
@@ -428,7 +439,7 @@ ZoneSeatLayout.propTypes = {
       rowIndex: PropTypes.number.isRequired,
       columnIndex: PropTypes.number.isRequired,
       seatName: PropTypes.string.isRequired,
-      showScheduleId: PropTypes.isRequired,
+      showId: PropTypes.isRequired,
     })
   ).isRequired,
   handleSeatClick: PropTypes.func.isRequired,

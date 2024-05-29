@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { supabase } from './supabaseClient';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import {TextField } from '@mui/material';
+import { TextField } from '@mui/material';
 
 // Material Dashboard 2 React example components
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout';
@@ -62,7 +64,10 @@ export default function EditScreen() {
     onSubmit: async (values, { resetForm }) => {
       await editTheatreData(values);
       resetForm();
-      navigate(-1);
+      toast.info('Screen has been successfully updated!');
+      setTimeout(() => {
+        navigate(-1);
+      }, 1500);
     },
   });
 
@@ -190,6 +195,18 @@ export default function EditScreen() {
         </Grid>
       </MDBox>
       <Footer />
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </DashboardLayout>
   )
 }

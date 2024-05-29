@@ -57,6 +57,7 @@ export default function ScreenMovieSelection({ onNext, initialScreenId, initialM
       <FormControl fullWidth mb={3}>
         <InputLabel>Select Screen</InputLabel>
         <Select
+          label="Select Screen"
           value={selectedScreenId}
           onChange={(e) => setSelectedScreenId(e.target.value)}
           sx={{ height: '45px', mb: 3 }}
@@ -71,6 +72,7 @@ export default function ScreenMovieSelection({ onNext, initialScreenId, initialM
       <FormControl fullWidth>
         <InputLabel>Select Movie</InputLabel>
         <Select
+          label="Select Movie"
           value={selectedMovieId}
           onChange={(e) => setSelectedMovieId(e.target.value)}
           sx={{ height: '45px' }}>
@@ -81,7 +83,7 @@ export default function ScreenMovieSelection({ onNext, initialScreenId, initialM
           ))}
         </Select>
       </FormControl>
-      <MDBox mt={3}><MDButton color='info' onClick={handleNext}>Next</MDButton></MDBox>
+      <MDBox mt={3} mb={-3}><MDButton color='info' onClick={handleNext}>Next</MDButton></MDBox>
     </Box>
 
   )
