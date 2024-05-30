@@ -104,6 +104,10 @@ export default function SingleEvent() {
         navigate(`/events/single-event/${id}/view-form`, { state: { formFieldData, id } });
     }
 
+    const handleViewEventRegistrations = () => {
+        navigate(`/events/single-event/${id}/view-registrations`);
+    }
+
     return (
         <DashboardLayout>
             <DashboardNavbar />
@@ -150,11 +154,11 @@ export default function SingleEvent() {
                                 </Grid>
                             </Grid>
                         </Card>
-                        <MDButton sx={{ position: 'absolute', right: '300px', m: 2 }} color='info' onClick={() => handleDialogBox()}>Add Registration Form</MDButton>
-                        {formFieldData &&
-                            <MDButton sx={{ position: 'absolute', right: '10px', m: 2 }} color='info' onClick={() => handleViewForm()}>View Registration Form</MDButton>
-                        }
-
+                        <Grid sx={{ display: 'flex', flexDirection: 'row', position: 'absolute', right: 0, mt: 2 }}>
+                            <MDButton sx={{ mr: 2 }} color='info' onClick={() => handleDialogBox()}>Add Registration Form</MDButton>
+                            <MDButton sx={{ mr: 2 }} color='info' onClick={() => handleViewForm()}>View Registration Form</MDButton>
+                            <MDButton color='info' onClick={handleViewEventRegistrations}>View Event Registrations</MDButton>
+                        </Grid>
                         {formFieldData.length > 0 && (
                             <TableContainer component={Paper} sx={{ mt: 9 }}>
                                 <Table>
