@@ -4,17 +4,14 @@ import { supabase } from './supabaseClient';
 
 // @mui material components
 import Grid from "@mui/material/Grid";
-import { Button, Card, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Button, Card, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 
 // @mui icons
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-import AddIcon from '@mui/icons-material/Add';
 
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
-import MDAvatar from 'components/MDAvatar';
 
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -24,12 +21,8 @@ import Footer from "examples/Footer";
 // Images
 import backgroundImage from "assets/images/bg-profile.jpeg";
 import { UserDataContext } from 'context';
-// import DataTable from 'examples/Tables/DataTable';
-// import registrationFormDataTable from "layouts/tables/data/registrationFormDataTable";
 import MDButton from 'components/MDButton';
 import RegistrationFormModel from './Models/registrationFormModel';
-import { position } from 'stylis';
-
 
 export default function SingleEvent() {
     const userDetails = useContext(UserDataContext);
@@ -60,10 +53,13 @@ export default function SingleEvent() {
 
     const fetchRegistrationFormField = async () => {
         try {
-            const { data, error } = await supabase.from('registrationForm').select('*');
-            console.log('form data', data);
+            const { data, error } = await supabase.from('registrationForm').select('*').eq('eventId', id);
+            if (data) {
+                setFormFieldData(data);
+                console.log('form data', data);
+            }
+
             if (error) throw error;
-            setFormFieldData(data);
         } catch (error) {
             console.log(error)
         }
@@ -104,6 +100,10 @@ export default function SingleEvent() {
         fetchRegistrationFormField();
     };
 
+    const handleViewForm = () => {
+        navigate(`/events/single-event/${id}/view-form`, { state: { formFieldData, id } });
+    }
+
     return (
         <DashboardLayout>
             <DashboardNavbar />
@@ -138,9 +138,6 @@ export default function SingleEvent() {
                             }}
                         >
                             <Grid container spacing={3} alignItems="center">
-                                {/* <Grid item>
-                                    <MDAvatar src={null} alt="profile-image" size="xl" shadow="sm" />
-                                </Grid> */}
                                 <Grid item>
                                     <MDBox height="100%" mt={0.5} lineHeight={1}>
                                         <MDTypography variant="h5" fontWeight="medium">
@@ -153,8 +150,10 @@ export default function SingleEvent() {
                                 </Grid>
                             </Grid>
                         </Card>
-
-                        <MDButton sx={{ position: 'absolute', right: '10px', m: 2 }} color='info' onClick={() => handleDialogBox()}>Add Registration Form</MDButton>
+                        <MDButton sx={{ position: 'absolute', right: '300px', m: 2 }} color='info' onClick={() => handleDialogBox()}>Add Registration Form</MDButton>
+                        {formFieldData &&
+                            <MDButton sx={{ position: 'absolute', right: '10px', m: 2 }} color='info' onClick={() => handleViewForm()}>View Registration Form</MDButton>
+                        }
 
                         {formFieldData.length > 0 && (
                             <TableContainer component={Paper} sx={{ mt: 9 }}>
@@ -162,7 +161,7 @@ export default function SingleEvent() {
                                     <TableHead>
                                         <TableRow>
                                             <TableCell align="left">Name</TableCell>
-                                            <TableCell align="center">Type</TableCell>
+                                            <TableCell align="right">Type</TableCell>
                                             <TableCell align="center">Option</TableCell>
                                             <TableCell align="center">Action</TableCell>
                                         </TableRow>
@@ -180,12 +179,12 @@ export default function SingleEvent() {
                                 </Table>
                             </TableContainer>
                         )}
-
                     </>
                 }
                 <RegistrationFormModel
                     open={openEditDialogBox}
                     onClose={handleEditDialogClose}
+                    eventId={id}
                 />
             </MDBox>
             <Footer />

@@ -52,7 +52,7 @@ export default function useUserRoutes() {
         }
         else if (!userEmail) {
           filteredRoutes = routes && routes.filter(route => {
-            return route.route === '/authentication/sign-in';
+            return route.route === '/authentication/sign-in' || route.route === "/register/:eventId";
           });
           setUserRoutes(filteredRoutes);
         }

@@ -101,6 +101,8 @@ import Events from "pages/events";
 import AddEvent from "pages/addEvent";
 import EditEvent from "pages/editEvent";
 import SingleEvent from "pages/singleEvent";
+import ViewForm from "pages/viewForm";
+import RegisterEvent from "pages/registerEvent";
 
 const routes = [
   {
@@ -442,6 +444,14 @@ const routes = [
   {
     route: "/events/single-event/:id",
     component: <SingleEvent />,
+  },
+  {
+    route: "/events/single-event/:id/view-form",
+    component: <ViewForm />,
+  },
+  {
+    route: "/register/:eventId",
+    component: <RegisterEvent />,
   },
   // {
   //   type: "collapse",

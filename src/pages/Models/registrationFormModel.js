@@ -1,18 +1,20 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, TextField } from '@mui/material'
-import React from 'react'
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, InputLabel, MenuItem, Select, TextField } from '@mui/material'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { supabase } from 'pages/supabaseClient';
 
-export default function RegistrationFormModel({ open, onClose, }) {
-
+export default function RegistrationFormModel({ open, onClose, eventId }) {
+    const [selectedType, setSelectedType] = useState();
     const handleClose = () => {
         onClose();
     };
 
     const onSubmit = async (values, { resetForm }) => {
         try {
+            values.type = selectedType;
+            values.eventId = eventId;
             await addFormFieldData(values);
             resetForm();
             onClose();
@@ -68,16 +70,18 @@ export default function RegistrationFormModel({ open, onClose, }) {
                             />
                         </Grid>
                         <Grid item xs={12}>
-                            <TextField
-                                fullWidth
-                                label="Type"
-                                name="type"
-                                value={newFormField.values.type}
-                                onChange={newFormField.handleChange}
-                                onBlur={newFormField.handleBlur}
-                                error={newFormField.touched.type && Boolean(newFormField.errors.type)}
-                                helperText={newFormField.touched.type && newFormField.errors.type}
-                            />
+                            <FormControl fullWidth sx={{ mb: 3 }}>
+                                <InputLabel>Select Type</InputLabel>
+                                <Select
+                                    label="Select Type"
+                                    value={selectedType}
+                                    onChange={(e) => setSelectedType(e.target.value)}
+                                    sx={{ height: '45px', mb: 3 }}
+                                >
+                                    <MenuItem value="Text">Text</MenuItem>
+                                    <MenuItem value="Number">Number</MenuItem>
+                                </Select>
+                            </FormControl>
                         </Grid>
                         <Grid item xs={12}>
                             <TextField
@@ -105,4 +109,5 @@ export default function RegistrationFormModel({ open, onClose, }) {
 RegistrationFormModel.propTypes = {
     open: PropTypes.isRequired,
     onClose: PropTypes.isRequired,
+    eventId: PropTypes.isRequired,
 };

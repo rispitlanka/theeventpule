@@ -16,7 +16,7 @@ Coded by www.creative-tim.com
 import { useState, useEffect, useMemo } from "react";
 
 // react-router components
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation, useParams } from "react-router-dom";
 import { supabase } from "pages/supabaseClient";
 
 // @mui material components
@@ -54,6 +54,7 @@ import { useMaterialUIController, setMiniSidenav, setOpenConfigurator, UserDataC
 import brandWhite from "assets/images/logo-ct.png";
 import brandDark from "assets/images/logo-ct-dark.png";
 import useUserRoutes from "userRoutes";
+import RegisterEvent from "pages/registerEvent";
 
 export default function App() {
   const userEmail = localStorage.getItem('userEmail');
@@ -213,6 +214,7 @@ export default function App() {
             <Routes>
               {getRoutes(userRoutes)}
               <Route path="*" element={<Navigate to="/authentication/sign-in" />} />
+              <Route path="/register/:eventId" element={<RegisterEvent />} />
             </Routes>
           </>
         }
