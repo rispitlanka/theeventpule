@@ -29,12 +29,12 @@ export default function RegistrationFormModel({ open, onClose, eventId }) {
         initialValues: {
             name: '',
             type: '',
-            option: '',
+            options: '',
         },
         validationSchema: Yup.object({
             // name: Yup.string().required('Required'),
             // type: Yup.string().required('Required'),
-            // option: Yup.string().required('Required'),
+            // options: Yup.string().required('Required'),
         }),
         onSubmit,
     });
@@ -85,7 +85,8 @@ export default function RegistrationFormModel({ open, onClose, eventId }) {
                                     <MenuItem value="Select">Select</MenuItem>
                                     <MenuItem value="Date">Date</MenuItem>
                                     <MenuItem value="Radio">Radio</MenuItem>
-                                    <MenuItem value="CheckBox">CheckBox</MenuItem>
+                                    <MenuItem value="Checkbox">CheckBox</MenuItem>
+                                    <MenuItem value="Password">Password</MenuItem>
                                 </Select>
                             </FormControl>
                         </Grid>
@@ -96,13 +97,13 @@ export default function RegistrationFormModel({ open, onClose, eventId }) {
                             <Grid item xs={12}>
                                 <TextField
                                     fullWidth
-                                    label="Option"
-                                    name="option"
-                                    value={newFormField.values.option}
+                                    label="Options"
+                                    name="options"
+                                    value={newFormField.values.options}
                                     onChange={newFormField.handleChange}
                                     onBlur={newFormField.handleBlur}
-                                    error={newFormField.touched.option && Boolean(newFormField.errors.option)}
-                                    helperText={newFormField.touched.option && newFormField.errors.option}
+                                    error={newFormField.touched.options && Boolean(newFormField.errors.options)}
+                                    helperText={newFormField.touched.options && newFormField.errors.options}
                                 />
                             </Grid>
                         }

@@ -23,6 +23,7 @@ import backgroundImage from "assets/images/bg-profile.jpeg";
 import { UserDataContext } from 'context';
 import MDButton from 'components/MDButton';
 import RegistrationFormModel from './Models/registrationFormModel';
+import dayjs from 'dayjs';
 
 export default function SingleEvent() {
     const userDetails = useContext(UserDataContext);
@@ -108,6 +109,17 @@ export default function SingleEvent() {
         navigate(`/events/single-event/${id}/view-registrations`);
     }
 
+    const formattedTime = (time) => {
+        const [hours, minutes, seconds] = time.split(':');
+        const date = new Date();
+        date.setHours(hours, minutes, seconds);
+        return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+    };
+
+    const formattedDate = (date) => {
+        return dayjs(date).format('YYYY-MM-DD');
+    }
+
     return (
         <DashboardLayout>
             <DashboardNavbar />
@@ -147,9 +159,37 @@ export default function SingleEvent() {
                                         <MDTypography variant="h5" fontWeight="medium">
                                             {eventData[0].name}
                                         </MDTypography>
-                                        <MDTypography variant="button" color="text" fontWeight="regular">
-                                            {eventData[0].category}
-                                        </MDTypography>
+
+                                        <Grid sx={{ display: 'flex', flexDirection: 'row', mt: 0.5 }}>
+                                            <MDTypography sx={{ mr: 1 }} variant="body2" color="text" fontWeight="regular">
+                                                Date: {formattedDate(eventData[0].date)}
+                                            </MDTypography>
+                                            <MDTypography sx={{ mr: 1 }} variant="body2" color="text" fontWeight="regular">
+                                                Time: {formattedTime(eventData[0].startTime)}
+                                            </MDTypography>
+                                            <MDTypography variant="body2" color="text" fontWeight="regular">
+                                                Location: {eventData[0].location}
+                                            </MDTypography>
+                                        </Grid>
+
+                                        <Grid sx={{ display: 'flex', flexDirection: 'row', mt: 0.5 }}>
+                                            <MDTypography sx={{ mr: 1 }} variant="button" color="text" fontWeight="regular">
+                                                Phone: {eventData[0].contactPhone}
+                                            </MDTypography>
+                                            <MDTypography sx={{ mr: 1 }} variant="button" color="text" fontWeight="regular">
+                                                Mail: {eventData[0].contactEmail}
+                                            </MDTypography>
+                                            <MDTypography sx={{ mr: 1 }} variant="button" color="text" fontWeight="regular">
+                                                Status: {eventData[0].status}
+                                            </MDTypography>
+                                            <MDTypography sx={{ mr: 1 }} variant="button" color="text" fontWeight="regular">
+                                                Category: {eventData[0].category}
+                                            </MDTypography>
+                                            <MDTypography variant="button" color="text" fontWeight="regular">
+                                                Description: {eventData[0].description}
+                                            </MDTypography>
+                                        </Grid>
+
                                     </MDBox>
                                 </Grid>
                             </Grid>
@@ -160,23 +200,23 @@ export default function SingleEvent() {
                             <MDButton color='info' onClick={handleViewEventRegistrations}>View Event Registrations</MDButton>
                         </Grid>
                         {formFieldData.length > 0 && (
-                            <TableContainer component={Paper} sx={{ mt: 9 }}>
+                            <TableContainer component={Paper} sx={{ mt: 9, p: 2 }}>
                                 <Table>
-                                    <TableHead>
+                                    <TableHead sx={{ display: "table-header-group" }}>
                                         <TableRow>
-                                            <TableCell align="left">Name</TableCell>
-                                            <TableCell align="right">Type</TableCell>
-                                            <TableCell align="center">Option</TableCell>
-                                            <TableCell align="center">Action</TableCell>
+                                            <TableCell>Name</TableCell>
+                                            <TableCell align='center'>Type</TableCell>
+                                            <TableCell align='center'>Options</TableCell>
+                                            <TableCell align='center'>Action</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
                                         {formFieldData.map((row) => (
                                             <TableRow key={row.id}>
-                                                <TableCell align="left">{row.name}</TableCell>
-                                                <TableCell align="center">{row.type}</TableCell>
-                                                <TableCell align="center">{row.option}</TableCell>
-                                                <TableCell align="center"><Button onClick={() => deleteRow(row.id)}>Delete</Button></TableCell>
+                                                <TableCell >{row.name}</TableCell>
+                                                <TableCell align='center'>{row.type}</TableCell>
+                                                <TableCell align='center'>{row.options || '--'}</TableCell>
+                                                <TableCell align='center'><Button onClick={() => deleteRow(row.id)}>Delete</Button></TableCell>
                                             </TableRow>
                                         ))}
                                     </TableBody>

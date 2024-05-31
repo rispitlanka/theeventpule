@@ -176,7 +176,7 @@ export default function GetTickets() {
         </Box>
         <Box sx={{ mt: 'auto', textAlign: 'right', p: 2 }}>
           <MDTypography sx={{ mb: 2 }}>Total Price: LKR {calculateTotalPrice()}</MDTypography>
-          <MDButton color='info' onClick={handleBookTickets} disabled={bookedTicketsData.length > 0} sx={{ mr: 2 }}>Book Tickets</MDButton>
+          <MDButton color='info' onClick={handleBookTickets} disabled={bookedTicketsData.length > 0}>Book Tickets</MDButton>
         </Box>
       </MDBox>
       <Footer />

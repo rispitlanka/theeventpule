@@ -16,6 +16,7 @@ import {
     Typography
 } from '@mui/material';
 import { supabase } from 'pages/supabaseClient';
+import MDButton from 'components/MDButton';
 
 const renderField = (field) => {
     switch (field.type) {
@@ -23,24 +24,24 @@ const renderField = (field) => {
             return <Field as={TextField} fullWidth name={field.name} type="text" variant="outlined" />;
         case 'Number':
             return <Field as={TextField} fullWidth name={field.name} type="number" variant="outlined" />;
-        case 'radio':
+        case 'Radio':
             return (
                 <FormControl component="fieldset">
                     <FormLabel component="legend">{field.name}</FormLabel>
                     <RadioGroup row>
-                        {field.options.split(',').map((option) => (
+                        {field.options.split(',').map((options) => (
                             <FormControlLabel
-                                key={option}
+                                key={options}
                                 control={<Field as={Radio} type="radio" />}
-                                label={option}
-                                value={option}
+                                label={options}
+                                value={options}
                                 name={field.name}
                             />
                         ))}
                     </RadioGroup>
                 </FormControl>
             );
-        case 'select':
+        case 'Select':
             return (
                 <Field name={field.name}>
                     {({ field: { value, name }, form: { setFieldValue } }) => (
@@ -49,13 +50,14 @@ const renderField = (field) => {
                                 value={value}
                                 onChange={(e) => setFieldValue(name, e.target.value)}
                                 displayEmpty
+                                sx={{ height: '45px' }}
                             >
                                 <MenuItem value="">
                                     <em>Select an option</em>
                                 </MenuItem>
-                                {field.options.split(',').map((option) => (
-                                    <MenuItem key={option} value={option}>
-                                        {option}
+                                {field.options.split(',').map((options) => (
+                                    <MenuItem key={options} value={options}>
+                                        {options}
                                     </MenuItem>
                                 ))}
                             </Select>
@@ -65,7 +67,7 @@ const renderField = (field) => {
             );
         case 'Date':
             return <Field as={TextField} fullWidth name={field.name} type="date" variant="outlined" InputLabelProps={{ shrink: true }} />;
-        case 'checkbox':
+        case 'Checkbox':
             return (
                 <FormControlLabel
                     control={<Field as={Checkbox} name={field.name} />}
@@ -117,18 +119,18 @@ const DynamicForm = ({ fields, eventId }) => {
         <Formik initialValues={initialValues} onSubmit={handleSubmit}>
             {({ values }) => (
                 <Form>
-                    <Box sx={{ padding: '20px', border: '1px solid black', marginTop: '10px' }}>
+                    <Box sx={{}}>
                         {fields.map((field) => (
-                            <Box key={field.name} sx={{ marginBottom: '20px' }}>
+                            <Box key={field.name} sx={{ marginBottom: '10px' }}>
                                 <Typography variant="h6" component="label">
                                     {field.name}
                                 </Typography>
                                 {renderField(field)}
                             </Box>
                         ))}
-                        <Button variant="contained" color="primary" type="submit">
+                        <MDButton sx={{ marginTop: '10px' }} ariant="contained" type="submit" color='info' >
                             Submit
-                        </Button>
+                        </MDButton>
                     </Box>
                 </Form>
             )}

@@ -54,7 +54,7 @@ export default function ViewEventRegistrations() {
             <Card sx={{ mt: 3, mb: 3 }}>
                 {eventRegistrationData && eventRegistrationData.length > 0 && (
                     <Table>
-                        <TableHead>
+                        <TableHead sx={{ display: "table-header-group" }}>
                             <TableRow>
                                 {matchingKeys.map(key => (
                                     <TableCell key={key}>{key}</TableCell>

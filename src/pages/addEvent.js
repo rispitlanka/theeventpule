@@ -75,19 +75,6 @@ export default function AddEvent() {
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
-            //   description: Yup.string().required('Required'),
-            //   category: Yup.string().required('Required'),
-            //   location: Yup.string()
-            //     .required('Required')
-            //     // .matches(phoneRegExp, 'Mobile number is not valid')
-            //     .min(10, 'Not a valid mobile number')
-            //     .max(10, 'Not a valid mobile number'),
-            //   status: Yup.string()
-            //     .required('Required')
-            //     // .matches(phoneRegExp, 'Telephone number is not valid')
-            //     .min(10, 'Not a valid status number')
-            //     .max(10, 'Not a valid status number'),
-            //   date: Yup.string().required('Email is required').email('Enter a valid email'),
         }),
         onSubmit,
     });
@@ -248,43 +235,49 @@ export default function AddEvent() {
                                         helperText={newEvent.touched.contactPhone && newEvent.errors.contactPhone} />
                                 </MDBox>
                                 <MDBox p={1}>
-                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                        <DemoContainer components={['MobileTimePicker']}>
-                                            <MobileTimePicker
-                                                label={'Time'}
-                                                openTo="hours"
-                                                value={selectedTime}
-                                                onChange={handleTimeChange}
-                                            />
-                                        </DemoContainer>
-                                    </LocalizationProvider>
+                                    <FormControl fullWidth>
+                                        <InputLabel>Select Screen</InputLabel>
+                                        <Select
+                                            label="Select Screen"
+                                            value={selectedScreenId}
+                                            onChange={(e) => setSelectedScreenId(e.target.value)}
+                                            sx={{ height: '45px' }}
+                                        >
+                                            {screensData.map((screen) => (
+                                                <MenuItem key={screen.id} value={screen.id}>
+                                                    {screen.name}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
                                 </MDBox>
-                                <MDBox p={1} >
-                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                        <DemoContainer components={['DatePicker']}>
-                                            <DatePicker
-                                                label="Select Date"
-                                                value={selectedDate}
-                                                onChange={handleDateChange}
-                                            />
-                                        </DemoContainer>
-                                    </LocalizationProvider>
+                                <MDBox ml={1} mb={1}>
+                                    <Grid sx={{ display: 'flex', flexDirection: 'row', }}>
+                                        <MDBox sx={{ mr: 2 }}>
+                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <DemoContainer components={['DatePicker']}>
+                                                    <DatePicker
+                                                        label="Select Date"
+                                                        value={selectedDate}
+                                                        onChange={handleDateChange}
+                                                    />
+                                                </DemoContainer>
+                                            </LocalizationProvider>
+                                        </MDBox>
+                                        <MDBox sx={{ ml: 2 }}>
+                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <DemoContainer components={['MobileTimePicker']}>
+                                                    <MobileTimePicker
+                                                        label={'Time'}
+                                                        openTo="hours"
+                                                        value={selectedTime}
+                                                        onChange={handleTimeChange}
+                                                    />
+                                                </DemoContainer>
+                                            </LocalizationProvider>
+                                        </MDBox>
+                                    </Grid>
                                 </MDBox>
-                                <FormControl fullWidth mb={3}>
-                                    <InputLabel>Select Screen</InputLabel>
-                                    <Select
-                                        label="Select Screen"
-                                        value={selectedScreenId}
-                                        onChange={(e) => setSelectedScreenId(e.target.value)}
-                                        sx={{ height: '45px', mb: 3 }}
-                                    >
-                                        {screensData.map((screen) => (
-                                            <MenuItem key={screen.id} value={screen.id}>
-                                                {screen.name}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
                                 <MDBox p={1}>
                                     <MDButton color='info' type='submit'>Save</MDButton>
                                 </MDBox>
