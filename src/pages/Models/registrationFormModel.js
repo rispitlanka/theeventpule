@@ -9,6 +9,8 @@ export default function RegistrationFormModel({ open, onClose, eventId }) {
     const [selectedType, setSelectedType] = useState();
     const handleClose = () => {
         onClose();
+        setSelectedType('');
+        newFormField.resetForm();
     };
 
     const onSubmit = async (values, { resetForm }) => {
@@ -53,7 +55,7 @@ export default function RegistrationFormModel({ open, onClose, eventId }) {
 
     return (
         <Dialog onClose={handleClose} open={open} maxWidth="sm" fullWidth>
-            <DialogTitle>Set backup account</DialogTitle>
+            <DialogTitle>Add Form Field</DialogTitle>
             <form onSubmit={newFormField.handleSubmit}>
                 <DialogContent>
                     <Grid container spacing={2}>
@@ -70,31 +72,40 @@ export default function RegistrationFormModel({ open, onClose, eventId }) {
                             />
                         </Grid>
                         <Grid item xs={12}>
-                            <FormControl fullWidth sx={{ mb: 3 }}>
+                            <FormControl fullWidth>
                                 <InputLabel>Select Type</InputLabel>
                                 <Select
                                     label="Select Type"
                                     value={selectedType}
                                     onChange={(e) => setSelectedType(e.target.value)}
-                                    sx={{ height: '45px', mb: 3 }}
+                                    sx={{ height: '45px', }}
                                 >
                                     <MenuItem value="Text">Text</MenuItem>
                                     <MenuItem value="Number">Number</MenuItem>
+                                    <MenuItem value="Select">Select</MenuItem>
+                                    <MenuItem value="Date">Date</MenuItem>
+                                    <MenuItem value="Radio">Radio</MenuItem>
+                                    <MenuItem value="CheckBox">CheckBox</MenuItem>
                                 </Select>
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                fullWidth
-                                label="Option"
-                                name="option"
-                                value={newFormField.values.option}
-                                onChange={newFormField.handleChange}
-                                onBlur={newFormField.handleBlur}
-                                error={newFormField.touched.option && Boolean(newFormField.errors.option)}
-                                helperText={newFormField.touched.option && newFormField.errors.option}
-                            />
-                        </Grid>
+                        {selectedType && selectedType.length > 0 &&
+                            selectedType !== 'Text' &&
+                            selectedType !== 'Number' &&
+                            selectedType !== 'Date' &&
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label="Option"
+                                    name="option"
+                                    value={newFormField.values.option}
+                                    onChange={newFormField.handleChange}
+                                    onBlur={newFormField.handleBlur}
+                                    error={newFormField.touched.option && Boolean(newFormField.errors.option)}
+                                    helperText={newFormField.touched.option && newFormField.errors.option}
+                                />
+                            </Grid>
+                        }
                     </Grid>
                 </DialogContent>
                 <DialogActions>
