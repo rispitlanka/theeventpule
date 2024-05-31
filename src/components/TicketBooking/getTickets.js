@@ -2,7 +2,7 @@ import Footer from 'examples/Footer'
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout'
 import DashboardNavbar from 'examples/Navbars/DashboardNavbar'
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { Box, Button, Card, Grid } from '@mui/material';
+import { Box, Card, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid } from '@mui/material';
 import MDTypography from 'components/MDTypography';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from 'pages/supabaseClient';
@@ -24,6 +24,7 @@ export default function GetTickets() {
   const [theatreName, setTheatreName] = useState([]);
   const [bookedTicketsData, setBookedTicketsData] = useState([]);
   const [qrCodes, setQrCodes] = useState({});
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     fetchTheatre();
@@ -63,12 +64,11 @@ export default function GetTickets() {
       console.log(dataToInsert)
       const { data, error } = await supabase.from('tickets').insert(dataToInsert).select('*');
       if (data) {
+        handleClickOpen();
         console.log('tickets booked', data);
         toast.info('Tickets have been successfully booked!');
         setBookedTicketsData(data);
-        // setTimeout(() => {
-        //   navigate(-1);
-        // }, 1500);
+        data.forEach(ticket => generateQRCode(ticket.id));
       }
       if (error) {
         console.log(error);
@@ -97,6 +97,15 @@ export default function GetTickets() {
     } catch (err) {
       console.log('Error generating QR code:', err);
     }
+  };
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    navigate(-1);
   };
 
   return (
@@ -168,13 +177,30 @@ export default function GetTickets() {
         <Box sx={{ mt: 'auto', textAlign: 'right', p: 2 }}>
           <MDTypography sx={{ mb: 2 }}>Total Price: LKR {calculateTotalPrice()}</MDTypography>
           <MDButton color='info' onClick={handleBookTickets} disabled={bookedTicketsData.length > 0} sx={{ mr: 2 }}>Book Tickets</MDButton>
-          <ReactToPrint trigger={() => <MDButton color='info' disabled={bookedTicketsData.length <= 0}>Print Tickets</MDButton>} content={() => componentRef.current} />
-          <MDButton color='info' onClick={() => bookedTicketsData.forEach(ticket => generateQRCode(ticket.id))} disabled={bookedTicketsData.length <= 0} sx={{ mr: 2 }}>
-            Generate QR Code
-          </MDButton>
         </Box>
       </MDBox>
       <Footer />
+
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          Tickets Have Been SuccessFully Booked !
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Do you want to print tickets?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <ReactToPrint trigger={() => <MDButton disabled={bookedTicketsData.length <= 0}>Yes</MDButton>} content={() => componentRef.current} />
+          <MDButton onClick={handleClose}>No</MDButton>
+        </DialogActions>
+      </Dialog>
+
       <ToastContainer
         position="bottom-right"
         autoClose={5000}

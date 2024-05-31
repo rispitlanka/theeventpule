@@ -292,7 +292,7 @@ export default function BookSeats() {
                 <ZoneSeatLayout key={zone.id} zone={zone} bookedSeats={bookedSeats} handleSeatClick={handleSeatClick} seatResponses={seatResponses} />
               ))}
             </Grid>
-            <MDButton color={'info'} sx={{ width: '10%' }} onClick={handleProceed} disabled={bookedSeats.length <= 0}>Proceed</MDButton>
+            <MDButton color={'info'} sx={{ width: '10%',mt:2 }} onClick={handleProceed} disabled={bookedSeats.length <= 0}>Proceed</MDButton>
           </Card>
         </>
       )}
