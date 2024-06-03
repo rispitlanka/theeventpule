@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { supabase } from './supabaseClient';
@@ -26,9 +26,12 @@ import { MobileTimePicker } from '@mui/x-date-pickers/MobileTimePicker';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 import dayjs from 'dayjs';
+import { UserDataContext } from 'context';
 
 export default function AddEvent() {
     const navigate = useNavigate();
+    const userDetails = useContext(UserDataContext);
+    const userTheatreId = userDetails[0].theatreId;
     const [selectedTime, setSelectedTime] = useState(null);
     const [selectedDate, setSelectedDate] = useState();
     const [selectedScreenId, setSelectedScreenId] = useState();
@@ -95,7 +98,7 @@ export default function AddEvent() {
 
     const fetchScreensData = async () => {
         try {
-            const { data, error } = await supabase.from('screens').select('*');
+            const { data, error } = await supabase.from('screens').select('*').eq('theatreId', userTheatreId);
             if (error) throw error;
             if (data) {
                 setScreensData(data);

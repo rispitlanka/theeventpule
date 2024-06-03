@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 
 // @mui material components
@@ -18,6 +18,8 @@ import MDButton from 'components/MDButton';
 
 // Data
 import eventsTableData from "layouts/tables/data/eventsTableData";
+import DataNotFound from 'components/NoData/dataNotFound';
+import { CircularProgress } from '@mui/material';
 
 export default function Events() {
 
@@ -26,6 +28,14 @@ export default function Events() {
   const openPage = (route) => {
     navigate(route);
   };
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+  }, []);
 
   return (
     <DashboardLayout>
@@ -51,18 +61,26 @@ export default function Events() {
                   Events
                 </MDTypography>
                 <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
-                  <MDButton onClick={() => openPage("/events/add-event")}><AddIcon color="info"/></MDButton>
+                  <MDButton onClick={() => openPage("/events/add-event")}><AddIcon color="info" /></MDButton>
                 </MDBox>
               </MDBox>
-              <MDBox pt={3}>
-                <DataTable
-                  table={{ columns: pColumns, rows: pRows }}
-                  isSorted={false}
-                  entriesPerPage={false}
-                  showTotalEntries={false}
-                  noEndBorder
-                />
-              </MDBox>
+              {isLoading ? (
+                <MDBox p={3} display="flex" justifyContent="center">
+                  <CircularProgress color="info" />
+                </MDBox>
+              ) : pRows && pRows.length > 0 ? (
+                <MDBox pt={3}>
+                  <DataTable
+                    table={{ columns: pColumns, rows: pRows }}
+                    isSorted={false}
+                    entriesPerPage={false}
+                    showTotalEntries={false}
+                    noEndBorder
+                  />
+                </MDBox>
+              ) : (
+                <DataNotFound message={'No Events Available !'} />
+              )}
             </Card>
           </Grid>
         </Grid>

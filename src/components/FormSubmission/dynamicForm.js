@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Formik, Form, Field } from 'formik';
 import {
@@ -11,12 +11,12 @@ import {
     MenuItem,
     Select,
     Checkbox,
-    Button,
     Box,
     Typography
 } from '@mui/material';
 import { supabase } from 'pages/supabaseClient';
 import MDButton from 'components/MDButton';
+import { ToastContainer, toast } from 'react-toastify';
 
 const renderField = (field) => {
     switch (field.type) {
@@ -96,6 +96,10 @@ const DynamicForm = ({ fields, eventId }) => {
             }
             await addRegistrationData(dataToAdd);
             resetForm();
+            toast.info('Entries have been successfully registered!');
+            setTimeout(() => {
+                document.activeElement.blur();
+            }, 0);
         } catch (error) {
             console.error('Error submitting form:', error.message);
         }
@@ -116,25 +120,39 @@ const DynamicForm = ({ fields, eventId }) => {
     };
 
     return (
-        <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-            {({ values }) => (
-                <Form>
-                    <Box sx={{}}>
-                        {fields.map((field) => (
-                            <Box key={field.name} sx={{ marginBottom: '10px' }}>
-                                <Typography variant="h6" component="label">
-                                    {field.name}
-                                </Typography>
-                                {renderField(field)}
-                            </Box>
-                        ))}
-                        <MDButton sx={{ marginTop: '10px' }} ariant="contained" type="submit" color='info' >
-                            Submit
-                        </MDButton>
-                    </Box>
-                </Form>
-            )}
-        </Formik>
+        <>
+            <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+                {({ values }) => (
+                    <Form>
+                        <Box sx={{}}>
+                            {fields.map((field) => (
+                                <Box key={field.name} sx={{ marginBottom: '10px' }}>
+                                    <Typography variant="h6" component="label">
+                                        {field.name}
+                                    </Typography>
+                                    {renderField(field)}
+                                </Box>
+                            ))}
+                            <MDButton sx={{ marginTop: '10px' }} ariant="contained" type="submit" color='info' >
+                                Submit
+                            </MDButton>
+                        </Box>
+                    </Form>
+                )}
+            </Formik>
+            <ToastContainer
+                position="bottom-right"
+                autoClose={2000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
+        </>
     );
 };
 

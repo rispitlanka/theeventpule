@@ -1,40 +1,23 @@
 import Footer from 'examples/Footer'
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout'
 import DashboardNavbar from 'examples/Navbars/DashboardNavbar'
-import React, { useContext, useEffect, useState } from 'react'
-import { supabase } from './supabaseClient'
-import { UserDataContext } from 'context'
-import { Box, Card, Grid, Typography } from '@mui/material'
+import { Card, CircularProgress, Grid } from '@mui/material'
 import DataTable from "examples/Tables/DataTable";
 import ticketsTableData from "layouts/tables/data/ticketsTableData";
 import MDBox from 'components/MDBox'
 import MDTypography from 'components/MDTypography'
-
+import DataNotFound from 'components/NoData/dataNotFound'
+import { useEffect, useState } from 'react';
 
 export default function ViewTickets() {
   const { columns: pColumns, rows: pRows } = ticketsTableData();
-  const userDetails = useContext(UserDataContext);
-  const userTheatreId = userDetails[0].theatreId;
-  const [allTickets, setAllTickets] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const getAlltickets = async () => {
-      try {
-        const { data: ticketsResponse, error: ticketsResponseError } = await supabase.from('tickets').select('*').eq('theatreId', userTheatreId);
-        if (ticketsResponseError) {
-          console.log('ticketsResponseError', ticketsResponseError)
-        }
-        if (ticketsResponse) {
-          console.log('ticketsResponse', ticketsResponse)
-          setAllTickets(ticketsResponse);
-        }
-      }
-      catch {
-
-      }
-    };
-    getAlltickets();
-  }, [])
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+  }, []);
 
   return (
     <DashboardLayout>
@@ -60,15 +43,23 @@ export default function ViewTickets() {
                   Tickets
                 </MDTypography>
               </MDBox>
-              <MDBox pt={3}>
-                <DataTable
-                  table={{ columns: pColumns, rows: pRows }}
-                  isSorted={false}
-                  entriesPerPage={false}
-                  showTotalEntries={false}
-                  noEndBorder
-                />
-              </MDBox>
+              {isLoading ? (
+                <MDBox p={3} display="flex" justifyContent="center">
+                  <CircularProgress color="info" />
+                </MDBox>
+              ) : pRows && pRows.length > 0 ? (
+                <MDBox pt={3}>
+                  <DataTable
+                    table={{ columns: pColumns, rows: pRows }}
+                    isSorted={false}
+                    entriesPerPage={false}
+                    showTotalEntries={false}
+                    noEndBorder
+                  />
+                </MDBox>
+              ) : (
+                <DataNotFound message={'No Tickets Reserved Yet !'} />
+              )}
             </Card>
           </Grid>
         </Grid>

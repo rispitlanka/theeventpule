@@ -6,9 +6,6 @@ import { supabase } from './supabaseClient';
 import Grid from "@mui/material/Grid";
 import { Button, Card, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 
-// @mui icons
-
-
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
@@ -24,6 +21,8 @@ import { UserDataContext } from 'context';
 import MDButton from 'components/MDButton';
 import RegistrationFormModel from './Models/registrationFormModel';
 import dayjs from 'dayjs';
+import DataNotFound from 'components/NoData/dataNotFound';
+import { Padding } from '@mui/icons-material';
 
 export default function SingleEvent() {
     const userDetails = useContext(UserDataContext);
@@ -199,7 +198,7 @@ export default function SingleEvent() {
                             <MDButton sx={{ mr: 2 }} color='info' onClick={() => handleViewForm()}>View Registration Form</MDButton>
                             <MDButton color='info' onClick={handleViewEventRegistrations}>View Event Registrations</MDButton>
                         </Grid>
-                        {formFieldData.length > 0 && (
+                        {formFieldData.length > 0 ?
                             <TableContainer component={Paper} sx={{ mt: 9, p: 2 }}>
                                 <Table>
                                     <TableHead sx={{ display: "table-header-group" }}>
@@ -222,7 +221,11 @@ export default function SingleEvent() {
                                     </TableBody>
                                 </Table>
                             </TableContainer>
-                        )}
+                            :
+                            <MDBox sx={{ mt: 9 }}>
+                            <DataNotFound message={'No Fields To Show !'} />
+                            </MDBox>
+                        }
                     </>
                 }
                 <RegistrationFormModel
