@@ -20,6 +20,8 @@ import MDButton from 'components/MDButton';
 import userTableData from "layouts/tables/data/userTableData";
 import DataNotFound from 'components/NoData/dataNotFound';
 import { CircularProgress } from '@mui/material';
+import noUserImage from "assets/images/illustrations/noUsers.png";
+
 
 export default function Users() {
 
@@ -79,7 +81,7 @@ export default function Users() {
                   />
                 </MDBox>
               ) : (
-                <DataNotFound message={'No Users Availabale !'} />
+                <DataNotFound message={'No Users Availabale !'} image={noUserImage} />
               )}
             </Card>
           </Grid>

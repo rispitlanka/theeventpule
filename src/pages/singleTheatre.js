@@ -20,7 +20,7 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 
 // Images
-import backgroundImage from "assets/images/bg-profile.jpeg";
+import backgroundImage from "assets/images/theatre2.jpg";
 import { UserDataContext } from 'context';
 import DataNotFound from 'components/NoData/dataNotFound';
 
@@ -226,7 +226,7 @@ export default function SingleTheatre() {
           }
 
           {/* screens */}
-          {screensData && screensData.length > 0 &&
+          {theatreData && theatreData.length > 0 &&
             <>
               <MDBox pt={2} px={2} lineHeight={1.25}>
                 <MDTypography variant="h6" fontWeight="medium">

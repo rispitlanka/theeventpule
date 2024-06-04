@@ -5,6 +5,8 @@ import { supabase } from './supabaseClient';
 import { useParams } from 'react-router-dom';
 import { Box, Card, CircularProgress } from '@mui/material';
 import MDTypography from 'components/MDTypography';
+import DataNotFound from 'components/NoData/dataNotFound';
+import noFormImage from "assets/images/illustrations/noForms2.png";
 
 export default function RegisterEvent() {
     const { eventId } = useParams();
@@ -50,7 +52,7 @@ export default function RegisterEvent() {
                         {formFieldData && formFieldData.length > 0 ?
                             <DynamicForm sx={{ m: 2 }} fields={formFieldData} />
                             :
-                            <MDTypography variant='h6' mb={1} sx={{ textAlign: 'center' }}>-Unavailable-</MDTypography>
+                            <DataNotFound message={'No Forms Available !'} image={noFormImage}/>
                         }
                     </Card>
                 }

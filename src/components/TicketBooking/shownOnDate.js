@@ -6,6 +6,7 @@ import { Box, Card, CardContent, Chip, CircularProgress, Grid } from '@mui/mater
 import { useNavigate } from 'react-router-dom';
 import DataNotFound from 'components/NoData/dataNotFound';
 import MDBox from 'components/MDBox';
+import noDataImage from "assets/images/illustrations/noData3.svg";
 
 export default function ShowsOnDate(date) {
     const eqDate = date.date;
@@ -173,7 +174,7 @@ export default function ShowsOnDate(date) {
                 })
             ) : (
                 <>
-                    <DataNotFound message={'No Shows Scheduled !'} />
+                    <DataNotFound message={'No Shows Scheduled !'} image={noDataImage} />
                 </>
             )}
         </>

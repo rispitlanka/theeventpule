@@ -8,6 +8,7 @@ import { Card, CircularProgress, Table, TableBody, TableCell, TableHead, TableRo
 import MDTypography from 'components/MDTypography';
 import DataNotFound from 'components/NoData/dataNotFound';
 import MDBox from 'components/MDBox';
+import noDataImage from "assets/images/illustrations/noData3.svg";
 
 export default function ViewEventRegistrations() {
     const { id } = useParams();
@@ -89,7 +90,7 @@ export default function ViewEventRegistrations() {
                             </TableBody>
                         </Table>
                         :
-                        <DataNotFound message={'No Entries Yet !'} />
+                        <DataNotFound message={'No Entries Yet !'} image={noDataImage}/>
                 }
             </Card>
             <Footer />

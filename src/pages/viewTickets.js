@@ -8,6 +8,7 @@ import MDBox from 'components/MDBox'
 import MDTypography from 'components/MDTypography'
 import DataNotFound from 'components/NoData/dataNotFound'
 import { useEffect, useState } from 'react';
+import noTicketImage from "assets/images/illustrations/noTicket.png";
 
 export default function ViewTickets() {
   const { columns: pColumns, rows: pRows } = ticketsTableData();
@@ -58,7 +59,7 @@ export default function ViewTickets() {
                   />
                 </MDBox>
               ) : (
-                <DataNotFound message={'No Tickets Reserved Yet !'} />
+                <DataNotFound message={'No Tickets Reserved Yet !'} image={noTicketImage} />
               )}
             </Card>
           </Grid>

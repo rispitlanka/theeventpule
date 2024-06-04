@@ -17,7 +17,7 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 
 // Images
-import backgroundImage from "assets/images/bg-profile.jpeg";
+import backgroundImage from "assets/images/user2.jpg";
 
 export default function SingleUser() {
     const [userData, setUserData] = useState([]);

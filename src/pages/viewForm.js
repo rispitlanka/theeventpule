@@ -7,6 +7,7 @@ import DashboardLayout from 'examples/LayoutContainers/DashboardLayout'
 import DashboardNavbar from 'examples/Navbars/DashboardNavbar'
 import React from 'react'
 import { useLocation } from 'react-router-dom'
+import noForms from "assets/images/illustrations/noForms.png";
 
 export default function ViewForm() {
   const location = useLocation();
@@ -20,7 +21,7 @@ export default function ViewForm() {
         {formFieldData.length > 0 ? (
           <DynamicForm fields={formFieldData} eventId={id} />)
           :
-          <DataNotFound message={'Nothing To Show !'}/>
+          <DataNotFound message={'No Forms Available !'} image={noForms}/>
         }
       </Card>
       <Footer />

@@ -1,11 +1,9 @@
 import MDBox from 'components/MDBox'
 import React from 'react'
 import PropTypes from 'prop-types';
-import noDataImage from "assets/images/illustrations/noData3.svg";
 import MDTypography from 'components/MDTypography';
 
-
-export default function DataNotFound({ message }) {
+export default function DataNotFound({ message, image }) {
     return (
         <MDBox
             display="flex"
@@ -15,7 +13,7 @@ export default function DataNotFound({ message }) {
             sx={{ textAlign: 'center' }}
         >
             <img
-                src={noDataImage}
+                src={image}
                 alt='No Data Found'
                 style={{
                     maxWidth: '100%',
@@ -29,5 +27,6 @@ export default function DataNotFound({ message }) {
 }
 
 DataNotFound.propTypes = {
-    message: PropTypes.isRequired
+    message: PropTypes.isRequired,
+    image: PropTypes.isRequired
 }

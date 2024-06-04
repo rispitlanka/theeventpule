@@ -16,13 +16,13 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 
 // Images
-import backgroundImage from "assets/images/bg-profile.jpeg";
+import backgroundImage from "assets/images/events.jpg";
+import noDataImage from "assets/images/illustrations/noData3.svg";
 import { UserDataContext } from 'context';
 import MDButton from 'components/MDButton';
 import RegistrationFormModel from './Models/registrationFormModel';
 import dayjs from 'dayjs';
 import DataNotFound from 'components/NoData/dataNotFound';
-import { Padding } from '@mui/icons-material';
 
 export default function SingleEvent() {
     const userDetails = useContext(UserDataContext);
@@ -223,7 +223,7 @@ export default function SingleEvent() {
                             </TableContainer>
                             :
                             <MDBox sx={{ mt: 9 }}>
-                            <DataNotFound message={'No Fields To Show !'} />
+                            <DataNotFound message={'No Fields To Show !'} image={noDataImage}/>
                             </MDBox>
                         }
                     </>

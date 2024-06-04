@@ -51,6 +51,7 @@ export default function AddEvent() {
             values.startTime = formattedTime;
             values.date = formattedDate;
             values.screenId = selectedScreenId;
+            values.theatreId = userTheatreId;
             await addEventData(values);
             resetForm();
             toast.info('Event has been successfully created!');
@@ -75,6 +76,7 @@ export default function AddEvent() {
             contactEmail: '',
             contactPhone: '',
             screenId: '',
+            theatreId: '',
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),

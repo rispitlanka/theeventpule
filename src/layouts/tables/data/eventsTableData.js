@@ -16,16 +16,11 @@ Coded by www.creative-tim.com
 */
 
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { supabase } from "pages/supabaseClient";
-// Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
-import MDAvatar from "components/MDAvatar";
-import MDButton from "components/MDButton";
-
-// Images
-import LogoAsana from "assets/images/small-logos/screen1.png";
+import { UserDataContext } from "context";
 
 export default function data() {
   const Screen = ({ name }) => (
@@ -36,6 +31,8 @@ export default function data() {
     </MDBox>
   );
 
+  const userDetails = useContext(UserDataContext);
+  const userTheatreId = userDetails[0].theatreId;
   const [eventsData, setEventsData] = useState(null);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -46,7 +43,7 @@ export default function data() {
 
   const fetchEventsData = async () => {
     try {
-      const { data, error } = await supabase.from('events').select('*');
+      const { data, error } = await supabase.from('events').select('*').eq('theatreId', userTheatreId);
       console.log(data);
       if (error) throw error;
       setEventsData(data);

@@ -20,6 +20,7 @@ import MDButton from 'components/MDButton';
 import theatreTableData from "layouts/tables/data/theatreTableData";
 import DataNotFound from 'components/NoData/dataNotFound';
 import { CircularProgress } from '@mui/material';
+import noDataImage from "assets/images/illustrations/noData3.svg";
 
 export default function Theatres() {
 
@@ -77,7 +78,7 @@ export default function Theatres() {
                   />
                 </MDBox>
               ) : (
-                <DataNotFound message={'No Theatres To Show !'} />
+                <DataNotFound message={'No Theatres To Show !'} image={noDataImage} />
               )}
             </Card>
           </Grid>

@@ -6,8 +6,6 @@ import { useNavigate } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import AddIcon from '@mui/icons-material/Add';
-
-// Material Dashboard 2 React example components
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout';
 import DashboardNavbar from 'examples/Navbars/DashboardNavbar';
 import Footer from "examples/Footer";
@@ -15,11 +13,11 @@ import DataTable from "examples/Tables/DataTable";
 import MDBox from 'components/MDBox';
 import MDTypography from 'components/MDTypography';
 import MDButton from 'components/MDButton';
-
-// Data
 import eventsTableData from "layouts/tables/data/eventsTableData";
 import DataNotFound from 'components/NoData/dataNotFound';
 import { CircularProgress } from '@mui/material';
+import noDataImage from "assets/images/illustrations/noData3.svg";
+
 
 export default function Events() {
 
@@ -79,7 +77,7 @@ export default function Events() {
                   />
                 </MDBox>
               ) : (
-                <DataNotFound message={'No Events Available !'} />
+                <DataNotFound message={'No Events Available !'} image={noDataImage} />
               )}
             </Card>
           </Grid>
