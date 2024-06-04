@@ -104,6 +104,7 @@ import SingleEvent from "pages/singleEvent";
 import ViewForm from "pages/viewForm";
 import RegisterEvent from "pages/registerEvent";
 import ViewEventRegistrations from "pages/viewEventRegistrations";
+import AddMainEvent from "pages/addMainEvent";
 
 const routes = [
   {
@@ -457,6 +458,10 @@ const routes = [
   {
     route: "/events/single-event/:id/view-registrations",
     component: <ViewEventRegistrations />,
+  },
+  {
+    route: "/events/add-mainEvent",
+    component: <AddMainEvent />,
   },
   // {
   //   type: "collapse",

@@ -18,7 +18,6 @@ import MDBox from 'components/MDBox';
 import MDTypography from 'components/MDTypography';
 import MDButton from 'components/MDButton';
 import { useNavigate } from 'react-router-dom';
-
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -36,6 +35,9 @@ export default function AddEvent() {
     const [selectedDate, setSelectedDate] = useState();
     const [selectedScreenId, setSelectedScreenId] = useState();
     const [screensData, setScreensData] = useState([]);
+    const [mainEventData, setMainEventdata] = useState([]);
+    const [selectedMainEventId, setSelectedMainEventId] = useState(null);
+
 
     const handleTimeChange = (newTime) => {
         setSelectedTime(newTime);
@@ -51,6 +53,7 @@ export default function AddEvent() {
             values.startTime = formattedTime;
             values.date = formattedDate;
             values.screenId = selectedScreenId;
+            values.mainEventId = selectedMainEventId;
             values.theatreId = userTheatreId;
             await addEventData(values);
             resetForm();
@@ -77,6 +80,7 @@ export default function AddEvent() {
             contactPhone: '',
             screenId: '',
             theatreId: '',
+            mainEventId: '',
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
@@ -110,9 +114,29 @@ export default function AddEvent() {
         }
     };
 
+    const fetchMainEventData = async () => {
+        try {
+            const { data, error } = await supabase.from('mainEvent').select('*').eq('theatreId', userTheatreId);
+            if (data) {
+                setMainEventdata(data);
+                console.log('Data fetched succesfully:', data);
+            }
+            if (error) {
+                throw error;
+            }
+        } catch (error) {
+            throw new Error('Error inserting data:', error.message);
+        }
+    };
+
     useEffect(() => {
         fetchScreensData();
         selectedScreenId
+    }, [])
+
+    useEffect(() => {
+        fetchMainEventData();
+        selectedMainEventId
     }, [])
 
     return (
@@ -253,6 +277,25 @@ export default function AddEvent() {
                                                     {screen.name}
                                                 </MenuItem>
                                             ))}
+                                        </Select>
+                                    </FormControl>
+                                </MDBox>
+                                <MDBox p={1}>
+                                    <FormControl fullWidth>
+                                        <InputLabel>Select Main Event</InputLabel>
+                                        <Select
+                                            label="Select Main Event"
+                                            value={selectedMainEventId}
+                                            onChange={(e) => setSelectedMainEventId(e.target.value)}
+                                            sx={{ height: '45px' }}
+                                        >
+                                            <MenuItem value={null}>Null</MenuItem>
+                                            {mainEventData.map((event) => (
+                                                <MenuItem key={event.id} value={event.id}>
+                                                    {event.title}
+                                                </MenuItem>
+                                            ))}
+
                                         </Select>
                                     </FormControl>
                                 </MDBox>
