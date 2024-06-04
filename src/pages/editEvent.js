@@ -24,7 +24,6 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { MobileTimePicker } from '@mui/x-date-pickers/MobileTimePicker';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-
 import dayjs from 'dayjs';
 
 export default function EditEvent() {
@@ -76,19 +75,6 @@ export default function EditEvent() {
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
-            //   description: Yup.string().required('Required'),
-            //   category: Yup.string().required('Required'),
-            //   location: Yup.string()
-            //     .required('Required')
-            //     // .matches(phoneRegExp, 'Mobile number is not valid')
-            //     .min(10, 'Not a valid mobile number')
-            //     .max(10, 'Not a valid mobile number'),
-            //   status: Yup.string()
-            //     .required('Required')
-            //     // .matches(phoneRegExp, 'Telephone number is not valid')
-            //     .min(10, 'Not a valid status number')
-            //     .max(10, 'Not a valid status number'),
-            //   date: Yup.string().required('Email is required').email('Enter a valid email'),
         }),
         onSubmit,
     });

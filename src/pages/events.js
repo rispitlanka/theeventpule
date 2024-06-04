@@ -1,8 +1,6 @@
 
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
-
-// @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import AddIcon from '@mui/icons-material/Add';
@@ -17,9 +15,9 @@ import { Box, CircularProgress, Paper, Tab, Table, TableBody, TableCell, TableCo
 import noDataImage from "assets/images/illustrations/noData3.svg";
 import { UserDataContext } from 'context';
 import { supabase } from './supabaseClient';
+import EditIcon from '@mui/icons-material/Edit';
 
 export default function Events() {
-
   const userDetails = useContext(UserDataContext);
   const userTheatreId = userDetails[0].theatreId;
   const navigate = useNavigate();
@@ -111,21 +109,23 @@ export default function Events() {
                 </MDTypography>
                 <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
                   <MDButton onClick={() => openPage("/events/add-event")}><AddIcon color="info" /></MDButton>
-                </MDBox>
+                </MDBox>                
               </MDBox>
 
-              <Box sx={{ maxWidth: { xs: '100%', sm: '100%' }, bgcolor: 'grey' }}>
+              <Box sx={{ maxWidth: { xs: '100%', sm: '100%' }, bgcolor: 'grey', mt:2, p:2 }}>
                 <Tabs
                   value={value}
                   onChange={handleChange}
                   variant="scrollable"
-                  scrollButtons
-                  allowScrollButtonsMobile
-                  aria-label="scrollable force tabs example"
+                  scrollButtons="auto"
+                  aria-label="scrollable auto tabs example"
                 >
                   <Tab label="Uncategorized" onClick={() => handleMainEventClick(null)} />
                   {mainEventData && mainEventData.map((event) => (
-                    <Tab key={event.id} label={event.title} onClick={() => handleMainEventClick(event.id)} />
+                    <>
+                      <Tab key={event.id} label={event.title} onClick={() => handleMainEventClick(event.id)}></Tab>
+                      <EditIcon onClick={() => openPage(`/events/edit-mainEvent/${event.id}`)} />
+                    </>
                   ))}
                   <Tab label="Add Event" onClick={() => openPage("/events/add-mainEvent")} />
                 </Tabs>
@@ -145,15 +145,17 @@ export default function Events() {
                           <TableCell align='center'>Description</TableCell>
                           <TableCell align='center'>Status</TableCell>
                           <TableCell align='center'>Category</TableCell>
+                          <TableCell align='center'>Actions</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
                         {eventsData.map((row) => (
-                          <TableRow key={row.id}>
+                          <TableRow key={row.id} onClick={() => openPage(`/events/single-event/${row.id}`)} style={{ cursor: 'pointer' }}>
                             <TableCell >{row.name}</TableCell>
                             <TableCell align='center'>{row.description}</TableCell>
                             <TableCell align='center'>{row.status}</TableCell>
                             <TableCell align='center'>{row.category}</TableCell>
+                            <TableCell align='center' onClick={() => openPage(`/events/edit-event/${row.id}`)}>Edit</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
