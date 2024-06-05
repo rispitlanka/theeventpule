@@ -86,6 +86,8 @@ export default function Events() {
     handleMainEventClick(newValue === 0 ? null : mainEventData[newValue - 1]?.id);
   };
 
+  const selectedMainEvent = mainEventData.find(event => event.id === mainEventId);
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -142,13 +144,20 @@ export default function Events() {
                 </Tabs>
               </Box>
 
+              {selectedMainEvent && (
+                <Grid key={selectedMainEvent.id} display={'flex'} flexDirection={'row'} px={2} mb={-2}>
+                  <MDTypography variant='h5' mr={2}>{selectedMainEvent.title}</MDTypography>
+                  <EditIcon onClick={(e) => { e.stopPropagation(); openPage(`/events/edit-mainEvent/${selectedMainEvent.id}`); }} style={{ cursor: 'pointer' }} />
+                </Grid>
+              )}
+
               {isLoading ? (
                 <MDBox p={3} display="flex" justifyContent="center">
                   <CircularProgress color="info" />
                 </MDBox>
               ) : eventsData && eventsData.length > 0 ? (
                 <MDBox pt={3}>
-                  <TableContainer component={Paper} sx={{ mt: 9, p: 2 }}>
+                  <TableContainer component={Paper} sx={{ p: 2 }}>
                     <Table>
                       <TableHead sx={{ display: "table-header-group" }}>
                         <TableRow>
