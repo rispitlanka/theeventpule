@@ -1,12 +1,13 @@
 import MDTypography from 'components/MDTypography'
 import { supabase } from 'pages/supabaseClient'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import PropTypes from 'prop-types';
 import { Box, Card, CardContent, Chip, CircularProgress, Grid } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import DataNotFound from 'components/NoData/dataNotFound';
 import MDBox from 'components/MDBox';
 import noDataImage from "assets/images/illustrations/noData3.svg";
+import { UserDataContext } from 'context';
 
 export default function ShowsOnDate(date) {
     const eqDate = date.date;
@@ -15,6 +16,8 @@ export default function ShowsOnDate(date) {
     const [screens, setScreens] = useState();
     const [showTime, setShowTime] = useState();
     const [isLoading, setIsLoading] = useState(true);
+    const userDetails = useContext(UserDataContext);
+    const userTheatreId = userDetails[0].theatreId;
 
     const navigate = useNavigate();
     const openPage = (route) => {
@@ -23,7 +26,7 @@ export default function ShowsOnDate(date) {
 
     const fetchShowsOnDate = async () => {
         try {
-            const { data, error } = await supabase.from('shows').select('*').eq('date', eqDate);
+            const { data, error } = await supabase.from('shows').select('*').eq('date', eqDate).eq('theatreId', userTheatreId);
             if (data) {
                 setShows(data);
                 console.log('shows', data);
