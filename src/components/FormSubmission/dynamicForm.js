@@ -17,6 +17,7 @@ import {
 import { supabase } from 'pages/supabaseClient';
 import MDButton from 'components/MDButton';
 import { ToastContainer, toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const renderField = (field) => {
     switch (field.type) {
@@ -87,6 +88,8 @@ const DynamicForm = ({ fields, eventId }) => {
         return acc;
     }, {});
 
+    const navigate = useNavigate();
+
     const handleSubmit = async (values, { resetForm }) => {
         try {
             values.details = JSON.stringify(values);
@@ -97,9 +100,10 @@ const DynamicForm = ({ fields, eventId }) => {
             await addRegistrationData(dataToAdd);
             resetForm();
             toast.info('Entries have been successfully registered!');
+            document.activeElement.blur();
             setTimeout(() => {
-                document.activeElement.blur();
-            }, 0);
+                navigate(-1)
+            }, 1500);
         } catch (error) {
             console.error('Error submitting form:', error.message);
         }

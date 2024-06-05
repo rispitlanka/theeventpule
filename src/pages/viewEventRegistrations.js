@@ -18,7 +18,7 @@ export default function ViewEventRegistrations() {
 
     const fetchEventRegistrations = async () => {
         try {
-            const { data, error } = await supabase.from('eventRegistrations').select('*').in('eventId', id);
+            const { data, error } = await supabase.from('eventRegistrations').select('*').in('eventId', [id]);
             if (data) {
                 setEventRegistrationData(data);
                 console.log('event data', data);
@@ -31,7 +31,7 @@ export default function ViewEventRegistrations() {
 
     const fetchRegistrationForm = async () => {
         try {
-            const { data, error } = await supabase.from('registrationForm').select('*').in('eventId', id);
+            const { data, error } = await supabase.from('registrationForm').select('*').in('eventId', [id]);
             if (data) {
                 setRegistrationFormData(data);
                 console.log('form reg data', data);
@@ -90,7 +90,7 @@ export default function ViewEventRegistrations() {
                             </TableBody>
                         </Table>
                         :
-                        <DataNotFound message={'No Entries Yet !'} image={noDataImage}/>
+                        <DataNotFound message={'No Entries Yet !'} image={noDataImage} />
                 }
             </Card>
             <Footer />

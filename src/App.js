@@ -55,6 +55,9 @@ import brandWhite from "assets/images/logo-ct.png";
 import brandDark from "assets/images/logo-ct-dark.png";
 import useUserRoutes from "userRoutes";
 import RegisterEvent from "pages/registerEvent";
+import MainEventsLists from "pages/mainEventsList";
+import SubEventsLists from "pages/subEventsLists";
+import RegisterForEvents from "pages/registerForEvents";
 
 export default function App() {
   const userEmail = localStorage.getItem('userEmail');
@@ -215,6 +218,9 @@ export default function App() {
               {getRoutes(userRoutes)}
               <Route path="*" element={<Navigate to="/authentication/sign-in" />} />
               <Route path="/register/:eventId" element={<RegisterEvent />} />
+              <Route path="/main-events" element={<MainEventsLists />} />
+              <Route path="/main-events/sub-events/:mainEventId" element={<SubEventsLists />} />
+              <Route path="/main-events/sub-events/registerForEvents/:eventId" element={<RegisterForEvents />} />
             </Routes>
           </>
         }

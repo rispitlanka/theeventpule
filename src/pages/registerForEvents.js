@@ -8,7 +8,7 @@ import MDTypography from 'components/MDTypography';
 import DataNotFound from 'components/NoData/dataNotFound';
 import noFormImage from "assets/images/illustrations/noForms2.png";
 
-export default function RegisterEvent() {
+export default function RegisterForEvents() {
     const { eventId } = useParams();
     const [formFieldData, setFormFieldData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -47,7 +47,6 @@ export default function RegisterEvent() {
                     </Box>
                     :
                     <Card sx={{ p: 2, mb: 2, width: '80%' }}>
-
                         <MDTypography variant='h5' mb={1} fontWeight='medium'>Register For The Event</MDTypography>
                         {formFieldData && formFieldData.length > 0 ?
                             <DynamicForm sx={{ m: 2 }} fields={formFieldData} eventId={eventId} />
