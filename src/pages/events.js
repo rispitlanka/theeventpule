@@ -35,10 +35,6 @@ export default function Events() {
     }, 500);
   }, []);
 
-  const [value, setValue] = useState(0);
-  const handleChange = (newValue) => {
-    setValue(newValue);
-  };
 
   const fetchMainEventData = async () => {
     try {
@@ -84,6 +80,12 @@ export default function Events() {
     setMainEventId(mainEventId);
   }
 
+  const [value, setValue] = useState(0);
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+    handleMainEventClick(newValue === 0 ? null : mainEventData[newValue - 1]?.id);
+  };
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -109,10 +111,10 @@ export default function Events() {
                 </MDTypography>
                 <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
                   <MDButton onClick={() => openPage("/events/add-event")}><AddIcon color="info" /></MDButton>
-                </MDBox>                
+                </MDBox>
               </MDBox>
 
-              <Box sx={{ maxWidth: { xs: '100%', sm: '100%' }, bgcolor: 'grey', mt:2, p:2 }}>
+              <Box sx={{ maxWidth: { xs: '100%', sm: '100%' }, mt: 2, p: 2 }}>
                 <Tabs
                   value={value}
                   onChange={handleChange}
@@ -120,14 +122,23 @@ export default function Events() {
                   scrollButtons="auto"
                   aria-label="scrollable auto tabs example"
                 >
-                  <Tab label="Uncategorized" onClick={() => handleMainEventClick(null)} />
-                  {mainEventData && mainEventData.map((event) => (
-                    <>
-                      <Tab key={event.id} label={event.title} onClick={() => handleMainEventClick(event.id)}></Tab>
-                      <EditIcon onClick={() => openPage(`/events/edit-mainEvent/${event.id}`)} />
-                    </>
+                  <Tab
+                    label="Uncategorized"
+                    onClick={() => handleMainEventClick(null)} value={0}
+                  />
+                  {mainEventData && mainEventData.map((event, index) => (
+                    <Tab
+                      key={event.id}
+                      label={event.title}
+                      onClick={() => handleMainEventClick(event.id)}
+                      value={index + 1}
+                      icon={<EditIcon onClick={(e) => { e.stopPropagation(); openPage(`/events/edit-mainEvent/${event.id}`); }} />}
+                    />
                   ))}
-                  <Tab label="Add Event" onClick={() => openPage("/events/add-mainEvent")} />
+                  <Tab
+                    label="Add Event"
+                    onClick={() => openPage("/events/add-mainEvent")}
+                    value={mainEventData.length + 1} />
                 </Tabs>
               </Box>
 
@@ -150,12 +161,12 @@ export default function Events() {
                       </TableHead>
                       <TableBody>
                         {eventsData.map((row) => (
-                          <TableRow key={row.id} onClick={() => openPage(`/events/single-event/${row.id}`)} style={{ cursor: 'pointer' }}>
+                          <TableRow key={row.id} onClick={(e) => { e.stopPropagation(); openPage(`/events/single-event/${row.id}`); }} style={{ cursor: 'pointer' }}>
                             <TableCell >{row.name}</TableCell>
                             <TableCell align='center'>{row.description}</TableCell>
                             <TableCell align='center'>{row.status}</TableCell>
                             <TableCell align='center'>{row.category}</TableCell>
-                            <TableCell align='center' onClick={() => openPage(`/events/edit-event/${row.id}`)}>Edit</TableCell>
+                            <TableCell align='center' onClick={(e) => { e.stopPropagation(); openPage(`/events/edit-event/${row.id}`); }}>Edit</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
