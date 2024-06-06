@@ -7,14 +7,17 @@ import ticketsTableData from "layouts/tables/data/ticketsTableData";
 import MDBox from 'components/MDBox'
 import MDTypography from 'components/MDTypography'
 import DataNotFound from 'components/NoData/dataNotFound'
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import noTicketImage from "assets/images/illustrations/noTicket.png";
 import ReportsBarChart from 'examples/Charts/BarCharts/ReportsBarChart';
 import { supabase } from './supabaseClient';
+import { UserDataContext } from 'context';
 
 
 export default function ViewTickets() {
-
+  const { columns: pColumns, rows: pRows } = ticketsTableData();
+  const userDetails = useContext(UserDataContext);
+  const userTheatreId = userDetails[0].theatreId;
   const [chartData, setChartData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -29,6 +32,7 @@ export default function ViewTickets() {
         const { data, error } = await supabase
           .from("tickets")
           .select('*')
+          .eq('theatreId', userTheatreId)
           .gte("created_at", startDateString)
           .lte("created_at", endDate);
 
@@ -61,7 +65,23 @@ export default function ViewTickets() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      {/* <MDBox pt={6} pb={3}>
+      <MDBox pt={6} pb={3}>
+        {isLoading ?
+          <MDBox p={3} display="flex" justifyContent="center">
+            <CircularProgress color="info" />
+          </MDBox>
+          :
+          <ReportsBarChart
+            color="info"
+            title="Tickets Count"
+            description="Number of booked tickets of the last week"
+            date="Weekly"
+            chart={chartData}
+          />
+        }
+      </MDBox>
+
+      <MDBox pt={6} pb={3}>
         <Grid container spacing={6}>
           <Grid item xs={12}>
             <Card>
@@ -102,22 +122,6 @@ export default function ViewTickets() {
             </Card>
           </Grid>
         </Grid>
-      </MDBox> */}
-
-      <MDBox pt={6} pb={3}>
-        {isLoading ?
-          <MDBox p={3} display="flex" justifyContent="center">
-            <CircularProgress color="info" />
-          </MDBox>
-          :
-          <ReportsBarChart
-            color="info"
-            title="Tickets Count"
-            description="Number of booked tickets of the last week"
-            date="Weekly"
-            chart={chartData}
-          />
-        }
       </MDBox>
       <Footer />
     </DashboardLayout>
