@@ -9,7 +9,7 @@ import MDTypography from 'components/MDTypography'
 import DataNotFound from 'components/NoData/dataNotFound'
 import { useContext, useEffect, useState } from 'react';
 import noTicketImage from "assets/images/illustrations/noTicket.png";
-import ReportsBarChart from 'examples/Charts/BarCharts/ReportsBarChart';
+import ReportsLineChart from 'examples/Charts/LineCharts/ReportsLineChart';
 import { supabase } from './supabaseClient';
 import { UserDataContext } from 'context';
 
@@ -24,33 +24,15 @@ export default function ViewTickets() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const endDate = new Date().toISOString();
-        const startDate = new Date();
-        startDate.setDate(startDate.getDate() - 7);
-        const startDateString = startDate.toISOString();
-
         const { data, error } = await supabase
-          .from("tickets")
-          .select('*')
-          .eq('theatreId', userTheatreId)
-          .gte("created_at", startDateString)
-          .lte("created_at", endDate);
-
+          .rpc('get_ticket_counts', { theatre_id: userTheatreId });
         if (error) throw error;
-
-        const ticketCounts = {};
-        data.forEach(ticket => {
-          const date = new Date(ticket.created_at).toISOString().split('T')[0];
-          if (ticketCounts[date]) {
-            ticketCounts[date]++;
-          } else {
-            ticketCounts[date] = 1;
-          }
-        });
-
-        const labels = Object.keys(ticketCounts);
-        const ticketData = Object.values(ticketCounts);
-        setChartData({ labels, datasets: { label: "Count", data: ticketData } });
+        console.log('fetvhed data', data)
+        const labels = data.map(item => {
+          const date = new Date(item.date);
+          return date.toLocaleDateString('en-GB', { month: '2-digit', day: '2-digit', });
+        }); const count = data.map(item => item.ticket_count);
+        setChartData({ labels, datasets: { label: "Count", data: count } });
 
       } catch (error) {
         console.log(error)
@@ -60,7 +42,7 @@ export default function ViewTickets() {
     };
 
     fetchData();
-  }, []);
+  }, [userTheatreId]);
 
   return (
     <DashboardLayout>
@@ -71,7 +53,7 @@ export default function ViewTickets() {
             <CircularProgress color="info" />
           </MDBox>
           :
-          <ReportsBarChart
+          <ReportsLineChart
             color="info"
             title="Tickets Count"
             description="Number of booked tickets of the last week"
