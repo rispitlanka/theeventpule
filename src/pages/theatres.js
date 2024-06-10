@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 
 // @mui material components
@@ -18,14 +18,23 @@ import MDButton from 'components/MDButton';
 
 // Data
 import theatreTableData from "layouts/tables/data/theatreTableData";
+import DataNotFound from 'components/NoData/dataNotFound';
+import { CircularProgress } from '@mui/material';
+import noDataImage from "assets/images/illustrations/noData3.svg";
 
 export default function Theatres() {
 
   const { columns: pColumns, rows: pRows } = theatreTableData();
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const openPage = (route) => {
     navigate(route);
   };
+  useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+  }, []);
 
   return (
     <DashboardLayout>
@@ -51,18 +60,26 @@ export default function Theatres() {
                   Theatres
                 </MDTypography>
                 <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
-                  <MDButton onClick={() => openPage("/theatres/add-theatre")}><AddIcon color="info"/></MDButton>
+                  <MDButton onClick={() => openPage("/theatres/add-theatre")}><AddIcon color="info" /></MDButton>
                 </MDBox>
               </MDBox>
-              <MDBox pt={3}>
-                <DataTable
-                  table={{ columns: pColumns, rows: pRows }}
-                  isSorted={false}
-                  entriesPerPage={false}
-                  showTotalEntries={false}
-                  noEndBorder
-                />
-              </MDBox>
+              {isLoading ? (
+                <MDBox p={3} display="flex" justifyContent="center">
+                  <CircularProgress color="info" />
+                </MDBox>
+              ) : pRows && pRows.length > 0 ? (
+                <MDBox pt={3}>
+                  <DataTable
+                    table={{ columns: pColumns, rows: pRows }}
+                    isSorted={false}
+                    entriesPerPage={false}
+                    showTotalEntries={false}
+                    noEndBorder
+                  />
+                </MDBox>
+              ) : (
+                <DataNotFound message={'No Theatres To Show !'} image={noDataImage} />
+              )}
             </Card>
           </Grid>
         </Grid>

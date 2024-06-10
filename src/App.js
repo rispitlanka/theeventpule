@@ -16,7 +16,7 @@ Coded by www.creative-tim.com
 import { useState, useEffect, useMemo } from "react";
 
 // react-router components
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation, useParams } from "react-router-dom";
 import { supabase } from "pages/supabaseClient";
 
 // @mui material components
@@ -54,9 +54,15 @@ import { useMaterialUIController, setMiniSidenav, setOpenConfigurator, UserDataC
 import brandWhite from "assets/images/logo-ct.png";
 import brandDark from "assets/images/logo-ct-dark.png";
 import useUserRoutes from "userRoutes";
+import RegisterEvent from "pages/registerEvent";
+import MainEventsLists from "pages/mainEventsList";
+import SubEventsLists from "pages/subEventsLists";
+import RegisterForEvents from "pages/registerForEvents";
+import SignUp from "layouts/authentication/sign-up";
 
 export default function App() {
   const userEmail = localStorage.getItem('userEmail');
+  const userEmailModified = userEmail && userEmail.substring(1, userEmail.length - 1);
   const [controller, dispatch] = useMaterialUIController();
   const {
     miniSidenav,
@@ -76,7 +82,6 @@ export default function App() {
 
   const fetchUser = async () => {
     try {
-      const userEmailModified = userEmail && userEmail.substring(1, userEmail.length - 1);
       if (userEmailModified) {
         const { data, error } = await supabase.from('theatreOwners').select('*').eq('email', userEmailModified);
         if (data) {
@@ -192,7 +197,7 @@ export default function App() {
                 <Sidenav
                   color={sidenavColor}
                   brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
-                  brandName={userData && userData[0].name}
+                  brandName={userData && userData.length > 0 ? userData[0].name : userEmailModified}
                   routes={userRoutes}
                   onMouseEnter={handleOnMouseEnter}
                   onMouseLeave={handleOnMouseLeave}
@@ -213,6 +218,11 @@ export default function App() {
             <Routes>
               {getRoutes(userRoutes)}
               <Route path="*" element={<Navigate to="/authentication/sign-in" />} />
+              <Route path="/authentication/sign-up" element={<SignUp />} />
+              <Route path="/register/:eventId" element={<RegisterEvent />} />
+              <Route path="/main-events" element={<MainEventsLists />} />
+              <Route path="/main-events/sub-events/:mainEventId" element={<SubEventsLists />} />
+              <Route path="/main-events/sub-events/registerForEvents/:eventId" element={<RegisterForEvents />} />
             </Routes>
           </>
         }

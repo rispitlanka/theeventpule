@@ -1,9 +1,13 @@
 import MDTypography from 'components/MDTypography'
 import { supabase } from 'pages/supabaseClient'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import PropTypes from 'prop-types';
-import { Box, Card, CardContent, Chip, Grid } from '@mui/material';
+import { Box, Card, CardContent, Chip, CircularProgress, Grid } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import DataNotFound from 'components/NoData/dataNotFound';
+import MDBox from 'components/MDBox';
+import noDataImage from "assets/images/illustrations/noData3.svg";
+import { UserDataContext } from 'context';
 
 export default function ShowsOnDate(date) {
     const eqDate = date.date;
@@ -11,6 +15,10 @@ export default function ShowsOnDate(date) {
     const [movies, setMovies] = useState();
     const [screens, setScreens] = useState();
     const [showTime, setShowTime] = useState();
+    const [isLoading, setIsLoading] = useState(true);
+    const userDetails = useContext(UserDataContext);
+    const userTheatreId = userDetails[0].theatreId;
+
     const navigate = useNavigate();
     const openPage = (route) => {
         navigate(route);
@@ -18,10 +26,11 @@ export default function ShowsOnDate(date) {
 
     const fetchShowsOnDate = async () => {
         try {
-            const { data, error } = await supabase.from('shows').select('*').eq('date', eqDate);
+            const { data, error } = await supabase.from('shows').select('*').eq('date', eqDate).eq('theatreId', userTheatreId);
             if (data) {
                 setShows(data);
                 console.log('shows', data);
+                setIsLoading(false);
             }
             if (error) {
                 console.log(error);
@@ -100,7 +109,11 @@ export default function ShowsOnDate(date) {
 
     return (
         <>
-            {shows && shows.length > 0 ? (
+            {isLoading ? (
+                <MDBox p={3} display="flex" justifyContent="center">
+                    <CircularProgress color="info" />
+                </MDBox>
+            ) : shows && shows.length > 0 ? (
                 Object.values(
                     shows.reduce((group, show) => {
                         if (!group[show.movieId]) {
@@ -163,7 +176,9 @@ export default function ShowsOnDate(date) {
                     );
                 })
             ) : (
-                <MDTypography>No Shows Available</MDTypography>
+                <>
+                    <DataNotFound message={'No Shows Scheduled !'} image={noDataImage} />
+                </>
             )}
         </>
     )

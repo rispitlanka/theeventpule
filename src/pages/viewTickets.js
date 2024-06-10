@@ -1,44 +1,68 @@
 import Footer from 'examples/Footer'
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout'
 import DashboardNavbar from 'examples/Navbars/DashboardNavbar'
-import React, { useContext, useEffect, useState } from 'react'
-import { supabase } from './supabaseClient'
-import { UserDataContext } from 'context'
-import { Box, Card, Grid, Typography } from '@mui/material'
+import { Card, CircularProgress, Grid } from '@mui/material'
 import DataTable from "examples/Tables/DataTable";
 import ticketsTableData from "layouts/tables/data/ticketsTableData";
 import MDBox from 'components/MDBox'
 import MDTypography from 'components/MDTypography'
+import DataNotFound from 'components/NoData/dataNotFound'
+import { useContext, useEffect, useState } from 'react';
+import noTicketImage from "assets/images/illustrations/noTicket.png";
+import ReportsLineChart from 'examples/Charts/LineCharts/ReportsLineChart';
+import { supabase } from './supabaseClient';
+import { UserDataContext } from 'context';
 
 
 export default function ViewTickets() {
   const { columns: pColumns, rows: pRows } = ticketsTableData();
   const userDetails = useContext(UserDataContext);
   const userTheatreId = userDetails[0].theatreId;
-  const [allTickets, setAllTickets] = useState([]);
+  const [chartData, setChartData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const getAlltickets = async () => {
+    const fetchData = async () => {
       try {
-        const { data: ticketsResponse, error: ticketsResponseError } = await supabase.from('tickets').select('*').eq('theatreId', userTheatreId);
-        if (ticketsResponseError) {
-          console.log('ticketsResponseError', ticketsResponseError)
-        }
-        if (ticketsResponse) {
-          console.log('ticketsResponse', ticketsResponse)
-          setAllTickets(ticketsResponse);
-        }
-      }
-      catch {
+        const { data, error } = await supabase
+          .rpc('get_ticket_counts', { theatre_id: userTheatreId });
+        if (error) throw error;
+        console.log('fetvhed data', data)
+        const labels = data.map(item => {
+          const date = new Date(item.date);
+          return date.toLocaleDateString('en-GB', { month: '2-digit', day: '2-digit', });
+        }); const count = data.map(item => item.ticket_count);
+        setChartData({ labels, datasets: { label: "Count", data: count } });
 
+      } catch (error) {
+        console.log(error)
+      } finally {
+        setIsLoading(false);
       }
     };
-    getAlltickets();
-  }, [])
+
+    fetchData();
+  }, [userTheatreId]);
 
   return (
     <DashboardLayout>
       <DashboardNavbar />
+      <MDBox pt={6} pb={3}>
+        {isLoading ?
+          <MDBox p={3} display="flex" justifyContent="center">
+            <CircularProgress color="info" />
+          </MDBox>
+          :
+          <ReportsLineChart
+            color="info"
+            title="Tickets Count"
+            description="Number of booked tickets of the last week"
+            date="Weekly"
+            chart={chartData}
+          />
+        }
+      </MDBox>
+
       <MDBox pt={6} pb={3}>
         <Grid container spacing={6}>
           <Grid item xs={12}>
@@ -60,15 +84,23 @@ export default function ViewTickets() {
                   Tickets
                 </MDTypography>
               </MDBox>
-              <MDBox pt={3}>
-                <DataTable
-                  table={{ columns: pColumns, rows: pRows }}
-                  isSorted={false}
-                  entriesPerPage={false}
-                  showTotalEntries={false}
-                  noEndBorder
-                />
-              </MDBox>
+              {isLoading ? (
+                <MDBox p={3} display="flex" justifyContent="center">
+                  <CircularProgress color="info" />
+                </MDBox>
+              ) : pRows && pRows.length > 0 ? (
+                <MDBox pt={3}>
+                  <DataTable
+                    table={{ columns: pColumns, rows: pRows }}
+                    isSorted={false}
+                    entriesPerPage={false}
+                    showTotalEntries={false}
+                    noEndBorder
+                  />
+                </MDBox>
+              ) : (
+                <DataNotFound message={'No Tickets Reserved Yet !'} image={noTicketImage} />
+              )}
             </Card>
           </Grid>
         </Grid>

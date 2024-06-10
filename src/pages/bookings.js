@@ -5,7 +5,7 @@ import MDTypography from 'components/MDTypography'
 import Footer from 'examples/Footer'
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout'
 import DashboardNavbar from 'examples/Navbars/DashboardNavbar'
-import backgroundImage from "assets/images/bg-profile.jpeg";
+import backgroundImage from "assets/images/seats1.jpg";
 import ShowsOnDate from 'components/TicketBooking/shownOnDate'
 
 export default function Bookings() {

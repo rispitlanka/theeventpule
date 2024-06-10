@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 
 // @mui material components
@@ -18,6 +18,10 @@ import MDButton from 'components/MDButton';
 
 // Data
 import userTableData from "layouts/tables/data/userTableData";
+import DataNotFound from 'components/NoData/dataNotFound';
+import { CircularProgress } from '@mui/material';
+import noUserImage from "assets/images/illustrations/noUsers.png";
+
 
 export default function Users() {
 
@@ -26,6 +30,14 @@ export default function Users() {
   const openPage = (route) => {
     navigate(route);
   };
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+  }, []);
 
   return (
     <DashboardLayout>
@@ -54,15 +66,23 @@ export default function Users() {
                   <MDButton onClick={() => openPage("/users/add-user")}><AddIcon color="info" /></MDButton>
                 </MDBox>
               </MDBox>
-              <MDBox pt={3}>
-                <DataTable
-                  table={{ columns: pColumns, rows: pRows }}
-                  isSorted={false}
-                  entriesPerPage={false}
-                  showTotalEntries={false}
-                  noEndBorder
-                />
-              </MDBox>
+              {isLoading ? (
+                <MDBox p={3} display="flex" justifyContent="center">
+                  <CircularProgress color="info" />
+                </MDBox>
+              ) : pRows && pRows.length > 0 ? (
+                <MDBox pt={3}>
+                  <DataTable
+                    table={{ columns: pColumns, rows: pRows }}
+                    isSorted={false}
+                    entriesPerPage={false}
+                    showTotalEntries={false}
+                    noEndBorder
+                  />
+                </MDBox>
+              ) : (
+                <DataNotFound message={'No Users Availabale !'} image={noUserImage} />
+              )}
             </Card>
           </Grid>
         </Grid>

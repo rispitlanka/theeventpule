@@ -97,6 +97,15 @@ import Bookings from "pages/bookings";
 import BookSeats from "components/TicketBooking/bookSeats";
 import GetTickets from "components/TicketBooking/getTickets";
 import ViewTickets from "pages/viewTickets";
+import Events from "pages/events";
+import AddEvent from "pages/addEvent";
+import EditEvent from "pages/editEvent";
+import SingleEvent from "pages/singleEvent";
+import ViewForm from "pages/viewForm";
+import RegisterEvent from "pages/registerEvent";
+import ViewEventRegistrations from "pages/viewEventRegistrations";
+import AddMainEvent from "pages/addMainEvent";
+import EditMainEvent from "pages/editMainEvent";
 
 const routes = [
   {
@@ -154,6 +163,14 @@ const routes = [
     icon: <Icon fontSize="small">receipt-long</Icon>,
     route: "/view-tickets",
     component: <ViewTickets />,
+  },
+  {
+    type: "collapse",
+    name: "Events",
+    key: "events",
+    icon: <Icon fontSize="small">celebration</Icon>,
+    route: "/events",
+    component: <Events />,
   },
   // {
   //   type: "collapse",
@@ -418,6 +435,38 @@ const routes = [
   {
     route: "/bookings/book-seats/get-tickets",
     component: <GetTickets />,
+  },
+  {
+    route: "/events/add-event",
+    component: <AddEvent />,
+  },
+  {
+    route: "/events/edit-event/:id",
+    component: <EditEvent />,
+  },
+  {
+    route: "/events/single-event/:id",
+    component: <SingleEvent />,
+  },
+  {
+    route: "/events/single-event/:id/view-form",
+    component: <ViewForm />,
+  },
+  {
+    route: "/register/:eventId",
+    component: <RegisterEvent />,
+  },
+  {
+    route: "/events/single-event/:id/view-registrations",
+    component: <ViewEventRegistrations />,
+  },
+  {
+    route: "/events/add-mainEvent",
+    component: <AddMainEvent />,
+  },
+  {
+    route: "/events/edit-mainEvent/:id",
+    component: <EditMainEvent />,
   },
   // {
   //   type: "collapse",
