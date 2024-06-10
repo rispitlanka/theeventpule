@@ -12,6 +12,7 @@ import ChairIcon from "@mui/icons-material/Chair";
 import MDButton from 'components/MDButton';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import GetTickets from './getTickets';
+import CircleIcon from '@mui/icons-material/Circle';
 
 export default function BookSeats() {
   const [zonesData, setZonesData] = useState([]);
@@ -278,9 +279,29 @@ export default function BookSeats() {
               </MDBox>
             </Grid>
           </Card>
+          <MDBox sx={{ position: 'absolute', mt: 3, }}>
+            <Grid container spacing={0} alignItems="center" >
+              <Grid item>
+                <MDTypography variant='body2' display="flex" alignItems="center" mr={1}>
+                  <CircleIcon sx={{ color: 'grey', mr: 0.5 }} />Available
+                </MDTypography>
+              </Grid>
+              <Grid item>
+                <MDTypography variant='body2' display="flex" alignItems="center" mr={1}>
+                  <CircleIcon sx={{ color: 'black', mr: 0.5 }} />Selected
+                </MDTypography>
+              </Grid>
+              <Grid item>
+                <MDTypography variant='body2' display="flex" alignItems="center">
+                  <CircleIcon sx={{ color: 'green', mr: 0.5 }} />Booked
+                </MDTypography>
+              </Grid>
+
+            </Grid>
+          </MDBox>
           <Card sx={{
             position: 'relative',
-            mt: 5,
+            mt: 7,
             mb: 2,
             pb: 2,
             display: 'flex',
@@ -292,7 +313,7 @@ export default function BookSeats() {
                 <ZoneSeatLayout key={zone.id} zone={zone} bookedSeats={bookedSeats} handleSeatClick={handleSeatClick} seatResponses={seatResponses} />
               ))}
             </Grid>
-            <MDButton color={'info'} sx={{ width: '10%',mt:2 }} onClick={handleProceed} disabled={bookedSeats.length <= 0}>Proceed</MDButton>
+            <MDButton color={'info'} sx={{ width: '10%', mt: 2 }} onClick={handleProceed} disabled={bookedSeats.length <= 0}>Proceed</MDButton>
           </Card>
         </>
       )}
@@ -349,12 +370,14 @@ function ZoneSeatLayout({ zone, bookedSeats, handleSeatClick, seatResponses }) {
     return String.fromCharCode(65 + index);
   };
 
+  const bookedSeatsCount = (seatResponses.filter(seatResponses => seatResponses.zoneId === zone.id).length);
+  const totalSeatsCount = (seatsData.filter(seatResponses => seatResponses.zoneId === zone.id).length);
 
   return (
     <Stack>
       <MDBox>
-        <MDTypography variant="h6" gutterBottom sx={{ ml: 2, mt: 2 }}>
-          {zone.name}
+        <MDTypography variant="h6" sx={{ ml: 2, mt: 2, mr: 2 }}>
+          {zone.name} - {bookedSeatsCount}/{totalSeatsCount}
         </MDTypography>
         <MDBox p={2}>
           {isLoading ? (
