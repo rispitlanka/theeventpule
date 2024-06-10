@@ -58,9 +58,11 @@ import RegisterEvent from "pages/registerEvent";
 import MainEventsLists from "pages/mainEventsList";
 import SubEventsLists from "pages/subEventsLists";
 import RegisterForEvents from "pages/registerForEvents";
+import SignUp from "layouts/authentication/sign-up";
 
 export default function App() {
   const userEmail = localStorage.getItem('userEmail');
+  const userEmailModified = userEmail && userEmail.substring(1, userEmail.length - 1);
   const [controller, dispatch] = useMaterialUIController();
   const {
     miniSidenav,
@@ -80,7 +82,6 @@ export default function App() {
 
   const fetchUser = async () => {
     try {
-      const userEmailModified = userEmail && userEmail.substring(1, userEmail.length - 1);
       if (userEmailModified) {
         const { data, error } = await supabase.from('theatreOwners').select('*').eq('email', userEmailModified);
         if (data) {
@@ -196,7 +197,7 @@ export default function App() {
                 <Sidenav
                   color={sidenavColor}
                   brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
-                  brandName={userData && userData[0].name}
+                  brandName={userData && userData.length > 0 ? userData[0].name : userEmailModified}
                   routes={userRoutes}
                   onMouseEnter={handleOnMouseEnter}
                   onMouseLeave={handleOnMouseLeave}
@@ -217,6 +218,7 @@ export default function App() {
             <Routes>
               {getRoutes(userRoutes)}
               <Route path="*" element={<Navigate to="/authentication/sign-in" />} />
+              <Route path="/authentication/sign-up" element={<SignUp />} />
               <Route path="/register/:eventId" element={<RegisterEvent />} />
               <Route path="/main-events" element={<MainEventsLists />} />
               <Route path="/main-events/sub-events/:mainEventId" element={<SubEventsLists />} />
