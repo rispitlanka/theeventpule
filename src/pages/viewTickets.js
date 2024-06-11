@@ -1,7 +1,7 @@
 import Footer from 'examples/Footer'
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout'
 import DashboardNavbar from 'examples/Navbars/DashboardNavbar'
-import { Card, CircularProgress, Grid } from '@mui/material'
+import { Card, CircularProgress, Grid, TextField } from '@mui/material'
 import DataTable from "examples/Tables/DataTable";
 import ticketsTableData from "layouts/tables/data/ticketsTableData";
 import MDBox from 'components/MDBox'
@@ -46,6 +46,9 @@ export default function ViewTickets() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
+      <MDBox sx={{ mt: 2, mb: 2 }}>
+        <TextField fullWidth  id="standard-basic" label="Search for tickets" variant="standard" />
+      </MDBox>
       <MDBox pt={6} pb={3}>
         {isLoading ?
           <MDBox p={3} display="flex" justifyContent="center">
