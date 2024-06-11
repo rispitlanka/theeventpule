@@ -38,14 +38,19 @@ export default function BookSeats() {
 
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true);
-      await fetchMovieData();
-      await fetchZonesData();
-      await fetchShowData();
-      await fetchBookedTickets();
-      await fetchOtherShows();
-      await fetchScreens();
-      setIsLoading(false);
+      try {
+        setIsLoading(true);
+        await fetchMovieData();
+        await fetchZonesData();
+        await fetchShowData();
+        await fetchBookedTickets();
+        await fetchOtherShows();
+        await fetchScreens();
+      } catch (error) {
+        console.error('Error fetching data', error);
+      } finally {
+        setIsLoading(false);
+      }
     };
     fetchData();
   }, [showId]);
@@ -56,7 +61,6 @@ export default function BookSeats() {
       if (error) throw error;
       if (data) {
         setZonesData(data);
-        setIsLoading(false);
       }
     } catch (error) {
       console.log(error);
@@ -69,7 +73,6 @@ export default function BookSeats() {
       if (error) throw error;
       if (data) {
         setMovieData(data);
-        setIsLoading(false);
       }
     } catch (error) {
       console.log(error);
@@ -87,7 +90,6 @@ export default function BookSeats() {
 
       if (data) {
         setShowData(data);
-        setIsLoading(false);
       }
     } catch (error) {
       console.log(error);
@@ -283,7 +285,7 @@ export default function BookSeats() {
             <Grid container spacing={0} alignItems="center" >
               <Grid item>
                 <MDTypography variant='body2' display="flex" alignItems="center" mr={1}>
-                  <CircleIcon sx={{ color: 'grey', mr: 0.5 }} />Available
+                  <CircleIcon sx={{ color: 'green', mr: 0.5 }} />Available
                 </MDTypography>
               </Grid>
               <Grid item>
@@ -293,7 +295,7 @@ export default function BookSeats() {
               </Grid>
               <Grid item>
                 <MDTypography variant='body2' display="flex" alignItems="center">
-                  <CircleIcon sx={{ color: 'green', mr: 0.5 }} />Booked
+                  <CircleIcon sx={{ color: 'grey', mr: 0.5 }} />Booked
                 </MDTypography>
               </Grid>
 

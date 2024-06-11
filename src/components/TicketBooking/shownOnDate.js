@@ -11,11 +11,13 @@ import { UserDataContext } from 'context';
 
 export default function ShowsOnDate(date) {
     const eqDate = date.date;
-    const [shows, setShows] = useState();
+    const [shows, setShows] = useState([]);
     const [movies, setMovies] = useState();
     const [screens, setScreens] = useState();
     const [showTime, setShowTime] = useState();
     const [isLoading, setIsLoading] = useState(true);
+    const [bookedSeatsCount, setBookedSeatsCount] = useState({});
+    const [totalSeatsCount, setTotalSeatsCount] = useState({});
     const userDetails = useContext(UserDataContext);
     const userTheatreId = userDetails[0].theatreId;
 
@@ -107,6 +109,59 @@ export default function ShowsOnDate(date) {
         return date.toLocaleTimeString('en-US', options);
     };
 
+    const fetchBookedSeatsCount = async (showId) => {
+        try {
+            const { data, error } = await supabase
+                .rpc('get_booked_seats_count', { show_id: showId });
+            if (data) {
+                const bookedSeatsCount = data[0].booked_seats_count;
+                return bookedSeatsCount;
+            }
+            if (error) {
+                console.log(error);
+                return 0;
+            }
+        } catch (error) {
+            console.log('Error in fetching booked tickets', error);
+            return 0;
+        }
+    };
+
+    const fetchTotalSeatsCount = async (screenId) => {
+        try {     
+            const { data, error } = await supabase
+                .rpc('get_all_seats_count', { screen_id: screenId });
+            if (data) {
+                const totalSeatsCount = data[0].seats_count;
+                return totalSeatsCount;
+            }
+            if (error) {
+                console.log(error);
+                return 0;
+            }
+        } catch (error) {
+            console.log('Error in fetching seats count', error);
+            return 0;
+        }
+    };
+
+    const fetchAndSetBookedSeatsCount = async (showId) => {
+        const count = await fetchBookedSeatsCount(showId);
+        setBookedSeatsCount(prevCounts => ({ ...prevCounts, [showId]: count }));
+    };
+
+    const fetchAndSetTotalSeatsCount = async (screenId) => {
+        const count = await fetchTotalSeatsCount(screenId);
+        setTotalSeatsCount(prevCounts => ({ ...prevCounts, [screenId]: count }));
+    };
+
+    useEffect(() => {
+        shows.forEach(show => {
+            fetchAndSetBookedSeatsCount(show.id);
+            fetchAndSetTotalSeatsCount(show.screenId);
+        });
+    }, [shows]);
+
     return (
         <>
             {isLoading ? (
@@ -158,9 +213,23 @@ export default function ShowsOnDate(date) {
                                                     </MDTypography>
                                                     {times && times.length > 0 ? (
                                                         <Box>
-                                                            {times.map((time, index) => (
-                                                                <Chip label={formattedTime(time.time)} variant="outlined" onClick={() => handleChipClick(screenShows.find(sched => sched.showTimeId === time.id), screen, movie)} key={index} sx={{ mr: 1 }} />
-                                                            ))}
+                                                            {times.map((time, index) => {
+                                                                const show = screenShows.find(sched => sched.showTimeId === time.id);
+                                                                const showId = show?.id;
+                                                                const bookedCount = bookedSeatsCount[showId] || 0;
+                                                                const totalCount = totalSeatsCount[screenId] || 0;
+                                                                const isFull = bookedCount >= totalCount;
+                                                                return (
+                                                                    <Chip
+                                                                        key={index}
+                                                                        variant="outlined"
+                                                                        label={`${formattedTime(time.time)} (${bookedCount}/${totalCount})`}
+                                                                        onClick={() => handleChipClick(show, screen, movie)}
+                                                                        sx={{ mr: 1, bgcolor: isFull ? '#e0e0e0' : 'default' }}
+                                                                        disabled={isFull}
+                                                                    />
+                                                                );
+                                                            })}
                                                         </Box>
                                                     ) : (
                                                         <MDTypography>No show times available</MDTypography>

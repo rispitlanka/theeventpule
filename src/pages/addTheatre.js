@@ -40,6 +40,7 @@ export default function AddTheatre() {
     initialValues: {
       name: '',
       address: '',
+      city: '',
       telephone: '',
       coordinatorName: '',
       coordinatorMobile: '',
@@ -47,7 +48,7 @@ export default function AddTheatre() {
     },
     validationSchema: Yup.object({
       name: Yup.string().required('Required'),
-      address: Yup.string().required('Required'),
+      city: Yup.string().required('Required'),
       coordinatorName: Yup.string().required('Required'),
       coordinatorMobile: Yup.string()
         .required('Required')
@@ -126,6 +127,19 @@ export default function AddTheatre() {
                     onBlur={newTheatre.handleBlur}
                     error={newTheatre.touched.address && Boolean(newTheatre.errors.address)}
                     helperText={newTheatre.touched.address && newTheatre.errors.address} />
+                </MDBox>
+                <MDBox p={1}>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    id="outlined-basic"
+                    label="City"
+                    name="city"
+                    value={newTheatre.values.city}
+                    onChange={newTheatre.handleChange}
+                    onBlur={newTheatre.handleBlur}
+                    error={newTheatre.touched.city && Boolean(newTheatre.errors.city)}
+                    helperText={newTheatre.touched.city && newTheatre.errors.city} />
                 </MDBox>
                 <MDBox p={1}>
                   <TextField

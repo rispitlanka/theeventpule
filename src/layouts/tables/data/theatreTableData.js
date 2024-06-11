@@ -73,6 +73,11 @@ export default function data() {
         {theatre.address}
       </MDTypography>
     ),
+    city: (
+      <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        {theatre.city}
+      </MDTypography>
+    ),
     telephone: (
       <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
         {theatre.telephone}
@@ -102,6 +107,7 @@ export default function data() {
   return {
     columns: [
       { Header: "name", accessor: "name", width: "30%", align: "left" },
+      { Header: "city", accessor: "city", align: "center" },
       { Header: "address", accessor: "address", align: "center" },
       { Header: "telephone", accessor: "telephone", align: "center" },
       { Header: "Coordinator Name", accessor: "coordinatorName", align: "center" },

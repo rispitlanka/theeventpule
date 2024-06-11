@@ -27,7 +27,6 @@ export default function ViewTickets() {
         const { data, error } = await supabase
           .rpc('get_ticket_counts', { theatre_id: userTheatreId });
         if (error) throw error;
-        console.log('fetvhed data', data)
         const labels = data.map(item => {
           const date = new Date(item.date);
           return date.toLocaleDateString('en-GB', { month: '2-digit', day: '2-digit', });

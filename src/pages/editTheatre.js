@@ -35,6 +35,7 @@ export default function EditTheatre() {
                     editTheatre.setValues({
                         name: theatre.name,
                         address: theatre.address,
+                        city: theatre.city,
                         telephone: theatre.telephone,
                         coordinatorName: theatre.coordinatorName,
                         coordinatorMobile: theatre.coordinatorMobile,
@@ -47,13 +48,13 @@ export default function EditTheatre() {
         };
 
         fetchTheatreData();
-        // eslint-disable-next-line
     }, [id]);
 
     const editTheatre = useFormik({
         initialValues: {
             name: '',
             address: '',
+            city: '',
             telephone: '',
             coordinatorName: '',
             coordinatorMobile: '',
@@ -61,7 +62,7 @@ export default function EditTheatre() {
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
-            address: Yup.string().required('Required'),
+            city: Yup.string().required('Required'),
             coordinatorName: Yup.string().required('Required'),
             coordinatorMobile: Yup.string()
                 .required('Required')
@@ -146,6 +147,19 @@ export default function EditTheatre() {
                                         onBlur={editTheatre.handleBlur}
                                         error={editTheatre.touched.address && Boolean(editTheatre.errors.address)}
                                         helperText={editTheatre.touched.address && editTheatre.errors.address} />
+                                </MDBox>
+                                <MDBox p={1}>
+                                    <TextField
+                                        fullWidth
+                                        variant="outlined"
+                                        id="outlined-basic"
+                                        label="City"
+                                        name="city"
+                                        value={editTheatre.values.city}
+                                        onChange={editTheatre.handleChange}
+                                        onBlur={editTheatre.handleBlur}
+                                        error={editTheatre.touched.city && Boolean(editTheatre.errors.city)}
+                                        helperText={editTheatre.touched.city && editTheatre.errors.city} />
                                 </MDBox>
                                 <MDBox p={1}>
                                     <TextField
