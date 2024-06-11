@@ -115,7 +115,7 @@ export default function ShowsOnDate(date) {
                 .rpc('get_booked_seats_count', { show_id: showId });
             if (data) {
                 const bookedSeatsCount = data[0].booked_seats_count;
-                return bookedSeatsCount;
+                setBookedSeatsCount(prevCounts => ({ ...prevCounts, [showId]: bookedSeatsCount }));
             }
             if (error) {
                 console.log(error);
@@ -128,12 +128,12 @@ export default function ShowsOnDate(date) {
     };
 
     const fetchTotalSeatsCount = async (screenId) => {
-        try {     
+        try {
             const { data, error } = await supabase
                 .rpc('get_all_seats_count', { screen_id: screenId });
             if (data) {
                 const totalSeatsCount = data[0].seats_count;
-                return totalSeatsCount;
+                setTotalSeatsCount(prevCounts => ({ ...prevCounts, [screenId]: totalSeatsCount }));
             }
             if (error) {
                 console.log(error);
@@ -145,20 +145,10 @@ export default function ShowsOnDate(date) {
         }
     };
 
-    const fetchAndSetBookedSeatsCount = async (showId) => {
-        const count = await fetchBookedSeatsCount(showId);
-        setBookedSeatsCount(prevCounts => ({ ...prevCounts, [showId]: count }));
-    };
-
-    const fetchAndSetTotalSeatsCount = async (screenId) => {
-        const count = await fetchTotalSeatsCount(screenId);
-        setTotalSeatsCount(prevCounts => ({ ...prevCounts, [screenId]: count }));
-    };
-
     useEffect(() => {
         shows.forEach(show => {
-            fetchAndSetBookedSeatsCount(show.id);
-            fetchAndSetTotalSeatsCount(show.screenId);
+            fetchBookedSeatsCount(show.id);
+            fetchTotalSeatsCount(show.screenId);
         });
     }, [shows]);
 
