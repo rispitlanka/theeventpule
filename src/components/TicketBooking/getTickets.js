@@ -16,7 +16,7 @@ import QRCode from 'qrcode';
 import ShortUniqueId from 'short-unique-id';
 
 export default function GetTickets() {
-  const uid = new ShortUniqueId({ length: 5 });
+  const uid = new ShortUniqueId({ dictionary: 'number' });
   const componentRef = useRef();
   const userDetails = useContext(UserDataContext);
   const userTheatreId = userDetails[0].theatreId;
