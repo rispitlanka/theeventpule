@@ -26,6 +26,7 @@ export default function ViewTickets() {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [searched, setSearched] = useState(false);
 
   const getCurrentDate = () => {
     const today = new Date();
@@ -55,10 +56,13 @@ export default function ViewTickets() {
     const fetchTickets = async () => {
       if (referenceId.trim() === '' || showId.length === 0) {
         setTickets([]);
+        setError('');
+        setSearched(false);
         return;
       }
       setLoading(true);
       setError('');
+      setSearched(true);
       try {
         const { data, error } = await supabase
           .from('tickets')
@@ -125,7 +129,10 @@ export default function ViewTickets() {
         <TextField fullWidth id="standard-basic" label="Search for tickets" variant="standard" value={referenceId} onChange={(e) => setReferenceId(e.target.value)} sx={{ mb: 1 }} />
         {loading && <MDTypography>Searching...<CircularProgress /></MDTypography>}
         {error && <MDTypography>{error}</MDTypography>}
-          <Grid container spacing={2}>
+        {!loading && searched && tickets.length === 0 && (
+          <MDTypography variant="body2">No tickets found</MDTypography>
+        )}
+        <Grid container spacing={2}>
           {Object.entries(groupedTickets).map(([refId, tickets]) => (
             <Grid item xs={12} key={refId}>
               <Card>
