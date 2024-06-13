@@ -70,6 +70,7 @@ export default function AddZone() {
         initialValues: {
             name: '',
             price: '',
+            halfPrice: '',
             screenId: screenId,
         },
         validationSchema: Yup.object({
@@ -81,6 +82,7 @@ export default function AddZone() {
                 const zoneData = {
                     name: values.name,
                     price: values.price,
+                    halfPrice: values.halfPrice,
                     screenId: screenId,
                 }
                 await addZoneData(zoneData);
@@ -339,13 +341,26 @@ export default function AddZone() {
                                             fullWidth
                                             variant="outlined"
                                             id="outlined-basic"
-                                            label="Price"
+                                            label="Full Ticket Price"
                                             name="price"
                                             value={newZone.values.price}
                                             onChange={newZone.handleChange}
                                             onBlur={newZone.handleBlur}
                                             error={newZone.touched.price && Boolean(newZone.errors.price)}
                                             helperText={newZone.touched.price && newZone.errors.price} />
+                                    </MDBox>
+                                    <MDBox p={1}>
+                                        <TextField
+                                            fullWidth
+                                            variant="outlined"
+                                            id="outlined-basic"
+                                            label="Half Ticket Price"
+                                            name="halfPrice"
+                                            value={newZone.values.halfPrice}
+                                            onChange={newZone.handleChange}
+                                            onBlur={newZone.handleBlur}
+                                            error={newZone.touched.halfPrice && Boolean(newZone.errors.halfPrice)}
+                                            helperText={newZone.touched.halfPrice && newZone.errors.halfPrice} />
                                     </MDBox>
                                     <MDBox p={1}>
                                         <TextField

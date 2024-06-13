@@ -16,7 +16,7 @@ import QRCode from 'qrcode';
 import ShortUniqueId from 'short-unique-id';
 
 export default function GetTickets() {
-  const uid = new ShortUniqueId({ dictionary: 'number',length:10 });
+  const uid = new ShortUniqueId({ dictionary: 'number', length: 6 });
   const componentRef = useRef();
   const userDetails = useContext(UserDataContext);
   const userTheatreId = userDetails[0].theatreId;
@@ -62,6 +62,7 @@ export default function GetTickets() {
         movieId: movieId,
         theatreId: userTheatreId,
         bookedBy: '',
+        price: seat.price,
         totalPrice: calculateTotalPrice(),
         referenceId: refId,
       }));

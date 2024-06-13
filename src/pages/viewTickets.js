@@ -140,7 +140,7 @@ export default function ViewTickets() {
                   <MDTypography variant="h6">Reference ID: {refId}</MDTypography>
                   <MDTypography>Booked By: {tickets.bookedBy}</MDTypography>
                   {tickets.map((ticket) => (
-                    <Grid key={ticket.id} display={'flex'} flexDirection={'row'}>
+                    <Grid key={ticket.id}>
                       <MDTypography variant="body2" mr={2}>Ticket ID: {ticket.id}</MDTypography>
                     </Grid>
                   ))}

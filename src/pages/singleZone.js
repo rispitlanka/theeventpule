@@ -7,17 +7,37 @@ import Footer from "examples/Footer";
 import ChairIcon from "@mui/icons-material/Chair";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { FixedSizeGrid } from 'react-window';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 export default function SingleZone() {
     const { id } = useParams();
     const [seatsData, setSeatsData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [zoneData, setZoneData] = useState([]);
+    const navigate = useNavigate();
+    const openPage = (route) => {
+        navigate(route);
+    };
 
     useEffect(() => {
         fetchSeatsData();
+        fetchZoneData();
     }, []);
+
+    const fetchZoneData = async () => {
+        try {
+            const { data, error } = await supabase.from('zones').select('*').eq('id', id);
+            if (error) throw error;
+            if (data) {
+                setZoneData(data);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     const fetchSeatsData = async () => {
         try {
@@ -65,6 +85,21 @@ export default function SingleZone() {
                 p: 3,
                 mb: 2,
             }}>
+                {zoneData && zoneData.length > 0 && zoneData.map((zone => (
+                    <Grid key={zone.id} sx={{ display: 'flex', flexDirection: 'row', justifyContent: "space-between", mb: 1 }}>
+                        <Grid item>
+                            <Grid display={'flex'} flexDirection={'row'}>
+                                <MDTypography fontWeight="bold" mr={2}>{zone.name}</MDTypography>
+                                <MDTypography fontWeight="light" mr={1}>Full Ticket : Rs.{zone.price}</MDTypography>
+                                <MDTypography fontWeight="light" mr={1}>Half Ticket : Rs.{zone.halfPrice}</MDTypography>
+                            </Grid>
+                        </Grid>
+                        <Grid item >
+                            <EditIcon onClick={() => { openPage(`/theatres/single-theatre/single-screen/single-zone/edit-zone/${id}`) }} sx={{ cursor: 'pointer', mr: 1 }} />
+                            <DeleteIcon />
+                        </Grid>
+                    </Grid>
+                )))}
                 <MDBox>
                     <MDTypography variant="h6" gutterBottom>
                         Seat Layout

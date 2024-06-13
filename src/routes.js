@@ -106,6 +106,7 @@ import RegisterEvent from "pages/registerEvent";
 import ViewEventRegistrations from "pages/viewEventRegistrations";
 import AddMainEvent from "pages/addMainEvent";
 import EditMainEvent from "pages/editMainEvent";
+import EditZone from "pages/editZone";
 
 const routes = [
   {
@@ -415,6 +416,10 @@ const routes = [
   {
     route: "/theatres/single-theatre/single-screen/single-zone/:id",
     component: <SingleZone />,
+  },
+  {
+    route: "/theatres/single-theatre/single-screen/single-zone/edit-zone/:id",
+    component: <EditZone />,
   },
   {
     route: "/users/add-user",

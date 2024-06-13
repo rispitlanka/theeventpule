@@ -18,10 +18,12 @@ import MDBox from 'components/MDBox';
 import MDTypography from 'components/MDTypography';
 import { useNavigate, useParams } from 'react-router-dom';
 import MDButton from 'components/MDButton';
+import DeleteDialog from 'components/DeleteDialogBox/deleteDialog';
 
 export default function EditScreen() {
   const navigate = useNavigate();
   const { screenId } = useParams();
+  const [openDeleteDialogBox, setOpenDeleteDialogBox] = useState();
 
   useEffect(() => {
     const fetchScreenData = async () => {
@@ -62,7 +64,7 @@ export default function EditScreen() {
       name: Yup.string().required('Required'),
     }),
     onSubmit: async (values, { resetForm }) => {
-      await editTheatreData(values);
+      await editScreenData(values);
       resetForm();
       toast.info('Screen has been successfully updated!');
       setTimeout(() => {
@@ -71,7 +73,7 @@ export default function EditScreen() {
     },
   });
 
-  const editTheatreData = async (values) => {
+  const editScreenData = async (values) => {
     try {
       const { error } = await supabase.from('screens').update(values).eq('id', screenId);
       if (error) {
@@ -80,9 +82,34 @@ export default function EditScreen() {
       console.log('Data updated successfully');
     } catch (error) {
       console.error('Error updating data:', error.message);
-      throw new Error('Error updating data:', error.message);
     }
   };
+
+  const handleDelete = async () => {
+    setOpenDeleteDialogBox(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      const { error } = await supabase.from('screens').delete().eq('id', screenId);
+      if (error) {
+        throw error;
+      }
+      console.log('Data deleted successfully');
+      setOpenDeleteDialogBox(false);
+      toast.error('Screen has been successfully deleted!');
+      setTimeout(() => {
+        navigate(-2);
+      }, 1500);
+    } catch (error) {
+      console.error('Error deleting data:', error.message);
+    }
+  };
+
+  const closeDeleteDialogBox = () => {
+    setOpenDeleteDialogBox(false);
+  };
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -186,7 +213,8 @@ export default function EditScreen() {
                       helperText={editScreen.touched.facilities && editScreen.errors.facilities} />
                   </MDBox>
                   <MDBox p={1}>
-                    <MDButton color='info' type='submit'>Update</MDButton>
+                    <MDButton color='info' type='submit' sx={{ mr: 1 }}>Update</MDButton>
+                    <MDButton color='error' onClick={handleDelete}>Delete</MDButton>
                   </MDBox>
                 </MDBox>
               </Card>
@@ -194,6 +222,11 @@ export default function EditScreen() {
           </Grid>
         </Grid>
       </MDBox>
+      <DeleteDialog
+        open={openDeleteDialogBox}
+        onClose={closeDeleteDialogBox}
+        onDelete={handleDeleteConfirm}
+      />
       <Footer />
       <ToastContainer
         position="bottom-right"
