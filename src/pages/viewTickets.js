@@ -127,7 +127,7 @@ export default function ViewTickets() {
       <DashboardNavbar />
       <MDBox sx={{ mt: 2, mb: 2 }}>
         <TextField fullWidth id="standard-basic" label="Search for tickets" variant="standard" value={referenceId} onChange={(e) => setReferenceId(e.target.value)} sx={{ mb: 1 }} />
-        {loading && <MDTypography>Searching...<CircularProgress /></MDTypography>}
+        {loading && <MDTypography>Searching...<CircularProgress color="info" /></MDTypography>}
         {error && <MDTypography>{error}</MDTypography>}
         {!loading && searched && tickets.length === 0 && (
           <MDTypography variant="body2">No tickets found</MDTypography>
@@ -138,10 +138,10 @@ export default function ViewTickets() {
               <Card>
                 <CardContent>
                   <MDTypography variant="h6">Reference ID: {refId}</MDTypography>
+                  <MDTypography>Booked By: {tickets.bookedBy}</MDTypography>
                   {tickets.map((ticket) => (
                     <Grid key={ticket.id} display={'flex'} flexDirection={'row'}>
                       <MDTypography variant="body2" mr={2}>Ticket ID: {ticket.id}</MDTypography>
-                      <MDTypography variant="body2">Booked By: {ticket.bookedBy}</MDTypography>
                     </Grid>
                   ))}
                 </CardContent>
