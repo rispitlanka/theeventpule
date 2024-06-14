@@ -18,10 +18,12 @@ import MDBox from 'components/MDBox';
 import MDTypography from 'components/MDTypography';
 import { useNavigate, useParams } from 'react-router-dom';
 import MDButton from 'components/MDButton';
+import DeleteDialog from 'components/DeleteDialogBox/deleteDialog';
 
 export default function EditZone() {
     const navigate = useNavigate();
     const { id } = useParams();
+    const [openDeleteDialogBox, setOpenDeleteDialogBox] = useState();
 
     useEffect(() => {
         const fetchZoneData = async () => {
@@ -79,6 +81,32 @@ export default function EditZone() {
             console.error('Error updating data:', error.message);
         }
     };
+
+    const handleDelete = async () => {
+        setOpenDeleteDialogBox(true);
+    };
+
+    const closeDeleteDialogBox = () => {
+        setOpenDeleteDialogBox(false);
+    };
+
+    const handleDeleteConfirm = async () => {
+        try {
+            const { error } = await supabase.from('zones').delete().eq('id', id);
+            if (error) {
+                throw error;
+            }
+            console.log('Data deleted successfully');
+            setOpenDeleteDialogBox(false);
+            toast.error('Zone has been successfully deleted!');
+            setTimeout(() => {
+                navigate(-2);
+            }, 1500);
+        } catch (error) {
+            console.error('Error deleting data:', error.message);
+        }
+    };
+
     return (
         <DashboardLayout>
             <DashboardNavbar />
@@ -144,7 +172,8 @@ export default function EditZone() {
                                             helperText={editZone.touched.halfPrice && editZone.errors.halfPrice} />                  </MDBox>
 
                                     <MDBox p={1}>
-                                        <MDButton color='info' type='submit'>Update</MDButton>
+                                        <MDButton color='info' type='submit' sx={{ mr: 1 }}>Update</MDButton>
+                                        <MDButton color='error' onClick={handleDelete}>Delete</MDButton>
                                     </MDBox>
                                 </MDBox>
                             </Card>
@@ -152,6 +181,12 @@ export default function EditZone() {
                     </Grid>
                 </Grid>
             </MDBox>
+            <DeleteDialog
+                open={openDeleteDialogBox}
+                onClose={closeDeleteDialogBox}
+                onDelete={handleDeleteConfirm}
+                name={'zone'}
+            />
             <Footer />
             <ToastContainer
                 position="bottom-right"

@@ -5,7 +5,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
 import PropTypes from 'prop-types';
 
-export default function DeleteDialog({ open, onClose, onDelete }) {
+export default function DeleteDialog({ open, onClose, onDelete, name }) {
 
     const handleClose = () => {
         onClose();
@@ -24,13 +24,11 @@ export default function DeleteDialog({ open, onClose, onDelete }) {
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="alert-dialog-title">
-                    Are you sure you want to delete this?
+                    Are you sure you want to delete this {name}?
                 </DialogTitle>
                 <DialogActions>
-                    <Button onClick={handleClose}>Cancel</Button>
-                    <Button onClick={handleDelete} autoFocus>
-                        Delete
-                    </Button>
+                    <Button onClick={handleClose} autoFocus>Cancel</Button>
+                    <Button sx={{ color: 'red' }} onClick={handleDelete}>Delete</Button>
                 </DialogActions>
             </Dialog>
         </>
@@ -41,4 +39,5 @@ DeleteDialog.propTypes = {
     open: PropTypes.isRequired,
     onClose: PropTypes.isRequired,
     onDelete: PropTypes.func.isRequired,
+    name: PropTypes.isRequired
 };

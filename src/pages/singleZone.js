@@ -96,7 +96,6 @@ export default function SingleZone() {
                         </Grid>
                         <Grid item >
                             <EditIcon onClick={() => { openPage(`/theatres/single-theatre/single-screen/single-zone/edit-zone/${id}`) }} sx={{ cursor: 'pointer', mr: 1 }} />
-                            <DeleteIcon />
                         </Grid>
                     </Grid>
                 )))}

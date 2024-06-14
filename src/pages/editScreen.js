@@ -89,6 +89,10 @@ export default function EditScreen() {
     setOpenDeleteDialogBox(true);
   };
 
+  const closeDeleteDialogBox = () => {
+    setOpenDeleteDialogBox(false);
+  };
+
   const handleDeleteConfirm = async () => {
     try {
       const { error } = await supabase.from('screens').delete().eq('id', screenId);
@@ -104,10 +108,6 @@ export default function EditScreen() {
     } catch (error) {
       console.error('Error deleting data:', error.message);
     }
-  };
-
-  const closeDeleteDialogBox = () => {
-    setOpenDeleteDialogBox(false);
   };
 
   return (
@@ -226,6 +226,7 @@ export default function EditScreen() {
         open={openDeleteDialogBox}
         onClose={closeDeleteDialogBox}
         onDelete={handleDeleteConfirm}
+        name={'screen'}
       />
       <Footer />
       <ToastContainer

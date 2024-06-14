@@ -296,7 +296,6 @@ export default function AddZone() {
         }
     };
 
-
     return (
         <DashboardLayout>
             <DashboardNavbar />
@@ -489,7 +488,7 @@ export default function AddZone() {
                                     </MDBox>
                                 </form>
                                 <MDBox p={1} sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <MDButton color='info' onClick={handleFormsSubmit}>Save</MDButton>
+                                    <MDButton color='info' onClick={handleFormsSubmit} disabled={seatDetails.length <= 0}>Save</MDButton>
                                     {isSubmitting && <CircularProgress color='info' sx={{ marginLeft: '15px' }} />}
                                 </MDBox>
                             </MDBox>
