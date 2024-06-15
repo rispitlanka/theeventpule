@@ -419,7 +419,7 @@ export default function AddZone() {
 
                                                             return (
                                                                 <div style={{ ...style, display: 'flex', alignItems: 'center', justifyContent: 'center', }}>
-                                                                    {isClicked && isHeaderRow && isHeaderColumn ? (
+                                                                    {isHeaderRow && isHeaderColumn ? (
                                                                         <div></div>
                                                                     ) : isHeaderRow ? (
                                                                         <Box sx={{ m: 1, display: 'flex', flexDirection: 'column' }}>
@@ -496,7 +496,7 @@ export default function AddZone() {
                                     }
                                 </form>
                                 <MDBox p={1} sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <MDButton color='info' onClick={handleFormsSubmit} disabled={seatDetails.length <= 0}>Save</MDButton>
+                                    <MDButton color='info' onClick={handleFormsSubmit} disabled={seatDetails.length <= 0 || !isClicked}>Save</MDButton>
                                     {isSubmitting && <CircularProgress color='info' sx={{ marginLeft: '15px' }} />}
                                 </MDBox>
                             </MDBox>
