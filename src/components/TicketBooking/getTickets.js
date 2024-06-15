@@ -13,8 +13,10 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ReactToPrint from 'react-to-print';
 import QRCode from 'qrcode';
+import ShortUniqueId from 'short-unique-id';
 
 export default function GetTickets() {
+  const uid = new ShortUniqueId({ dictionary: 'number', length: 6 });
   const componentRef = useRef();
   const userDetails = useContext(UserDataContext);
   const userTheatreId = userDetails[0].theatreId;
@@ -52,6 +54,7 @@ export default function GetTickets() {
   }
 
   const handleBookTickets = async () => {
+    const refId = uid.rnd()
     try {
       const dataToInsert = bookedSeats && bookedSeats.length > 0 && bookedSeats.map(seat => ({
         seatId: seat.seatId,
@@ -59,7 +62,9 @@ export default function GetTickets() {
         movieId: movieId,
         theatreId: userTheatreId,
         bookedBy: '',
+        price: seat.price,
         totalPrice: calculateTotalPrice(),
+        referenceId: refId,
       }));
       console.log(dataToInsert)
       const { data, error } = await supabase.from('tickets').insert(dataToInsert).select('*');

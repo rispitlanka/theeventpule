@@ -1,7 +1,7 @@
 import Footer from 'examples/Footer'
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout'
 import DashboardNavbar from 'examples/Navbars/DashboardNavbar'
-import { Card, CircularProgress, Grid } from '@mui/material'
+import { Card, CardContent, CircularProgress, Grid, List, ListItem, ListItemText, TextField } from '@mui/material'
 import DataTable from "examples/Tables/DataTable";
 import ticketsTableData from "layouts/tables/data/ticketsTableData";
 import MDBox from 'components/MDBox'
@@ -20,6 +20,72 @@ export default function ViewTickets() {
   const userTheatreId = userDetails[0].theatreId;
   const [chartData, setChartData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showId, setShowId] = useState([]);
+
+  const [referenceId, setReferenceId] = useState('');
+  const [tickets, setTickets] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [searched, setSearched] = useState(false);
+
+  const getCurrentDate = () => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  useEffect(() => {
+    const fetchShowIdsByDate = async () => {
+      try {
+        const currentDate = getCurrentDate();
+        const { data, error } = await supabase
+          .from('shows')
+          .select('id')
+          .eq('theatreId', userTheatreId)
+          .gte('date', currentDate);
+
+        if (error) throw error;
+        const showIds = data.map(show => show.id);
+        setShowId(showIds);
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    const fetchTickets = async () => {
+      if (referenceId.trim() === '' || showId.length === 0) {
+        setTickets([]);
+        setError('');
+        setSearched(false);
+        return;
+      }
+      setLoading(true);
+      setError('');
+      setSearched(true);
+      try {
+        const { data, error } = await supabase
+          .from('tickets')
+          .select('*')
+          .in('showId', showId)
+          .ilike('referenceId', `%${referenceId}%`);
+
+        if (error) throw error;
+        setTickets(data);
+      } catch (error) {
+        setError('Error fetching tickets');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const delayDebounceFn = setTimeout(() => {
+      fetchTickets();
+    }, 500);
+
+    fetchShowIdsByDate();
+    return () => clearTimeout(delayDebounceFn);
+  }, [referenceId]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,7 +93,6 @@ export default function ViewTickets() {
         const { data, error } = await supabase
           .rpc('get_ticket_counts', { theatre_id: userTheatreId });
         if (error) throw error;
-        console.log('fetvhed data', data)
         const labels = data.map(item => {
           const date = new Date(item.date);
           return date.toLocaleDateString('en-GB', { month: '2-digit', day: '2-digit', });
@@ -44,9 +109,47 @@ export default function ViewTickets() {
     fetchData();
   }, [userTheatreId]);
 
+  const groupTicketsByReferenceId = (tickets) => {
+    return tickets.reduce((groups, ticket) => {
+      const { referenceId } = ticket;
+      if (!groups[referenceId]) {
+        groups[referenceId] = [];
+      }
+      groups[referenceId].push(ticket);
+      return groups;
+    }, {});
+  };
+
+  const groupedTickets = groupTicketsByReferenceId(tickets);
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
+      <MDBox sx={{ mt: 2, mb: 2 }}>
+        <TextField fullWidth id="standard-basic" label="Search for tickets" variant="standard" value={referenceId} onChange={(e) => setReferenceId(e.target.value)} sx={{ mb: 1 }} />
+        {loading && <MDTypography>Searching...<CircularProgress color="info" /></MDTypography>}
+        {error && <MDTypography>{error}</MDTypography>}
+        {!loading && searched && tickets.length === 0 && (
+          <MDTypography variant="body2">No tickets found</MDTypography>
+        )}
+        <Grid container spacing={2}>
+          {Object.entries(groupedTickets).map(([refId, tickets]) => (
+            <Grid item xs={12} key={refId}>
+              <Card>
+                <CardContent>
+                  <MDTypography variant="h6">Reference ID: {refId}</MDTypography>
+                  <MDTypography>Booked By: {tickets.bookedBy}</MDTypography>
+                  {tickets.map((ticket) => (
+                    <Grid key={ticket.id}>
+                      <MDTypography variant="body2" mr={2}>Ticket ID: {ticket.id}</MDTypography>
+                    </Grid>
+                  ))}
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </MDBox>
       <MDBox pt={6} pb={3}>
         {isLoading ?
           <MDBox p={3} display="flex" justifyContent="center">

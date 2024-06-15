@@ -18,10 +18,12 @@ import Footer from "examples/Footer";
 import MDBox from 'components/MDBox';
 import MDTypography from 'components/MDTypography';
 import MDButton from 'components/MDButton';
+import DeleteDialog from 'components/DeleteDialogBox/deleteDialog';
 
 export default function EditTheatre() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const [openDeleteDialogBox, setOpenDeleteDialogBox] = useState();
 
     useEffect(() => {
         const fetchTheatreData = async () => {
@@ -35,6 +37,7 @@ export default function EditTheatre() {
                     editTheatre.setValues({
                         name: theatre.name,
                         address: theatre.address,
+                        city: theatre.city,
                         telephone: theatre.telephone,
                         coordinatorName: theatre.coordinatorName,
                         coordinatorMobile: theatre.coordinatorMobile,
@@ -47,13 +50,13 @@ export default function EditTheatre() {
         };
 
         fetchTheatreData();
-        // eslint-disable-next-line
     }, [id]);
 
     const editTheatre = useFormik({
         initialValues: {
             name: '',
             address: '',
+            city: '',
             telephone: '',
             coordinatorName: '',
             coordinatorMobile: '',
@@ -61,7 +64,7 @@ export default function EditTheatre() {
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
-            address: Yup.string().required('Required'),
+            city: Yup.string().required('Required'),
             coordinatorName: Yup.string().required('Required'),
             coordinatorMobile: Yup.string()
                 .required('Required')
@@ -95,6 +98,31 @@ export default function EditTheatre() {
         } catch (error) {
             console.error('Error updating data:', error.message);
             throw new Error('Error updating data:', error.message);
+        }
+    };
+
+    const handleDelete = async () => {
+        setOpenDeleteDialogBox(true);
+    };
+
+    const closeDeleteDialogBox = () => {
+        setOpenDeleteDialogBox(false);
+    };
+
+    const handleDeleteConfirm = async () => {
+        try {
+            const { error } = await supabase.from('theatres').delete().eq('id', id);
+            if (error) {
+                throw error;
+            }
+            console.log('Data deleted successfully');
+            setOpenDeleteDialogBox(false);
+            toast.error('Theatre has been successfully deleted!');
+            setTimeout(() => {
+                navigate(-1);
+            }, 1500);
+        } catch (error) {
+            console.error('Error deleting data:', error.message);
         }
     };
 
@@ -152,6 +180,19 @@ export default function EditTheatre() {
                                         fullWidth
                                         variant="outlined"
                                         id="outlined-basic"
+                                        label="City"
+                                        name="city"
+                                        value={editTheatre.values.city}
+                                        onChange={editTheatre.handleChange}
+                                        onBlur={editTheatre.handleBlur}
+                                        error={editTheatre.touched.city && Boolean(editTheatre.errors.city)}
+                                        helperText={editTheatre.touched.city && editTheatre.errors.city} />
+                                </MDBox>
+                                <MDBox p={1}>
+                                    <TextField
+                                        fullWidth
+                                        variant="outlined"
+                                        id="outlined-basic"
                                         label="Telephone"
                                         name="telephone"
                                         value={editTheatre.values.telephone}
@@ -199,14 +240,20 @@ export default function EditTheatre() {
                                         helperText={editTheatre.touched.coordinatorMail && editTheatre.errors.coordinatorMail} />
                                 </MDBox>
                                 <MDBox p={1}>
-                                    <MDButton color='info' type='submit'>Update</MDButton>
-                                </MDBox>
+                                    <MDButton color='info' type='submit' sx={{ mr: 1 }}>Update</MDButton>
+                                    <MDButton color='error' onClick={handleDelete}>Delete</MDButton>                                </MDBox>
                             </MDBox>
                         </Card>
                     </form>
                 </Grid>
             </Grid>
         </MDBox>
+            <DeleteDialog
+                open={openDeleteDialogBox}
+                onClose={closeDeleteDialogBox}
+                onDelete={handleDeleteConfirm}
+                name={'theatre'}
+            />
             <Footer />
             <ToastContainer
                 position="bottom-right"

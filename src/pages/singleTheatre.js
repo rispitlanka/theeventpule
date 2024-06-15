@@ -120,7 +120,7 @@ export default function SingleTheatre() {
                         {theatreData[0].name}
                       </MDTypography>
                       <MDTypography variant="button" color="text" fontWeight="regular">
-                        {theatreData[0].address}
+                        {theatreData[0].city}
                       </MDTypography>
                     </MDBox>
                   </Grid>

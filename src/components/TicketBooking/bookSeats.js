@@ -13,6 +13,8 @@ import MDButton from 'components/MDButton';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import GetTickets from './getTickets';
 import CircleIcon from '@mui/icons-material/Circle';
+import StarIcon from '@mui/icons-material/Star';
+import StarHalfIcon from '@mui/icons-material/StarHalf';
 
 export default function BookSeats() {
   const [zonesData, setZonesData] = useState([]);
@@ -25,6 +27,7 @@ export default function BookSeats() {
   const [showData, setShowData] = useState([]);
   const [movieData, setMovieData] = useState([]);
   const [otherShows, setOtherShows] = useState([]);
+  const [seatType, setSeatType] = useState('full');
   const navigate = useNavigate();
   const location = useLocation();
   const { showId, screenId } = useParams();
@@ -38,14 +41,19 @@ export default function BookSeats() {
 
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true);
-      await fetchMovieData();
-      await fetchZonesData();
-      await fetchShowData();
-      await fetchBookedTickets();
-      await fetchOtherShows();
-      await fetchScreens();
-      setIsLoading(false);
+      try {
+        setIsLoading(true);
+        await fetchMovieData();
+        await fetchZonesData();
+        await fetchShowData();
+        await fetchBookedTickets();
+        await fetchOtherShows();
+        await fetchScreens();
+      } catch (error) {
+        console.error('Error fetching data', error);
+      } finally {
+        setIsLoading(false);
+      }
     };
     fetchData();
   }, [showId]);
@@ -56,7 +64,6 @@ export default function BookSeats() {
       if (error) throw error;
       if (data) {
         setZonesData(data);
-        setIsLoading(false);
       }
     } catch (error) {
       console.log(error);
@@ -69,7 +76,6 @@ export default function BookSeats() {
       if (error) throw error;
       if (data) {
         setMovieData(data);
-        setIsLoading(false);
       }
     } catch (error) {
       console.log(error);
@@ -87,7 +93,6 @@ export default function BookSeats() {
 
       if (data) {
         setShowData(data);
-        setIsLoading(false);
       }
     } catch (error) {
       console.log(error);
@@ -187,6 +192,10 @@ export default function BookSeats() {
   };
 
   const handleSeatClick = (zoneId, zoneName, price, rowIndex, columnIndex, seatData) => {
+    let newPrice = price;
+    if (seatType === 'half') {
+      newPrice = zonesData.find(zone => zone.id === zoneId).halfPrice;
+    }
     console.log(seatData)
     const seatIndex = bookedSeats.findIndex(seat => seat.zoneId === zoneId && seat.rowIndex === rowIndex && seat.columnIndex === columnIndex);
     if (seatIndex !== -1) {
@@ -200,7 +209,7 @@ export default function BookSeats() {
       const newBookedSeat = {
         zoneId,
         zoneName,
-        price,
+        price: newPrice,
         rowIndex,
         columnIndex,
         seatId: seatData.id,
@@ -212,6 +221,13 @@ export default function BookSeats() {
       updateBookedSeats(updatedSeats);
     }
   };
+
+  const handleFull = () => {
+    setSeatType('full');
+  }
+  const handleHalf = () => {
+    setSeatType('half');
+  }
 
   const screenName = screens && screens.length > 0 ? screens[0].name : '';
   const time = showData && showData.length > 0 ? showData[0].showTime.time : '';
@@ -279,29 +295,49 @@ export default function BookSeats() {
               </MDBox>
             </Grid>
           </Card>
-          <MDBox sx={{ position: 'absolute', mt: 3, }}>
-            <Grid container spacing={0} alignItems="center" >
+          <MDBox sx={{ mt: 3 }}>
+            <Grid container justifyContent="space-between" display={'flex'} flexDirection={'row'}>
               <Grid item>
-                <MDTypography variant='body2' display="flex" alignItems="center" mr={1}>
-                  <CircleIcon sx={{ color: 'grey', mr: 0.5 }} />Available
-                </MDTypography>
+                <Grid container spacing={1} alignItems="center">
+                  <Grid item>
+                    <MDTypography display="flex" alignItems="center" mr={1}>Select Seat Type:</MDTypography>
+                  </Grid>
+                  <Grid item>
+                    <MDTypography display="flex" alignItems="center">
+                      <StarIcon onClick={handleFull} style={{ color: seatType === 'full' ? 'blue' : 'grey', cursor: 'pointer' }} />Full
+                    </MDTypography>
+                  </Grid>
+                  <Grid item>
+                    <MDTypography display="flex" alignItems="center" >
+                      <StarHalfIcon onClick={handleHalf} style={{ color: seatType === 'half' ? 'blue' : 'grey', cursor: 'pointer' }} />Half
+                    </MDTypography>
+                  </Grid>
+                </Grid>
               </Grid>
               <Grid item>
-                <MDTypography variant='body2' display="flex" alignItems="center" mr={1}>
-                  <CircleIcon sx={{ color: 'black', mr: 0.5 }} />Selected
-                </MDTypography>
+                <Grid container alignItems="center">
+                  <Grid item>
+                    <MDTypography variant='body2' display="flex" alignItems="center" mr={1}>
+                      <CircleIcon sx={{ color: 'green', mr: 0.5 }} />Available
+                    </MDTypography>
+                  </Grid>
+                  <Grid item>
+                    <MDTypography variant='body2' display="flex" alignItems="center" mr={1}>
+                      <CircleIcon sx={{ color: 'black', mr: 0.5 }} />Selected
+                    </MDTypography>
+                  </Grid>
+                  <Grid item>
+                    <MDTypography variant='body2' display="flex" alignItems="center">
+                      <CircleIcon sx={{ color: 'grey', mr: 0.5 }} />Booked
+                    </MDTypography>
+                  </Grid>
+                </Grid>
               </Grid>
-              <Grid item>
-                <MDTypography variant='body2' display="flex" alignItems="center">
-                  <CircleIcon sx={{ color: 'green', mr: 0.5 }} />Booked
-                </MDTypography>
-              </Grid>
-
             </Grid>
           </MDBox>
           <Card sx={{
             position: 'relative',
-            mt: 7,
+            mt: 1,
             mb: 2,
             pb: 2,
             display: 'flex',

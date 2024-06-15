@@ -30,6 +30,7 @@ export default function AddZone() {
     const [disabledSeats, setDisabledSeats] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [isClicked, setIsClicked] = useState(false);
     const navigate = useNavigate();
     let currentZoneId = '';
 
@@ -70,6 +71,7 @@ export default function AddZone() {
         initialValues: {
             name: '',
             price: '',
+            halfPrice: '',
             screenId: screenId,
         },
         validationSchema: Yup.object({
@@ -81,6 +83,7 @@ export default function AddZone() {
                 const zoneData = {
                     name: values.name,
                     price: values.price,
+                    halfPrice: values.halfPrice,
                     screenId: screenId,
                 }
                 await addZoneData(zoneData);
@@ -159,14 +162,17 @@ export default function AddZone() {
         setRowHeads(newRowHeads);
 
         setIsLoading(true);
+        setIsClicked(true);
     };
 
     const handleColumnsChange = (event) => {
+        setIsClicked(false);
         const value = parseInt(event.target.value);
         setColumns(isNaN(value) ? 0 : value);
     };
 
     const handleRowsChange = (event) => {
+        setIsClicked(false);
         const value = parseInt(event.target.value);
         setRows(isNaN(value) ? 0 : value);
     };
@@ -294,7 +300,6 @@ export default function AddZone() {
         }
     };
 
-
     return (
         <DashboardLayout>
             <DashboardNavbar />
@@ -339,13 +344,26 @@ export default function AddZone() {
                                             fullWidth
                                             variant="outlined"
                                             id="outlined-basic"
-                                            label="Price"
+                                            label="Full Ticket Price"
                                             name="price"
                                             value={newZone.values.price}
                                             onChange={newZone.handleChange}
                                             onBlur={newZone.handleBlur}
                                             error={newZone.touched.price && Boolean(newZone.errors.price)}
                                             helperText={newZone.touched.price && newZone.errors.price} />
+                                    </MDBox>
+                                    <MDBox p={1}>
+                                        <TextField
+                                            fullWidth
+                                            variant="outlined"
+                                            id="outlined-basic"
+                                            label="Half Ticket Price"
+                                            name="halfPrice"
+                                            value={newZone.values.halfPrice}
+                                            onChange={newZone.handleChange}
+                                            onBlur={newZone.handleBlur}
+                                            error={newZone.touched.halfPrice && Boolean(newZone.errors.halfPrice)}
+                                            helperText={newZone.touched.halfPrice && newZone.errors.halfPrice} />
                                     </MDBox>
                                     <MDBox p={1}>
                                         <TextField
@@ -378,103 +396,107 @@ export default function AddZone() {
                                 </form>
                                 <MDBox ml={-2}><Button onClick={() => handleShowClick()}>Generate Seat Layout</Button></MDBox>
                                 <form onSubmit={newSeat.handleSubmit}>
-                                    <MDTypography m={1} variant="h6">Seat Layout</MDTypography>
-                                    <MDBox m={1} p={3} sx={{ overflowX: 'auto' }}>
-                                        {isLoading ?
-                                            <Box sx={{ position: 'absolute', top: '50%', left: '50%' }}>
-                                                <CircularProgress />
-                                            </Box>
-                                            :
-                                            <FixedSizeGrid
-                                                columnCount={columns + 1}
-                                                columnWidth={80}
-                                                rowCount={rows + 1}
-                                                rowHeight={80}
-                                                width={1600}
-                                                height={400}
-                                            >
-                                                {({ columnIndex, rowIndex, style }) => {
-                                                    const isHeaderRow = rowIndex === 0;
-                                                    const isHeaderColumn = columnIndex === 0;
+                                    {isClicked &&
+                                        <>
+                                            <MDTypography m={1} variant="h6">Seat Layout</MDTypography>
+                                            <MDBox m={1} p={3} sx={{ overflowX: 'auto' }}>
+                                                {isLoading ?
+                                                    <Box sx={{ position: 'absolute', top: '50%', left: '50%' }}>
+                                                        <CircularProgress />
+                                                    </Box>
+                                                    :
+                                                    <FixedSizeGrid
+                                                        columnCount={columns + 1}
+                                                        columnWidth={80}
+                                                        rowCount={rows + 1}
+                                                        rowHeight={80}
+                                                        width={1600}
+                                                        height={400}
+                                                    >
+                                                        {({ columnIndex, rowIndex, style }) => {
+                                                            const isHeaderRow = rowIndex === 0;
+                                                            const isHeaderColumn = columnIndex === 0;
 
-                                                    return (
-                                                        <div style={{ ...style, display: 'flex', alignItems: 'center', justifyContent: 'center', }}>
-                                                            {isHeaderRow && isHeaderColumn ? (
-                                                                <div></div>
-                                                            ) : isHeaderRow ? (
-                                                                <Box sx={{ m: 1, display: 'flex', flexDirection: 'column' }}>
-                                                                    <TextField
-                                                                        sx={{ width: '60px', '& input': { textAlign: 'center' } }}
-                                                                        id={`column-head-${columnIndex}`}
-                                                                        label={`Col ${columnIndex}`}
-                                                                        variant="outlined"
-                                                                        size="small"
-                                                                        value={columnHeads[columnIndex - 1]}
-                                                                        onChange={(event) => handleColumnHeadChange(columnIndex - 1, event)}
-                                                                    />
-                                                                    <IconButton onClick={() => handleColumnDisable(columnIndex - 1)}><BlockIcon /></IconButton>
-                                                                </Box>
-                                                            ) : isHeaderColumn ? (
-                                                                <>
-                                                                    <TextField
-                                                                        sx={{ width: '55px', '& input': { textAlign: 'center' } }}
-                                                                        id={`row-head-${rowIndex}`}
-                                                                        label={`Row ${rowIndex}`}
-                                                                        variant="outlined"
-                                                                        size="small"
-                                                                        value={rowHeads[rowIndex - 1]}
-                                                                        onChange={(event) => handleRowHeadChange(rowIndex - 1, event)}
-                                                                    />
-                                                                    <IconButton onClick={() => handleRowDisable(rowIndex - 1)}><BlockIcon /></IconButton>
-                                                                </>
-                                                            ) : (
-                                                                <Grid container alignItems="center" justifyContent="center" m={1}>
-                                                                    {disabledColumns.includes(columnIndex - 1) || disabledRows.includes(rowIndex - 1) || disabledSeats.includes((rowIndex - 1) * columns + (columnIndex - 1)) ? (
-                                                                        <>
-                                                                            <IconButton onClick={() => handleSeatDisable(rowIndex - 1, columnIndex - 1)}><ChairIcon style={{ color: 'grey', mt: 3 }} /></IconButton>
+                                                            return (
+                                                                <div style={{ ...style, display: 'flex', alignItems: 'center', justifyContent: 'center', }}>
+                                                                    {isHeaderRow && isHeaderColumn ? (
+                                                                        <div></div>
+                                                                    ) : isHeaderRow ? (
+                                                                        <Box sx={{ m: 1, display: 'flex', flexDirection: 'column' }}>
                                                                             <TextField
-                                                                                sx={{ mt: -1 }}
-                                                                                size='small'
-                                                                                id={`seat-name-${rowIndex - 1}-${columnIndex - 1}`}
-                                                                                name='seatName'
-                                                                                value={editedSeatNames[`${rowIndex - 1}-${columnIndex - 1}`]}
-                                                                                onChange={(event) => handleSeatNameChange(event, rowIndex - 1, columnIndex - 1)}
-                                                                                onBlur={() => handleSaveSeatName(rowIndex - 1, columnIndex - 1)}
-                                                                                disabled
+                                                                                sx={{ width: '60px', '& input': { textAlign: 'center' } }}
+                                                                                id={`column-head-${columnIndex}`}
+                                                                                label={`Col ${columnIndex}`}
+                                                                                variant="outlined"
+                                                                                size="small"
+                                                                                value={columnHeads[columnIndex - 1]}
+                                                                                onChange={(event) => handleColumnHeadChange(columnIndex - 1, event)}
                                                                             />
+                                                                            <IconButton onClick={() => handleColumnDisable(columnIndex - 1)}><BlockIcon /></IconButton>
+                                                                        </Box>
+                                                                    ) : isHeaderColumn ? (
+                                                                        <>
+                                                                            <TextField
+                                                                                sx={{ width: '55px', '& input': { textAlign: 'center' } }}
+                                                                                id={`row-head-${rowIndex}`}
+                                                                                label={`Row ${rowIndex}`}
+                                                                                variant="outlined"
+                                                                                size="small"
+                                                                                value={rowHeads[rowIndex - 1]}
+                                                                                onChange={(event) => handleRowHeadChange(rowIndex - 1, event)}
+                                                                            />
+                                                                            <IconButton onClick={() => handleRowDisable(rowIndex - 1)}><BlockIcon /></IconButton>
                                                                         </>
                                                                     ) : (
-                                                                        <>
-                                                                            <IconButton onClick={() => handleSeatDisable(rowIndex - 1, columnIndex - 1)}><ChairIcon style={{ color: 'green' }} /></IconButton>
-                                                                            {seatDetails.find(seatDetail => seatDetail.row === rowIndex && seatDetail.column === columnIndex) && (
-                                                                                <TextField
-                                                                                    sx={{
-                                                                                        mt: -1,
-                                                                                        '& input': {
-                                                                                            textAlign: 'center',
-                                                                                        }
-                                                                                    }}
-                                                                                    size='small'
-                                                                                    id={`seat-name-${rowIndex - 1}-${columnIndex - 1}`}
-                                                                                    name='seatName'
-                                                                                    value={editedSeatNames[`${rowIndex - 1}-${columnIndex - 1}`] || `${rowHeads[rowIndex - 1]}${columnHeads[columnIndex - 1]}`}
-                                                                                    onChange={(event) => handleSeatNameChange(event, rowIndex - 1, columnIndex - 1)}
-                                                                                    onBlur={() => handleSaveSeatName(rowIndex - 1, columnIndex - 1)}
-                                                                                />
+                                                                        <Grid container alignItems="center" justifyContent="center" m={1}>
+                                                                            {disabledColumns.includes(columnIndex - 1) || disabledRows.includes(rowIndex - 1) || disabledSeats.includes((rowIndex - 1) * columns + (columnIndex - 1)) ? (
+                                                                                <>
+                                                                                    <IconButton onClick={() => handleSeatDisable(rowIndex - 1, columnIndex - 1)}><ChairIcon style={{ color: 'grey', mt: 3 }} /></IconButton>
+                                                                                    <TextField
+                                                                                        sx={{ mt: -1 }}
+                                                                                        size='small'
+                                                                                        id={`seat-name-${rowIndex - 1}-${columnIndex - 1}`}
+                                                                                        name='seatName'
+                                                                                        value={editedSeatNames[`${rowIndex - 1}-${columnIndex - 1}`]}
+                                                                                        onChange={(event) => handleSeatNameChange(event, rowIndex - 1, columnIndex - 1)}
+                                                                                        onBlur={() => handleSaveSeatName(rowIndex - 1, columnIndex - 1)}
+                                                                                        disabled
+                                                                                    />
+                                                                                </>
+                                                                            ) : (
+                                                                                <>
+                                                                                    <IconButton onClick={() => handleSeatDisable(rowIndex - 1, columnIndex - 1)}><ChairIcon style={{ color: 'green' }} /></IconButton>
+                                                                                    {seatDetails.find(seatDetail => seatDetail.row === rowIndex && seatDetail.column === columnIndex) && (
+                                                                                        <TextField
+                                                                                            sx={{
+                                                                                                mt: -1,
+                                                                                                '& input': {
+                                                                                                    textAlign: 'center',
+                                                                                                }
+                                                                                            }}
+                                                                                            size='small'
+                                                                                            id={`seat-name-${rowIndex - 1}-${columnIndex - 1}`}
+                                                                                            name='seatName'
+                                                                                            value={editedSeatNames[`${rowIndex - 1}-${columnIndex - 1}`] || `${rowHeads[rowIndex - 1]}${columnHeads[columnIndex - 1]}`}
+                                                                                            onChange={(event) => handleSeatNameChange(event, rowIndex - 1, columnIndex - 1)}
+                                                                                            onBlur={() => handleSaveSeatName(rowIndex - 1, columnIndex - 1)}
+                                                                                        />
+                                                                                    )}
+                                                                                </>
                                                                             )}
-                                                                        </>
+                                                                        </Grid>
                                                                     )}
-                                                                </Grid>
-                                                            )}
-                                                        </div>
-                                                    );
-                                                }}
-                                            </FixedSizeGrid>
-                                        }
-                                    </MDBox>
+                                                                </div>
+                                                            );
+                                                        }}
+                                                    </FixedSizeGrid>
+                                                }
+                                            </MDBox>
+                                        </>
+                                    }
                                 </form>
                                 <MDBox p={1} sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <MDButton color='info' onClick={handleFormsSubmit}>Save</MDButton>
+                                    <MDButton color='info' onClick={handleFormsSubmit} disabled={seatDetails.length <= 0 || !isClicked}>Save</MDButton>
                                     {isSubmitting && <CircularProgress color='info' sx={{ marginLeft: '15px' }} />}
                                 </MDBox>
                             </MDBox>
