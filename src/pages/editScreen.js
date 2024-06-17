@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import { TextField } from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 
 // Material Dashboard 2 React example components
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout';
@@ -24,6 +24,10 @@ export default function EditScreen() {
   const navigate = useNavigate();
   const { screenId } = useParams();
   const [openDeleteDialogBox, setOpenDeleteDialogBox] = useState();
+  const [soundTypes, setSoundTypes] = useState([]);
+  const [selectedSoundType, setSelectedSoundType] = useState('');
+  const [projectionTypes, setProjectionTypes] = useState([]);
+  const [selectedProjectionType, setSelectedProjectionType] = useState('');
 
   useEffect(() => {
     const fetchScreenData = async () => {
@@ -42,6 +46,8 @@ export default function EditScreen() {
             projectionType: screen.projectionType,
             facilities: screen.facilities,
           });
+          setSelectedSoundType(screen.soundType);
+          setSelectedProjectionType(screen.projectionType);
         }
       } catch (error) {
         console.error('Error fetching screen data:', error.message);
@@ -50,6 +56,35 @@ export default function EditScreen() {
 
     fetchScreenData();
   }, [screenId]);
+
+  const fetchSoundTypes = async () => {
+    try {
+      const { data, error } = await supabase.from('soundsystem_types').select('*');
+      if (error) throw error;
+      if (data) {
+        setSoundTypes(data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchProjectionTypes = async () => {
+    try {
+      const { data, error } = await supabase.from('projection_types').select('*');
+      if (error) throw error;
+      if (data) {
+        setProjectionTypes(data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchSoundTypes();
+    fetchProjectionTypes();
+  }, [])
 
   const editScreen = useFormik({
     initialValues: {
@@ -64,6 +99,8 @@ export default function EditScreen() {
       name: Yup.string().required('Required'),
     }),
     onSubmit: async (values, { resetForm }) => {
+      values.soundType = selectedSoundType;
+      values.projectionType = selectedProjectionType;
       await editScreenData(values);
       resetForm();
       toast.info('Screen has been successfully updated!');
@@ -175,7 +212,7 @@ export default function EditScreen() {
                       helperText={editScreen.touched.height && editScreen.errors.height} />
                   </MDBox>
                   <MDBox p={1}>
-                    <TextField
+                    {/* <TextField
                       fullWidth
                       variant="outlined"
                       id="outlined-basic"
@@ -185,10 +222,26 @@ export default function EditScreen() {
                       onChange={editScreen.handleChange}
                       onBlur={editScreen.handleBlur}
                       error={editScreen.touched.soundType && Boolean(editScreen.errors.soundType)}
-                      helperText={editScreen.touched.soundType && editScreen.errors.soundType} />
+                      helperText={editScreen.touched.soundType && editScreen.errors.soundType} /> */}
+                    <FormControl fullWidth>
+                      <InputLabel>Select Sound Type</InputLabel>
+                      <Select
+                        name="soundType"
+                        label='Select Sound Type'
+                        value={selectedSoundType}
+                        onChange={(e) => setSelectedSoundType(e.target.value)}
+                        sx={{ height: '45px' }}
+                      >
+                        {soundTypes && soundTypes.length > 0 && soundTypes.map((sound) => (
+                          <MenuItem key={sound.id} value={sound.soundsystem_type}>
+                            {sound.soundsystem_type}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
                   </MDBox>
                   <MDBox p={1}>
-                    <TextField
+                    {/* <TextField
                       fullWidth
                       variant="outlined"
                       id="outlined-basic"
@@ -198,7 +251,23 @@ export default function EditScreen() {
                       onChange={editScreen.handleChange}
                       onBlur={editScreen.handleBlur}
                       error={editScreen.touched.projectionType && Boolean(editScreen.errors.projectionType)}
-                      helperText={editScreen.touched.projectionType && editScreen.errors.projectionType} />
+                      helperText={editScreen.touched.projectionType && editScreen.errors.projectionType} /> */}
+                    <FormControl fullWidth>
+                      <InputLabel>Select Projection Type</InputLabel>
+                      <Select
+                        name="projectionType"
+                        label='Select Projection Type'
+                        value={selectedProjectionType}
+                        onChange={(e) => setSelectedProjectionType(e.target.value)}
+                        sx={{ height: '45px' }}
+                      >
+                        {projectionTypes && projectionTypes.length > 0 && projectionTypes.map((projection) => (
+                          <MenuItem key={projection.id} value={projection.projection_type}>
+                            {projection.projection_type}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
                   </MDBox>
                   <MDBox p={1}>
                     <TextField fullWidth

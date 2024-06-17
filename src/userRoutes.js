@@ -34,6 +34,7 @@ export default function useUserRoutes() {
                 route.route !== '/authentication/sign-in' &&
                 route.route !== '/authentication/sign-up' &&
                 route.route !== '/users' &&
+                route.route !== '/customers' &&
                 route.route !== '/theatres' &&
                 route.route !== '/facilities' &&
                 route.route !== '/movies' &&
