@@ -179,7 +179,7 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Bookings Admin",
+    name: "Bookings",
     key: "bookingsAdmin",
     icon: <Icon fontSize="small">booking</Icon>,
     route: "/bookingsAdmin",

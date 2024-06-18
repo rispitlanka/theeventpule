@@ -23,19 +23,13 @@ import { CircularProgress } from '@mui/material';
 import noDataImage from "assets/images/illustrations/noData3.svg";
 
 export default function BookingsAdmin() {
-
     const { columns: pColumns, rows: pRows } = bookingsAdminDataTable();
-    const navigate = useNavigate();
-    const openPage = (route) => {
-        navigate(route);
-    };
-
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         setTimeout(() => {
             setIsLoading(false);
-        }, 500);
+        }, 800);
     }, []);
 
     return (
@@ -77,7 +71,7 @@ export default function BookingsAdmin() {
                                     />
                                 </MDBox>
                             ) : (
-                                <DataNotFound message={'No Bookings Availabale !'} image={noDataImage} />
+                                <DataNotFound message={'No Booking Records Availabale !'} image={noDataImage} />
                             )}
                         </Card>
                     </Grid>
