@@ -43,11 +43,15 @@ function Dashboard() {
   const [ticketsCount, setTicketsCount] = useState(0);
   const [revenue, setRevenue] = useState(0);
   const [moviesCount, setMoviesCount] = useState(0);
+  const [bookingChartData, setBookingChartData] = useState([]);
+  const [revenueChartData, setRevenueChartData] = useState([]);
 
   useEffect(() => {
     fetchTheatreCount();
     fetchTicketsCount();
     fetchMoviesCount();
+    fetchWeeklyBookings();
+    fetchWeeklyRevenue();
   }, [])
 
   const fetchTheatreCount = async () => {
@@ -59,7 +63,7 @@ function Dashboard() {
       }
       if (error) throw error;
     } catch (error) {
-
+      console.log(error)
     }
   }
 
@@ -73,7 +77,7 @@ function Dashboard() {
       }
       if (error) throw error;
     } catch (error) {
-
+      console.log(error)
     }
   }
 
@@ -86,7 +90,39 @@ function Dashboard() {
       }
       if (error) throw error;
     } catch (error) {
+      console.log(error)
+    }
+  }
 
+  const fetchWeeklyBookings = async () => {
+    try {
+      const { data, error } = await supabase
+        .rpc('get_weekly_bookings');
+      if (error) throw error;
+      const labels = data.map(item => {
+        const date = new Date(item.date);
+        return date.toLocaleDateString('en-GB', { month: '2-digit', day: '2-digit', });
+      }); const count = data.map(item => item.ticket_count);
+      setBookingChartData({ labels, datasets: { label: "Count", data: count } });
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const fetchWeeklyRevenue = async () => {
+    try {
+      const { data, error } = await supabase
+        .rpc('get_weekly_revenue');
+      if (error) throw error;
+      const labels = data.map(item => {
+        const date = new Date(item.date);
+        return date.toLocaleDateString('en-GB', { month: '2-digit', day: '2-digit', });
+      }); const count = data.map(item => item.revenue);
+      setRevenueChartData({ labels, datasets: { label: "Count", data: count } });
+
+    } catch (error) {
+      console.log(error)
     }
   }
 
@@ -161,9 +197,9 @@ function Dashboard() {
               <MDBox mb={3}>
                 <ReportsBarChart
                   color="info"
-                  title="website views"
-                  description="Last Campaign Performance"
-                  date="campaign sent 2 days ago"
+                  title="website visits"
+                  description="Number of visitors last Week"
+                  date="weekly"
                   chart={reportsBarChartData}
                 />
               </MDBox>
@@ -172,14 +208,10 @@ function Dashboard() {
               <MDBox mb={3}>
                 <ReportsLineChart
                   color="success"
-                  title="daily sales"
-                  description={
-                    <>
-                      (<strong>+15%</strong>) increase in today sales.
-                    </>
-                  }
-                  date="updated 4 min ago"
-                  chart={sales}
+                  title="weekly bookings"
+                  description="Booked tickets of the last week"
+                  date="weekly"
+                  chart={bookingChartData}
                 />
               </MDBox>
             </Grid>
@@ -187,10 +219,10 @@ function Dashboard() {
               <MDBox mb={3}>
                 <ReportsLineChart
                   color="dark"
-                  title="completed tasks"
-                  description="Last Campaign Performance"
-                  date="just updated"
-                  chart={tasks}
+                  title="weekly revenue"
+                  description="Revenue of the last week"
+                  date="weekly"
+                  chart={revenueChartData}
                 />
               </MDBox>
             </Grid>
