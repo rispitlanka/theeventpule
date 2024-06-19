@@ -24,9 +24,12 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDAvatar from "components/MDAvatar";
 import MDButton from "components/MDButton";
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 // Images
 import LogoAsana from "assets/images/small-logos/screen1.png";
+import { Switch } from "@mui/material";
 
 export default function data() {
   const Screen = ({ image, name }) => (
@@ -76,14 +79,28 @@ export default function data() {
     fetchTheatreData();
   }, [])
 
-  const handleRowClick = (userId) => {
-    openPage(`/users/single-user/${userId}`);
+  const handleChange = async (userId, newValue) => {
+    try {
+      const { error } = await supabase
+        .from('theatreOwners')
+        .update({ isActive: newValue })
+        .eq('id', userId);
+      if (error) throw error;
+
+      setUserData(prevData =>
+        prevData.map(user =>
+          user.id === userId ? { ...user, isActive: newValue } : user
+        )
+      );
+    } catch (error) {
+      setError(error.message);
+    }
   };
 
   const rows = userData ? userData.map(user => ({
-    name: <div onClick={() => handleRowClick(user.id)} style={{ cursor: 'pointer' }}>
+    name: (
       <Screen image={LogoAsana} name={user.name} />
-    </div>,
+    ),
     userRole: (
       <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
         {user.userRole}
@@ -104,8 +121,14 @@ export default function data() {
         {getTheatreName(user.theatreId)}
       </MDTypography>
     ),
+    status: (
+      <Switch checked={user.isActive} onChange={e => handleChange(user.id, e.target.checked)} />
+    ),
     action: (
-      <MDButton onClick={() => openPage(`/users/edit-user/${user.id}`)} variant='text' size='small' color='info'>edit</MDButton>
+      <>
+        <MDButton onClick={() => openPage(`/users/single-user/${user.id}`)} variant='text' size='medium' color='info'><VisibilityIcon /></MDButton>
+        <MDButton onClick={() => openPage(`/users/edit-user/${user.id}`)} variant='text' size='medium' color='info'><EditIcon /></MDButton>
+      </>
     ),
 
   })) : [{ name: <MDTypography color='warning' fontWeight='bold'>{error}</MDTypography> }];
@@ -117,6 +140,7 @@ export default function data() {
       { Header: "theatre name", accessor: "theatreName", align: "center" },
       { Header: "mobile", accessor: "mobile", align: "center" },
       { Header: "email", accessor: "email", align: "center" },
+      { Header: "status", accessor: "status", align: "center" },
       { Header: "other", accessor: "action", align: "center" },
     ],
 

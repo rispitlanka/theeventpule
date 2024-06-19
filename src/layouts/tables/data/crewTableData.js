@@ -23,8 +23,9 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDAvatar from "components/MDAvatar";
 import MDButton from "components/MDButton";
-
 import { supabase } from "pages/supabaseClient";
+import EditIcon from '@mui/icons-material/Edit';
+import { Switch } from "@mui/material";
 
 export default function data() {
     const [crewData, setCrewData] = useState(null);
@@ -53,19 +54,37 @@ export default function data() {
             console.error('Error fetching crew:', error.message);
         }
     };
-    async function deleteCrew(crew) {
-        try {
-            const response = await supabase
-                .from("crew")
-                .delete()
-                .eq("id", crew.id);
+    // async function deleteCrew(crew) {
+    //     try {
+    //         const response = await supabase
+    //             .from("crew")
+    //             .delete()
+    //             .eq("id", crew.id);
 
-            if (response.error) throw response.error;
-            window.location.reload();
+    //         if (response.error) throw response.error;
+    //         window.location.reload();
+    //     } catch (error) {
+    //         alert(error.message);
+    //     }
+    // }
+
+    const handleChange = async (crewId, newValue) => {
+        try {
+            const { error } = await supabase
+                .from('crew')
+                .update({ isActive: newValue })
+                .eq('id', crewId);
+            if (error) throw error;
+
+            setCrewData(prevData =>
+                prevData.map(crew =>
+                    crew.id === crewId ? { ...crew, isActive: newValue } : crew
+                )
+            );
         } catch (error) {
-            alert(error.message);
+            setError(error.message);
         }
-    }
+    };
 
     const rows = crewData ? crewData.map(crew => ({
         name: (
@@ -81,13 +100,15 @@ export default function data() {
                 {crew.category}
             </MDTypography>
         ),
-
+        status: (
+            <Switch checked={crew.isActive} onChange={e => handleChange(crew.id, e.target.checked)} />
+        ),
         action: (
-            <MDButton onClick={() => openPage(`/crew/edit-crew/${crew.id}`)} variant='text' size='small' color='info'>edit</MDButton>
+            <MDButton onClick={() => openPage(`/crew/edit-crew/${crew.id}`)} variant='text' size='medium' color='info'><EditIcon /></MDButton>
         ),
-        action2: (
-            <MDButton onClick={() => deleteCrew(crew)} variant='text' size='small' color='info'>delete</MDButton>
-        ),
+        // action2: (
+        //     <MDButton onClick={() => deleteCrew(crew)} variant='text' size='small' color='info'>delete</MDButton>
+        // ),
 
     })) : [{ name: <MDTypography color='warning' fontWeight='bold'>No Crew founded</MDTypography> }];
 
@@ -95,8 +116,9 @@ export default function data() {
         columns: [
             { Header: "Crew", accessor: "name", width: "30%", align: "left" },
             { Header: "Category ", accessor: "category", width: "30%", align: "left" },
-            { Header: "Edit", accessor: "action", align: "center" },
-            { Header: "Delete", accessor: "action2", align: "center" },
+            { Header: "status", accessor: "status", align: "center" },
+            { Header: "action", accessor: "action", align: "center" },
+            // { Header: "Delete", accessor: "action2", align: "center" },
         ],
 
         rows: rows,

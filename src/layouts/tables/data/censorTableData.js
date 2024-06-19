@@ -25,11 +25,13 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDAvatar from "components/MDAvatar";
 import MDButton from "components/MDButton";
+import EditIcon from '@mui/icons-material/Edit';
 
 import { supabase } from "pages/supabaseClient";
 
 // Images
 import LogoAsana from "assets/images/small-logos/genre.png";
+import { Switch } from "@mui/material";
 
 
 export default function data() {
@@ -68,38 +70,58 @@ export default function data() {
             console.error('Error fetching Censor types:', error.message);
         }
     };
-    async function deleteCensorTypes(censor) {
-        try {
-            const response = await supabase
-                .from("censor_types")
-                .delete()
-                .eq("id", censor.id);
+    // async function deleteCensorTypes(censor) {
+    //     try {
+    //         const response = await supabase
+    //             .from("censor_types")
+    //             .delete()
+    //             .eq("id", censor.id);
 
-            if (response.error) throw response.error;
-            window.location.reload();
+    //         if (response.error) throw response.error;
+    //         window.location.reload();
+    //     } catch (error) {
+    //         alert(error.message);
+    //     }
+    // }
+
+    const handleChange = async (censorId, newValue) => {
+        try {
+            const { error } = await supabase
+                .from('censor_types')
+                .update({ isActive: newValue })
+                .eq('id', censorId);
+            if (error) throw error;
+
+            setCensorData(prevData =>
+                prevData.map(censorType =>
+                    censorType.id === censorId ? { ...censorType, isActive: newValue } : censorType
+                )
+            );
         } catch (error) {
-            alert(error.message);
+            console.log(error);
         }
-    }
+    };
 
     const rows = censorData ? censorData.map(censor => ({
         censor_type: <GenreIcon image={LogoAsana} name={censor.censor_type} />,
-
+        status: (
+            <Switch checked={censor.isActive} onChange={e => handleChange(censor.id, e.target.checked)} />
+        ),
         action: (
-            <MDButton onClick={() => openPage(`/censor-types/edit-censor-types/${censor.id}`)} variant='text' size='small' color='info'>edit</MDButton>
+            <MDButton onClick={() => openPage(`/censor-types/edit-censor-types/${censor.id}`)} variant='text' size='medium' color='info'><EditIcon /></MDButton>
         ),
-        action2: (
-            <MDButton onClick={() => deleteCensorTypes(censor)} variant='text' size='small' color='info'>delete</MDButton>
-        ),
+        // action2: (
+        //     <MDButton onClick={() => deleteCensorTypes(censor)} variant='text' size='small' color='info'>delete</MDButton>
+        // ),
 
     })) : [{ censor_type: <MDTypography color='warning' fontWeight='bold'>No Censor Types founded</MDTypography> }];
 
     return {
         columns: [
             { Header: "Censor Types ", accessor: "censor_type", width: "50%", align: "left" },
-
-            { Header: "Edit", accessor: "action", align: "center" },
-            { Header: "Delete", accessor: "action2", align: "center" },
+            { Header: "status", accessor: "status", align: "center" },
+            { Header: "action", accessor: "action", align: "center" },
+            // { Header: "Delete", accessor: "action2", align: "center" },
         ],
 
         rows: rows,

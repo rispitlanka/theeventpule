@@ -133,11 +133,11 @@ export default function data() {
     ),
     action: (
       <>
-        <MDButton onClick={() => openPage(`/theatres/edit-theatre/${theatre.id}`)} variant='text' size='small' color='info'><EditIcon /></MDButton>
-        <MDButton onClick={() => openPage(`/theatres/single-theatre/${theatre.id}`)} variant='text' size='small' color='info'><VisibilityIcon /></MDButton>
+        <MDButton onClick={() => openPage(`/theatres/single-theatre/${theatre.id}`)} variant='text' size='medium' color='info'><VisibilityIcon /></MDButton>
+        <MDButton onClick={() => openPage(`/theatres/edit-theatre/${theatre.id}`)} variant='text' size='medium' color='info'><EditIcon /></MDButton>
       </>
     ),
-
+    
   })) : [{ name: <MDTypography color='warning' fontWeight='bold'>{error}</MDTypography> }];
 
   return {

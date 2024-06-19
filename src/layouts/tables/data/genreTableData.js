@@ -25,11 +25,13 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDAvatar from "components/MDAvatar";
 import MDButton from "components/MDButton";
+import EditIcon from '@mui/icons-material/Edit';
 
 import { supabase } from "pages/supabaseClient";
 
 // Images
 import LogoAsana from "assets/images/small-logos/genre.png";
+import { Switch } from "@mui/material";
 
 
 export default function data() {
@@ -68,38 +70,58 @@ export default function data() {
             console.error('Error fetching genres:', error.message);
         }
     };
-    async function deleteGenre(genre) {
-        try {
-            const response = await supabase
-                .from("genres")
-                .delete()
-                .eq("id", genre.id);
+    // async function deleteGenre(genre) {
+    //     try {
+    //         const response = await supabase
+    //             .from("genres")
+    //             .delete()
+    //             .eq("id", genre.id);
 
-            if (response.error) throw response.error;
-            window.location.reload();
+    //         if (response.error) throw response.error;
+    //         window.location.reload();
+    //     } catch (error) {
+    //         alert(error.message);
+    //     }
+    // }
+
+    const handleChange = async (id, newValue) => {
+        try {
+            const { error } = await supabase
+                .from('genres')
+                .update({ isActive: newValue })
+                .eq('id', id);
+            if (error) throw error;
+
+            setGenreData(prevData =>
+                prevData.map(genre =>
+                    genre.id === id ? { ...genre, isActive: newValue } : genre
+                )
+            );
         } catch (error) {
-            alert(error.message);
+            console.log(error);
         }
-    }
+    };
 
     const rows = genreData ? genreData.map(genre => ({
         genre_name: <GenreIcon image={LogoAsana} name={genre.genre_name} />,
-
+        status: (
+            <Switch checked={genre.isActive} onChange={e => handleChange(genre.id, e.target.checked)} />
+        ),
         action: (
-            <MDButton onClick={() => openPage(`/genre/edit-genre/${genre.id}`)} variant='text' size='small' color='info'>edit</MDButton>
+            <MDButton onClick={() => openPage(`/genre/edit-genre/${genre.id}`)} variant='text' size='medium' color='info'><EditIcon /></MDButton>
         ),
-        action2: (
-            <MDButton onClick={() => deleteGenre(genre)} variant='text' size='small' color='info'>delete</MDButton>
-        ),
+        // action2: (
+        //     <MDButton onClick={() => deleteGenre(genre)} variant='text' size='small' color='info'>delete</MDButton>
+        // ),
 
     })) : [{ genre_name: <MDTypography color='warning' fontWeight='bold'>No genres founded</MDTypography> }];
 
     return {
         columns: [
             { Header: "Genres ", accessor: "genre_name", width: "50%", align: "left" },
-
-            { Header: "Edit", accessor: "action", align: "center" },
-            { Header: "Delete", accessor: "action2", align: "center" },
+            { Header: "status", accessor: "status", align: "center" },
+            { Header: "action", accessor: "action", align: "center" },
+            // { Header: "Delete", accessor: "action2", align: "center" },
         ],
 
         rows: rows,

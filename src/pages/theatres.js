@@ -128,7 +128,7 @@ export default function Theatres() {
           <Grid item xs={12} md={6} lg={4}>
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
-                color="dark"
+                color="primary"
                 icon="theaters"
                 title="Total Active Theatres"
                 count={activeTheatresCount}
@@ -138,6 +138,7 @@ export default function Theatres() {
           <Grid item xs={12} md={6} lg={4}>
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
+                color="dark"
                 icon="theaters"
                 title="Total Theatres"
                 count={totalTheatresCount}
