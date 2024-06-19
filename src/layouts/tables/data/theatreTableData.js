@@ -21,16 +21,14 @@ import { supabase } from "pages/supabaseClient";
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
-import MDAvatar from "components/MDAvatar";
 import MDButton from "components/MDButton";
-
-// Images
-import LogoAsana from "assets/images/small-logos/screen1.png";
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { Switch } from "@mui/material";
 
 export default function data() {
-  const Screen = ({ image, name }) => (
+  const Screen = ({ name }) => (
     <MDBox display="flex" alignItems="center" lineHeight={1}>
-      <MDAvatar src={image} name={name} size="sm" variant="rounded" />
       <MDTypography display="block" variant="button" fontWeight="medium" ml={1} lineHeight={1}>
         {name}
       </MDTypography>
@@ -44,15 +42,38 @@ export default function data() {
     navigate(route);
   };
 
-
   const fetchTheatreData = async () => {
     try {
-      const { data, error } = await supabase.from('theatres').select('*');
-      console.log(data);
-      if (error) throw error;
-      setTheatreData(data);
+      const { data: theatresResponse, error: theatresError } = await supabase
+        .from('theatres')
+        .select();
+
+      if (theatresError) throw theatresError;
+
+      const theatreIds = theatresResponse.map(theatre => theatre.id);
+
+      const { data: screensResponse, error: screensError } = await supabase
+        .from('screens')
+        .select('theatreId, screenId:id')
+        .in('theatreId', theatreIds);
+
+      if (screensError) throw screensError;
+
+      const screenCounts = screensResponse.reduce((counts, screen) => {
+        const { theatreId } = screen;
+        counts[theatreId] = counts[theatreId] ? counts[theatreId] + 1 : 1;
+        return counts;
+      }, {});
+
+      const enhancedTheatres = theatresResponse.map(theatre => ({
+        ...theatre,
+        screensCount: screenCounts[theatre.id] || 0,
+      }));
+
+      setTheatreData(enhancedTheatres);
+
     } catch (error) {
-      setError(error);
+      setError(error.message);
     }
   };
 
@@ -60,18 +81,27 @@ export default function data() {
     fetchTheatreData();
   }, [])
 
-  const handleRowClick = (theatreId) => {
-    openPage(`/theatres/single-theatre/${theatreId}`);
+  const handleChange = async (theatreId, newValue) => {
+    try {
+      const { error } = await supabase
+        .from('theatres')
+        .update({ isActive: newValue })
+        .eq('id', theatreId);
+      if (error) throw error;
+
+      setTheatreData(prevData =>
+        prevData.map(theatre =>
+          theatre.id === theatreId ? { ...theatre, isActive: newValue } : theatre
+        )
+      );
+    } catch (error) {
+      setError(error.message);
+    }
   };
 
   const rows = theatreData ? theatreData.map(theatre => ({
-    name: <div onClick={() => handleRowClick(theatre.id)} style={{ cursor: 'pointer' }}>
-      <Screen image={LogoAsana} name={theatre.name} />
-    </div>,
-    address: (
-      <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-        {theatre.address}
-      </MDTypography>
+    name: (
+      <Screen name={theatre.name} />
     ),
     city: (
       <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
@@ -81,6 +111,11 @@ export default function data() {
     telephone: (
       <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
         {theatre.telephone}
+      </MDTypography>
+    ),
+    screens: (
+      <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        {theatre.screensCount}
       </MDTypography>
     ),
     coordinatorName: (
@@ -93,13 +128,14 @@ export default function data() {
         {theatre.coordinatorMobile}
       </MDTypography>
     ),
-    coordinatorMail: (
-      <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-        {theatre.coordinatorMail}
-      </MDTypography>
+    status: (
+      <Switch checked={theatre.isActive} onChange={e => handleChange(theatre.id, e.target.checked)} />
     ),
     action: (
-      <MDButton onClick={() => openPage(`/theatres/edit-theatre/${theatre.id}`)} variant='text' size='small' color='info'>edit</MDButton>
+      <>
+        <MDButton onClick={() => openPage(`/theatres/edit-theatre/${theatre.id}`)} variant='text' size='small' color='info'><EditIcon /></MDButton>
+        <MDButton onClick={() => openPage(`/theatres/single-theatre/${theatre.id}`)} variant='text' size='small' color='info'><VisibilityIcon /></MDButton>
+      </>
     ),
 
   })) : [{ name: <MDTypography color='warning' fontWeight='bold'>{error}</MDTypography> }];
@@ -108,12 +144,12 @@ export default function data() {
     columns: [
       { Header: "name", accessor: "name", width: "30%", align: "left" },
       { Header: "city", accessor: "city", align: "center" },
-      { Header: "address", accessor: "address", align: "center" },
       { Header: "telephone", accessor: "telephone", align: "center" },
+      { Header: "screens", accessor: "screens", align: "center" },
       { Header: "Coordinator Name", accessor: "coordinatorName", align: "center" },
       { Header: "Coordinator Mobile", accessor: "coordinatorMobile", align: "center" },
-      { Header: "Coordinator Mail", accessor: "coordinatorMail", align: "center" },
-      { Header: "other", accessor: "action", align: "center" },
+      { Header: "status", accessor: "status", align: "center" },
+      { Header: "actions", accessor: "action", align: "center" },
     ],
 
     rows: rows,

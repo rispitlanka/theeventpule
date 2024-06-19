@@ -29,7 +29,7 @@ export default function BookingsAdmin() {
     useEffect(() => {
         setTimeout(() => {
             setIsLoading(false);
-        }, 800);
+        }, 1000);
     }, []);
 
     return (
