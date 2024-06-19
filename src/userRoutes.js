@@ -34,9 +34,12 @@ export default function useUserRoutes() {
                 route.route !== '/authentication/sign-in' &&
                 route.route !== '/authentication/sign-up' &&
                 route.route !== '/users' &&
+                route.route !== '/customers' &&
                 route.route !== '/theatres' &&
+                route.route !== '/theatreMasterData' &&
                 route.route !== '/facilities' &&
                 route.route !== '/movies' &&
+                route.route !== '/movieMasterData' &&
                 route.route !== '/languages' &&
                 route.route !== '/genre' &&
                 route.route !== '/censor-types' &&
@@ -44,6 +47,7 @@ export default function useUserRoutes() {
                 route.route !== '/projection-type' &&
                 route.route !== '/cast' &&
                 route.route !== '/crew' &&
+                route.route !== '/bookingsAdmin' &&
                 route.route !== '/facilities'
               );
             }

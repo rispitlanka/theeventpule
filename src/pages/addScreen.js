@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { supabase } from './supabaseClient';
@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import { TextField } from '@mui/material';
+import { FormControl, FormHelperText, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 
 // Material Dashboard 2 React example components
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout';
@@ -20,10 +20,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import MDButton from 'components/MDButton';
 
 export default function AddScreen() {
-
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const { id: theatreId } = useParams();
+  const [soundTypes, setSoundTypes] = useState([]);
+  const [projectionTypes, setProjectionTypes] = useState([]);
 
   const onSubmit = async (values, { resetForm }) => {
     try {
@@ -55,8 +56,6 @@ export default function AddScreen() {
     onSubmit,
   });
 
-
-
   const addScreenData = async (values) => {
     try {
       const { data, error } = await supabase.from('screens').insert([values]).select('*');
@@ -71,6 +70,35 @@ export default function AddScreen() {
       throw new Error('Error inserting data:', error.message);
     }
   };
+
+  const fetchSoundTypes = async () => {
+    try {
+      const { data, error } = await supabase.from('soundsystem_types').select('*');
+      if (error) throw error;
+      if (data) {
+        setSoundTypes(data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
+  const fetchProjectionTypes = async () => {
+    try {
+      const { data, error } = await supabase.from('projection_types').select('*');
+      if (error) throw error;
+      if (data) {
+        setProjectionTypes(data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchSoundTypes();
+    fetchProjectionTypes();
+  }, [])
 
   return (
     <DashboardLayout><DashboardNavbar />
@@ -136,7 +164,7 @@ export default function AddScreen() {
                       helperText={newScreen.touched.height && newScreen.errors.height} />
                   </MDBox>
                   <MDBox p={1}>
-                    <TextField
+                    {/* <TextField
                       fullWidth
                       variant="outlined"
                       id="outlined-basic"
@@ -146,10 +174,31 @@ export default function AddScreen() {
                       onChange={newScreen.handleChange}
                       onBlur={newScreen.handleBlur}
                       error={newScreen.touched.soundType && Boolean(newScreen.errors.soundType)}
-                      helperText={newScreen.touched.soundType && newScreen.errors.soundType} />
+                      helperText={newScreen.touched.soundType && newScreen.errors.soundType} /> */}
+                    <FormControl fullWidth>
+                      <InputLabel>Select Sound Type</InputLabel>
+                      <Select
+                        label="Select Sound Type"
+                        name="soundType"
+                        value={newScreen.values.soundType}
+                        onChange={newScreen.handleChange}
+                        onBlur={newScreen.handleBlur}
+                        sx={{ height: '45px' }}
+                        error={newScreen.touched.soundType && Boolean(newScreen.errors.soundType)}
+                      >
+                        {soundTypes && soundTypes.length > 0 && soundTypes.map((sound) => (
+                          <MenuItem key={sound.id} value={sound.soundsystem_type}>
+                            {sound.soundsystem_type}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      {newScreen.touched.soundType && newScreen.errors.soundType && (
+                        <FormHelperText error>{newScreen.errors.soundType}</FormHelperText>
+                      )}
+                    </FormControl>
                   </MDBox>
                   <MDBox p={1}>
-                    <TextField
+                    {/* <TextField
                       fullWidth
                       variant="outlined"
                       id="outlined-basic"
@@ -159,7 +208,28 @@ export default function AddScreen() {
                       onChange={newScreen.handleChange}
                       onBlur={newScreen.handleBlur}
                       error={newScreen.touched.projectionType && Boolean(newScreen.errors.projectionType)}
-                      helperText={newScreen.touched.projectionType && newScreen.errors.projectionType} />
+                      helperText={newScreen.touched.projectionType && newScreen.errors.projectionType} /> */}
+                    <FormControl fullWidth>
+                      <InputLabel>Select Projection Type</InputLabel>
+                      <Select
+                        label="Select Projection Type"
+                        name="projectionType"
+                        value={newScreen.values.projectionType}
+                        onChange={newScreen.handleChange}
+                        onBlur={newScreen.handleBlur}
+                        sx={{ height: '45px' }}
+                        error={newScreen.touched.projectionType && Boolean(newScreen.errors.projectionType)}
+                      >
+                        {projectionTypes && projectionTypes.length > 0 && projectionTypes.map((projection) => (
+                          <MenuItem key={projection.id} value={projection.projection_type}>
+                            {projection.projection_type}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      {newScreen.touched.projectionType && newScreen.errors.projectionType && (
+                        <FormHelperText error>{newScreen.errors.projectionType}</FormHelperText>
+                      )}
+                    </FormControl>
                   </MDBox>
                   <MDBox p={1}>
                     <TextField fullWidth

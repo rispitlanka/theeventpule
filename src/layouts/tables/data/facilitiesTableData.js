@@ -25,11 +25,12 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDAvatar from "components/MDAvatar";
 import MDButton from "components/MDButton";
-
+import EditIcon from '@mui/icons-material/Edit';
 import { supabase } from "pages/supabaseClient";
 
 // Images
 import LogoAsana from "assets/images/small-logos/facilities.png";
+import { Switch } from "@mui/material";
 
 export default function data() {
     const FacilityIcon = ({ image, name }) => (
@@ -67,39 +68,58 @@ export default function data() {
             console.error('Error fetching questions:', error.message);
         }
     };
-    async function deleteGenre(genre) {
+    // async function deleteGenre(genre) {
+    //     try {
+    //         const response = await supabase
+    //             .from("genres")
+    //             .delete()
+    //             .eq("id", genre.id);
+
+    //         if (response.error) throw response.error;
+    //         window.location.reload();
+    //     } catch (error) {
+    //         alert(error.message);
+    //     }
+    // }
+
+    const handleChange = async (id, newValue) => {
         try {
-            const response = await supabase
-                .from("genres")
-                .delete()
-                .eq("id", genre.id);
+            const { error } = await supabase
+                .from('facilities')
+                .update({ isActive: newValue })
+                .eq('id', id);
+            if (error) throw error;
 
-            if (response.error) throw response.error;
-            window.location.reload();
+            setFacilityData(prevData =>
+                prevData.map(facility =>
+                    facility.id === id ? { ...facility, isActive: newValue } : facility
+                )
+            );
         } catch (error) {
-            alert(error.message);
+            console.log(error);
         }
-    }
-
+    };
 
     const rows = facilityData ? facilityData.map(facility => ({
         facility_name: <FacilityIcon image={LogoAsana} name={facility.facility_name} />,
-
+        status: (
+            <Switch checked={facility.isActive} onChange={e => handleChange(facility.id, e.target.checked)} />
+        ),
         action: (
-            <MDButton onClick={() => openPage(`/facilities/edit-facilities/${facility.id}`)} variant='text' size='small' color='info'>edit</MDButton>
+            <MDButton onClick={() => openPage(`/facilities/edit-facilities/${facility.id}`)} variant='text' size='medium' color='info'><EditIcon /></MDButton>
         ),
-        action2: (
-            <MDButton onClick={() => deleteGenre(facility)} variant='text' size='small' color='info'>delete</MDButton>
-        ),
+        // action2: (
+        //     <MDButton onClick={() => deleteGenre(facility)} variant='text' size='small' color='info'>delete</MDButton>
+        // ),
 
     })) : [{ name: <MDTypography color='warning' fontWeight='bold'>No Facilities founded</MDTypography> }];
 
     return {
         columns: [
             { Header: "facility name", accessor: "facility_name", width: "50%", align: "left" },
-
-            { Header: "edit", accessor: "action", align: "center" },
-            { Header: "delete", accessor: "action2", align: "center" },
+            { Header: "status", accessor: "status", align: "center" },
+            { Header: "action", accessor: "action", align: "center" },
+            // { Header: "delete", accessor: "action2", align: "center" },
         ],
 
         rows: rows,

@@ -25,8 +25,11 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDAvatar from "components/MDAvatar";
 import MDButton from "components/MDButton";
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 import { supabase } from "pages/supabaseClient";
+import { Switch } from "@mui/material";
 
 export default function data() {
     const [movieData, setMovieData] = useState(null);
@@ -55,19 +58,37 @@ export default function data() {
             console.error('Error fetching genres:', error.message);
         }
     };
-    async function deleteMovie(movie) {
-        try {
-            const response = await supabase
-                .from("movies")
-                .delete()
-                .eq("id", movie.id);
+    // async function deleteMovie(movie) {
+    //     try {
+    //         const response = await supabase
+    //             .from("movies")
+    //             .delete()
+    //             .eq("id", movie.id);
 
-            if (response.error) throw response.error;
-            window.location.reload();
+    //         if (response.error) throw response.error;
+    //         window.location.reload();
+    //     } catch (error) {
+    //         alert(error.message);
+    //     }
+    // }
+
+    const handleChange = async (movieId, newValue) => {
+        try {
+            const { error } = await supabase
+                .from('movies')
+                .update({ isActive: newValue })
+                .eq('id', movieId);
+            if (error) throw error;
+
+            setMovieData(prevData =>
+                prevData.map(movie =>
+                    movie.id === movieId ? { ...movie, isActive: newValue } : movie
+                )
+            );
         } catch (error) {
-            alert(error.message);
+            console.log(error);
         }
-    }
+    };
 
     const rows = movieData && movieData.length > 0 ? movieData.map((movie) => ({
         movie_name: (
@@ -93,9 +114,14 @@ export default function data() {
                 {movie.trailer_link}
             </MDTypography>
         ),
-
+        status: (
+            <Switch checked={movie.isActive} onChange={e => handleChange(movie.id, e.target.checked)} />
+        ),
         action: (
-            <MDButton onClick={() => openPage(`/movies/edit-movie/${movie.id}`)} variant='text' size='small' color='info'>edit</MDButton>
+            <>
+                <MDButton onClick={() => openPage(`/movies/view-movie/${movie.id}`)} variant='text' size='medium' color='info'><VisibilityIcon /></MDButton>
+                <MDButton onClick={() => openPage(`/movies/edit-movie/${movie.id}`)} variant='text' size='medium' color='info'><EditIcon /></MDButton>
+            </>
         ),
         action2: (
             <MDButton onClick={() => deleteMovie(movie)} variant='text' size='small' color='info'>delete</MDButton>
@@ -106,7 +132,6 @@ export default function data() {
         duration: <MDTypography color='warning' fontWeight='bold'>-</MDTypography>,
         trailer_link: <MDTypography color='warning' fontWeight='bold'>-</MDTypography>,
         action: null,
-        action2: null,
     }];
 
     return {
@@ -115,8 +140,9 @@ export default function data() {
             { Header: "Release Date", accessor: "release_date", align: "center" },
             { Header: "Duration", accessor: "duration", align: "center" },
             { Header: "Trailer", accessor: "trailer_link", align: "center" },
-            { Header: "Edit", accessor: "action", align: "center" },
-            { Header: "Delete", accessor: "action2", align: "center" },
+            { Header: "status", accessor: "status", align: "center" },
+            { Header: "actions", accessor: "action", align: "center" },
+            // { Header: "Delete", accessor: "action2", align: "center" },
         ],
         rows: rows,
     };

@@ -25,11 +25,11 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDAvatar from "components/MDAvatar";
 import MDButton from "components/MDButton";
-
+import EditIcon from '@mui/icons-material/Edit';
 import { supabase } from "pages/supabaseClient";
-
 import { Icon } from '@iconify/react';
 import soundOneIcon from '@iconify-icons/icon-park-twotone/sound-one';
+import { Switch } from "@mui/material";
 
 export default function data() {
     const SoundIcon = ({ name }) => (
@@ -66,38 +66,58 @@ export default function data() {
             console.error('Error fetching sound system types:', error.message);
         }
     };
-    async function deleteSoundSystem(soundsys) {
-        try {
-            const response = await supabase
-                .from("soundsystem_types")
-                .delete()
-                .eq("id", soundsys.id);
+    // async function deleteSoundSystem(soundsys) {
+    //     try {
+    //         const response = await supabase
+    //             .from("soundsystem_types")
+    //             .delete()
+    //             .eq("id", soundsys.id);
 
-            if (response.error) throw response.error;
-            window.location.reload();
+    //         if (response.error) throw response.error;
+    //         window.location.reload();
+    //     } catch (error) {
+    //         alert(error.message);
+    //     }
+    // }
+
+    const handleChange = async (id, newValue) => {
+        try {
+            const { error } = await supabase
+                .from('soundsystem_types')
+                .update({ isActive: newValue })
+                .eq('id', id);
+            if (error) throw error;
+
+            setSoundSystemData(prevData =>
+                prevData.map(system =>
+                    system.id === id ? { ...system, isActive: newValue } : system
+                )
+            );
         } catch (error) {
-            alert(error.message);
+            console.log(error);
         }
-    }
+    };
 
     const rows = soundSystemData ? soundSystemData.map(soundsys => ({
         soundsystem_type: <SoundIcon name={soundsys.soundsystem_type} />,
-
+        status: (
+            <Switch checked={soundsys.isActive} onChange={e => handleChange(soundsys.id, e.target.checked)} />
+        ),
         action: (
-            <MDButton onClick={() => openPage(`/soundsystem/edit-soundsystem/${soundsys.id}`)} variant='text' size='small' color='info'>edit</MDButton>
+            <MDButton onClick={() => openPage(`/soundsystem/edit-soundsystem/${soundsys.id}`)} variant='text' size='medium' color='info'><EditIcon /></MDButton>
         ),
-        action2: (
-            <MDButton onClick={() => deleteSoundSystem(soundsys)} variant='text' size='small' color='info'>delete</MDButton>
-        ),
+        // action2: (
+        //     <MDButton onClick={() => deleteSoundSystem(soundsys)} variant='text' size='small' color='info'>delete</MDButton>
+        // ),
 
     })) : [{ name: <MDTypography color='warning' fontWeight='bold'>No sound system types founded</MDTypography> }];
 
     return {
         columns: [
             { Header: "Sound Systems ", accessor: "soundsystem_type", width: "50%", align: "left" },
-
-            { Header: "Edit", accessor: "action", align: "center" },
-            { Header: "Delete", accessor: "action2", align: "center" },
+            { Header: "status", accessor: "status", align: "center" },
+            { Header: "Action", accessor: "action", align: "center" },
+            // { Header: "Delete", accessor: "action2", align: "center" },
         ],
 
         rows: rows,

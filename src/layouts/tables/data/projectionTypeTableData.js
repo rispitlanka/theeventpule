@@ -25,11 +25,11 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDAvatar from "components/MDAvatar";
 import MDButton from "components/MDButton";
-
 import { supabase } from "pages/supabaseClient";
-
 import { Icon } from '@iconify/react';
 import cubeSolid from '@iconify-icons/fa-solid/cube';
+import EditIcon from '@mui/icons-material/Edit';
+import { Switch } from "@mui/material";
 
 export default function data() {
     const ProjectionIcon = ({ name }) => (
@@ -68,38 +68,58 @@ export default function data() {
             console.error('Error fetching projection types:', error.message);
         }
     };
-    async function deleteProjectionType(projtyp) {
-        try {
-            const response = await supabase
-                .from("projection_types")
-                .delete()
-                .eq("id", projtyp.id);
+    // async function deleteProjectionType(projtyp) {
+    //     try {
+    //         const response = await supabase
+    //             .from("projection_types")
+    //             .delete()
+    //             .eq("id", projtyp.id);
 
-            if (response.error) throw response.error;
-            window.location.reload();
+    //         if (response.error) throw response.error;
+    //         window.location.reload();
+    //     } catch (error) {
+    //         alert(error.message);
+    //     }
+    // }
+
+    const handleChange = async (id, newValue) => {
+        try {
+            const { error } = await supabase
+                .from('projection_types')
+                .update({ isActive: newValue })
+                .eq('id', id);
+            if (error) throw error;
+
+            setProjectionTypeData(prevData =>
+                prevData.map(projection =>
+                    projection.id === id ? { ...projection, isActive: newValue } : projection
+                )
+            );
         } catch (error) {
-            alert(error.message);
+            console.log(error);
         }
-    }
+    };
 
     const rows = projectionTypeData ? projectionTypeData.map(projtyp => ({
         projection_type: <ProjectionIcon name={projtyp.projection_type} />,
-
+        status: (
+            <Switch checked={projtyp.isActive} onChange={e => handleChange(projtyp.id, e.target.checked)} />
+        ),
         action: (
-            <MDButton onClick={() => openPage(`/projection-type/edit-projection-type/${projtyp.id}`)} variant='text' size='small' color='info'>edit</MDButton>
+            <MDButton onClick={() => openPage(`/projection-type/edit-projection-type/${projtyp.id}`)} variant='text' size='medium' color='info'><EditIcon /></MDButton>
         ),
-        action2: (
-            <MDButton onClick={() => deleteProjectionType(projtyp)} variant='text' size='small' color='info'>delete</MDButton>
-        ),
+        // action2: (
+        //     <MDButton onClick={() => deleteProjectionType(projtyp)} variant='text' size='small' color='info'>delete</MDButton>
+        // ),
 
     })) : [{ name: <MDTypography color='warning' fontWeight='bold'>No Projection types founded</MDTypography> }];
 
     return {
         columns: [
             { Header: "Projection Types ", accessor: "projection_type", width: "50%", align: "left" },
-
-            { Header: "Edit", accessor: "action", align: "center" },
-            { Header: "Delete", accessor: "action2", align: "center" },
+            { Header: "status", accessor: "status", align: "center" },
+            { Header: "Action", accessor: "action", align: "center" },
+            // { Header: "Delete", accessor: "action2", align: "center" },
         ],
 
         rows: rows,

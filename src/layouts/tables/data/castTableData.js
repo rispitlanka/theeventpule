@@ -23,8 +23,9 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDAvatar from "components/MDAvatar";
 import MDButton from "components/MDButton";
-
 import { supabase } from "pages/supabaseClient";
+import EditIcon from '@mui/icons-material/Edit';
+import { Switch } from "@mui/material";
 
 export default function data() {
     const [castData, setCastData] = useState(null);
@@ -53,19 +54,37 @@ export default function data() {
         }
     };
 
-    async function deleteCast(cast) {
-        try {
-            const response = await supabase
-                .from("cast")
-                .delete()
-                .eq("id", cast.id);
+    // async function deleteCast(cast) {
+    //     try {
+    //         const response = await supabase
+    //             .from("cast")
+    //             .delete()
+    //             .eq("id", cast.id);
 
-            if (response.error) throw response.error;
-            window.location.reload();
+    //         if (response.error) throw response.error;
+    //         window.location.reload();
+    //     } catch (error) {
+    //         alert(error.message);
+    //     }
+    // }
+
+    const handleChange = async (castId, newValue) => {
+        try {
+            const { error } = await supabase
+                .from('cast')
+                .update({ isActive: newValue })
+                .eq('id', castId);
+            if (error) throw error;
+
+            setCastData(prevData =>
+                prevData.map(cast =>
+                    cast.id === castId ? { ...cast, isActive: newValue } : cast
+                )
+            );
         } catch (error) {
-            alert(error.message);
+            console.log(error);
         }
-    }
+    };
 
     const rows = castData ? castData.map(cast => ({
         name: (
@@ -81,13 +100,15 @@ export default function data() {
                 {cast.category}
             </MDTypography>
         ),
-
+        status: (
+            <Switch checked={cast.isActive} onChange={e => handleChange(cast.id, e.target.checked)} />
+        ),
         action: (
-            <MDButton onClick={() => openPage(`/cast/edit-cast/${cast.id}`)} variant='text' size='small' color='info'>edit</MDButton>
+            <MDButton onClick={() => openPage(`/cast/edit-cast/${cast.id}`)} variant='text' size='medium' color='info'><EditIcon /></MDButton>
         ),
-        action2: (
-            <MDButton onClick={() => deleteCast(cast)} variant='text' size='small' color='info'>delete</MDButton>
-        ),
+        // action2: (
+        //     <MDButton onClick={() => deleteCast(cast)} variant='text' size='small' color='info'>delete</MDButton>
+        // ),
 
     })) : [{ name: <MDTypography color='warning' fontWeight='bold'>No Cast found</MDTypography> }];
 
@@ -95,8 +116,9 @@ export default function data() {
         columns: [
             { Header: "Cast", accessor: "name", width: "30%", align: "left" },
             { Header: "Category ", accessor: "category", width: "30%", align: "left" },
-            { Header: "Edit", accessor: "action", align: "center" },
-            { Header: "Delete", accessor: "action2", align: "center" },
+            { Header: "status", accessor: "status", align: "center" },
+            { Header: "action", accessor: "action", align: "center" },
+            // { Header: "Delete", accessor: "action2", align: "center" },
         ],
 
         rows: rows,

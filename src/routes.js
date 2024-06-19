@@ -107,6 +107,10 @@ import ViewEventRegistrations from "pages/viewEventRegistrations";
 import AddMainEvent from "pages/addMainEvent";
 import EditMainEvent from "pages/editMainEvent";
 import EditZone from "pages/editZone";
+import Customers from "pages/customers";
+import MovieMasterData from "pages/movieMasterData";
+import TheatreMasterData from "pages/theatreMasterData";
+import BookingsAdmin from "pages/bookingsAdmin";
 
 const routes = [
   {
@@ -127,6 +131,14 @@ const routes = [
   },
   {
     type: "collapse",
+    name: "Customers",
+    key: "customers",
+    icon: <Icon fontSize="small">groupicon</Icon>,
+    route: "/customers",
+    component: <Customers />,
+  },
+  {
+    type: "collapse",
     name: "Theatres",
     key: "theatres",
     icon: <Icon fontSize="small">theaters</Icon>,
@@ -143,6 +155,14 @@ const routes = [
   },
   {
     type: "collapse",
+    name: "Theatre Master Data",
+    key: "theatreMasterData",
+    icon: <Icon fontSize="small">theaters</Icon>,
+    route: "/theatreMasterData",
+    component: <TheatreMasterData />,
+  },
+  {
+    type: "collapse",
     name: "Shows",
     key: "shows",
     icon: <Icon fontSize="small">slideshow</Icon>,
@@ -156,6 +176,14 @@ const routes = [
     icon: <Icon fontSize="small">booking</Icon>,
     route: "/bookings",
     component: <Bookings />,
+  },
+  {
+    type: "collapse",
+    name: "Bookings",
+    key: "bookingsAdmin",
+    icon: <Icon fontSize="small">booking</Icon>,
+    route: "/bookingsAdmin",
+    component: <BookingsAdmin />,
   },
   {
     type: "collapse",
@@ -214,10 +242,6 @@ const routes = [
     component: <SignUp />,
   },
   {
-    type: "collapse",
-    name: "Facilities",
-    key: "facilities",
-    icon: <Icon fontSize="small">door_sliding</Icon>,
     route: "/facilities",
     component: <Facilities />,
   },
@@ -231,57 +255,37 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Languages",
-    key: "languages",
-    icon: <Icon fontSize="small">translate</Icon>,
+    name: "Movies Master Data",
+    key: "movieMasterData",
+    icon: <Icon fontSize="small">moviefiltericon</Icon>,
+    route: "/movieMasterData",
+    component: <MovieMasterData />,
+  },
+  {
     route: "/languages",
     component: <Languages />,
   },
   {
-    type: "collapse",
-    name: "Genres",
-    key: "genre",
-    icon: <Icon fontSize="small">dehaze</Icon>,
     route: "/genre",
     component: <Genre />,
   },
   {
-    type: "collapse",
-    name: "Censor Types",
-    key: "censor-types",
-    icon: <Icon fontSize="small">dehaze</Icon>,
     route: "/censor-types",
     component: <CensorTypes />,
   },
   {
-    type: "collapse",
-    name: "Sound System",
-    key: "soundsystem",
-    icon: <Icon fontSize="small">speaker</Icon>,
     route: "/soundsystem",
     component: <SoundSystem />,
   },
   {
-    type: "collapse",
-    name: "Projection Types",
-    key: "projection-type",
-    icon: <Icon fontSize="small">view_in_ar</Icon>,
     route: "/projection-type",
     component: <ProjectionType />,
   },
   {
-    type: "collapse",
-    name: "Cast",
-    key: "cast",
-    icon: <Icon fontSize="small">group</Icon>,
     route: "/cast",
     component: <CastList />,
   },
   {
-    type: "collapse",
-    name: "Crew",
-    key: "crew",
-    icon: <Icon fontSize="small">handyman</Icon>,
     route: "/crew",
     component: <CrewList />,
   },

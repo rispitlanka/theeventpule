@@ -5,6 +5,7 @@ import DashboardNavbar from 'examples/Navbars/DashboardNavbar'
 import React, { useState } from 'react'
 import ScreenMovieSelection from './screenmovieSelection'
 import ShowDateSetup from './showDateSetup'
+import { ToastContainer, toast } from 'react-toastify'
 
 
 export default function AddShows() {
@@ -34,6 +35,7 @@ export default function AddShows() {
   };
 
   const handleShowsSaved = () => {
+    toast.info('Shows have been successfully created!');
     setSelectedScreenId(null);
     setSelectedMovieId(null);
     setCompleted(new Set());
@@ -77,6 +79,18 @@ export default function AddShows() {
           </Grid>
         </Grid>
       </MDBox>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </DashboardLayout>
   )
 }
