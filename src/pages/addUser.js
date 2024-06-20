@@ -165,6 +165,7 @@ export default function AddUser() {
                                     <FormControl fullWidth mb={3}>
                                         <InputLabel>Select Theatre</InputLabel>
                                         <Select
+                                            label="Select Theatre"
                                             value={selectedTheatreId}
                                             onChange={(e) => setSelectedTheatreId(e.target.value)}
                                             sx={{ height: '45px', mb: 3 }}

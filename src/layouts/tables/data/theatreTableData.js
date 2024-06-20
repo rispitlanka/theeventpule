@@ -118,14 +118,14 @@ export default function data() {
         {theatre.screensCount}
       </MDTypography>
     ),
-    coordinatorName: (
+    ownerName: (
       <MDTypography component="a" href="#" variant="button" color="text" fontWeight="medium">
-        {theatre.coordinatorName}
+        {theatre.ownerName}
       </MDTypography>
     ),
-    coordinatorMobile: (
+    ownerPhoneNumber: (
       <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-        {theatre.coordinatorMobile}
+        {theatre.ownerPhoneNumber}
       </MDTypography>
     ),
     status: (
@@ -146,8 +146,8 @@ export default function data() {
       { Header: "city", accessor: "city", align: "center" },
       { Header: "telephone", accessor: "telephone", align: "center" },
       { Header: "screens", accessor: "screens", align: "center" },
-      { Header: "Coordinator Name", accessor: "coordinatorName", align: "center" },
-      { Header: "Coordinator Mobile", accessor: "coordinatorMobile", align: "center" },
+      { Header: "owner Name", accessor: "ownerName", align: "center" },
+      { Header: "owner Phone Number", accessor: "ownerPhoneNumber", align: "center" },
       { Header: "status", accessor: "status", align: "center" },
       { Header: "actions", accessor: "action", align: "center" },
     ],

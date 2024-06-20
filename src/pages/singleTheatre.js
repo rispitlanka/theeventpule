@@ -177,7 +177,7 @@ export default function SingleTheatre() {
                     <Card sx={{ boxShadow: "none" }}>
                       <MDBox p={2}>
                         <MDTypography variant="h6" fontWeight="medium" textTransform="capitalize">
-                          Coordinator Information
+                          Owner&apos;s Information
                         </MDTypography>
                       </MDBox>
                       <MDBox pt={1} pb={2} px={2} lineHeight={1.25}>
@@ -187,7 +187,7 @@ export default function SingleTheatre() {
                         <MDBox display="flex" alignItems="center" mb={0.5}>
                           <MDBox width="80%" ml={0.5}>
                             <MDTypography variant="button" fontWeight="regular" color="text">
-                              {theatreData[0].coordinatorName}
+                              {theatreData[0].ownerName}
                             </MDTypography>
                           </MDBox>
                         </MDBox>
@@ -199,7 +199,7 @@ export default function SingleTheatre() {
                         <MDBox display="flex" alignItems="center" mb={0.5}>
                           <MDBox width="80%" ml={0.5}>
                             <MDTypography variant="button" fontWeight="regular" color="text">
-                              {theatreData[0].coordinatorMobile}
+                              {theatreData[0].ownerPhoneNumber}
                             </MDTypography>
                           </MDBox>
                         </MDBox>
@@ -211,7 +211,7 @@ export default function SingleTheatre() {
                         <MDBox display="flex" alignItems="center" mb={0.5}>
                           <MDBox width="80%" ml={0.5}>
                             <MDTypography variant="button" fontWeight="regular" color="text">
-                              {theatreData[0].coordinatorMail}
+                              {theatreData[0].ownerEmail}
                             </MDTypography>
                           </MDBox>
                         </MDBox>

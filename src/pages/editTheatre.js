@@ -39,9 +39,9 @@ export default function EditTheatre() {
                         address: theatre.address,
                         city: theatre.city,
                         telephone: theatre.telephone,
-                        coordinatorName: theatre.coordinatorName,
-                        coordinatorMobile: theatre.coordinatorMobile,
-                        coordinatorMail: theatre.coordinatorMail,
+                        ownerName: theatre.ownerName,
+                        ownerPhoneNumber: theatre.ownerPhoneNumber,
+                        ownerEmail: theatre.ownerEmail,
                     });
                 }
             } catch (error) {
@@ -58,15 +58,15 @@ export default function EditTheatre() {
             address: '',
             city: '',
             telephone: '',
-            coordinatorName: '',
-            coordinatorMobile: '',
-            coordinatorMail: '',
+            ownerName: '',
+            ownerPhoneNumber: '',
+            ownerEmail: '',
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
             city: Yup.string().required('Required'),
-            coordinatorName: Yup.string().required('Required'),
-            coordinatorMobile: Yup.string()
+            ownerName: Yup.string().required('Required'),
+            ownerPhoneNumber: Yup.string()
                 .required('Required')
                 // .matches(phoneRegExp, 'Mobile number is not valid')
                 .min(10, 'Not a valid mobile number')
@@ -76,7 +76,7 @@ export default function EditTheatre() {
                 // .matches(phoneRegExp, 'Telephone number is not valid')
                 .min(10, 'Not a valid telephone number')
                 .max(10, 'Not a valid telephone number'),
-            coordinatorMail: Yup.string().required('Email is required').email('Enter a valid email'),
+            ownerEmail: Yup.string().required('Email is required').email('Enter a valid email'),
         }),
         onSubmit: async (values, { resetForm }) => {
             await editTheatreData(values);
@@ -207,12 +207,12 @@ export default function EditTheatre() {
                                         variant="outlined"
                                         id="outlined-basic"
                                         label="Coordinator Name"
-                                        name="coordinatorName"
-                                        value={editTheatre.values.coordinatorName}
+                                        name="ownerName"
+                                        value={editTheatre.values.ownerName}
                                         onChange={editTheatre.handleChange}
                                         onBlur={editTheatre.handleBlur}
-                                        error={editTheatre.touched.coordinatorName && Boolean(editTheatre.errors.coordinatorName)}
-                                        helperText={editTheatre.touched.coordinatorName && editTheatre.errors.coordinatorName} />
+                                        error={editTheatre.touched.ownerName && Boolean(editTheatre.errors.ownerName)}
+                                        helperText={editTheatre.touched.ownerName && editTheatre.errors.ownerName} />
                                 </MDBox>
                                 <MDBox p={1}>
                                     <TextField
@@ -220,24 +220,24 @@ export default function EditTheatre() {
                                         variant="outlined"
                                         id="outlined-basic"
                                         label="Coordinator Mobile"
-                                        name="coordinatorMobile"
-                                        value={editTheatre.values.coordinatorMobile}
+                                        name="ownerPhoneNumber"
+                                        value={editTheatre.values.ownerPhoneNumber}
                                         onChange={editTheatre.handleChange}
                                         onBlur={editTheatre.handleBlur}
-                                        error={editTheatre.touched.coordinatorMobile && Boolean(editTheatre.errors.coordinatorMobile)}
-                                        helperText={editTheatre.touched.coordinatorMobile && editTheatre.errors.coordinatorMobile} />
+                                        error={editTheatre.touched.ownerPhoneNumber && Boolean(editTheatre.errors.ownerPhoneNumber)}
+                                        helperText={editTheatre.touched.ownerPhoneNumber && editTheatre.errors.ownerPhoneNumber} />
                                 </MDBox>
                                 <MDBox p={1}>
                                     <TextField fullWidth
                                         variant="outlined"
                                         id="outlined-basic"
                                         label="Coordinator Mail"
-                                        name="coordinatorMail"
-                                        value={editTheatre.values.coordinatorMail}
+                                        name="ownerEmail"
+                                        value={editTheatre.values.ownerEmail}
                                         onChange={editTheatre.handleChange}
                                         onBlur={editTheatre.handleBlur}
-                                        error={editTheatre.touched.coordinatorMail && Boolean(editTheatre.errors.coordinatorMail)}
-                                        helperText={editTheatre.touched.coordinatorMail && editTheatre.errors.coordinatorMail} />
+                                        error={editTheatre.touched.ownerEmail && Boolean(editTheatre.errors.ownerEmail)}
+                                        helperText={editTheatre.touched.ownerEmail && editTheatre.errors.ownerEmail} />
                                 </MDBox>
                                 <MDBox p={1}>
                                     <MDButton color='info' type='submit' sx={{ mr: 1 }}>Update</MDButton>
