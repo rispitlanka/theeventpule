@@ -26,6 +26,19 @@ export default function useUserRoutes() {
                 route.route !== '/bookings' &&
                 route.route !== '/view-tickets' &&
                 route.route !== '/events' &&
+                route.route !== '/theatres/single-theatre/add-screen/:id' &&
+                route.route !== '/theatres/single-theatre/edit-screen/:screenId' &&
+                route.route !== '/theatres/single-theatre/single-screen/add-showTime/:screenId' &&
+                route.route !== '/theatres/single-theatre/single-screen/edit-showTime/:showTimeId' &&
+                route.route !== '/theatres/single-theatre/single-screen/add-zone/:screenId' &&
+                route.route !== '/theatres/single-theatre/single-screen/single-zone/edit-zone/:id' &&
+                route.route !== '/bookings/book-seats/:showId/:screenId' &&
+                route.route !== '/bookings/book-seats/get-tickets' &&
+                route.route !== '/events/add-event' &&
+                route.route !== '/events/edit-event/:id' &&
+                route.route !== '/events/add-mainEvent' &&
+                route.route !== '/events/edit-mainEvent/:id' &&
+                route.route !== '/events' &&
                 route.route !== '/shows'
               );
             };
@@ -48,6 +61,39 @@ export default function useUserRoutes() {
                 route.route !== '/cast' &&
                 route.route !== '/crew' &&
                 route.route !== '/bookingsAdmin' &&
+                route.route !== '/facilities/add-facilities' &&
+                route.route !== '/movies/add-movie' &&
+                route.route !== '/languages/add-languages' &&
+                route.route !== '/cast/add-cast' &&
+                route.route !== '/crew/add-crew"' &&
+                route.route !== '/genre/add-genre' &&
+                route.route !== '/censor-types/add-censor-types' &&
+                route.route !== '/languages/edit-languages/:id' &&
+                route.route !== '/cast/edit-cast/:id' &&
+                route.route !== '/movies/edit-movie/:id' &&
+                route.route !== '/crew/edit-crew/:id' &&
+                route.route !== '/soundsystem/add-soundsystem' &&
+                route.route !== '/projection-type/add-projection-type"' &&
+                route.route !== '/tables/add-owner' &&
+                route.route !== '/tables/manage-owner' &&
+                route.route !== '/theatres/add-theatre' &&
+                route.route !== '/theatres/edit-theatre/:id' &&
+                route.route !== '/facilities/edit-facilities/:id' &&
+                route.route !== '/genre/edit-genre/:id' &&
+                route.route !== '/censor-types/edit-censor-types/:id"' &&
+                route.route !== '/soundsystem/edit-soundsystem/:id' &&
+                route.route !== '/projection-type/edit-projection-type/:id' &&
+                route.route !== '/bookingsAdmin' &&
+                route.route !== '/bookingsAdmin' &&
+                route.route !== '/bookingsAdmin' &&
+                route.route !== '/bookingsAdmin' &&
+                route.route !== '/bookingsAdmin' &&
+                route.route !== '/bookingsAdmin' &&
+                route.route !== '/bookingsAdmin' &&
+                route.route !== '/bookingsAdmin' &&
+                route.route !== '/bookingsAdmin' &&
+                route.route !== '/bookingsAdmin' &&
+
                 route.route !== '/facilities'
               );
             }

@@ -3,7 +3,7 @@ import MDBox from 'components/MDBox'
 import MDTypography from 'components/MDTypography'
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout'
 import DashboardNavbar from 'examples/Navbars/DashboardNavbar'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from './supabaseClient'
 import EditIcon from '@mui/icons-material/Edit';
@@ -12,8 +12,11 @@ import Footer from 'examples/Footer'
 import MDButton from 'components/MDButton'
 import DataTable from "examples/Tables/DataTable";
 import showTimeTableData from "layouts/tables/data/showTimeTableData";
+import { UserDataContext } from 'context'
 
 export default function SingleScreen() {
+    const userDetails = useContext(UserDataContext);
+    const userRole = userDetails[0].userRole;
     const { columns: pColumns, rows: pRows } = showTimeTableData();
     const [screenData, setScreenData] = useState([]);
     const [zonesData, setZonesData] = useState([]);
@@ -75,9 +78,11 @@ export default function SingleScreen() {
                         <MDTypography variant="h6" color="white">
                             Screen Informations
                         </MDTypography>
-                        <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
-                            <MDButton onClick={() => openPage(`/theatres/single-theatre/edit-screen/${screenId}`)}><EditIcon color="info" /></MDButton>
-                        </MDBox>
+                        {userRole !== "superAdmin" &&
+                            <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
+                                <MDButton onClick={() => openPage(`/theatres/single-theatre/edit-screen/${screenId}`)}><EditIcon color="info" /></MDButton>
+                            </MDBox>
+                        }
                     </MDBox>
 
                     {screenData.length > 0 &&
@@ -157,7 +162,9 @@ export default function SingleScreen() {
                             noEndBorder
                         />
                     </MDBox>
-                    <MDBox p={3}><MDButton color='info' onClick={() => openPage(`/theatres/single-theatre/single-screen/add-showTime/${screenId}`)}>Add Show Time</MDButton></MDBox>
+                    {userRole !== "superAdmin" &&
+                        <MDBox p={3}><MDButton color='info' onClick={() => openPage(`/theatres/single-theatre/single-screen/add-showTime/${screenId}`)}>Add Show Time</MDButton></MDBox>
+                    }
                     <MDBox mt={5} pt={3} px={2} lineHeight={1.25}>
                         <MDTypography variant="h6" fontWeight="medium">
                             Zones
@@ -203,23 +210,25 @@ export default function SingleScreen() {
                                     </Card>
                                 </Grid>
                             ))}
-                            <Grid item xs={12}>
-                                <Card
-                                    sx={{
-                                        backgroundColor: '#cfe0fd',
-                                        padding: '20px',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                        height: '150px'
-                                    }}>
-                                    <IconButton onClick={() => openPage(`/theatres/single-theatre/single-screen/add-zone/${screenId}`)}>
-                                        <AddCircleIcon color='info' sx={{ fontSize: 48 }} />
-                                    </IconButton>
-                                    <MDTypography>Add New Zone</MDTypography>
-                                </Card>
-                            </Grid>
+                            {userRole !== "superAdmin" &&
+                                <Grid item xs={12}>
+                                    <Card
+                                        sx={{
+                                            backgroundColor: '#cfe0fd',
+                                            padding: '20px',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            height: '150px'
+                                        }}>
+                                        <IconButton onClick={() => openPage(`/theatres/single-theatre/single-screen/add-zone/${screenId}`)}>
+                                            <AddCircleIcon color='info' sx={{ fontSize: 48 }} />
+                                        </IconButton>
+                                        <MDTypography>Add New Zone</MDTypography>
+                                    </Card>
+                                </Grid>
+                            }
                         </Grid>
                     </MDBox>
                 </Card>

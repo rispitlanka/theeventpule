@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
@@ -10,9 +10,11 @@ import MDTypography from "components/MDTypography";
 import { useNavigate, useParams } from "react-router-dom";
 import { FixedSizeGrid } from 'react-window';
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { UserDataContext } from "context";
 
 export default function SingleZone() {
+    const userDetails = useContext(UserDataContext);
+    const userRole = userDetails[0].userRole;
     const { id } = useParams();
     const [seatsData, setSeatsData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -94,9 +96,11 @@ export default function SingleZone() {
                                 <MDTypography fontWeight="light" mr={1}>Half Ticket : Rs.{zone.halfPrice}</MDTypography>
                             </Grid>
                         </Grid>
-                        <Grid item >
-                            <EditIcon onClick={() => { openPage(`/theatres/single-theatre/single-screen/single-zone/edit-zone/${id}`) }} sx={{ cursor: 'pointer', mr: 1 }} />
-                        </Grid>
+                        {userRole !== "superAdmin" &&
+                            <Grid item >
+                                <EditIcon onClick={() => { openPage(`/theatres/single-theatre/single-screen/single-zone/edit-zone/${id}`) }} sx={{ cursor: 'pointer', mr: 1 }} />
+                            </Grid>
+                        }
                     </Grid>
                 )))}
                 <MDBox>

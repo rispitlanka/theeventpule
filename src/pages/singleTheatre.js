@@ -20,13 +20,14 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 
 // Images
-import backgroundImage from "assets/images/theatre2.jpg";
+// import backgroundImage from "assets/images/theatre2.jpg";
 import { UserDataContext } from 'context';
 import DataNotFound from 'components/NoData/dataNotFound';
 
 export default function SingleTheatre() {
   const userDetails = useContext(UserDataContext);
   const userTheatreId = userDetails[0].theatreId;
+  const userRole = userDetails[0].userRole;
   const [theatreData, setTheatreData] = useState([]);
   const [screensData, setScreensData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -92,7 +93,7 @@ export default function SingleTheatre() {
                 `${linearGradient(
                   rgba(gradients.info.main, 0.6),
                   rgba(gradients.info.state, 0.6)
-                )}, url(${backgroundImage})`,
+                )}, url(${theatreData[0]?.coverImage || ''})`,
               backgroundSize: "cover",
               backgroundPosition: "50%",
               overflow: "hidden",
@@ -112,7 +113,7 @@ export default function SingleTheatre() {
               >
                 <Grid container spacing={3} alignItems="center">
                   <Grid item>
-                    <MDAvatar src={null} alt="profile-image" size="xl" shadow="sm" />
+                    <MDAvatar src={theatreData[0].theatreImage} alt="profile-image" size="lg" shadow="sm" />
                   </Grid>
                   <Grid item>
                     <MDBox height="100%" mt={0.5} lineHeight={1}>
@@ -224,7 +225,6 @@ export default function SingleTheatre() {
             :
             <DataNotFound message={'Theatre Not Found !'} />
           }
-
           {/* screens */}
           {theatreData && theatreData.length > 0 &&
             <>
@@ -258,23 +258,25 @@ export default function SingleTheatre() {
                       </Card>
                     </Grid>
                   ))}
-                  <Grid item xs={12} md={6} xl={3}>
-                    <Card
-                      sx={{
-                        backgroundColor: '#cfe0fd',
-                        padding: '20px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        height: '150px'
-                      }}>
-                      <IconButton onClick={() => openPage(`/theatres/single-theatre/add-screen/${theatreID}`)}>
-                        <AddCircleIcon color='info' sx={{ fontSize: 48 }} />
-                      </IconButton>
-                      <MDTypography>Add New Screen</MDTypography>
-                    </Card>
-                  </Grid>
+                  {userRole !== "superAdmin" &&
+                    <Grid item xs={12} md={6} xl={3}>
+                      <Card
+                        sx={{
+                          backgroundColor: '#cfe0fd',
+                          padding: '20px',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          height: '150px'
+                        }}>
+                        <IconButton onClick={() => openPage(`/theatres/single-theatre/add-screen/${theatreID}`)}>
+                          <AddCircleIcon color='info' sx={{ fontSize: 48 }} />
+                        </IconButton>
+                        <MDTypography>Add New Screen</MDTypography>
+                      </Card>
+                    </Grid>
+                  }
                 </Grid>
               </MDBox>
             </>
