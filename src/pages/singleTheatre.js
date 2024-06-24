@@ -4,7 +4,7 @@ import { supabase } from './supabaseClient';
 
 // @mui material components
 import Grid from "@mui/material/Grid";
-import { Card, CircularProgress, IconButton } from '@mui/material';
+import { Box, Button, Card, CircularProgress, Divider, Fade, IconButton, List, ListItem, Menu, MenuItem, Typography } from '@mui/material';
 
 // @mui icons
 import AddCircleIcon from '@mui/icons-material/AddCircle';
@@ -31,6 +31,7 @@ export default function SingleTheatre() {
   const [theatreData, setTheatreData] = useState([]);
   const [screensData, setScreensData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showsData, setShowsData] = useState([]);
   const navigate = useNavigate();
   const openPage = (route) => {
     navigate(route);
@@ -67,10 +68,78 @@ export default function SingleTheatre() {
 
   useEffect(() => {
     fetchSingleTheatreData();
+    fetchShows();
     setTimeout(() => {
       setIsLoading(false);
     }, 500);
   }, [theatreID])
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const getCurrentDate = () => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  const fetchShows = async () => {
+    try {
+      const currentDate = getCurrentDate();
+      const { data: fetchedShowsData, error: fetchedShowsError } = await supabase
+        .from('shows').select('*')
+        .eq('theatreId', theatreID)
+        .gte('date', currentDate);
+      // .lte('date', new Date(new Date(currentDate).setDate(new Date(currentDate).getDate() + 7)).toISOString().slice(0, 10));;
+      if (fetchedShowsError) throw error;
+      setShowsData(fetchedShowsData);
+      const showTimeIds = fetchedShowsData.map((shows => (shows.showTimeId)));
+      const movieIds = fetchedShowsData.map((shows => (shows.movieId)));
+      const screenIds = fetchedShowsData.map((shows => (shows.screenId)));
+
+      const [showTimes, movies, screens] = await Promise.all([
+        supabase.from('showTime').select().in('id', showTimeIds),
+        supabase.from('movies').select().in('id', movieIds),
+        supabase.from('screens').select().in('id', screenIds),
+      ]);
+
+      const enhancedShows = fetchedShowsData.map(show => {
+        const showTime = showTimes.data.find(showTime => showTime.id === show.showTimeId);
+        const movie = movies.data.find(movie => movie.id === show.movieId);
+        const screen = screens.data.find(screen => screen.id === show.screenId);
+
+        return {
+          ...show,
+          movieName: movie ? movie.title : 'Unknown Movie',
+          screenName: screen ? screen.name : 'Unknown Screen',
+          showTime: showTime ? showTime.time : 'Unknown Show Time',
+        };
+      });
+      setShowsData(enhancedShows);
+
+    } catch (error) {
+      console.log(error)
+    }
+  };
+
+  const groupedShows = showsData.reduce((acc, show) => {
+    if (!acc[show.movieId]) {
+      acc[show.movieId] = {};
+    }
+    if (!acc[show.movieId][show.screenId]) {
+      acc[show.movieId][show.screenId] = [];
+    }
+    acc[show.movieId][show.screenId].push(show);
+    return acc;
+  }, {});
 
   return (
     <DashboardLayout>
@@ -219,12 +288,76 @@ export default function SingleTheatre() {
                       </MDBox>
                     </Card>
                   </Grid>
+                  <Grid item xs={12} md={6} xl={4}>
+                    <Card sx={{ boxShadow: "none" }}>
+                      <Grid display={'flex'} flexDirection={'row'}>
+                        <Grid>
+                          <Button
+                            id="fade-button"
+                            aria-controls={open ? 'fade-menu' : undefined}
+                            aria-haspopup="true"
+                            aria-expanded={open ? 'true' : undefined}
+                            onClick={handleClick}
+                          >
+                            Click to Show Movies
+                          </Button>
+                          <Menu
+                            id="fade-menu"
+                            MenuListProps={{
+                              'aria-labelledby': 'fade-button',
+                            }}
+                            anchorEl={anchorEl}
+                            open={open}
+                            onClose={handleClose}
+                            TransitionComponent={Fade}
+                          >
+                            {Object.keys(groupedShows).map(movieId => (
+                              <MenuItem key={movieId} disableRipple>
+                                <Box sx={{ width: '100%' }}>
+                                  <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: '8px' }}>
+                                    {groupedShows[movieId][Object.keys(groupedShows[movieId])[0]][0].movieName}
+                                  </Typography>
+                                  <List disablePadding>
+                                    {Object.keys(groupedShows[movieId]).map(screenId => (
+                                      <Box key={screenId} sx={{ marginBottom: '16px' }}>
+                                        <Typography sx={{ marginBottom: '4px' }}>
+                                          Screen Name: {groupedShows[movieId][screenId][0].screenName}
+                                        </Typography>
+                                        <List disablePadding>
+                                          {groupedShows[movieId][screenId].map(show => (
+                                            <ListItem key={show.screenId} sx={{ paddingLeft: '0px', paddingRight: '0px' }}>
+                                              <Grid container spacing={2} alignItems="center">
+                                                <Grid item xs={6}>
+                                                  <Typography>
+                                                    Show Time: {show.date} - {show.showTime}
+                                                  </Typography>
+                                                </Grid>
+                                              </Grid>
+                                            </ListItem>
+                                          ))}
+                                        </List>
+                                        <Divider />
+                                      </Box>
+                                    ))}
+                                  </List>
+                                </Box>
+                              </MenuItem>
+                            ))}
+                          </Menu>
+                        </Grid>
+                        <Grid >
+                          <Button>Filter By</Button>
+                        </Grid>
+                      </Grid>
+                    </Card>
+                  </Grid>
                 </Grid>
               </MDBox>
             </>
             :
             <DataNotFound message={'Theatre Not Found !'} />
           }
+
           {/* screens */}
           {theatreData && theatreData.length > 0 &&
             <>
