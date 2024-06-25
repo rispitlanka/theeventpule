@@ -8,8 +8,8 @@ import 'react-toastify/dist/ReactToastify.css';
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import { Checkbox, FormControlLabel, Switch, TextField } from '@mui/material';
-
+import { Button, Checkbox, FormControlLabel, Switch, TextField } from '@mui/material';
+import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 // Material Dashboard 2 React example components
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout';
 import DashboardNavbar from 'examples/Navbars/DashboardNavbar';
@@ -18,11 +18,42 @@ import MDBox from 'components/MDBox';
 import MDTypography from 'components/MDTypography';
 import MDButton from 'components/MDButton';
 import { useNavigate } from 'react-router-dom';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import dayjs from 'dayjs';
 
 export default function AddTheatre() {
   const navigate = useNavigate();
   const [facilitiesData, setFacilitiesData] = useState([]);
   const [selectedFacilityIds, setSelectedFacilityIds] = useState([]);
+  const [regDate, setRegDate] = useState();
+  const [coverImagePreview, setCoverImagePreview] = useState(null);
+  const [theatreImagePreview, setTheatreImagePreview] = useState(null);
+
+  const handleDateChange = (date) => {
+    setRegDate(date);
+  }
+
+  const handleCheckboxChange = (facilityId) => {
+    setSelectedFacilityIds((prevSelected) =>
+      prevSelected.includes(facilityId)
+        ? prevSelected.filter((id) => id !== facilityId)
+        : [...prevSelected, facilityId]
+    );
+  };
+
+  const handleCoverImageChange = (event) => {
+    const file = event.currentTarget.files[0];
+    newTheatre.setFieldValue('coverImage', file);
+    setCoverImagePreview(URL.createObjectURL(file));
+  };
+
+  const handleTheatreImageChange = (event) => {
+    const file = event.currentTarget.files[0];
+    newTheatre.setFieldValue('theatreImage', file);
+    setTheatreImagePreview(URL.createObjectURL(file));
+  };
 
   useEffect(() => {
     const fetchFacilities = async () => {
@@ -38,36 +69,6 @@ export default function AddTheatre() {
     };
     fetchFacilities();
   }, [])
-
-  const handleCheckboxChange = (facilityId) => {
-    setSelectedFacilityIds((prevSelected) =>
-      prevSelected.includes(facilityId)
-        ? prevSelected.filter((id) => id !== facilityId)
-        : [...prevSelected, facilityId]
-    );
-  };
-
-  // const onSubmit = async (values, { resetForm }) => {
-  //   try {
-  //     if (newTheatre.values.coverImage) {
-  //       const file = newTheatre.values.coverImage;
-  //       const { data: imageData, error: imageError } = await uploadImage(file);
-  //       if (imageData) {
-  //         values.coverImageURL = imageData.Key; // Store image URL in theatre data
-  //       } else {
-  //         throw new Error('Failed to upload image');
-  //       }
-  //     }
-  //     await addTheatreData({ ...values, facilityIds: selectedFacilityIds });
-  //     resetForm();
-  //     toast.info('Theatre has been successfully created!');
-  //     setTimeout(() => {
-  //       navigate(-1);
-  //     }, 1500);
-  //   } catch (error) {
-  //     console.error('Error submitting form:', error.message);
-  //   }
-  // };
 
   const onSubmit = async (values, { resetForm }) => {
     try {
@@ -115,8 +116,14 @@ export default function AddTheatre() {
         }
       }
 
+      const selectedFacilityNames = facilitiesData
+        .filter(facility => selectedFacilityIds.includes(facility.id))
+        .map(facility => facility.facility_name);
+      values.facilities = selectedFacilityNames
+      const formattedDate = dayjs(regDate).format('YYYY-MM-DD');
+      values.registeredDate = formattedDate;
 
-      await addTheatreData({ ...values, facilityIds: selectedFacilityIds });
+      await addTheatreData(values);
       resetForm();
       toast.info('Theatre has been successfully created!');
       setTimeout(() => {
@@ -128,8 +135,6 @@ export default function AddTheatre() {
     }
   };
 
-
-
   const newTheatre = useFormik({
     initialValues: {
       name: '',
@@ -139,14 +144,14 @@ export default function AddTheatre() {
       ownerName: '',
       ownerPhoneNumber: '',
       ownerEmail: '',
-      facilityIds: [],
+      facilities: [],
       websiteURL: '',
       // latitude: '',
       // longitude: '',
       licenseInfo: '',
       description: '',
       isActive: true,
-      // regDate: '',
+      registeredDate: '',
       notes: '',
       coverImage: '',
       theatreImage: '',
@@ -183,7 +188,6 @@ export default function AddTheatre() {
       throw new Error('Error inserting data:', error.message);
     }
   };
-
 
   return (
     <DashboardLayout><DashboardNavbar /> <MDBox pt={6} pb={3}>
@@ -371,6 +375,17 @@ export default function AddTheatre() {
                     helperText={newTheatre.touched.notes && newTheatre.errors.notes} />
                 </MDBox>
                 <MDBox p={1} >
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DemoContainer components={['DatePicker']}>
+                      <DatePicker
+                        label="Select Registered Date"
+                        value={regDate}
+                        onChange={handleDateChange}
+                      />
+                    </DemoContainer>
+                  </LocalizationProvider>
+                </MDBox>
+                <MDBox p={1} >
                   <MDTypography variant="body2" fontWeight="regular">
                     Status:
                     <Switch label="Status" checked={newTheatre.values.isActive} onChange={(e) => newTheatre.setFieldValue('isActive', e.target.checked)} />
@@ -381,35 +396,112 @@ export default function AddTheatre() {
                   <MDTypography mr={2}>Facilities: </MDTypography>
                   {facilitiesData && facilitiesData.length > 0 && facilitiesData.map((facility) => (
                     <MDBox key={facility.id}>
-                      <FormControlLabel control={<Checkbox checked={selectedFacilityIds.includes(facility.id)} onChange={() => handleCheckboxChange(facility.id)} />} label={facility.facility_name} />                    </MDBox>
+                      <FormControlLabel control={<Checkbox checked={selectedFacilityIds.includes(facility.id)} onChange={() => handleCheckboxChange(facility.id)} />} label={facility.facility_name} />
+                    </MDBox>
                   ))}
                 </MDBox>
+
                 <MDBox p={1}>
-                  <TextField
-                    fullWidth
-                    type="file"
-                    // label="Cover Image"
-                    name="coverImage"
-                    onChange={(event) => {
-                      newTheatre.setFieldValue('coverImage', event.currentTarget.files[0]);
-                    }}
-                    error={newTheatre.touched.coverImage && Boolean(newTheatre.errors.coverImage)}
-                    helperText={newTheatre.touched.coverImage && newTheatre.errors.coverImage}
-                  />
+                  <Grid container spacing={3}>
+                    <Grid item xs={6} display={'flex'} flexDirection={'column'}>
+                      <MDTypography>Theatre Image</MDTypography>
+                      {theatreImagePreview ? (
+                        <MDBox
+                          display="flex"
+                          justifyContent="center"
+                          alignItems="center"
+                          border="1px dashed"
+                          borderRadius="4px"
+                          width="50%"
+                          maxHeight="200px"
+                          mb={1}
+                        >
+                          <img src={theatreImagePreview} alt="Theatre Preview" style={{ width: '100%', maxHeight: '100%' }} />
+                        </MDBox>
+                      ) : (
+                        <MDBox
+                          display="flex"
+                          justifyContent="center"
+                          alignItems="center"
+                          border="1px dashed"
+                          borderRadius="4px"
+                          width="50%"
+                          maxHeight="200px"
+                          mb={1}
+                        >
+                          <AddPhotoAlternateIcon />
+                        </MDBox>
+                      )}
+                      <MDBox display="flex" justifyContent="center">
+                        <MDButton
+                          size="small"
+                          variant="contained"
+                          component="label"
+                          style={{ marginBottom: 8 }}
+                        >
+                          Upload Theatre Image
+                          <input
+                            type="file"
+                            hidden
+                            onChange={handleTheatreImageChange}
+                          />
+                        </MDButton>
+                      </MDBox>
+                      {newTheatre.touched.theatreImage && newTheatre.errors.theatreImage && (
+                        <MDTypography color="error">{newTheatre.errors.theatreImage}</MDTypography>
+                      )}
+                    </Grid>
+                    <Grid item xs={6} display={'flex'} flexDirection={'column'}>
+                      <MDTypography>Cover Image</MDTypography>
+                      {coverImagePreview ? (
+                        <MDBox
+                          display="flex"
+                          justifyContent="center"
+                          alignItems="center"
+                          border="1px dashed"
+                          borderRadius="4px"
+                          width="50%"
+                          maxHeight="200px"
+                          mb={1}
+                        >
+                          <img src={coverImagePreview} alt="Cover Preview" style={{ width: '100%', maxHeight: '100%' }} />
+                        </MDBox>
+                      ) : (
+                        <MDBox
+                          display="flex"
+                          justifyContent="center"
+                          alignItems="center"
+                          border="1px dashed"
+                          borderRadius="4px"
+                          width="50%"
+                          maxHeight="200px"
+                          mb={1}
+                        >
+                          <AddPhotoAlternateIcon />
+                        </MDBox>
+                      )}
+                      <MDBox display="flex" justifyContent="center">
+                        <MDButton
+                          size="small"
+                          variant="contained"
+                          component="label"
+                          style={{ marginBottom: 8 }}
+                        >
+                          Upload Cover Image
+                          <input
+                            type="file"
+                            hidden
+                            onChange={handleCoverImageChange}
+                          />
+                        </MDButton>
+                      </MDBox>
+                      {newTheatre.touched.coverImage && newTheatre.errors.coverImage && (
+                        <MDTypography color="error">{newTheatre.errors.coverImage}</MDTypography>
+                      )}
+                    </Grid>
+                  </Grid>
                 </MDBox>
-                <MDBox p={1}>
-                  <TextField
-                    fullWidth
-                    type="file"
-                    // label="Theatre Image"
-                    name="theatreImage"
-                    onChange={(event) => {
-                      newTheatre.setFieldValue('theatreImage', event.currentTarget.files[0]);
-                    }}
-                    error={newTheatre.touched.theatreImage && Boolean(newTheatre.errors.theatreImage)}
-                    helperText={newTheatre.touched.theatreImage && newTheatre.errors.theatreImage}
-                  />
-                </MDBox>
+
                 <MDBox p={1}>
                   <MDButton color='info' type='submit'>Save</MDButton>
                 </MDBox>

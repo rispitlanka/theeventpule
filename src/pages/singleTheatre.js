@@ -4,7 +4,7 @@ import { supabase } from './supabaseClient';
 
 // @mui material components
 import Grid from "@mui/material/Grid";
-import { Box, Button, Card, CircularProgress, Divider, Fade, IconButton, List, ListItem, Menu, MenuItem, Typography } from '@mui/material';
+import { Box, Button, Card, CircularProgress, Divider, Fade, IconButton, List, ListItem, ListItemText, Menu, MenuItem, Typography } from '@mui/material';
 
 // @mui icons
 import AddCircleIcon from '@mui/icons-material/AddCircle';
@@ -140,6 +140,15 @@ export default function SingleTheatre() {
     acc[show.movieId][show.screenId].push(show);
     return acc;
   }, {});
+
+  const formattedTime = (time) => {
+    if (time) {
+      const [hours, minutes, seconds] = time.split(':');
+      const date = new Date(0, 0, 0, hours, minutes, seconds);
+      const options = { hour: '2-digit', minute: '2-digit' };
+      return date.toLocaleTimeString('en-US', options);
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -288,69 +297,6 @@ export default function SingleTheatre() {
                       </MDBox>
                     </Card>
                   </Grid>
-                  <Grid item xs={12} md={6} xl={4}>
-                    <Card sx={{ boxShadow: "none" }}>
-                      <Grid display={'flex'} flexDirection={'row'}>
-                        <Grid>
-                          <Button
-                            id="fade-button"
-                            aria-controls={open ? 'fade-menu' : undefined}
-                            aria-haspopup="true"
-                            aria-expanded={open ? 'true' : undefined}
-                            onClick={handleClick}
-                          >
-                            Click to Show Movies
-                          </Button>
-                          <Menu
-                            id="fade-menu"
-                            MenuListProps={{
-                              'aria-labelledby': 'fade-button',
-                            }}
-                            anchorEl={anchorEl}
-                            open={open}
-                            onClose={handleClose}
-                            TransitionComponent={Fade}
-                          >
-                            {Object.keys(groupedShows).map(movieId => (
-                              <MenuItem key={movieId} disableRipple>
-                                <Box sx={{ width: '100%' }}>
-                                  <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: '8px' }}>
-                                    {groupedShows[movieId][Object.keys(groupedShows[movieId])[0]][0].movieName}
-                                  </Typography>
-                                  <List disablePadding>
-                                    {Object.keys(groupedShows[movieId]).map(screenId => (
-                                      <Box key={screenId} sx={{ marginBottom: '16px' }}>
-                                        <Typography sx={{ marginBottom: '4px' }}>
-                                          Screen Name: {groupedShows[movieId][screenId][0].screenName}
-                                        </Typography>
-                                        <List disablePadding>
-                                          {groupedShows[movieId][screenId].map(show => (
-                                            <ListItem key={show.screenId} sx={{ paddingLeft: '0px', paddingRight: '0px' }}>
-                                              <Grid container spacing={2} alignItems="center">
-                                                <Grid item xs={6}>
-                                                  <Typography>
-                                                    Show Time: {show.date} - {show.showTime}
-                                                  </Typography>
-                                                </Grid>
-                                              </Grid>
-                                            </ListItem>
-                                          ))}
-                                        </List>
-                                        <Divider />
-                                      </Box>
-                                    ))}
-                                  </List>
-                                </Box>
-                              </MenuItem>
-                            ))}
-                          </Menu>
-                        </Grid>
-                        <Grid >
-                          <Button>Filter By</Button>
-                        </Grid>
-                      </Grid>
-                    </Card>
-                  </Grid>
                 </Grid>
               </MDBox>
             </>
@@ -414,6 +360,48 @@ export default function SingleTheatre() {
               </MDBox>
             </>
           }
+          <MDBox pt={4} px={2} lineHeight={1.25}>
+            <Grid display={'flex'} flexDirection={'row'}>
+              <Grid item>
+                <MDTypography variant="h6" fontWeight="medium">
+                  Movies
+                </MDTypography>
+                <List>
+                  {Object.keys(groupedShows).map(movieId => (
+                    <ListItem key={movieId} disableRipple>
+                      <Box >
+                        <Typography sx={{ fontWeight: 'regular', mt: 3 }}>
+                          {groupedShows[movieId][Object.keys(groupedShows[movieId])[0]][0].movieName}
+                        </Typography>
+                        <List disablePadding>
+                          {Object.keys(groupedShows[movieId]).map(screenId => (
+                            <Box key={screenId}>
+                              <Typography sx={{ marginBottom: '4px' }}>
+                                Screen Name: {groupedShows[movieId][screenId][0].screenName}
+                              </Typography>
+                              <List disablePadding>
+                                {groupedShows[movieId][screenId].map(show => (
+                                  <ListItem key={show.screenId}>
+                                    <ListItemText>
+                                      Show Time: {show.date} - {formattedTime(show.showTime)}
+                                    </ListItemText>
+                                  </ListItem>
+                                ))}
+                              </List>
+                              <Divider />
+                            </Box>
+                          ))}
+                        </List>
+                      </Box>
+                    </ListItem>
+                  ))}
+                </List>
+              </Grid>
+              <Grid sx={{ position: 'absolute', right: 16, }}>
+                <Button>Filter By</Button>
+              </Grid>
+            </Grid>
+          </MDBox>
         </MDBox>
       }
       <Footer />
