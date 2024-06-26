@@ -16,13 +16,14 @@ Coded by www.creative-tim.com
 */
 
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { supabase } from "pages/supabaseClient";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDButton from "components/MDButton";
+import { UserDataContext } from "context";
 
 export default function data() {
   const Screen = ({ name }) => (
@@ -44,6 +45,8 @@ export default function data() {
   const [error, setError] = useState(null);
   const { screenId } = useParams();
   const navigate = useNavigate();
+  const userDetails = useContext(UserDataContext);
+  const userRole = userDetails[0].userRole;
   const openPage = (route) => {
     navigate(route);
   };
@@ -78,7 +81,7 @@ export default function data() {
       </MDTypography>
     ),
     action: (
-      <MDButton onClick={() => openPage(`/theatres/single-theatre/single-screen/edit-showTime/${showTime.id}`)} variant='text' size='small' color='info'>Edit</MDButton>
+      <MDButton onClick={() => openPage(`/theatres/single-theatre/single-screen/edit-showTime/${showTime.id}`)} variant='text' size='small' color='info' disabled={userRole === 'superAdmin'}>Edit</MDButton>
     ),
 
   })) : [{ name: <MDTypography color='warning' fontWeight='bold'>{error}</MDTypography> }];

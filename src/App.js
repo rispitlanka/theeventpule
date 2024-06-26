@@ -59,6 +59,7 @@ import MainEventsLists from "pages/mainEventsList";
 import SubEventsLists from "pages/subEventsLists";
 import RegisterForEvents from "pages/registerForEvents";
 import SignUp from "layouts/authentication/sign-up";
+import { Box, CircularProgress } from "@mui/material";
 
 export default function App() {
   const userEmail = localStorage.getItem('userEmail');
@@ -77,30 +78,34 @@ export default function App() {
   const [onMouseEnter, setOnMouseEnter] = useState(false);
   const [rtlCache, setRtlCache] = useState(null);
   const { pathname } = useLocation();
-  const userRoutes = useUserRoutes();
+  const { userRoutes, isLoading } = useUserRoutes();
   const [userData, setUserData] = useState();
 
-  const fetchUser = async () => {
-    try {
-      if (userEmailModified) {
-        const { data, error } = await supabase.from('theatreOwners').select('*').eq('email', userEmailModified);
-        if (data) {
-          setUserData(data);
-          console.log('fetched user data', data);
-        }
-        if (error) {
-          console.log(error);
-        }
-      }
-    }
-    catch (error) {
-
-    }
-  }
-
   useEffect(() => {
-    fetchUser()
-  }, [userEmail])
+    const fetchUser = async () => {
+      try {
+        if (userEmailModified) {
+          const { data, error } = await supabase
+            .from('theatreOwners')
+            .select('*')
+            .eq('email', userEmailModified);
+
+          if (data) {
+            setUserData(data);
+            console.log('Fetched user data:', data);
+          }
+
+          if (error) {
+            console.error(error);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching user:', error);
+      }
+    };
+
+    fetchUser();
+  }, [userEmailModified]);
 
   // Cache for the rtl
   useMemo(() => {
@@ -190,42 +195,49 @@ export default function App() {
     <ThemeProvider theme={darkMode ? themeDark : theme}>
       <CssBaseline />
       <UserDataContext.Provider value={contextValue}>
-        {userEmail ?
+        {isLoading ? <Box sx={{ display: 'flex', justifyContent: 'center', mt: 5 }}>
+          <CircularProgress color="info" />
+        </Box> :
           <>
-            {layout === "dashboard" && (
+            {userEmail ?
               <>
-                <Sidenav
-                  color={sidenavColor}
-                  brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
-                  brandName={userData && userData.length > 0 ? userData[0].name : userEmailModified}
-                  routes={userRoutes}
-                  onMouseEnter={handleOnMouseEnter}
-                  onMouseLeave={handleOnMouseLeave}
-                />
-                <Configurator />
-                {configsButton}
+                {layout === "dashboard" && (
+                  <>
+                    <Sidenav
+                      color={sidenavColor}
+                      brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
+                      brandName={userData && userData.length > 0 ? userData[0].name : userEmailModified}
+                      routes={userRoutes}
+                      onMouseEnter={handleOnMouseEnter}
+                      onMouseLeave={handleOnMouseLeave}
+                    />
+                    <Configurator />
+                    {configsButton}
+                  </>
+                )}
+                {layout === "vr" && <Configurator />}
+                <Routes>
+                  {getRoutes(userRoutes)}
+                  <Route path="*" element={<Navigate to="/dashboard" />} />
+                </Routes>
               </>
-            )}
-            {layout === "vr" && <Configurator />}
-            <Routes>
-              {getRoutes(userRoutes)}
-              <Route path="*" element={<Navigate to="/dashboard" />} />
-            </Routes>
-          </>
-          :
-          <>
-            {layout === "vr" && <Configurator />}
-            <Routes>
-              {getRoutes(userRoutes)}
-              <Route path="*" element={<Navigate to="/authentication/sign-in" />} />
-              <Route path="/authentication/sign-up" element={<SignUp />} />
-              <Route path="/register/:eventId" element={<RegisterEvent />} />
-              <Route path="/main-events" element={<MainEventsLists />} />
-              <Route path="/main-events/sub-events/:mainEventId" element={<SubEventsLists />} />
-              <Route path="/main-events/sub-events/registerForEvents/:eventId" element={<RegisterForEvents />} />
-            </Routes>
+              :
+              <>
+                {layout === "vr" && <Configurator />}
+                <Routes>
+                  {getRoutes(userRoutes)}
+                  <Route path="*" element={<Navigate to="/authentication/sign-in" />} />
+                  <Route path="/authentication/sign-up" element={<SignUp />} />
+                  <Route path="/register/:eventId" element={<RegisterEvent />} />
+                  <Route path="/main-events" element={<MainEventsLists />} />
+                  <Route path="/main-events/sub-events/:mainEventId" element={<SubEventsLists />} />
+                  <Route path="/main-events/sub-events/registerForEvents/:eventId" element={<RegisterForEvents />} />
+                </Routes>
+              </>
+            }
           </>
         }
+
       </UserDataContext.Provider>
     </ThemeProvider>
   );
