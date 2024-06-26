@@ -212,295 +212,285 @@ export default function AddTheatre() {
                 </MDTypography>
               </MDBox>
               <MDBox p={2}>
-                <MDBox p={1}>
-                  <TextField
-                    fullWidth
-                    variant="outlined"
-                    id="outlined-basic"
-                    label="Name"
-                    name="name"
-                    value={newTheatre.values.name}
-                    onChange={newTheatre.handleChange}
-                    onBlur={newTheatre.handleBlur}
-                    error={newTheatre.touched.name && Boolean(newTheatre.errors.name)}
-                    helperText={newTheatre.touched.name && newTheatre.errors.name} />
-                </MDBox>
-                <MDBox p={1}>
-                  <TextField
-                    fullWidth
-                    variant="outlined"
-                    id="outlined-basic"
-                    label="Address"
-                    name="address"
-                    value={newTheatre.values.address}
-                    onChange={newTheatre.handleChange}
-                    onBlur={newTheatre.handleBlur}
-                    error={newTheatre.touched.address && Boolean(newTheatre.errors.address)}
-                    helperText={newTheatre.touched.address && newTheatre.errors.address} />
-                </MDBox>
-                <MDBox p={1}>
-                  <TextField
-                    fullWidth
-                    variant="outlined"
-                    id="outlined-basic"
-                    label="City"
-                    name="city"
-                    value={newTheatre.values.city}
-                    onChange={newTheatre.handleChange}
-                    onBlur={newTheatre.handleBlur}
-                    error={newTheatre.touched.city && Boolean(newTheatre.errors.city)}
-                    helperText={newTheatre.touched.city && newTheatre.errors.city} />
-                </MDBox>
-                <MDBox p={1}>
-                  <TextField
-                    fullWidth
-                    variant="outlined"
-                    id="outlined-basic"
-                    label="Telephone"
-                    name="telephone"
-                    value={newTheatre.values.telephone}
-                    onChange={newTheatre.handleChange}
-                    onBlur={newTheatre.handleBlur}
-                    error={newTheatre.touched.telephone && Boolean(newTheatre.errors.telephone)}
-                    helperText={newTheatre.touched.telephone && newTheatre.errors.telephone} />
-                </MDBox>
-                <MDBox p={1}>
-                  <TextField
-                    fullWidth
-                    variant="outlined"
-                    id="outlined-basic"
-                    label="Owner Name"
-                    name="ownerName"
-                    value={newTheatre.values.ownerName}
-                    onChange={newTheatre.handleChange}
-                    onBlur={newTheatre.handleBlur}
-                    error={newTheatre.touched.ownerName && Boolean(newTheatre.errors.ownerName)}
-                    helperText={newTheatre.touched.ownerName && newTheatre.errors.ownerName} />
-                </MDBox>
-                <MDBox p={1}>
-                  <TextField
-                    fullWidth
-                    variant="outlined"
-                    id="outlined-basic"
-                    label="Owner Phone Number"
-                    name="ownerPhoneNumber"
-                    value={newTheatre.values.ownerPhoneNumber}
-                    onChange={newTheatre.handleChange}
-                    onBlur={newTheatre.handleBlur}
-                    error={newTheatre.touched.ownerPhoneNumber && Boolean(newTheatre.errors.ownerPhoneNumber)}
-                    helperText={newTheatre.touched.ownerPhoneNumber && newTheatre.errors.ownerPhoneNumber} />
-                </MDBox>
-                <MDBox p={1}>
-                  <TextField fullWidth
-                    variant="outlined"
-                    id="outlined-basic"
-                    label="Owner Mail"
-                    name="ownerEmail"
-                    value={newTheatre.values.ownerEmail}
-                    onChange={newTheatre.handleChange}
-                    onBlur={newTheatre.handleBlur}
-                    error={newTheatre.touched.ownerEmail && Boolean(newTheatre.errors.ownerEmail)}
-                    helperText={newTheatre.touched.ownerEmail && newTheatre.errors.ownerEmail} />
-                </MDBox>
-                <MDBox p={1}>
-                  <TextField fullWidth
-                    variant="outlined"
-                    id="outlined-basic"
-                    label="Website URL"
-                    name="websiteURL"
-                    value={newTheatre.values.websiteURL}
-                    onChange={newTheatre.handleChange}
-                    onBlur={newTheatre.handleBlur}
-                    error={newTheatre.touched.websiteURL && Boolean(newTheatre.errors.websiteURL)}
-                    helperText={newTheatre.touched.websiteURL && newTheatre.errors.websiteURL} />
-                </MDBox>
-                {/* <MDBox p={1}>
-                  <TextField fullWidth
-                    variant="outlined"
-                    id="outlined-basic"
-                    label="Latitude"
-                    name="latitude"
-                    value={newTheatre.values.latitude}
-                    onChange={newTheatre.handleChange}
-                    onBlur={newTheatre.handleBlur}
-                    error={newTheatre.touched.latitude && Boolean(newTheatre.errors.latitude)}
-                    helperText={newTheatre.touched.latitude && newTheatre.errors.latitude} />
-                </MDBox>
-                <MDBox p={1}>
-                  <TextField fullWidth
-                    variant="outlined"
-                    id="outlined-basic"
-                    label="Longitude"
-                    name="longitude"
-                    value={newTheatre.values.longitude}
-                    onChange={newTheatre.handleChange}
-                    onBlur={newTheatre.handleBlur}
-                    error={newTheatre.touched.longitude && Boolean(newTheatre.errors.longitude)}
-                    helperText={newTheatre.touched.longitude && newTheatre.errors.longitude} />
-                </MDBox> */}
-                <MDBox p={1}>
-                  <TextField fullWidth
-                    variant="outlined"
-                    id="outlined-basic"
-                    label="License Information"
-                    name="licenseInfo"
-                    value={newTheatre.values.licenseInfo}
-                    onChange={newTheatre.handleChange}
-                    onBlur={newTheatre.handleBlur}
-                    error={newTheatre.touched.licenseInfo && Boolean(newTheatre.errors.licenseInfo)}
-                    helperText={newTheatre.touched.licenseInfo && newTheatre.errors.licenseInfo} />
-                </MDBox>
-                <MDBox p={1}>
-                  <TextField fullWidth
-                    variant="outlined"
-                    id="outlined-basic"
-                    label="Description"
-                    name="description"
-                    value={newTheatre.values.description}
-                    onChange={newTheatre.handleChange}
-                    onBlur={newTheatre.handleBlur}
-                    error={newTheatre.touched.description && Boolean(newTheatre.errors.description)}
-                    helperText={newTheatre.touched.description && newTheatre.errors.description} />
-                </MDBox>
-                <MDBox p={1}>
-                  <TextField fullWidth
-                    variant="outlined"
-                    id="outlined-basic"
-                    label="Notes"
-                    name="notes"
-                    value={newTheatre.values.notes}
-                    onChange={newTheatre.handleChange}
-                    onBlur={newTheatre.handleBlur}
-                    error={newTheatre.touched.notes && Boolean(newTheatre.errors.notes)}
-                    helperText={newTheatre.touched.notes && newTheatre.errors.notes} />
-                </MDBox>
-                <MDBox p={1} >
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DemoContainer components={['DatePicker']}>
-                      <DatePicker
-                        label="Select Registered Date"
-                        value={regDate}
-                        onChange={handleDateChange}
-                      />
-                    </DemoContainer>
-                  </LocalizationProvider>
-                </MDBox>
-                <MDBox p={1} >
-                  <MDTypography variant="body2" fontWeight="regular">
-                    Status:
-                    <Switch label="Status" checked={newTheatre.values.isActive} onChange={(e) => newTheatre.setFieldValue('isActive', e.target.checked)} />
-                    {newTheatre.values.isActive ? 'Active' : 'Inactive'}
-                  </MDTypography>
-                </MDBox>
-                <MDBox p={1} display="flex" flexDirection="row">
-                  <MDTypography mr={2}>Facilities: </MDTypography>
-                  {facilitiesData && facilitiesData.length > 0 && facilitiesData.map((facility) => (
-                    <MDBox key={facility.id}>
-                      <FormControlLabel control={<Checkbox checked={selectedFacilityIds.includes(facility.id)} onChange={() => handleCheckboxChange(facility.id)} />} label={facility.facility_name} />
+                <MDTypography>Theatre Info</MDTypography>
+                <Grid container spacing={2} display={'flex'} flexDirection={'row'}>
+                  <Grid item xs={6}>
+                    <MDBox p={1}>
+                      <TextField
+                        fullWidth
+                        variant="outlined"
+                        id="outlined-basic"
+                        label="Name"
+                        name="name"
+                        value={newTheatre.values.name}
+                        onChange={newTheatre.handleChange}
+                        onBlur={newTheatre.handleBlur}
+                        error={newTheatre.touched.name && Boolean(newTheatre.errors.name)}
+                        helperText={newTheatre.touched.name && newTheatre.errors.name} />
                     </MDBox>
-                  ))}
-                </MDBox>
-
-                <MDBox p={1}>
-                  <Grid container spacing={3}>
-                    <Grid item xs={6} display={'flex'} flexDirection={'column'}>
-                      <MDTypography>Theatre Image</MDTypography>
-                      {theatreImagePreview ? (
-                        <MDBox
-                          display="flex"
-                          justifyContent="center"
-                          alignItems="center"
-                          border="1px dashed"
-                          borderRadius="4px"
-                          width="50%"
-                          maxHeight="200px"
-                          mb={1}
-                        >
-                          <img src={theatreImagePreview} alt="Theatre Preview" style={{ width: '100%', maxHeight: '100%' }} />
-                        </MDBox>
-                      ) : (
-                        <MDBox
-                          display="flex"
-                          justifyContent="center"
-                          alignItems="center"
-                          border="1px dashed"
-                          borderRadius="4px"
-                          width="50%"
-                          maxHeight="200px"
-                          mb={1}
-                        >
-                          <AddPhotoAlternateIcon />
-                        </MDBox>
-                      )}
-                      <MDBox display="flex" justifyContent="center">
-                        <MDButton
-                          size="small"
-                          variant="contained"
-                          component="label"
-                          style={{ marginBottom: 8 }}
-                        >
-                          Upload Theatre Image
-                          <input
-                            type="file"
-                            hidden
-                            onChange={handleTheatreImageChange}
+                    <MDBox p={1}>
+                      <TextField
+                        fullWidth
+                        variant="outlined"
+                        id="outlined-basic"
+                        label="Address"
+                        name="address"
+                        value={newTheatre.values.address}
+                        onChange={newTheatre.handleChange}
+                        onBlur={newTheatre.handleBlur}
+                        error={newTheatre.touched.address && Boolean(newTheatre.errors.address)}
+                        helperText={newTheatre.touched.address && newTheatre.errors.address} />
+                    </MDBox>
+                    <MDBox p={1}>
+                      <TextField
+                        fullWidth
+                        variant="outlined"
+                        id="outlined-basic"
+                        label="City"
+                        name="city"
+                        value={newTheatre.values.city}
+                        onChange={newTheatre.handleChange}
+                        onBlur={newTheatre.handleBlur}
+                        error={newTheatre.touched.city && Boolean(newTheatre.errors.city)}
+                        helperText={newTheatre.touched.city && newTheatre.errors.city} />
+                    </MDBox>
+                    <MDBox p={1}>
+                      <TextField
+                        fullWidth
+                        variant="outlined"
+                        id="outlined-basic"
+                        label="Telephone"
+                        name="telephone"
+                        value={newTheatre.values.telephone}
+                        onChange={newTheatre.handleChange}
+                        onBlur={newTheatre.handleBlur}
+                        error={newTheatre.touched.telephone && Boolean(newTheatre.errors.telephone)}
+                        helperText={newTheatre.touched.telephone && newTheatre.errors.telephone} />
+                    </MDBox>
+                    <MDBox p={1}>
+                      <TextField fullWidth
+                        variant="outlined"
+                        id="outlined-basic"
+                        label="Website URL"
+                        name="websiteURL"
+                        value={newTheatre.values.websiteURL}
+                        onChange={newTheatre.handleChange}
+                        onBlur={newTheatre.handleBlur}
+                        error={newTheatre.touched.websiteURL && Boolean(newTheatre.errors.websiteURL)}
+                        helperText={newTheatre.touched.websiteURL && newTheatre.errors.websiteURL} />
+                    </MDBox>
+                    <MDBox p={1}>
+                      <TextField fullWidth
+                        variant="outlined"
+                        id="outlined-basic"
+                        label="License Information"
+                        name="licenseInfo"
+                        value={newTheatre.values.licenseInfo}
+                        onChange={newTheatre.handleChange}
+                        onBlur={newTheatre.handleBlur}
+                        error={newTheatre.touched.licenseInfo && Boolean(newTheatre.errors.licenseInfo)}
+                        helperText={newTheatre.touched.licenseInfo && newTheatre.errors.licenseInfo} />
+                    </MDBox>
+                    <MDBox p={1}>
+                      <TextField fullWidth
+                        variant="outlined"
+                        id="outlined-basic"
+                        label="Description"
+                        name="description"
+                        value={newTheatre.values.description}
+                        onChange={newTheatre.handleChange}
+                        onBlur={newTheatre.handleBlur}
+                        error={newTheatre.touched.description && Boolean(newTheatre.errors.description)}
+                        helperText={newTheatre.touched.description && newTheatre.errors.description} />
+                    </MDBox>
+                    <MDBox p={1}>
+                      <TextField fullWidth
+                        variant="outlined"
+                        id="outlined-basic"
+                        label="Notes"
+                        name="notes"
+                        value={newTheatre.values.notes}
+                        onChange={newTheatre.handleChange}
+                        onBlur={newTheatre.handleBlur}
+                        error={newTheatre.touched.notes && Boolean(newTheatre.errors.notes)}
+                        helperText={newTheatre.touched.notes && newTheatre.errors.notes} />
+                    </MDBox>
+                    <MDBox p={1} >
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DemoContainer components={['DatePicker']}>
+                          <DatePicker
+                            label="Select Registered Date"
+                            value={regDate}
+                            onChange={handleDateChange}
                           />
-                        </MDButton>
-                      </MDBox>
-                      {newTheatre.touched.theatreImage && newTheatre.errors.theatreImage && (
-                        <MDTypography color="error">{newTheatre.errors.theatreImage}</MDTypography>
-                      )}
-                    </Grid>
-                    <Grid item xs={6} display={'flex'} flexDirection={'column'}>
-                      <MDTypography>Cover Image</MDTypography>
-                      {coverImagePreview ? (
-                        <MDBox
-                          display="flex"
-                          justifyContent="center"
-                          alignItems="center"
-                          border="1px dashed"
-                          borderRadius="4px"
-                          width="50%"
-                          maxHeight="200px"
-                          mb={1}
-                        >
-                          <img src={coverImagePreview} alt="Cover Preview" style={{ width: '100%', maxHeight: '100%' }} />
-                        </MDBox>
-                      ) : (
-                        <MDBox
-                          display="flex"
-                          justifyContent="center"
-                          alignItems="center"
-                          border="1px dashed"
-                          borderRadius="4px"
-                          width="50%"
-                          maxHeight="200px"
-                          mb={1}
-                        >
-                          <AddPhotoAlternateIcon />
-                        </MDBox>
-                      )}
-                      <MDBox display="flex" justifyContent="center">
-                        <MDButton
-                          size="small"
-                          variant="contained"
-                          component="label"
-                          style={{ marginBottom: 8 }}
-                        >
-                          Upload Cover Image
-                          <input
-                            type="file"
-                            hidden
-                            onChange={handleCoverImageChange}
-                          />
-                        </MDButton>
-                      </MDBox>
-                      {newTheatre.touched.coverImage && newTheatre.errors.coverImage && (
-                        <MDTypography color="error">{newTheatre.errors.coverImage}</MDTypography>
-                      )}
-                    </Grid>
+                        </DemoContainer>
+                      </LocalizationProvider>
+                    </MDBox>
                   </Grid>
-                </MDBox>
+
+                  <Grid item xs={6} sx={{ mt: 1 }}>
+                    {/* status */}
+                    <MDBox>
+                      <MDTypography variant="body2" fontWeight="regular">
+                        Status:
+                        <Switch label="Status" checked={newTheatre.values.isActive} onChange={(e) => newTheatre.setFieldValue('isActive', e.target.checked)} />
+                        {newTheatre.values.isActive ? 'Active' : 'Inactive'}
+                      </MDTypography>
+                    </MDBox>
+                    {/* facility */}
+                    <MDBox mt={3} display="flex" flexDirection="row">
+                      <MDTypography variant="body2" fontWeight="regular" mr={2}>Facilities: </MDTypography>
+                      {facilitiesData && facilitiesData.length > 0 && facilitiesData.map((facility) => (
+                        <MDBox key={facility.id}>
+                          <FormControlLabel control={<Checkbox checked={selectedFacilityIds.includes(facility.id)} onChange={() => handleCheckboxChange(facility.id)} />} label={facility.facility_name} />
+                        </MDBox>
+                      ))}
+                    </MDBox>
+                    {/* image */}
+                    <MDBox mt={2}>
+                      <Grid container spacing={3}>
+                        <Grid item xs={6} display={'flex'} flexDirection={'column'}>
+                          <MDTypography>Theatre Image</MDTypography>
+                          {theatreImagePreview ? (
+                            <MDBox
+                              display="flex"
+                              justifyContent="center"
+                              alignItems="center"
+                              border="1px dashed"
+                              borderRadius="4px"
+                              width="50%"
+                              maxHeight="200px"
+                              mb={1}
+                            >
+                              <img src={theatreImagePreview} alt="Theatre Preview" style={{ width: '100%', maxHeight: '100%' }} />
+                            </MDBox>
+                          ) : (
+                            <MDBox
+                              display="flex"
+                              justifyContent="center"
+                              alignItems="center"
+                              border="1px dashed"
+                              borderRadius="4px"
+                              width="50%"
+                              maxHeight="200px"
+                              mb={1}
+                            >
+                              <AddPhotoAlternateIcon />
+                            </MDBox>
+                          )}
+                          <MDBox display="flex" justifyContent="center">
+                            <MDButton
+                              size="small"
+                              variant="contained"
+                              component="label"
+                              style={{ marginBottom: 8 }}
+                            >
+                              Upload Theatre Image
+                              <input
+                                type="file"
+                                hidden
+                                onChange={handleTheatreImageChange}
+                              />
+                            </MDButton>
+                          </MDBox>
+                          {newTheatre.touched.theatreImage && newTheatre.errors.theatreImage && (
+                            <MDTypography color="error">{newTheatre.errors.theatreImage}</MDTypography>
+                          )}
+                        </Grid>
+                        <Grid item xs={6} display={'flex'} flexDirection={'column'}>
+                          <MDTypography>Cover Image</MDTypography>
+                          {coverImagePreview ? (
+                            <MDBox
+                              display="flex"
+                              justifyContent="center"
+                              alignItems="center"
+                              border="1px dashed"
+                              borderRadius="4px"
+                              width="50%"
+                              maxHeight="200px"
+                              mb={1}
+                            >
+                              <img src={coverImagePreview} alt="Cover Preview" style={{ width: '100%', maxHeight: '100%' }} />
+                            </MDBox>
+                          ) : (
+                            <MDBox
+                              display="flex"
+                              justifyContent="center"
+                              alignItems="center"
+                              border="1px dashed"
+                              borderRadius="4px"
+                              width="50%"
+                              maxHeight="200px"
+                              mb={1}
+                            >
+                              <AddPhotoAlternateIcon />
+                            </MDBox>
+                          )}
+                          <MDBox display="flex" justifyContent="center">
+                            <MDButton
+                              size="small"
+                              variant="contained"
+                              component="label"
+                              style={{ marginBottom: 8 }}
+                            >
+                              Upload Cover Image
+                              <input
+                                type="file"
+                                hidden
+                                onChange={handleCoverImageChange}
+                              />
+                            </MDButton>
+                          </MDBox>
+                          {newTheatre.touched.coverImage && newTheatre.errors.coverImage && (
+                            <MDTypography color="error">{newTheatre.errors.coverImage}</MDTypography>
+                          )}
+                        </Grid>
+                      </Grid>
+                    </MDBox>
+                  </Grid>
+                </Grid>
+
+                <Grid mt={2}>
+                  <MDTypography>Theatre Owner Info</MDTypography>
+                  <MDBox p={1}>
+                    <TextField
+                      fullWidth
+                      variant="outlined"
+                      id="outlined-basic"
+                      label="Owner Name"
+                      name="ownerName"
+                      value={newTheatre.values.ownerName}
+                      onChange={newTheatre.handleChange}
+                      onBlur={newTheatre.handleBlur}
+                      error={newTheatre.touched.ownerName && Boolean(newTheatre.errors.ownerName)}
+                      helperText={newTheatre.touched.ownerName && newTheatre.errors.ownerName} />
+                  </MDBox>
+                  <MDBox p={1}>
+                    <TextField
+                      fullWidth
+                      variant="outlined"
+                      id="outlined-basic"
+                      label="Owner Phone Number"
+                      name="ownerPhoneNumber"
+                      value={newTheatre.values.ownerPhoneNumber}
+                      onChange={newTheatre.handleChange}
+                      onBlur={newTheatre.handleBlur}
+                      error={newTheatre.touched.ownerPhoneNumber && Boolean(newTheatre.errors.ownerPhoneNumber)}
+                      helperText={newTheatre.touched.ownerPhoneNumber && newTheatre.errors.ownerPhoneNumber} />
+                  </MDBox>
+                  <MDBox p={1}>
+                    <TextField fullWidth
+                      variant="outlined"
+                      id="outlined-basic"
+                      label="Owner Mail"
+                      name="ownerEmail"
+                      value={newTheatre.values.ownerEmail}
+                      onChange={newTheatre.handleChange}
+                      onBlur={newTheatre.handleBlur}
+                      error={newTheatre.touched.ownerEmail && Boolean(newTheatre.errors.ownerEmail)}
+                      helperText={newTheatre.touched.ownerEmail && newTheatre.errors.ownerEmail} />
+                  </MDBox>
+                </Grid>
 
                 <MDBox p={1}>
                   <MDButton color='info' type='submit'>Save</MDButton>
