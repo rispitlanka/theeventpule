@@ -32,10 +32,29 @@ export default function EditTheatre() {
     const [openDeleteDialogBox, setOpenDeleteDialogBox] = useState();
     const [selectedDate, setSelectedDate] = useState();
     const [existingDate, setExistingDate] = useState();
+    const [coverImagePreview, setCoverImagePreview] = useState(null);
+    const [coverImageChanged, setCoverImageChanged] = useState(false);
+    const [theatreImagePreview, setTheatreImagePreview] = useState(null);
+    const [theatreImageChanged, setTheatreImageChanged] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleDateChange = (date) => {
         setSelectedDate(date);
     }
+
+    const handleTheatreImageChange = (event) => {
+        const file = event.currentTarget.files[0];
+        editTheatre.setFieldValue('theatreImage', file);
+        setTheatreImagePreview(URL.createObjectURL(file));
+        setTheatreImageChanged(true);
+    };
+
+    const handleCoverImageChange = (event) => {
+        const file = event.currentTarget.files[0];
+        editTheatre.setFieldValue('coverImage', file);
+        setCoverImagePreview(URL.createObjectURL(file));
+        setCoverImageChanged(true);
+    };
 
     useEffect(() => {
         const fetchTheatreData = async () => {
@@ -59,9 +78,15 @@ export default function EditTheatre() {
                         description: theatre.description,
                         notes: theatre.notes,
                         registeredDate: theatre.registeredDate,
+                        isActive: theatre.isActive,
+                        theatreImage: theatre.theatreImage,
+                        coverImage: theatre.coverImage,
+
                     });
                     setExistingDate(theatre.registeredDate);
                     setSelectedDate(theatre.registeredDate);
+                    setTheatreImagePreview(theatre.theatreImage);
+                    setCoverImagePreview(theatre.coverImage);
                 }
             } catch (error) {
                 console.error('Error fetching theatre data:', error.message);
@@ -86,11 +111,11 @@ export default function EditTheatre() {
             // longitude: '',
             licenseInfo: '',
             description: '',
-            // isActive: true,
+            isActive: '',
             registeredDate: '',
             notes: '',
-            // coverImage: '',
-            // theatreImage: '',
+            coverImage: '',
+            theatreImage: '',
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
@@ -109,13 +134,64 @@ export default function EditTheatre() {
             ownerEmail: Yup.string().required('Email is required').email('Enter a valid email'),
         }),
         onSubmit: async (values, { resetForm }) => {
-            values.registeredDate = (dayjs(selectedDate).format("YYYY-MM-DD"))
+            setIsLoading(true);
+            values.registeredDate = (dayjs(selectedDate).format("YYYY-MM-DD"));
+
+            try {
+                if (theatreImageChanged && editTheatre.values.theatreImage) {
+                    const file = editTheatre.values.theatreImage;
+
+                    const { data: imageData, error: imageError } = await supabase.storage
+                        .from('theatre_images')
+                        .upload(`images/${file.name}`, file, {
+                            cacheControl: '3600',
+                            upsert: false,
+                        });
+
+                    if (imageError) {
+                        throw imageError;
+                    }
+
+                    if (imageData) {
+                        const imgURL = supabase.storage.from('theatre_images').getPublicUrl(imageData.path);
+                        values.theatreImage = imgURL.data.publicUrl;
+                    } else {
+                        throw new Error('Failed to upload image');
+                    }
+                }
+
+                if (coverImageChanged && editTheatre.values.coverImage) {
+                    const file = editTheatre.values.coverImage;
+
+                    const { data: imageData, error: imageError } = await supabase.storage
+                        .from('theatre_images')
+                        .upload(`cover_images/${file.name}`, file, {
+                            cacheControl: '3600',
+                            upsert: false,
+                        });
+
+                    if (imageError) {
+                        throw imageError;
+                    }
+
+                    if (imageData) {
+                        const imgURL = supabase.storage.from('theatre_images').getPublicUrl(imageData.path);
+                        values.coverImage = imgURL.data.publicUrl;
+                    } else {
+                        throw new Error('Failed to upload image');
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+            }
+
             await editTheatreData(values);
             resetForm();
             toast.info('Theatre has been successfully updated!');
             setTimeout(() => {
                 navigate(-1);
             }, 1500);
+            setIsLoading(false);
         },
     });
 
@@ -126,6 +202,7 @@ export default function EditTheatre() {
                 throw error;
             }
             console.log('Data updated successfully');
+
         } catch (error) {
             console.error('Error updating data:', error.message);
             throw new Error('Error updating data:', error.message);
@@ -296,14 +373,14 @@ export default function EditTheatre() {
                                         </MDBox>
                                     </Grid>
                                     <Grid item xs={6} >
-                                        {/* <MDBox p={1}>
+                                        <MDBox p={1}>
                                             <MDTypography>
                                                 Status:
                                                 <Switch label="Status" checked={editTheatre.values.isActive} onChange={(e) => editTheatre.setFieldValue('isActive', e.target.checked)} />
                                                 {editTheatre.values.isActive ? 'Active' : 'Inactive'}
                                             </MDTypography>
                                         </MDBox>
-                                        <MDBox p={1} display="flex" flexDirection="row" alignItems="center">
+                                        {/* <MDBox p={1} display="flex" flexDirection="row" alignItems="center">
                                             <MDTypography mr={1}>Facilities: </MDTypography>
                                             {facilitiesData && facilitiesData.length > 0 && facilitiesData.map((facility) => (
                                                 <MDBox key={facility.id} mr={1}>
@@ -311,7 +388,7 @@ export default function EditTheatre() {
                                                 </MDBox>
                                             ))}
                                         </MDBox> */}
-                                        {/* <MDBox p={1}>
+                                        <MDBox p={1}>
                                             <Grid container spacing={3}>
                                                 <Grid item xs={6} display={'flex'} flexDirection={'column'}>
                                                     <MDTypography>Theatre Image</MDTypography>
@@ -416,7 +493,7 @@ export default function EditTheatre() {
                                                     )}
                                                 </Grid>
                                             </Grid>
-                                        </MDBox> */}
+                                        </MDBox>
                                     </Grid>
                                 </Grid>
                                 <Grid mt={2}>
@@ -461,10 +538,10 @@ export default function EditTheatre() {
                                     </MDBox>
                                 </Grid>
                                 <MDBox p={1} display={'flex'} flexDirection={'row'} alignItems='center'>
-                                    <MDButton color='info' type='submit' sx={{ mr: 1 }}>Update</MDButton>
-                                    {/* {isLoading &&
-                                        <MDTypography variant='body2' ml={1}>saving....</MDTypography>
-                                    } */}
+                                    <MDButton color='info' type='submit' sx={{ mr: 1 }} disabled={isLoading}>Update</MDButton>
+                                    {isLoading &&
+                                        <MDTypography variant='body2' ml={1}>updating....</MDTypography>
+                                    }
                                 </MDBox>
                             </MDBox>
                         </Card>
