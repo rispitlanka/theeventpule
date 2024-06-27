@@ -8,8 +8,10 @@ import 'react-toastify/dist/ReactToastify.css';
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import { Button, Checkbox, FormControlLabel, Switch, TextField } from '@mui/material';
-import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+import { Checkbox, FormControlLabel, Switch, TextField } from '@mui/material';
+import ImageIcon from '@mui/icons-material/Image';
+import UploadIcon from '@mui/icons-material/Upload';
+
 // Material Dashboard 2 React example components
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout';
 import DashboardNavbar from 'examples/Navbars/DashboardNavbar';
@@ -30,6 +32,7 @@ export default function AddTheatre() {
   const [regDate, setRegDate] = useState();
   const [coverImagePreview, setCoverImagePreview] = useState(null);
   const [theatreImagePreview, setTheatreImagePreview] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleDateChange = (date) => {
     setRegDate(date);
@@ -71,6 +74,7 @@ export default function AddTheatre() {
   }, [])
 
   const onSubmit = async (values, { resetForm }) => {
+    setIsLoading(true);
     try {
       if (newTheatre.values.coverImage) {
         const file = newTheatre.values.coverImage;
@@ -129,9 +133,11 @@ export default function AddTheatre() {
       setTimeout(() => {
         navigate(-1);
       }, 1500);
+      setIsLoading(false);
 
     } catch (error) {
       console.error('Error submitting form:', error.message);
+      setIsLoading(false);
     }
   };
 
@@ -213,7 +219,7 @@ export default function AddTheatre() {
               </MDBox>
               <MDBox p={2}>
                 <MDTypography>Theatre Info</MDTypography>
-                <Grid container spacing={2} display={'flex'} flexDirection={'row'}>
+                <Grid container spacing={5} display={'flex'} flexDirection={'row'}>
                   <Grid item xs={6}>
                     <MDBox p={1}>
                       <TextField
@@ -327,27 +333,23 @@ export default function AddTheatre() {
                       </LocalizationProvider>
                     </MDBox>
                   </Grid>
-
-                  <Grid item xs={6} sx={{ mt: 1 }}>
-                    {/* status */}
-                    <MDBox>
-                      <MDTypography variant="body2" fontWeight="regular">
+                  <Grid item xs={6} >
+                    <MDBox p={1}>
+                      <MDTypography>
                         Status:
                         <Switch label="Status" checked={newTheatre.values.isActive} onChange={(e) => newTheatre.setFieldValue('isActive', e.target.checked)} />
                         {newTheatre.values.isActive ? 'Active' : 'Inactive'}
                       </MDTypography>
                     </MDBox>
-                    {/* facility */}
-                    <MDBox mt={3} display="flex" flexDirection="row">
-                      <MDTypography variant="body2" fontWeight="regular" mr={2}>Facilities: </MDTypography>
+                    <MDBox p={1} display="flex" flexDirection="row" alignItems="center">
+                      <MDTypography mr={1}>Facilities: </MDTypography>
                       {facilitiesData && facilitiesData.length > 0 && facilitiesData.map((facility) => (
-                        <MDBox key={facility.id}>
+                        <MDBox key={facility.id} mr={1}>
                           <FormControlLabel control={<Checkbox checked={selectedFacilityIds.includes(facility.id)} onChange={() => handleCheckboxChange(facility.id)} />} label={facility.facility_name} />
                         </MDBox>
                       ))}
                     </MDBox>
-                    {/* image */}
-                    <MDBox mt={2}>
+                    <MDBox p={1}>
                       <Grid container spacing={3}>
                         <Grid item xs={6} display={'flex'} flexDirection={'column'}>
                           <MDTypography>Theatre Image</MDTypography>
@@ -361,8 +363,9 @@ export default function AddTheatre() {
                               width="50%"
                               maxHeight="200px"
                               mb={1}
+                              height="100px"
                             >
-                              <img src={theatreImagePreview} alt="Theatre Preview" style={{ width: '100%', maxHeight: '100%' }} />
+                              <img src={theatreImagePreview} alt="Theatre Preview" style={{ width: '100%', maxHeight: '100px' }} />
                             </MDBox>
                           ) : (
                             <MDBox
@@ -372,20 +375,22 @@ export default function AddTheatre() {
                               border="1px dashed"
                               borderRadius="4px"
                               width="50%"
-                              maxHeight="200px"
+                              maxHeheight="200px"
                               mb={1}
+                              height="100px"
                             >
-                              <AddPhotoAlternateIcon />
+                              <ImageIcon />
                             </MDBox>
                           )}
-                          <MDBox display="flex" justifyContent="center">
+                          <MDBox display="flex" justifyContent='left'>
                             <MDButton
                               size="small"
-                              variant="contained"
+                              variant="outlined"
                               component="label"
-                              style={{ marginBottom: 8 }}
+                              color="info"
+                              startIcon={<UploadIcon />}
                             >
-                              Upload Theatre Image
+                              Upload
                               <input
                                 type="file"
                                 hidden
@@ -409,8 +414,9 @@ export default function AddTheatre() {
                               width="50%"
                               maxHeight="200px"
                               mb={1}
+                              height="100px"
                             >
-                              <img src={coverImagePreview} alt="Cover Preview" style={{ width: '100%', maxHeight: '100%' }} />
+                              <img src={coverImagePreview} alt="Cover Preview" style={{ width: '100%', maxHeight: '100px' }} />
                             </MDBox>
                           ) : (
                             <MDBox
@@ -422,18 +428,20 @@ export default function AddTheatre() {
                               width="50%"
                               maxHeight="200px"
                               mb={1}
+                              height="100px"
                             >
-                              <AddPhotoAlternateIcon />
+                              <ImageIcon />
                             </MDBox>
                           )}
-                          <MDBox display="flex" justifyContent="center">
+                          <MDBox display="flex" justifyContent='left'>
                             <MDButton
                               size="small"
-                              variant="contained"
+                              variant="outlined"
                               component="label"
-                              style={{ marginBottom: 8 }}
+                              color="info"
+                              startIcon={<UploadIcon />}
                             >
-                              Upload Cover Image
+                              Upload
                               <input
                                 type="file"
                                 hidden
@@ -449,7 +457,6 @@ export default function AddTheatre() {
                     </MDBox>
                   </Grid>
                 </Grid>
-
                 <Grid mt={2}>
                   <MDTypography>Theatre Owner Info</MDTypography>
                   <MDBox p={1}>
@@ -491,9 +498,11 @@ export default function AddTheatre() {
                       helperText={newTheatre.touched.ownerEmail && newTheatre.errors.ownerEmail} />
                   </MDBox>
                 </Grid>
-
-                <MDBox p={1}>
-                  <MDButton color='info' type='submit'>Save</MDButton>
+                <MDBox p={1} display={'flex'} flexDirection={'row'} alignItems='center'>
+                  <MDButton color='info' type='submit' disabled={isLoading}>Save</MDButton>
+                  {isLoading &&
+                    <MDTypography variant='body2' ml={1}>saving....</MDTypography>
+                  }
                 </MDBox>
               </MDBox>
             </Card>
