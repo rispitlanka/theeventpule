@@ -74,15 +74,6 @@ export default function SingleTheatre() {
     }, 500);
   }, [theatreID])
 
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
   const getCurrentDate = () => {
     const today = new Date();
     const yyyy = today.getFullYear();
@@ -130,16 +121,56 @@ export default function SingleTheatre() {
     }
   };
 
-  const groupedShows = showsData.reduce((acc, show) => {
-    if (!acc[show.movieId]) {
-      acc[show.movieId] = {};
-    }
-    if (!acc[show.movieId][show.screenId]) {
-      acc[show.movieId][show.screenId] = [];
-    }
-    acc[show.movieId][show.screenId].push(show);
-    return acc;
-  }, {});
+  const [filterOption, setFilterOption] = useState('movie');
+  const [groupedShows, setGroupedShows] = useState({});
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+
+  useEffect(() => {
+    const groupShows = (option) => {
+      switch (option) {
+        case 'movie':
+          return showsData.reduce((acc, show) => {
+            if (!acc[show.movieId]) acc[show.movieId] = {};
+            if (!acc[show.movieId][show.screenId]) acc[show.movieId][show.screenId] = [];
+            acc[show.movieId][show.screenId].push(show);
+            return acc;
+          }, {});
+        case 'screen':
+          return showsData.reduce((acc, show) => {
+            if (!acc[show.screenId]) acc[show.screenId] = {};
+            if (!acc[show.screenId][show.movieId]) acc[show.screenId][show.movieId] = [];
+            acc[show.screenId][show.movieId].push(show);
+            return acc;
+          }, {});
+        case 'show':
+          return showsData.reduce((acc, show) => {
+            if (!acc[show.date]) acc[show.date] = {};
+            if (!acc[show.date][show.movieId]) acc[show.date][show.movieId] = {};
+            if (!acc[show.date][show.movieId][show.screenId]) acc[show.date][show.movieId][show.screenId] = [];
+            acc[show.date][show.movieId][show.screenId].push(show);
+            return acc;
+          }, {});
+        default:
+          return {};
+      }
+    };
+
+    setGroupedShows(groupShows(filterOption));
+  }, [filterOption, showsData]);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleFilterClick = (option) => {
+    setFilterOption(option);
+    handleClose();
+  };
 
   const formattedTime = (time) => {
     if (time) {
@@ -360,48 +391,139 @@ export default function SingleTheatre() {
               </MDBox>
             </>
           }
-          <MDBox pt={4} px={2} lineHeight={1.25}>
-            <Grid display={'flex'} flexDirection={'row'}>
-              <Grid item>
-                <MDTypography variant="h6" fontWeight="medium">
-                  Movies
-                </MDTypography>
-                <List>
-                  {Object.keys(groupedShows).map(movieId => (
-                    <ListItem key={movieId} disableRipple>
-                      <Box >
-                        <Typography sx={{ fontWeight: 'regular', mt: 3 }}>
-                          {groupedShows[movieId][Object.keys(groupedShows[movieId])[0]][0].movieName}
-                        </Typography>
-                        <List disablePadding>
-                          {Object.keys(groupedShows[movieId]).map(screenId => (
-                            <Box key={screenId}>
-                              <Typography sx={{ marginBottom: '4px' }}>
-                                Screen Name: {groupedShows[movieId][screenId][0].screenName}
-                              </Typography>
-                              <List disablePadding>
-                                {groupedShows[movieId][screenId].map(show => (
-                                  <ListItem key={show.screenId}>
-                                    <ListItemText>
-                                      Show Time: {show.date} - {formattedTime(show.showTime)}
-                                    </ListItemText>
-                                  </ListItem>
-                                ))}
-                              </List>
-                              <Divider />
-                            </Box>
-                          ))}
-                        </List>
-                      </Box>
-                    </ListItem>
-                  ))}
-                </List>
+          {showsData && showsData.length > 0 ?
+            <MDBox pt={4} px={2} lineHeight={1.25}>
+              <Grid display={'flex'} flexDirection={'row'}>
+                <Grid item>
+                  <Typography variant="h6" fontWeight="medium">
+                    {filterOption.charAt(0).toUpperCase() + filterOption.slice(1)}s
+                  </Typography>
+                  <List>
+                    {filterOption === 'movie' && Object.keys(groupedShows).map(movieId => (
+                      <ListItem key={movieId} disableRipple>
+                        <Box>
+                          <Typography sx={{ fontWeight: 'regular', mt: 3 }}>
+                            {groupedShows[movieId] && groupedShows[movieId][Object.keys(groupedShows[movieId])[0]][0].movieName}
+                          </Typography>
+                          <List disablePadding>
+                            {groupedShows[movieId] && Object.keys(groupedShows[movieId]).map(screenId => (
+                              <Box key={screenId}>
+                                <Typography sx={{ marginBottom: '4px' }}>
+                                  Screen Name: {groupedShows[movieId][screenId][0].screenName}
+                                </Typography>
+                                <List disablePadding>
+                                  {groupedShows[movieId][screenId].map(show => (
+                                    <ListItem key={show.screenId}>
+                                      <ListItemText>
+                                        Show Time: {show.date} - {formattedTime(show.showTime)}
+                                      </ListItemText>
+                                    </ListItem>
+                                  ))}
+                                </List>
+                                <Divider />
+                              </Box>
+                            ))}
+                          </List>
+                        </Box>
+                      </ListItem>
+                    ))}
+                    {filterOption === 'screen' && Object.keys(groupedShows).map(screenId => (
+                      <ListItem key={screenId} disableRipple>
+                        <Box>
+                          <Typography sx={{ fontWeight: 'regular', mt: 3 }}>
+                            Screen Name: {groupedShows[screenId] && groupedShows[screenId][Object.keys(groupedShows[screenId])[0]][0].screenName}
+                          </Typography>
+                          <List disablePadding>
+                            {groupedShows[screenId] && Object.keys(groupedShows[screenId]).map(movieId => (
+                              <Box key={movieId}>
+                                <Typography sx={{ marginBottom: '4px' }}>
+                                  Movie Name: {groupedShows[screenId][movieId][0].movieName}
+                                </Typography>
+                                <List disablePadding>
+                                  {groupedShows[screenId][movieId].map(show => (
+                                    <ListItem key={show.screenId}>
+                                      <ListItemText>
+                                        Show Time: {show.date} - {formattedTime(show.showTime)}
+                                      </ListItemText>
+                                    </ListItem>
+                                  ))}
+                                </List>
+                                <Divider />
+                              </Box>
+                            ))}
+                          </List>
+                        </Box>
+                      </ListItem>
+                    ))}
+                    {filterOption === 'show' && Object.keys(groupedShows).map(date => (
+                      <ListItem key={date} disableRipple>
+                        <Box>
+                          <Typography sx={{ fontWeight: 'regular', mt: 3 }}>
+                            Date: {date}
+                          </Typography>
+                          <List disablePadding>
+                            {groupedShows[date] && Object.keys(groupedShows[date]).map(movieId => (
+                              <Box key={movieId}>
+                                <Typography sx={{ marginBottom: '4px' }}>
+                                  Movie Name: {groupedShows[date][movieId][Object.keys(groupedShows[date][movieId])[0]][0] && groupedShows[date][movieId][Object.keys(groupedShows[date][movieId])[0]][0].length > 0 && groupedShows[date][movieId][Object.keys(groupedShows[date][movieId])[0]][0].movieName}
+                                </Typography>
+                                <List disablePadding>
+                                  {groupedShows[date][movieId] && Object.keys(groupedShows[date][movieId]).map(screenId => (
+                                    <Box key={screenId}>
+                                      <Typography sx={{ marginBottom: '4px' }}>
+                                        Screen Name: {groupedShows[date][movieId][screenId][0] && groupedShows[date][movieId][screenId][0].length > 0 && groupedShows[date][movieId][screenId][0].screenName}
+                                      </Typography>
+                                      <List disablePadding>
+                                        {groupedShows[date][movieId][screenId] && groupedShows[date][movieId][screenId].length > 0 && groupedShows[date][movieId][screenId].map(show => (
+                                          <ListItem key={show.screenId}>
+                                            <ListItemText>
+                                              Show Time: {show.date} - {show.showTime}
+                                            </ListItemText>
+                                          </ListItem>
+                                        ))}
+                                      </List>
+                                      <Divider />
+                                    </Box>
+                                  ))}
+                                </List>
+                              </Box>
+                            ))}
+                          </List>
+                        </Box>
+                      </ListItem>
+                    ))}
+                  </List>
+                </Grid>
+                <Grid sx={{ position: 'absolute', right: 16 }}>
+                  <div>
+                    <Button
+                      id="basic-button"
+                      aria-controls={open ? 'basic-menu' : undefined}
+                      aria-haspopup="true"
+                      aria-expanded={open ? 'true' : undefined}
+                      onClick={handleClick}
+                    >
+                      Filter By
+                    </Button>
+                    <Menu
+                      id="basic-menu"
+                      anchorEl={anchorEl}
+                      open={open}
+                      onClose={handleClose}
+                      MenuListProps={{
+                        'aria-labelledby': 'basic-button',
+                      }}
+                    >
+                      <MenuItem onClick={() => handleFilterClick('movie')}>Movie</MenuItem>
+                      <MenuItem onClick={() => handleFilterClick('screen')}>Screen</MenuItem>
+                      {/* <MenuItem onClick={() => handleFilterClick('show')}>Show</MenuItem> */}
+                    </Menu>
+                  </div>
+                </Grid>
               </Grid>
-              <Grid sx={{ position: 'absolute', right: 16, }}>
-                <Button>Filter By</Button>
-              </Grid>
-            </Grid>
-          </MDBox>
+            </MDBox>
+            :
+            <></>}
         </MDBox>
       }
       <Footer />
