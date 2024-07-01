@@ -13,7 +13,7 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 // react-router-dom components
 import { useLocation, NavLink, useNavigate } from "react-router-dom";
@@ -47,6 +47,7 @@ import {
   setTransparentSidenav,
   setWhiteSidenav,
 } from "context";
+import { ListItem } from "@mui/material";
 
 function Sidenav({ color, brand, brandName, routes, ...rest }) {
   const [controller, dispatch] = useMaterialUIController();
@@ -60,7 +61,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
       let { error } = await supabase.auth.signOut();
       localStorage.removeItem('userEmail');
       navigate('/authentication/sign-in');
-      if(error){
+      if (error) {
         console.log(error);
       }
     }
@@ -99,31 +100,62 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
     return () => window.removeEventListener("resize", handleMiniSidenav);
   }, [dispatch, location]);
 
+  const [expanded, setExpanded] = useState({});
+  const handleExpand = (key) => {
+    setExpanded((prevState) => ({ ...prevState, [key]: !prevState[key] }));
+  };
+
   // Render all the routes from the routes.js (All the visible items on the Sidenav)
-  const renderRoutes = routes.map(({ type, name, icon, title, noCollapse, key, href, route }) => {
+  const renderRoutes = routes.map(({ type, name, icon, title, noCollapse, key, href, route, collapse }) => {
     let returnValue;
 
     if (type === "collapse") {
-      returnValue = href ? (
-        <Link
-          href={href}
-          key={key}
-          target="_blank"
-          rel="noreferrer"
-          sx={{ textDecoration: "none" }}
-        >
-          <SidenavCollapse
-            name={name}
-            icon={icon}
-            active={key === collapseName}
-            noCollapse={noCollapse}
-          />
-        </Link>
-      ) : (
-        <NavLink key={key} to={route}>
-          <SidenavCollapse name={name} icon={icon} active={key === collapseName} />
-        </NavLink>
-      );
+      if (href) {
+        returnValue = (
+          <Link
+            href={href}
+            key={key}
+            target="_blank"
+            rel="noreferrer"
+            sx={{ textDecoration: "none" }}
+          >
+            <SidenavCollapse
+              name={name}
+              icon={icon}
+              active={key === collapseName}
+              noCollapse={noCollapse}
+            />
+          </Link>
+        );
+      } else if (collapse && collapse.length > 0) {
+        returnValue = (
+          <div key={key}>
+            <ListItem button onClick={() => handleExpand(key)}>
+              <SidenavCollapse
+                name={name}
+                icon={icon}
+                active={key === collapseName}
+                noCollapse={noCollapse}
+              />
+            </ListItem>
+            {expanded[key] && (
+              <List component="div" disablePadding>
+                {collapse.map(({ type: subType, name: subName, icon: subIcon, key: subKey, route: subRoute }) => (
+                  <NavLink key={subKey} to={subRoute}>
+                    <SidenavCollapse name={subName} icon={subIcon} active={subKey === collapseName} />
+                  </NavLink>
+                ))}
+              </List>
+            )}
+          </div>
+        );
+      } else {
+        returnValue = (
+          <NavLink key={key} to={route}>
+            <SidenavCollapse name={name} icon={icon} active={key === collapseName} />
+          </NavLink>
+        );
+      }
     } else if (type === "title") {
       returnValue = (
         <MDTypography
@@ -152,7 +184,6 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
         />
       );
     }
-
     return returnValue;
   });
 
