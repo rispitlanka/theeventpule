@@ -283,7 +283,7 @@ export default function EditScreen() {
                   </MDBox>
                   <MDBox p={1}>
                     <MDButton color='info' type='submit' sx={{ mr: 1 }}>Update</MDButton>
-                    <MDButton color='error' onClick={handleDelete}>Delete</MDButton>
+                    {/* <MDButton color='error' onClick={handleDelete}>Delete</MDButton> */}
                   </MDBox>
                 </MDBox>
               </Card>

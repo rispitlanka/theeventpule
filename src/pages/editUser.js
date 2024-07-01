@@ -224,7 +224,7 @@ export default function EditUser() {
                                 </MDBox>
                                 <MDBox p={1}>
                                     <MDButton color='info' type='submit' sx={{ mr: 1 }}>Update</MDButton>
-                                    <MDButton color='error' onClick={handleDelete} disabled>Delete</MDButton>
+                                    {/* <MDButton color='error' onClick={handleDelete} disabled>Delete</MDButton> */}
                                 </MDBox>
                             </MDBox>
                         </Card>

@@ -169,11 +169,11 @@ export default function EditZone() {
                                             onChange={editZone.handleChange}
                                             onBlur={editZone.handleBlur}
                                             error={editZone.touched.halfPrice && Boolean(editZone.errors.halfPrice)}
-                                            helperText={editZone.touched.halfPrice && editZone.errors.halfPrice} />                  </MDBox>
-
+                                            helperText={editZone.touched.halfPrice && editZone.errors.halfPrice} />
+                                    </MDBox>
                                     <MDBox p={1}>
                                         <MDButton color='info' type='submit' sx={{ mr: 1 }}>Update</MDButton>
-                                        <MDButton color='error' onClick={handleDelete}>Delete</MDButton>
+                                        {/* <MDButton color='error' onClick={handleDelete}>Delete</MDButton> */}
                                     </MDBox>
                                 </MDBox>
                             </Card>
