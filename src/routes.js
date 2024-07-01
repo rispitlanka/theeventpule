@@ -39,6 +39,10 @@ Coded by www.creative-tim.com
 import Dashboard from "layouts/dashboard";
 import Tables from "layouts/tables";
 import Billing from "layouts/billing";
+
+// @mui icons
+import Icon from "@mui/material/Icon";
+
 // import RTL from "layouts/rtl";
 import Notifications from "layouts/notifications";
 import Profile from "layouts/profile";
@@ -60,9 +64,6 @@ import SingleZone from "pages/singleZone";
 import AddShowTime from "pages/addShowTime";
 import EditShowTime from "pages/editShowTime";
 import AddShows from "pages/addShows";
-// @mui icons
-import Icon from "@mui/material/Icon";
-import { Movie } from "@mui/icons-material";
 import Movies from "pages/movies";
 import AddMovies from "pages/addMovies";
 import AddLanguages from "pages/addLanguages";
@@ -157,9 +158,34 @@ const routes = [
     type: "collapse",
     name: "Theatre Master Data",
     key: "theatreMasterData",
-    icon: <Icon fontSize="small">theaters</Icon>,
     route: "/theatreMasterData",
-    component: <TheatreMasterData />,
+    icon: <Icon fontSize="small">theaters</Icon>,
+    collapse: [
+      {
+        type: "collapse",
+        name: "facilities",
+        key: "facilities",
+        icon: <Icon fontSize="small">listalticon</Icon>,
+        route: "/facilities",
+        component: <Facilities />,
+      },
+      {
+        type: "collapse",
+        name: "soundsystem",
+        key: "soundsystem",
+        icon: <Icon fontSize="small">speakergroupuutlinedicon</Icon>,
+        route: "/soundsystem",
+        component: <SoundSystem />,
+      },
+      {
+        type: "collapse",
+        name: "projection-type",
+        key: "projection-type",
+        icon: <Icon fontSize="small">hd</Icon>,
+        route: "/projection-type",
+        component: <ProjectionType />,
+      },
+    ],
   },
   {
     type: "collapse",
@@ -242,10 +268,6 @@ const routes = [
     component: <SignUp />,
   },
   {
-    route: "/facilities",
-    component: <Facilities />,
-  },
-  {
     type: "collapse",
     name: "Movies",
     key: "movies",
@@ -257,37 +279,66 @@ const routes = [
     type: "collapse",
     name: "Movies Master Data",
     key: "movieMasterData",
-    icon: <Icon fontSize="small">moviefiltericon</Icon>,
     route: "/movieMasterData",
-    component: <MovieMasterData />,
-  },
-  {
-    route: "/languages",
-    component: <Languages />,
-  },
-  {
-    route: "/genre",
-    component: <Genre />,
-  },
-  {
-    route: "/censor-types",
-    component: <CensorTypes />,
-  },
-  {
-    route: "/soundsystem",
-    component: <SoundSystem />,
-  },
-  {
-    route: "/projection-type",
-    component: <ProjectionType />,
-  },
-  {
-    route: "/cast",
-    component: <CastList />,
-  },
-  {
-    route: "/crew",
-    component: <CrewList />,
+    icon: <Icon fontSize="small">moviefiltericon</Icon>,
+    collapse: [
+      {
+        type: "collapse",
+        name: "Languages",
+        key: "languages",
+        icon: <Icon fontSize="small">translate</Icon>,
+        route: "/languages",
+        component: <Languages />,
+      },
+      {
+        type: "collapse",
+        name: "Genre",
+        key: "genre",
+        icon: <Icon fontSize="small">filterdramaicon</Icon>,
+        route: "/genre",
+        component: <Genre />,
+      },
+      {
+        type: "collapse",
+        name: "Censor Types",
+        key: "movieMacensor-typesterData",
+        icon: <Icon fontSize="small">approval</Icon>,
+        route: "/censor-types",
+        component: <CensorTypes />,
+      },
+      {
+        type: "collapse",
+        name: "Sound System",
+        key: "soundsystem",
+        icon: <Icon fontSize="small">speakergroupuutlinedicon</Icon>,
+        route: "/soundsystem",
+        component: <SoundSystem />,
+      },
+      {
+        type: "collapse",
+        name: "Projection Type",
+        key: "projection-type",
+        icon: <Icon fontSize="small">hd</Icon>,
+        route: "/projection-type",
+        component: <ProjectionType />,
+      },
+      {
+        type: "collapse",
+        name: "Cast",
+        key: "cast",
+        icon: <Icon fontSize="small">groups2outlinedicon</Icon>,
+        route: "/cast",
+        component: <CastList />,
+      },
+      {
+        type: "collapse",
+        name: "Crew",
+        key: "crew",
+        icon: <Icon fontSize="small">handymanoutlinedicon</Icon>,
+        route: "/crew",
+        component: <CrewList />,
+      },
+    ],
   },
   {
     route: "/facilities/add-facilities",
