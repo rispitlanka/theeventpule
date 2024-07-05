@@ -17,15 +17,15 @@ import MDTypography from 'components/MDTypography';
 import MDButton from 'components/MDButton';
 
 // Data
-import userTableData from "layouts/tables/data/userTableData";
+import theatreOwnerTableData from "layouts/tables/data/theatreOwnerTableData";
 import DataNotFound from 'components/NoData/dataNotFound';
 import { CircularProgress } from '@mui/material';
 import noUserImage from "assets/images/illustrations/noUsers.png";
 
 
-export default function Users() {
+export default function TheatreOwners() {
 
-  const { columns: pColumns, rows: pRows } = userTableData();
+  const { columns: pColumns, rows: pRows } = theatreOwnerTableData();
   const navigate = useNavigate();
   const openPage = (route) => {
     navigate(route);
@@ -60,10 +60,10 @@ export default function Users() {
                 justifyContent="space-between"
               >
                 <MDTypography variant="h6" color="white">
-                  Users
+                  TheatreOwners
                 </MDTypography>
                 <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
-                  <MDButton onClick={() => openPage("/users/add-user")}><AddIcon color="info" /></MDButton>
+                  <MDButton onClick={() => openPage("/theatreOwners/add-theatreOwner")}><AddIcon color="info" /></MDButton>
                 </MDBox>
               </MDBox>
               {isLoading ? (
@@ -81,7 +81,7 @@ export default function Users() {
                   />
                 </MDBox>
               ) : (
-                <DataNotFound message={'No Users Availabale !'} image={noUserImage} />
+                <DataNotFound message={'No TheatreOwners Availabale !'} image={noUserImage} />
               )}
             </Card>
           </Grid>

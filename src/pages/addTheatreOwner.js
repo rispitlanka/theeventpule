@@ -19,7 +19,7 @@ import MDTypography from 'components/MDTypography';
 import MDButton from 'components/MDButton';
 import { useNavigate } from 'react-router-dom';
 
-export default function AddUser() {
+export default function AddTheatreOwner() {
     const [theatreData, setTheatreData] = useState();
     const [selectedTheatreId, setSelectedTheatreId] = useState();
     const navigate = useNavigate();
@@ -74,7 +74,7 @@ export default function AddUser() {
             const { data, error } = await supabase.from('theatreOwners').insert([values]).select('*');
             if (data) {
                 console.log('Data added succesfully:', data);
-                toast.info('User has been successfully created!');
+                toast.info('Theatre Owner has been successfully created!');
                 setTimeout(() => {
                     navigate(-1);
                 }, 1500);
@@ -106,7 +106,7 @@ export default function AddUser() {
                                 justifyContent="space-between"
                             >
                                 <MDTypography variant="h6" color="white">
-                                    Add New User
+                                    Add New Theatre Owner
                                 </MDTypography>
                             </MDBox>
                             <MDBox p={2}>
@@ -149,17 +149,21 @@ export default function AddUser() {
                                         helperText={newUser.touched.email && newUser.errors.email} />
                                 </MDBox>
                                 <MDBox p={1}>
-                                    <TextField
-                                        fullWidth
-                                        variant="outlined"
-                                        id="outlined-basic"
-                                        label="User Role"
-                                        name="userRole"
-                                        value={newUser.values.userRole}
-                                        onChange={newUser.handleChange}
-                                        onBlur={newUser.handleBlur}
-                                        error={newUser.touched.userRole && Boolean(newUser.errors.userRole)}
-                                        helperText={newUser.touched.userRole && newUser.errors.userRole} />
+                                    <FormControl fullWidth>
+                                        <InputLabel>Select User Role</InputLabel>
+                                        <Select
+                                            label="Select User Role"
+                                            name="userRole"
+                                            value={newUser.values.userRole}
+                                            onChange={newUser.handleChange}
+                                            onBlur={newUser.handleBlur}
+                                            error={newUser.touched.userRole && Boolean(newUser.errors.userRole)}
+                                            helperText={newUser.touched.userRole && newUser.errors.userRole}
+                                            sx={{ height: '45px' }}
+                                        >
+                                            <MenuItem value="admin">Admin</MenuItem>
+                                        </Select>
+                                    </FormControl>
                                 </MDBox>
                                 <MDBox p={1}>
                                     <FormControl fullWidth mb={3}>

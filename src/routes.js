@@ -90,10 +90,11 @@ import CensorTypes from "pages/censorTypes";
 import AddCensorType from "pages/addCensorType";
 import EditCensorType from "pages/editCensorType";
 import AddFacilities from "pages/addFacilities";
-import Users from "pages/users";
-import AddUser from "pages/addUser";
-import EditUser from "pages/editUser";
-import SingleUser from "pages/singleUser";
+import SuperAdmin from "pages/superAdmin";
+import TheatreOwners from "pages/theatreOwners";
+import AddTheatreOwner from "pages/addTheatreOwner";
+import EditTheatreOwner from "pages/editTheatreOwner";
+import TheatreOwner from "pages/theatreOwner";
 import Bookings from "pages/bookings";
 import BookSeats from "components/TicketBooking/bookSeats";
 import GetTickets from "components/TicketBooking/getTickets";
@@ -109,8 +110,6 @@ import AddMainEvent from "pages/addMainEvent";
 import EditMainEvent from "pages/editMainEvent";
 import EditZone from "pages/editZone";
 import Customers from "pages/customers";
-import MovieMasterData from "pages/movieMasterData";
-import TheatreMasterData from "pages/theatreMasterData";
 import BookingsAdmin from "pages/bookingsAdmin";
 
 const routes = [
@@ -128,15 +127,32 @@ const routes = [
     key: "users",
     icon: <Icon fontSize="small">peoplealticon</Icon>,
     route: "/users",
-    component: <Users />,
-  },
-  {
-    type: "collapse",
-    name: "Customers",
-    key: "customers",
-    icon: <Icon fontSize="small">groupicon</Icon>,
-    route: "/customers",
-    component: <Customers />,
+    collapse: [
+      {
+        type: "collapse",
+        name: "Admin",
+        key: "admin",
+        icon: <Icon fontSize="small">person</Icon>,
+        route: "/admin",
+        component: <SuperAdmin />,
+      },
+      {
+        type: "collapse",
+        name: "Theatre Owners",
+        key: "theatreOwners",
+        icon: <Icon fontSize="small">peopleoutline</Icon>,
+        route: "/theatreOwners",
+        component: <TheatreOwners />,
+      },
+      {
+        type: "collapse",
+        name: "Customers",
+        key: "customers",
+        icon: <Icon fontSize="small">groupicon</Icon>,
+        route: "/customers",
+        component: <Customers />,
+      },
+    ]
   },
   {
     type: "collapse",
@@ -477,16 +493,16 @@ const routes = [
     component: <EditZone />,
   },
   {
-    route: "/users/add-user",
-    component: <AddUser />,
+    route: "/theatreOwners/add-theatreOwner",
+    component: <AddTheatreOwner />,
   },
   {
-    route: "/users/edit-user/:id",
-    component: <EditUser />,
+    route: "/theatreOwners/edit-theatreOwner/:id",
+    component: <EditTheatreOwner />,
   },
   {
-    route: "/users/single-user/:id",
-    component: <SingleUser />,
+    route: "/theatreOwners/theatreOwner/:id",
+    component: <TheatreOwner />,
   },
   {
     route: "/bookings/book-seats/:showId/:screenId",

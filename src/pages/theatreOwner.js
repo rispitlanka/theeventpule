@@ -19,7 +19,7 @@ import Footer from "examples/Footer";
 // Images
 import backgroundImage from "assets/images/user2.jpg";
 
-export default function SingleUser() {
+export default function TheatreOwner() {
     const [userData, setUserData] = useState([]);
     const [theatreData, setTheatreData] = useState([]);
     const { id } = useParams();

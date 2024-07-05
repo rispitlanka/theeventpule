@@ -51,7 +51,7 @@ export default function data() {
 
   const fetchUserData = async () => {
     try {
-      const { data, error } = await supabase.from('theatreOwners').select();
+      const { data, error } = await supabase.from('theatreOwners').select().neq('userRole', 'superAdmin');
       if (error) throw error;
       setUserData(data);
     } catch (error) {
@@ -126,8 +126,8 @@ export default function data() {
     ),
     action: (
       <>
-        <MDButton onClick={() => openPage(`/users/single-user/${user.id}`)} variant='text' size='medium' color='info'><VisibilityIcon /></MDButton>
-        <MDButton onClick={() => openPage(`/users/edit-user/${user.id}`)} variant='text' size='medium' color='info'><EditIcon /></MDButton>
+        <MDButton onClick={() => openPage(`/theatreOwners/theatreOwner/${user.id}`)} variant='text' size='medium' color='info'><VisibilityIcon /></MDButton>
+        <MDButton onClick={() => openPage(`/theatreOwners/edit-theatreOwner/${user.id}`)} variant='text' size='medium' color='info'><EditIcon /></MDButton>
       </>
     ),
 
