@@ -58,6 +58,7 @@ export default function useUserRoutes() {
                 '/authentication/sign-in',
                 '/authentication/sign-up',
                 '/users',
+                '/theatreOwners',
                 '/customers',
                 '/theatres',
                 '/theatreMasterData',

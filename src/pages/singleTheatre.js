@@ -82,14 +82,19 @@ export default function SingleTheatre() {
     return `${yyyy}-${mm}-${dd}`;
   };
 
+  const currentDate = getCurrentDate();
+  const sevenDaysFromNow = new Date(currentDate);
+  sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
+  const formattedSevenDaysFromNow = sevenDaysFromNow.toISOString().split('T')[0];
+
   const fetchShows = async () => {
     try {
       const currentDate = getCurrentDate();
       const { data: fetchedShowsData, error: fetchedShowsError } = await supabase
         .from('shows').select('*')
         .eq('theatreId', theatreID)
-        .gte('date', currentDate);
-      // .lte('date', new Date(new Date(currentDate).setDate(new Date(currentDate).getDate() + 7)).toISOString().slice(0, 10));;
+        .gte('date', currentDate)
+        .lte('date', formattedSevenDaysFromNow);
       if (fetchedShowsError) throw error;
       setShowsData(fetchedShowsData);
       const showTimeIds = fetchedShowsData.map((shows => (shows.showTimeId)));

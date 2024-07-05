@@ -20,7 +20,7 @@ import MDTypography from 'components/MDTypography';
 import MDButton from 'components/MDButton';
 import DeleteDialog from 'components/DeleteDialogBox/deleteDialog';
 
-export default function EditUser() {
+export default function EditTheatreOwner() {
     const { id } = useParams();
     const navigate = useNavigate();
     const [theatreData, setTheatreData] = useState();
@@ -96,7 +96,7 @@ export default function EditUser() {
                 throw error;
             }
             console.log('Data updated successfully');
-            toast.info('User has been successfully updated!');
+            toast.info('Theatre Owner has been successfully updated!');
             setTimeout(() => {
                 navigate(-1);
             }, 1500);
@@ -149,7 +149,7 @@ export default function EditUser() {
                                 justifyContent="space-between"
                             >
                                 <MDTypography variant="h6" color="white">
-                                    Manage User
+                                    Manage Theatre Owner
                                 </MDTypography>
                             </MDBox>
                             <MDBox p={2}>
@@ -192,23 +192,28 @@ export default function EditUser() {
                                         helperText={editUser.touched.email && editUser.errors.email} />
                                 </MDBox>
                                 <MDBox p={1}>
-                                    <TextField
-                                        fullWidth
-                                        variant="outlined"
-                                        id="outlined-basic"
-                                        label="User Role"
-                                        name="userRole"
-                                        value={editUser.values.userRole}
-                                        onChange={editUser.handleChange}
-                                        onBlur={editUser.handleBlur}
-                                        error={editUser.touched.userRole && Boolean(editUser.errors.userRole)}
-                                        helperText={editUser.touched.userRole && editUser.errors.userRole} />
+                                    <FormControl fullWidth>
+                                        <InputLabel>Select User Role</InputLabel>
+                                        <Select
+                                            label="Select User Role"
+                                            name="userRole"
+                                            value={editUser.values.userRole}
+                                            onChange={editUser.handleChange}
+                                            onBlur={editUser.handleBlur}
+                                            error={editUser.touched.userRole && Boolean(editUser.errors.userRole)}
+                                            helperText={editUser.touched.userRole && editUser.errors.userRole}
+                                            sx={{ height: '45px' }}
+                                        >
+                                            <MenuItem value="admin">Admin</MenuItem>
+                                        </Select>
+                                    </FormControl>
                                 </MDBox>
                                 <MDBox p={1}>
                                     <FormControl fullWidth mb={3}>
                                         <InputLabel>Select Theatre</InputLabel>
                                         {selectedTheatreId && (
                                             <Select
+                                                label='Select Theatre'
                                                 value={selectedTheatreId}
                                                 onChange={(e) => setSelectedTheatreId(e.target.value)}
                                                 sx={{ height: '45px', mb: 3 }}
@@ -224,7 +229,7 @@ export default function EditUser() {
                                 </MDBox>
                                 <MDBox p={1}>
                                     <MDButton color='info' type='submit' sx={{ mr: 1 }}>Update</MDButton>
-                                    <MDButton color='error' onClick={handleDelete} disabled>Delete</MDButton>
+                                    {/* <MDButton color='error' onClick={handleDelete} disabled>Delete</MDButton> */}
                                 </MDBox>
                             </MDBox>
                         </Card>
