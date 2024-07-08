@@ -76,7 +76,7 @@ export default function data() {
       <Screen name={showTime.name} />
     </div>,
     time: (
-      <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+      <MDTypography component="a" variant="caption" color="text" fontWeight="medium">
         {formattedTime(showTime.time)}
       </MDTypography>
     ),

@@ -158,7 +158,7 @@ export default function Theatres() {
         </Grid>
       </MDBox>
       <MDBox sx={{ mt: 2, mb: 2 }}>
-        <TextField fullWidth id="standard-basic" label="Search theatres" variant="standard" value={name} onChange={(e) => setName(e.target.value)} sx={{ mb: 1 }} />
+        <TextField fullWidth id="standard-basic" label="Search theatres here" variant="standard" value={name} onChange={(e) => setName(e.target.value)} sx={{ mb: 1 }} />
         {loading && <MDTypography>Searching...<CircularProgress color="info" /></MDTypography>}
         {error && <MDTypography>{error}</MDTypography>}
         {!loading && searched && theatres.length === 0 && (

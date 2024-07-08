@@ -111,6 +111,11 @@ import EditMainEvent from "pages/editMainEvent";
 import EditZone from "pages/editZone";
 import Customers from "pages/customers";
 import BookingsAdmin from "pages/bookingsAdmin";
+import Promotions from "pages/promotions";
+import FeedBacks from "pages/feedBack";
+import HelpAndSupport from "pages/helpAndSupport";
+import Reports from "pages/reports";
+import Settings from "pages/settings";
 
 const routes = [
   {
@@ -179,7 +184,7 @@ const routes = [
     collapse: [
       {
         type: "collapse",
-        name: "facilities",
+        name: "Facilities",
         key: "facilities",
         icon: <Icon fontSize="small">listalticon</Icon>,
         route: "/facilities",
@@ -187,7 +192,7 @@ const routes = [
       },
       {
         type: "collapse",
-        name: "soundsystem",
+        name: "Sound System",
         key: "soundsystem",
         icon: <Icon fontSize="small">speakergroupuutlinedicon</Icon>,
         route: "/soundsystem",
@@ -195,7 +200,7 @@ const routes = [
       },
       {
         type: "collapse",
-        name: "projection-type",
+        name: "Projection Type",
         key: "projection-type",
         icon: <Icon fontSize="small">hd</Icon>,
         route: "/projection-type",
@@ -229,7 +234,7 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "ViewTickets",
+    name: "View Tickets",
     key: "viewTickets",
     icon: <Icon fontSize="small">receipt-long</Icon>,
     route: "/view-tickets",
@@ -355,6 +360,46 @@ const routes = [
         component: <CrewList />,
       },
     ],
+  },
+  {
+    type: "collapse",
+    name: "Promotions",
+    key: "promotions",
+    icon: <Icon fontSize="small">campaign</Icon>,
+    route: "/promotions",
+    component: <Promotions />,
+  },
+  {
+    type: "collapse",
+    name: "Feedbacks",
+    key: "feedbacks",
+    icon: <Icon fontSize="small">feedback</Icon>,
+    route: "/feedbacks",
+    component: <FeedBacks />,
+  },
+  {
+    type: "collapse",
+    name: "Reports",
+    key: "reports",
+    icon: <Icon fontSize="small">summarize</Icon>,
+    route: "/reports",
+    component: <Reports />,
+  },
+  {
+    type: "collapse",
+    name: "Help And Support",
+    key: "helpAndSupport",
+    icon: <Icon fontSize="small">helpcenter</Icon>,
+    route: "/helpAndSupport",
+    component: <HelpAndSupport />,
+  },
+  {
+    type: "collapse",
+    name: "Settings",
+    key: "settings",
+    icon: <Icon fontSize="small">settings</Icon>,
+    route: "/settings",
+    component: <Settings />,
   },
   {
     route: "/facilities/add-facilities",

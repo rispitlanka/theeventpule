@@ -126,7 +126,7 @@ export default function Data() {
             { Header: 'Theatre Name', accessor: 'theatreName', align: 'center' },
             { Header: 'Show Time', accessor: 'showTime', align: 'center' },
             { Header: 'Movie Name', accessor: 'movieName', align: 'center' },
-            { Header: 'Created At', accessor: 'createdAt', align: 'center' },
+            { Header: 'Ticket Booked On', accessor: 'createdAt', align: 'center' },
         ],
         rows: rows,
     };

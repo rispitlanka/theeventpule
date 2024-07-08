@@ -84,7 +84,7 @@ function Dashboard() {
   const fetchMoviesCount = async () => {
     try {
       const { data, error } = await supabase
-        .rpc('get_movies_count');
+        .rpc('get_active_movies_count');
       if (data) {
         setMoviesCount(data[0].movies_count);
       }
@@ -136,7 +136,7 @@ function Dashboard() {
               <ComplexStatisticsCard
                 color="dark"
                 icon="movie"
-                title="Today's Movies"
+                title="Active Movies"
                 count={moviesCount}
               // percentage={{
               //   color: "success",
@@ -228,7 +228,7 @@ function Dashboard() {
             </Grid>
           </Grid>
         </MDBox>
-        {/* <MDBox>
+        <MDBox>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={8}>
               <Projects />
@@ -237,7 +237,7 @@ function Dashboard() {
               <OrdersOverview />
             </Grid>
           </Grid>
-        </MDBox> */}
+        </MDBox>
       </MDBox>
       <Footer />
     </DashboardLayout>
