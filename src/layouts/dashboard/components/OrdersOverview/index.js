@@ -55,20 +55,20 @@ function OrdersOverview() {
         </MDTypography>
         <MDBox mt={0} mb={2}>
           <MDTypography variant="button" color="text" fontWeight="regular">
-            with recent booked time
+            with latest ticket&apos;s booked time
           </MDTypography>
         </MDBox>
       </MDBox>
       <MDBox p={2}>
-        {theatres && theatres.map((theatre=>(
-                 <TimelineItem
-                 key={theatre.id}
-                 color="dark"
-                 icon="theaters"
-                 title={theatre.theatrename}
-                 dateTime={theatre.last_booking_date || "No Bookings"}
-               />
-        )))} 
+        {theatres && theatres.length >0 && theatres.map((theatre => (
+          <TimelineItem
+            key={theatre.id}
+            color="dark"
+            icon="theaters"
+            title={theatre.theatrename}
+            dateTime={theatre.last_booking_date || "No Bookings"}
+          />
+        )))}
       </MDBox>
     </Card>
   );

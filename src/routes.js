@@ -111,6 +111,11 @@ import EditMainEvent from "pages/editMainEvent";
 import EditZone from "pages/editZone";
 import Customers from "pages/customers";
 import BookingsAdmin from "pages/bookingsAdmin";
+import Promotions from "pages/promotions";
+import FeedBacks from "pages/feedBack";
+import HelpAndSupport from "pages/helpAndSupport";
+import Reports from "pages/reports";
+import Settings from "pages/settings";
 
 const routes = [
   {
@@ -355,6 +360,46 @@ const routes = [
         component: <CrewList />,
       },
     ],
+  },
+  {
+    type: "collapse",
+    name: "Promotions",
+    key: "promotions",
+    icon: <Icon fontSize="small">campaign</Icon>,
+    route: "/promotions",
+    component: <Promotions />,
+  },
+  {
+    type: "collapse",
+    name: "FeedBacks",
+    key: "feedBacks",
+    icon: <Icon fontSize="small">feedback</Icon>,
+    route: "/feedBacks",
+    component: <FeedBacks />,
+  },
+  {
+    type: "collapse",
+    name: "HelpAndSupport",
+    key: "helpAndSupport",
+    icon: <Icon fontSize="small">helpcenter</Icon>,
+    route: "/helpAndSupport",
+    component: <HelpAndSupport />,
+  },
+  {
+    type: "collapse",
+    name: "Reports",
+    key: "reports",
+    icon: <Icon fontSize="small">summarize</Icon>,
+    route: "/reports",
+    component: <Reports />,
+  },
+  {
+    type: "collapse",
+    name: "Settings",
+    key: "settings",
+    icon: <Icon fontSize="small">settings</Icon>,
+    route: "/settings",
+    component: <Settings />,
   },
   {
     route: "/facilities/add-facilities",

@@ -78,9 +78,9 @@ export default function data() {
       { Header: "Booked By", accessor: "bookedby", width: "30%", align: "left" },
       { Header: "Theatre Name", accessor: "theatrename", align: "center" },
       { Header: "Movie Name", accessor: "movietitle", align: "center" },
-      { Header: "Date & Time", accessor: "created_at", align: "center" },
+      { Header: "Booked Date & Time", accessor: "created_at", align: "center" },
     ],
-
+    
     rows: rows,
   };
 }
