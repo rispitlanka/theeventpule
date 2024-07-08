@@ -184,7 +184,7 @@ const routes = [
     collapse: [
       {
         type: "collapse",
-        name: "facilities",
+        name: "Facilities",
         key: "facilities",
         icon: <Icon fontSize="small">listalticon</Icon>,
         route: "/facilities",
@@ -192,7 +192,7 @@ const routes = [
       },
       {
         type: "collapse",
-        name: "soundsystem",
+        name: "Sound System",
         key: "soundsystem",
         icon: <Icon fontSize="small">speakergroupuutlinedicon</Icon>,
         route: "/soundsystem",
@@ -200,7 +200,7 @@ const routes = [
       },
       {
         type: "collapse",
-        name: "projection-type",
+        name: "Projection Type",
         key: "projection-type",
         icon: <Icon fontSize="small">hd</Icon>,
         route: "/projection-type",
@@ -234,7 +234,7 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "ViewTickets",
+    name: "View Tickets",
     key: "viewTickets",
     icon: <Icon fontSize="small">receipt-long</Icon>,
     route: "/view-tickets",
@@ -371,19 +371,11 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "FeedBacks",
-    key: "feedBacks",
+    name: "Feedbacks",
+    key: "feedbacks",
     icon: <Icon fontSize="small">feedback</Icon>,
-    route: "/feedBacks",
+    route: "/feedbacks",
     component: <FeedBacks />,
-  },
-  {
-    type: "collapse",
-    name: "HelpAndSupport",
-    key: "helpAndSupport",
-    icon: <Icon fontSize="small">helpcenter</Icon>,
-    route: "/helpAndSupport",
-    component: <HelpAndSupport />,
   },
   {
     type: "collapse",
@@ -392,6 +384,14 @@ const routes = [
     icon: <Icon fontSize="small">summarize</Icon>,
     route: "/reports",
     component: <Reports />,
+  },
+  {
+    type: "collapse",
+    name: "Help And Support",
+    key: "helpAndSupport",
+    icon: <Icon fontSize="small">helpcenter</Icon>,
+    route: "/helpAndSupport",
+    component: <HelpAndSupport />,
   },
   {
     type: "collapse",
