@@ -20,7 +20,6 @@
     "@iconify-icons/icon-park-twotone": "^1.2.8",
     "@iconify-icons/ion": "^1.2.10",
     "@iconify/icons-mdi": "^1.2.48",
-    "@iconify/react": "^4.1.1",
     "@mui/icons-material": "^5.15.16",
     "@mui/material": "^5.15.16",
     "@mui/x-date-pickers": "^7.3.2",
@@ -74,6 +73,7 @@
     ]
   },
   "devDependencies": {
+    "@iconify/react": "^5.0.1",
     "eslint": "8.39.0",
     "eslint-config-prettier": "8.8.0",
     "eslint-plugin-import": "2.27.5",

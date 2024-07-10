@@ -30,17 +30,17 @@ export default function EditTheatre() {
     const { id } = useParams();
     const navigate = useNavigate();
     const [openDeleteDialogBox, setOpenDeleteDialogBox] = useState();
-    const [selectedDate, setSelectedDate] = useState();
-    const [existingDate, setExistingDate] = useState();
+    // const [selectedDate, setSelectedDate] = useState();
+    // const [existingDate, setExistingDate] = useState();
     const [coverImagePreview, setCoverImagePreview] = useState(null);
     const [coverImageChanged, setCoverImageChanged] = useState(false);
     const [theatreImagePreview, setTheatreImagePreview] = useState(null);
     const [theatreImageChanged, setTheatreImageChanged] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleDateChange = (date) => {
-        setSelectedDate(date);
-    }
+    // const handleDateChange = (date) => {
+    //     setSelectedDate(date);
+    // }
 
     const handleTheatreImageChange = (event) => {
         const file = event.currentTarget.files[0];
@@ -77,14 +77,14 @@ export default function EditTheatre() {
                         licenseInfo: theatre.licenseInfo,
                         description: theatre.description,
                         notes: theatre.notes,
-                        registeredDate: theatre.registeredDate,
+                        // registeredDate: theatre.registeredDate,
                         isActive: theatre.isActive,
                         theatreImage: theatre.theatreImage,
                         coverImage: theatre.coverImage,
 
                     });
-                    setExistingDate(theatre.registeredDate);
-                    setSelectedDate(theatre.registeredDate);
+                    // setExistingDate(theatre.registeredDate);
+                    // setSelectedDate(theatre.registeredDate);
                     setTheatreImagePreview(theatre.theatreImage);
                     setCoverImagePreview(theatre.coverImage);
                 }
@@ -112,7 +112,7 @@ export default function EditTheatre() {
             licenseInfo: '',
             description: '',
             isActive: '',
-            registeredDate: '',
+            // registeredDate: '',
             notes: '',
             coverImage: '',
             theatreImage: '',
@@ -135,7 +135,7 @@ export default function EditTheatre() {
         }),
         onSubmit: async (values, { resetForm }) => {
             setIsLoading(true);
-            values.registeredDate = (dayjs(selectedDate).format("YYYY-MM-DD"));
+            // values.registeredDate = (dayjs(selectedDate).format("YYYY-MM-DD"));
 
             try {
                 if (theatreImageChanged && editTheatre.values.theatreImage) {
@@ -360,7 +360,7 @@ export default function EditTheatre() {
                                                 error={editTheatre.touched.notes && Boolean(editTheatre.errors.notes)}
                                                 helperText={editTheatre.touched.notes && editTheatre.errors.notes} />
                                         </MDBox>
-                                        <MDBox p={1} >
+                                        {/* <MDBox p={1} >
                                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                 <DemoContainer components={['DatePicker']}>
                                                     <DatePicker
@@ -370,7 +370,7 @@ export default function EditTheatre() {
                                                     />
                                                 </DemoContainer>
                                             </LocalizationProvider>
-                                        </MDBox>
+                                        </MDBox> */}
                                     </Grid>
                                     <Grid item xs={6} >
                                         <MDBox p={1}>
