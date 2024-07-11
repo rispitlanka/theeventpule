@@ -32,7 +32,7 @@ export default function data() {
   );
 
   const userDetails = useContext(UserDataContext);
-  const userTheatreId = userDetails[0].theatreId;
+  const userTheatreId = userDetails && userDetails[0].theatreId;
   const [eventsData, setEventsData] = useState(null);
   const [error, setError] = useState(null);
   const navigate = useNavigate();

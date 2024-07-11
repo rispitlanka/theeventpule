@@ -23,7 +23,7 @@ import { UserDataContext } from 'context';
 export default function AddMainEvent() {
     const navigate = useNavigate();
     const userDetails = useContext(UserDataContext);
-    const userTheatreId = userDetails[0].theatreId;
+    const userTheatreId = userDetails && userDetails[0].theatreId;
 
     const onSubmit = async (values, { resetForm }) => {
         try {

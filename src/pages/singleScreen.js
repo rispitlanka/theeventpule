@@ -16,7 +16,7 @@ import { UserDataContext } from 'context'
 
 export default function SingleScreen() {
     const userDetails = useContext(UserDataContext);
-    const userRole = userDetails[0].userRole;
+    const userRole = userDetails && userDetails[0].userRole;
     const { columns: pColumns, rows: pRows } = showTimeTableData();
     const [screenData, setScreenData] = useState([]);
     const [zonesData, setZonesData] = useState([]);

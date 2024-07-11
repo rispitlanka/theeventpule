@@ -19,7 +19,7 @@ export default function ShowsOnDate(date) {
     const [bookedSeatsCount, setBookedSeatsCount] = useState({});
     const [totalSeatsCount, setTotalSeatsCount] = useState({});
     const userDetails = useContext(UserDataContext);
-    const userTheatreId = userDetails[0].theatreId;
+    const userTheatreId = userDetails && userDetails[0].theatreId;
 
     const navigate = useNavigate();
     const openPage = (route) => {

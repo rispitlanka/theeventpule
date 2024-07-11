@@ -35,7 +35,7 @@ export default function data() {
   );
 
   const userDetails = useContext(UserDataContext);
-  const userTheatreId = userDetails[0].theatreId;
+  const userTheatreId = userDetails && userDetails[0].theatreId;
   const [allTickets, setAllTickets] = useState([]);
   const [movies, setMovies] = useState([]);
 

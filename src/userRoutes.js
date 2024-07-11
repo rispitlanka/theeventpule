@@ -49,7 +49,6 @@ export default function useUserRoutes() {
                 '/events/edit-event/:id',
                 '/events/add-mainEvent',
                 '/events/edit-mainEvent/:id',
-                '/events',
                 '/shows',
               ].includes(route.route);
 

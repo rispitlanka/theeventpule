@@ -19,7 +19,7 @@ import EditIcon from '@mui/icons-material/Edit';
 
 export default function Events() {
   const userDetails = useContext(UserDataContext);
-  const userTheatreId = userDetails[0].theatreId;
+  const userTheatreId = userDetails && userDetails[0].theatreId;
   const navigate = useNavigate();
   const openPage = (route) => {
     navigate(route);

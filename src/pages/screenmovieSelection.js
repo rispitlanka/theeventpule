@@ -9,7 +9,7 @@ import MDBox from 'components/MDBox';
 
 export default function ScreenMovieSelection({ onNext, initialScreenId, initialMovieId }) {
   const userDetails = useContext(UserDataContext);
-  const userTheatreId = userDetails[0].theatreId;
+  const userTheatreId = userDetails && userDetails[0].theatreId;
   const [screensData, setScreensData] = useState([]);
   const [moviesData, setMoviesData] = useState([]);
   const [selectedScreenId, setSelectedScreenId] = useState(initialScreenId);

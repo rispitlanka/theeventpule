@@ -17,7 +17,7 @@ import { UserDataContext } from 'context';
 export default function ViewTickets() {
   const { columns: pColumns, rows: pRows } = ticketsTableData();
   const userDetails = useContext(UserDataContext);
-  const userTheatreId = userDetails[0].theatreId;
+  const userTheatreId = userDetails && userDetails[0].theatreId;
   const [chartData, setChartData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showId, setShowId] = useState([]);

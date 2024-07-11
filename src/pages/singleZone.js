@@ -14,7 +14,7 @@ import { UserDataContext } from "context";
 
 export default function SingleZone() {
     const userDetails = useContext(UserDataContext);
-    const userRole = userDetails[0].userRole;
+    const userRole = userDetails && userDetails[0].userRole;
     const { id } = useParams();
     const [seatsData, setSeatsData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);

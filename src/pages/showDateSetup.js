@@ -20,7 +20,7 @@ import MDTypography from 'components/MDTypography';
 
 export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
     const userDetails = useContext(UserDataContext);
-    const userTheatreId = userDetails[0].theatreId;
+    const userTheatreId = userDetails && userDetails[0].theatreId;
     const [showTimeData, setShowTimeData] = useState(null);
     const [movieData, setMovieData] = useState();
     const [screenData, setScreenData] = useState();

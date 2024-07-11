@@ -46,7 +46,7 @@ export default function data() {
   const { screenId } = useParams();
   const navigate = useNavigate();
   const userDetails = useContext(UserDataContext);
-  const userRole = userDetails[0].userRole;
+  const userRole = userDetails && userDetails[0].userRole;
   const openPage = (route) => {
     navigate(route);
   };

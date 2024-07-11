@@ -30,7 +30,7 @@ import { UserDataContext } from 'context';
 export default function AddEvent() {
     const navigate = useNavigate();
     const userDetails = useContext(UserDataContext);
-    const userTheatreId = userDetails[0].theatreId;
+    const userTheatreId = userDetails && userDetails[0].theatreId;
     const [selectedTime, setSelectedTime] = useState(null);
     const [selectedDate, setSelectedDate] = useState();
     const [selectedScreenId, setSelectedScreenId] = useState();
