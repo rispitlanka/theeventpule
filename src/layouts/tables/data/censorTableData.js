@@ -26,18 +26,13 @@ import MDTypography from "components/MDTypography";
 import MDAvatar from "components/MDAvatar";
 import MDButton from "components/MDButton";
 import EditIcon from '@mui/icons-material/Edit';
-
 import { supabase } from "pages/supabaseClient";
-
-// Images
-import LogoAsana from "assets/images/small-logos/genre.png";
 import { Switch } from "@mui/material";
-
 
 export default function data() {
     const GenreIcon = ({ image, name }) => (
         <MDBox display="flex" alignItems="center" lineHeight={1}>
-            <MDAvatar src={image} name={name} size="sm" variant="rounded" />
+            <MDAvatar src={image} name={name} size="xs" variant="rounded" />
             <MDTypography display="block" variant="button" fontWeight="medium" ml={1} lineHeight={1}>
                 {name}
             </MDTypography>
@@ -103,7 +98,7 @@ export default function data() {
     };
 
     const rows = censorData ? censorData.map(censor => ({
-        censor_type: <GenreIcon image={LogoAsana} name={censor.censor_type} />,
+        censor_type: <GenreIcon image={censor.icons} name={censor.censor_type} />,
         status: (
             <Switch checked={censor.isActive} onChange={e => handleChange(censor.id, e.target.checked)} />
         ),

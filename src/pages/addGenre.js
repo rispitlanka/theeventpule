@@ -16,53 +16,82 @@ import DashboardNavbar from 'examples/Navbars/DashboardNavbar';
 import Footer from "examples/Footer";
 import MDBox from 'components/MDBox';
 import MDTypography from 'components/MDTypography';
-import MDSnackbar from 'components/MDSnackbar';
-import Genre from './genre';
-
+import { useNavigate } from 'react-router-dom';
+import ImageIcon from '@mui/icons-material/Image';
+import UploadIcon from '@mui/icons-material/Upload';
+import MDButton from 'components/MDButton';
+import { toast, ToastContainer } from 'react-toastify';
 
 export default function AddGenre() {
+    const [iconPreview, setIconPreview] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
 
-    const [snackbarOpen, setSnackbarOpen] = useState(false);
-    const [snackbarType, setSnackbarType] = useState('');
+    const handleIconUpload = (event) => {
+        const file = event.currentTarget.files[0];
+        newGenre.setFieldValue('icons', file);
+        setIconPreview(URL.createObjectURL(file));
+    };
+
+    const onSubmit = async (values, { resetForm }) => {
+        setIsLoading(true);
+        try {
+            if (newGenre.values.icons) {
+                const file = newGenre.values.icons;
+                const { data: iconData, error: iconError } = await supabase.storage
+                    .from('icons')
+                    .upload(`genre_icons/${file.name}`, file, {
+                        cacheControl: '3600',
+                        upsert: false,
+                    });
+                if (iconError) {
+                    throw iconError;
+                }
+                if (iconData) {
+                    const iconURL = supabase.storage.from('icons').getPublicUrl(iconData.path);
+                    values.icons = iconURL.data.publicUrl;
+                } else {
+                    throw new Error('Failed to upload icon');
+                }
+            }
+            await saveGenre(values);
+            resetForm();
+            toast.info('Genre has been successfully created!');
+            setTimeout(() => {
+                navigate(-1);
+            }, 1500);
+            setIsLoading(false);
+        } catch (error) {
+            console.error('Error submitting form:', error.message);
+            setIsLoading(false);
+        }
+    };
 
     const newGenre = useFormik({
         initialValues: {
             genre_name: '',
+            icons: '',
         },
         validationSchema: Yup.object({
             genre_name: Yup.string().required('Required'),
         }),
-        onSubmit: (values, { resetForm }) => {
-            saveGenre(values);
-            setSnackbarOpen(true);
-            setSnackbarType('success');
-            resetForm();
-        },
+        onSubmit,
     });
 
-    const saveGenre = async (genre) => {
+    const saveGenre = async (values) => {
         try {
             const { data, error } = await supabase
                 .from('genres')
-                .insert({ genre_name: genre.genre_name }); // Extract facility_name from the facility object
+                .insert([values]);
 
             if (error) {
                 throw error;
             } else {
                 console.log('Genre added successfully:', data);
-                setSnackbarOpen(true);
-                setSnackbarType('success');
             }
         } catch (error) {
             console.error('Error adding genre:', error.message);
-            setSnackbarOpen(true);
-            setSnackbarType('error');
         }
-    };
-
-
-    const handleCloseSnackbar = () => {
-        setSnackbarOpen(false);
     };
 
     return (
@@ -103,14 +132,71 @@ export default function AddGenre() {
                                         error={newGenre.touched.genre_name && Boolean(newGenre.errors.genre_name)}
                                         helperText={newGenre.touched.genre_name && newGenre.errors.genre_name} />
                                 </MDBox>
+                                <MDBox p={1}>
+                                    <Grid xs={3} display={'flex'} flexDirection={'column'}>
+                                        {iconPreview ? (
+                                            <MDBox
+                                                display="flex"
+                                                justifyContent="center"
+                                                alignItems="center"
+                                                border="1px dashed"
+                                                borderRadius="4px"
+                                                width="50%"
+                                                maxHeight="100px"
+                                                mb={1}
+                                                height="100px"
+                                            >
+                                                <img src={iconPreview} alt="Cover Preview" style={{ width: '50%', maxHeight: '100px' }} />
+                                            </MDBox>
+                                        ) : (
+                                            <MDBox
+                                                display="flex"
+                                                justifyContent="center"
+                                                alignItems="center"
+                                                border="1px dashed"
+                                                borderRadius="4px"
+                                                width="50%"
+                                                maxHeight="100px"
+                                                mb={1}
+                                                height="100px"
+                                            >
+                                                <ImageIcon />
+                                            </MDBox>
+                                        )}
+                                        <MDBox display="flex">
+                                            <MDButton
+                                                size="small"
+                                                variant="outlined"
+                                                component="label"
+                                                color="info"
+                                                startIcon={<UploadIcon />}
+                                            >
+                                                Click to Upload icon
+                                                <input
+                                                    type="file"
+                                                    hidden
+                                                    onChange={handleIconUpload}
+                                                />
+                                            </MDButton>
+                                        </MDBox>
+                                        {newGenre.touched.icons && newGenre.errors.icons && (
+                                            <MDTypography color="error">{newGenre.errors.icons}</MDTypography>
+                                        )}
+                                    </Grid>
+                                </MDBox>
                                 <MDBox mt={-3} p={4}>
                                     <Button
+                                        disabled={isLoading}
                                         fullWidth
                                         type='submit'
                                         variant="contained"
                                         color="primary"
                                     >
-                                        <span style={{ color: 'white' }}>Save</span>
+                                        {isLoading ?
+                                            <span style={{ color: 'black' }}>Loading....</span>
+                                            :
+                                            <span style={{ color: 'white' }}>Save</span>
+                                        }
                                     </Button>
                                 </MDBox>
                             </MDBox>
@@ -120,15 +206,17 @@ export default function AddGenre() {
             </Grid>
         </MDBox>
             <Footer />
-            <MDSnackbar
-                color={snackbarType}
-                icon={snackbarType === 'success' ? 'check' : 'warning'}
-                title={snackbarType === 'success' ? 'Success' : 'Error'}
-                content={snackbarType === 'success' ? 'New genre has been added successfully!' : 'Failed to add new genre!'}
-                open={snackbarOpen}
-                close={handleCloseSnackbar}
-                time={2500}
-                bgWhite
+            <ToastContainer
+                position="bottom-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
             />
         </DashboardLayout>
     )

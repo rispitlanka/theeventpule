@@ -4,7 +4,7 @@ import { supabase } from './supabaseClient';
 
 // @mui material components
 import Grid from "@mui/material/Grid";
-import { Box, Button, Card, CircularProgress, Divider, Fade, IconButton, List, ListItem, ListItemText, Menu, MenuItem, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, CircularProgress, Divider, IconButton, List, Menu, MenuItem } from '@mui/material';
 
 // @mui icons
 import AddCircleIcon from '@mui/icons-material/AddCircle';
@@ -26,8 +26,8 @@ import DataNotFound from 'components/NoData/dataNotFound';
 
 export default function SingleTheatre() {
   const userDetails = useContext(UserDataContext);
-  const userTheatreId = userDetails[0].theatreId;
-  const userRole = userDetails[0].userRole;
+  const userTheatreId = userDetails && userDetails[0].theatreId;
+  const userRole = userDetails && userDetails[0].userRole;
   const [theatreData, setTheatreData] = useState([]);
   const [screensData, setScreensData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -137,23 +137,17 @@ export default function SingleTheatre() {
         case 'movie':
           return showsData.reduce((acc, show) => {
             if (!acc[show.movieId]) acc[show.movieId] = {};
-            if (!acc[show.movieId][show.screenId]) acc[show.movieId][show.screenId] = [];
-            acc[show.movieId][show.screenId].push(show);
+            if (!acc[show.movieId][show.screenId]) acc[show.movieId][show.screenId] = {};
+            if (!acc[show.movieId][show.screenId][show.date]) acc[show.movieId][show.screenId][show.date] = [];
+            acc[show.movieId][show.screenId][show.date].push(show);
             return acc;
           }, {});
         case 'screen':
           return showsData.reduce((acc, show) => {
             if (!acc[show.screenId]) acc[show.screenId] = {};
-            if (!acc[show.screenId][show.movieId]) acc[show.screenId][show.movieId] = [];
-            acc[show.screenId][show.movieId].push(show);
-            return acc;
-          }, {});
-        case 'show':
-          return showsData.reduce((acc, show) => {
-            if (!acc[show.date]) acc[show.date] = {};
-            if (!acc[show.date][show.movieId]) acc[show.date][show.movieId] = {};
-            if (!acc[show.date][show.movieId][show.screenId]) acc[show.date][show.movieId][show.screenId] = [];
-            acc[show.date][show.movieId][show.screenId].push(show);
+            if (!acc[show.screenId][show.movieId]) acc[show.screenId][show.movieId] = {};
+            if (!acc[show.screenId][show.movieId][show.date]) acc[show.screenId][show.movieId][show.date] = [];
+            acc[show.screenId][show.movieId][show.date].push(show);
             return acc;
           }, {});
         default:
@@ -398,104 +392,89 @@ export default function SingleTheatre() {
           }
           {showsData && showsData.length > 0 ?
             <MDBox pt={4} px={2} lineHeight={1.25}>
-              <Grid display={'flex'} flexDirection={'row'}>
-                <Grid item>
-                  <Typography variant="h6" fontWeight="medium">
+              <Grid container>
+                <Grid item xs={12}>
+                  <MDTypography variant="h6" fontWeight="medium">
                     {filterOption.charAt(0).toUpperCase() + filterOption.slice(1)}s
-                  </Typography>
+                  </MDTypography>
                   <List>
                     {filterOption === 'movie' && Object.keys(groupedShows).map(movieId => (
-                      <ListItem key={movieId} disableRipple>
-                        <Box>
-                          <Typography sx={{ fontWeight: 'regular', mt: 3 }}>
-                            {groupedShows[movieId] && groupedShows[movieId][Object.keys(groupedShows[movieId])[0]][0].movieName}
-                          </Typography>
-                          <List disablePadding>
-                            {groupedShows[movieId] && Object.keys(groupedShows[movieId]).map(screenId => (
-                              <Box key={screenId}>
-                                <Typography sx={{ marginBottom: '4px' }}>
-                                  Screen Name: {groupedShows[movieId][screenId][0].screenName}
-                                </Typography>
-                                <List disablePadding>
-                                  {groupedShows[movieId][screenId].map(show => (
-                                    <ListItem key={show.screenId}>
-                                      <ListItemText>
-                                        Show Time: {show.date} - {formattedTime(show.showTime)}
-                                      </ListItemText>
-                                    </ListItem>
-                                  ))}
-                                </List>
-                                <Divider />
-                              </Box>
-                            ))}
-                          </List>
-                        </Box>
-                      </ListItem>
+                      <Grid key={movieId} item xs={12}>
+                        <Card sx={{ p: 2, mt: 1, width: '100%' }}>
+                          <CardContent>
+                            <MDTypography>
+                              Movie:&nbsp;{groupedShows[movieId] && groupedShows[movieId][Object.keys(groupedShows[movieId])[0]][Object.keys(groupedShows[movieId][Object.keys(groupedShows[movieId])[0]])[0]][0].movieName}
+                            </MDTypography>
+                            <Divider />
+                            <List>
+                              {groupedShows[movieId] && Object.keys(groupedShows[movieId]).map(screenId => (
+                                <Box key={screenId}>
+                                  <MDTypography>
+                                    Screen:&nbsp;{groupedShows[movieId][screenId][Object.keys(groupedShows[movieId][screenId])[0]][0].screenName}
+                                  </MDTypography>
+                                  <List>
+                                    <MDTypography>Date & Time:&nbsp;</MDTypography>
+                                    {Object.keys(groupedShows[movieId][screenId]).map(date => (
+                                      <Box key={date} display={'flex'} flexDirection={'row'} flexWrap={'wrap'}>
+                                        <MDTypography>
+                                          {date}
+                                        </MDTypography>
+                                        <MDBox display={'flex'} flexDirection={'row'} flexWrap={'wrap'} ml={2}>
+                                          {groupedShows[movieId][screenId][date].map(show => (
+                                            <MDTypography key={show.showId} mr={1}>
+                                              {formattedTime(show.showTime)},
+                                            </MDTypography>
+                                          ))}
+                                        </MDBox>
+                                      </Box>
+                                    ))}
+                                  </List>
+                                  <Divider />
+                                </Box>
+                              ))}
+                            </List>
+                          </CardContent>
+                        </Card>
+                      </Grid>
                     ))}
                     {filterOption === 'screen' && Object.keys(groupedShows).map(screenId => (
-                      <ListItem key={screenId} disableRipple>
-                        <Box>
-                          <Typography sx={{ fontWeight: 'regular', mt: 3 }}>
-                            Screen Name: {groupedShows[screenId] && groupedShows[screenId][Object.keys(groupedShows[screenId])[0]][0].screenName}
-                          </Typography>
-                          <List disablePadding>
-                            {groupedShows[screenId] && Object.keys(groupedShows[screenId]).map(movieId => (
-                              <Box key={movieId}>
-                                <Typography sx={{ marginBottom: '4px' }}>
-                                  Movie Name: {groupedShows[screenId][movieId][0].movieName}
-                                </Typography>
-                                <List disablePadding>
-                                  {groupedShows[screenId][movieId].map(show => (
-                                    <ListItem key={show.screenId}>
-                                      <ListItemText>
-                                        Show Time: {show.date} - {formattedTime(show.showTime)}
-                                      </ListItemText>
-                                    </ListItem>
-                                  ))}
-                                </List>
-                                <Divider />
-                              </Box>
-                            ))}
-                          </List>
-                        </Box>
-                      </ListItem>
-                    ))}
-                    {filterOption === 'show' && Object.keys(groupedShows).map(date => (
-                      <ListItem key={date} disableRipple>
-                        <Box>
-                          <Typography sx={{ fontWeight: 'regular', mt: 3 }}>
-                            Date: {date}
-                          </Typography>
-                          <List disablePadding>
-                            {groupedShows[date] && Object.keys(groupedShows[date]).map(movieId => (
-                              <Box key={movieId}>
-                                <Typography sx={{ marginBottom: '4px' }}>
-                                  Movie Name: {groupedShows[date][movieId][Object.keys(groupedShows[date][movieId])[0]][0] && groupedShows[date][movieId][Object.keys(groupedShows[date][movieId])[0]][0].length > 0 && groupedShows[date][movieId][Object.keys(groupedShows[date][movieId])[0]][0].movieName}
-                                </Typography>
-                                <List disablePadding>
-                                  {groupedShows[date][movieId] && Object.keys(groupedShows[date][movieId]).map(screenId => (
-                                    <Box key={screenId}>
-                                      <Typography sx={{ marginBottom: '4px' }}>
-                                        Screen Name: {groupedShows[date][movieId][screenId][0] && groupedShows[date][movieId][screenId][0].length > 0 && groupedShows[date][movieId][screenId][0].screenName}
-                                      </Typography>
-                                      <List disablePadding>
-                                        {groupedShows[date][movieId][screenId] && groupedShows[date][movieId][screenId].length > 0 && groupedShows[date][movieId][screenId].map(show => (
-                                          <ListItem key={show.screenId}>
-                                            <ListItemText>
-                                              Show Time: {show.date} - {show.showTime}
-                                            </ListItemText>
-                                          </ListItem>
-                                        ))}
-                                      </List>
-                                      <Divider />
-                                    </Box>
-                                  ))}
-                                </List>
-                              </Box>
-                            ))}
-                          </List>
-                        </Box>
-                      </ListItem>
+                      <Grid key={screenId} item xs={12}>
+                        <Card sx={{ p: 2, mt: 1, width: '100%' }}>
+                          <CardContent>
+                            <MDTypography>
+                              Screen:&nbsp;{groupedShows[screenId] && groupedShows[screenId][Object.keys(groupedShows[screenId])[0]][Object.keys(groupedShows[screenId][Object.keys(groupedShows[screenId])[0]])[0]][0].screenName}
+                            </MDTypography>
+                            <Divider />
+                            <List>
+                              {groupedShows[screenId] && Object.keys(groupedShows[screenId]).map(movieId => (
+                                <Box key={movieId}>
+                                  <MDTypography>
+                                    Movie:&nbsp;{groupedShows[screenId][movieId][Object.keys(groupedShows[screenId][movieId])[0]][0].movieName}
+                                  </MDTypography>
+                                  <List>
+                                    <MDTypography>Date & Time:&nbsp;</MDTypography>
+                                    {Object.keys(groupedShows[screenId][movieId]).map(date => (
+                                      <Box key={date} display={'flex'} flexDirection={'row'} flexWrap={'wrap'}>
+                                        <MDTypography>
+                                          {date}
+                                        </MDTypography>
+                                        <MDBox display={'flex'} flexDirection={'row'} ml={2}>
+                                          {groupedShows[screenId][movieId][date].map(show => (
+                                            <MDTypography key={show.showId} mr={1}>
+                                              {formattedTime(show.showTime)},
+                                            </MDTypography>
+                                          ))}
+                                        </MDBox>
+                                      </Box>
+                                    ))}
+                                  </List>
+                                  <Divider />
+                                </Box>
+                              ))}
+                            </List>
+                          </CardContent>
+                        </Card>
+                      </Grid>
                     ))}
                   </List>
                 </Grid>
@@ -521,7 +500,6 @@ export default function SingleTheatre() {
                     >
                       <MenuItem onClick={() => handleFilterClick('movie')}>Movie</MenuItem>
                       <MenuItem onClick={() => handleFilterClick('screen')}>Screen</MenuItem>
-                      {/* <MenuItem onClick={() => handleFilterClick('show')}>Show</MenuItem> */}
                     </Menu>
                   </div>
                 </Grid>

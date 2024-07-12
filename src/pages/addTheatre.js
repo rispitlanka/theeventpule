@@ -29,14 +29,14 @@ export default function AddTheatre() {
   const navigate = useNavigate();
   const [facilitiesData, setFacilitiesData] = useState([]);
   const [selectedFacilityIds, setSelectedFacilityIds] = useState([]);
-  const [regDate, setRegDate] = useState();
+  // const [regDate, setRegDate] = useState();
   const [coverImagePreview, setCoverImagePreview] = useState(null);
   const [theatreImagePreview, setTheatreImagePreview] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleDateChange = (date) => {
-    setRegDate(date);
-  }
+  // const handleDateChange = (date) => {
+  //   setRegDate(date);
+  // }
 
   const handleCheckboxChange = (facilityId) => {
     setSelectedFacilityIds((prevSelected) =>
@@ -124,8 +124,8 @@ export default function AddTheatre() {
         .filter(facility => selectedFacilityIds.includes(facility.id))
         .map(facility => facility.facility_name);
       values.facilities = selectedFacilityNames
-      const formattedDate = dayjs(regDate).format('YYYY-MM-DD');
-      values.registeredDate = formattedDate;
+      // const formattedDate = dayjs(regDate).format('YYYY-MM-DD');
+      values.registeredDate = dayjs(new Date).format('YYYY-MM-DD');
 
       await addTheatreData(values);
       resetForm();
@@ -321,7 +321,7 @@ export default function AddTheatre() {
                         error={newTheatre.touched.notes && Boolean(newTheatre.errors.notes)}
                         helperText={newTheatre.touched.notes && newTheatre.errors.notes} />
                     </MDBox>
-                    <MDBox p={1} >
+                    {/* <MDBox p={1} >
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DemoContainer components={['DatePicker']}>
                           <DatePicker
@@ -331,7 +331,7 @@ export default function AddTheatre() {
                           />
                         </DemoContainer>
                       </LocalizationProvider>
-                    </MDBox>
+                    </MDBox> */}
                   </Grid>
                   <Grid item xs={6} >
                     <MDBox p={1}>
@@ -341,10 +341,10 @@ export default function AddTheatre() {
                         {newTheatre.values.isActive ? 'Active' : 'Inactive'}
                       </MDTypography>
                     </MDBox>
-                    <MDBox p={1} display="flex" flexDirection="row" alignItems="center">
+                    <MDBox p={1} display="flex" flexDirection="row" alignItems="center" flexWrap="wrap">
                       <MDTypography mr={1}>Facilities: </MDTypography>
                       {facilitiesData && facilitiesData.length > 0 && facilitiesData.map((facility) => (
-                        <MDBox key={facility.id} mr={1}>
+                        <MDBox key={facility.id} mr={1} minWidth="100px">
                           <FormControlLabel control={<Checkbox checked={selectedFacilityIds.includes(facility.id)} onChange={() => handleCheckboxChange(facility.id)} />} label={facility.facility_name} />
                         </MDBox>
                       ))}

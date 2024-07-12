@@ -61,7 +61,7 @@ export default function GetTickets() {
         showId: seat.showId,
         movieId: movieId,
         theatreId: userTheatreId,
-        bookedBy: '',
+        bookedBy: theatreName,
         price: seat.price,
         totalPrice: calculateTotalPrice(),
         referenceId: refId,

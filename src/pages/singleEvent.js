@@ -26,7 +26,7 @@ import DataNotFound from 'components/NoData/dataNotFound';
 
 export default function SingleEvent() {
     const userDetails = useContext(UserDataContext);
-    const userTheatreId = userDetails[0].theatreId;
+    const userTheatreId = userDetails && userDetails[0].theatreId;
     const [eventData, setEventData] = useState([]);
     const [openEditDialogBox, setOpenEditDialogBox] = useState();
     const [formFieldData, setFormFieldData] = useState([]);

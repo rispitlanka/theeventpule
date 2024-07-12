@@ -89,7 +89,7 @@ export default function data() {
     const rows = castData ? castData.map(cast => ({
         name: (
             <MDBox display="flex" alignItems="center" lineHeight={1}>
-                <MDAvatar src={cast.image} name={cast.name} size="sm" variant="rounded" />
+                <MDAvatar src={cast.image} name={cast.name} size="xs" variant="rounded" />
                 <MDTypography display="block" variant="button" fontWeight="medium" ml={1} lineHeight={1}>
                     {cast.name}
                 </MDTypography>
