@@ -89,7 +89,7 @@ export default function data() {
     const rows = crewData ? crewData.map(crew => ({
         name: (
             <MDBox display="flex" alignItems="center" lineHeight={1}>
-                <MDAvatar src={crew.image} name={crew.name} size="sm" variant="rounded" />
+                <MDAvatar src={crew.image} name={crew.name} size="xs" variant="rounded" />
                 <MDTypography display="block" variant="button" fontWeight="medium" ml={1} lineHeight={1}>
                     {crew.name}
                 </MDTypography>

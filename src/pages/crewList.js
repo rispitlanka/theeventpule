@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // @mui material components
-import { Card, Grid } from '@mui/material';
+import { Card, CircularProgress, Grid } from '@mui/material';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 
 // Material Dashboard 2 React components
@@ -15,16 +15,26 @@ import DashboardLayout from 'examples/LayoutContainers/DashboardLayout';
 import DashboardNavbar from 'examples/Navbars/DashboardNavbar';
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
+import noData from "assets/images/illustrations/noData3.svg";
 
 // Data
 import crewTableData from "layouts/tables/data/crewTableData";
+import DataNotFound from 'components/NoData/dataNotFound';
 
 export default function CrewList() {
-    const { columns, rows } = crewTableData();
+    const { columns: pColumns, rows: pRows } = crewTableData();
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(true);
     const openPage = (route) => {
         navigate(route);
     };
+
+    useEffect(() => {
+        setTimeout(() => {
+            setIsLoading(false);
+        }, 500);
+    }, []);
+
     return (
         <DashboardLayout>
             <DashboardNavbar />
@@ -52,15 +62,23 @@ export default function CrewList() {
                                     <MDButton onClick={() => openPage("/crew/add-crew")}><AddBoxIcon color='info' /></MDButton>
                                 </MDBox>
                             </MDBox>
-                            <MDBox pt={3}>
-                                <DataTable
-                                    table={{ columns, rows }}
-                                    isSorted={false}
-                                    entriesPerPage={false}
-                                    showTotalEntries={false}
-                                    noEndBorder
-                                />
-                            </MDBox>
+                            {isLoading ? (
+                                <MDBox p={3} display="flex" justifyContent="center">
+                                    <CircularProgress color="info" />
+                                </MDBox>
+                            ) : pRows && pRows.length > 0 ? (
+                                <MDBox pt={3}>
+                                    <DataTable
+                                        table={{ columns: pColumns, rows: pRows }}
+                                        isSorted={false}
+                                        entriesPerPage={false}
+                                        showTotalEntries={false}
+                                        noEndBorder
+                                    />
+                                </MDBox>
+                            ) : (
+                                <DataNotFound message={'No Data Availabale !'} image={noData} />
+                            )}
                         </Card>
                     </Grid>
                 </Grid>

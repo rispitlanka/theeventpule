@@ -27,15 +27,12 @@ import MDAvatar from "components/MDAvatar";
 import MDButton from "components/MDButton";
 import EditIcon from '@mui/icons-material/Edit';
 import { supabase } from "pages/supabaseClient";
-
-// Images
-import LogoAsana from "assets/images/small-logos/facilities.png";
 import { Switch } from "@mui/material";
 
 export default function data() {
     const FacilityIcon = ({ image, name }) => (
         <MDBox display="flex" alignItems="center" lineHeight={1}>
-            <MDAvatar src={image} name={name} size="sm" variant="rounded" />
+            <MDAvatar src={image} name={name} size="xs" variant="rounded" />
             <MDTypography display="block" variant="button" fontWeight="medium" ml={1} lineHeight={1}>
                 {name}
             </MDTypography>
@@ -101,7 +98,7 @@ export default function data() {
     };
 
     const rows = facilityData ? facilityData.map(facility => ({
-        facility_name: <FacilityIcon image={LogoAsana} name={facility.facility_name} />,
+        facility_name: <FacilityIcon image={facility.icons} name={facility.facility_name} />,
         status: (
             <Switch checked={facility.isActive} onChange={e => handleChange(facility.id, e.target.checked)} />
         ),
@@ -125,4 +122,3 @@ export default function data() {
         rows: rows,
     };
 }
-

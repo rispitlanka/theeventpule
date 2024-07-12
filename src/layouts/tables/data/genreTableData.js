@@ -26,18 +26,13 @@ import MDTypography from "components/MDTypography";
 import MDAvatar from "components/MDAvatar";
 import MDButton from "components/MDButton";
 import EditIcon from '@mui/icons-material/Edit';
-
 import { supabase } from "pages/supabaseClient";
-
-// Images
-import LogoAsana from "assets/images/small-logos/genre.png";
 import { Switch } from "@mui/material";
-
 
 export default function data() {
     const GenreIcon = ({ image, name }) => (
         <MDBox display="flex" alignItems="center" lineHeight={1}>
-            <MDAvatar src={image} name={name} size="sm" variant="rounded" />
+            <MDAvatar src={image} name={name} size="xs" variant="rounded" />
             <MDTypography display="block" variant="button" fontWeight="medium" ml={1} lineHeight={1}>
                 {name}
             </MDTypography>
@@ -103,7 +98,7 @@ export default function data() {
     };
 
     const rows = genreData ? genreData.map(genre => ({
-        genre_name: <GenreIcon image={LogoAsana} name={genre.genre_name} />,
+        genre_name: <GenreIcon image={genre.icons} name={genre.genre_name} />,
         status: (
             <Switch checked={genre.isActive} onChange={e => handleChange(genre.id, e.target.checked)} />
         ),

@@ -27,14 +27,12 @@ import MDAvatar from "components/MDAvatar";
 import MDButton from "components/MDButton";
 import EditIcon from '@mui/icons-material/Edit';
 import { supabase } from "pages/supabaseClient";
-import { Icon } from '@iconify/react';
-import soundOneIcon from '@iconify-icons/icon-park-twotone/sound-one';
 import { Switch } from "@mui/material";
 
 export default function data() {
-    const SoundIcon = ({ name }) => (
+    const SoundIcon = ({ image, name }) => (
         <MDBox display="flex" alignItems="center" lineHeight={1}>
-            <Icon icon={soundOneIcon} width={24} height={24} />
+            <MDAvatar src={image} name={name} size="xs" variant="rounded" />
             <MDTypography display="block" variant="button" fontWeight="medium" ml={1} lineHeight={1}>
                 {name}
             </MDTypography>
@@ -99,7 +97,7 @@ export default function data() {
     };
 
     const rows = soundSystemData ? soundSystemData.map(soundsys => ({
-        soundsystem_type: <SoundIcon name={soundsys.soundsystem_type} />,
+        soundsystem_type: <SoundIcon image={soundsys.icons} name={soundsys.soundsystem_type} />,
         status: (
             <Switch checked={soundsys.isActive} onChange={e => handleChange(soundsys.id, e.target.checked)} />
         ),

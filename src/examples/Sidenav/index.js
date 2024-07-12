@@ -139,7 +139,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
               />
             </ListItem>
             {expanded[key] && (
-              <List component="div" disablePadding>
+              <List component="div" disablePadding sx={{ ml: 2 }}>
                 {collapse.map(({ type: subType, name: subName, icon: subIcon, key: subKey, route: subRoute }) => (
                   <NavLink key={subKey} to={subRoute}>
                     <SidenavCollapse name={subName} icon={subIcon} active={subKey === collapseName} />

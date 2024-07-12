@@ -16,7 +16,6 @@ Coded by www.creative-tim.com
 
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
-
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
@@ -26,21 +25,18 @@ import MDTypography from "components/MDTypography";
 import MDAvatar from "components/MDAvatar";
 import MDButton from "components/MDButton";
 import { supabase } from "pages/supabaseClient";
-import { Icon } from '@iconify/react';
-import cubeSolid from '@iconify-icons/fa-solid/cube';
 import EditIcon from '@mui/icons-material/Edit';
 import { Switch } from "@mui/material";
 
 export default function data() {
-    const ProjectionIcon = ({ name }) => (
+    const ProjectionIcon = ({ image, name }) => (
         <MDBox display="flex" alignItems="center" lineHeight={1}>
-            <Icon icon={cubeSolid} width={24} height={24} />
+            <MDAvatar src={image} name={name} size="xs" variant="rounded" />
             <MDTypography display="block" variant="button" fontWeight="medium" ml={1} lineHeight={1}>
                 {name}
             </MDTypography>
         </MDBox>
     );
-
 
     const [projectionTypeData, setProjectionTypeData] = useState(null);
     const navigate = useNavigate();
@@ -101,7 +97,7 @@ export default function data() {
     };
 
     const rows = projectionTypeData ? projectionTypeData.map(projtyp => ({
-        projection_type: <ProjectionIcon name={projtyp.projection_type} />,
+        projection_type: <ProjectionIcon image={projtyp.icons} name={projtyp.projection_type} />,
         status: (
             <Switch checked={projtyp.isActive} onChange={e => handleChange(projtyp.id, e.target.checked)} />
         ),
