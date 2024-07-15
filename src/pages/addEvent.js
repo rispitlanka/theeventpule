@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import { FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Select, Switch, TextField } from '@mui/material';
 
 // Material Dashboard 2 React example components
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout';
@@ -81,6 +81,7 @@ export default function AddEvent() {
             screenId: '',
             theatreId: '',
             mainEventId: '',
+            isActive: true,
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
@@ -325,6 +326,13 @@ export default function AddEvent() {
                                             </LocalizationProvider>
                                         </MDBox>
                                     </Grid>
+                                </MDBox>
+                                <MDBox p={1}>
+                                    <MDTypography fontWeight={'light'}>
+                                        Status:
+                                        <Switch label="Status" checked={newEvent.values.isActive} onChange={(e) => newEvent.setFieldValue('isActive', e.target.checked)} />
+                                        {newEvent.values.isActive ? 'Active' : 'Inactive'}
+                                    </MDTypography>
                                 </MDBox>
                                 <MDBox p={1}>
                                     <MDButton color='info' type='submit'>Save</MDButton>

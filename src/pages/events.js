@@ -11,7 +11,7 @@ import MDBox from 'components/MDBox';
 import MDTypography from 'components/MDTypography';
 import MDButton from 'components/MDButton';
 import DataNotFound from 'components/NoData/dataNotFound';
-import { Box, CircularProgress, Paper, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs } from '@mui/material';
+import { Box, CircularProgress, Paper, Switch, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs } from '@mui/material';
 import noDataImage from "assets/images/illustrations/noData3.svg";
 import { UserDataContext } from 'context';
 import { supabase } from './supabaseClient';
@@ -34,7 +34,6 @@ export default function Events() {
       setIsLoading(false);
     }, 500);
   }, []);
-
 
   const fetchMainEventData = async () => {
     try {
@@ -87,6 +86,24 @@ export default function Events() {
   };
 
   const selectedMainEvent = mainEventData.find(event => event.id === mainEventId);
+
+  const handleStatusChange = async (eventId, newValue) => {
+    try {
+      const { error } = await supabase
+        .from('events')
+        .update({ isActive: newValue })
+        .eq('id', eventId);
+      if (error) throw error;
+
+      setEventsData(prevData =>
+        prevData.map(event =>
+          event.id === eventId ? { ...event, isActive: newValue } : event
+        )
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -170,12 +187,12 @@ export default function Events() {
                       </TableHead>
                       <TableBody>
                         {eventsData.map((row) => (
-                          <TableRow key={row.id} onClick={(e) => { e.stopPropagation(); openPage(`/events/single-event/${row.id}`); }} style={{ cursor: 'pointer' }}>
-                            <TableCell >{row.name}</TableCell>
+                          <TableRow key={row.id} >
+                            <TableCell onClick={(e) => { e.stopPropagation(); openPage(`/events/single-event/${row.id}`); }} style={{ cursor: 'pointer' }}>{row.name}</TableCell>
                             <TableCell align='center'>{row.description}</TableCell>
-                            <TableCell align='center'>{row.status}</TableCell>
+                            <TableCell align='center'><Switch checked={row.isActive} onChange={(e) => handleStatusChange(row.id, e.target.checked)} /></TableCell>
                             <TableCell align='center'>{row.category}</TableCell>
-                            <TableCell align='center' onClick={(e) => { e.stopPropagation(); openPage(`/events/edit-event/${row.id}`); }}>Edit</TableCell>
+                            <TableCell align='center' onClick={(e) => { e.stopPropagation(); openPage(`/events/edit-event/${row.id}`); }} style={{ cursor: 'pointer' }}>Edit</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
