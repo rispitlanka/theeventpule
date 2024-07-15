@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 
 // @mui material components
@@ -19,27 +19,25 @@ import MDButton from 'components/MDButton';
 // Data
 import theatreTableData from "layouts/tables/data/theatreTableData";
 import DataNotFound from 'components/NoData/dataNotFound';
-import { CircularProgress, List, ListItem, ListItemText, TextField } from '@mui/material';
+import { CircularProgress } from '@mui/material';
 import noDataImage from "assets/images/illustrations/noData3.svg";
 import { supabase } from './supabaseClient';
 import ComplexStatisticsCard from 'examples/Cards/StatisticsCards/ComplexStatisticsCard';
+import MDInput from 'components/MDInput';
 
 export default function Theatres() {
   const { columns: pColumns, rows: pRows } = theatreTableData();
   const [isLoading, setIsLoading] = useState(true);
-  const [searched, setSearched] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [theatres, setTheatres] = useState([]);
-  const [error, setError] = useState('');
-  const [name, setName] = useState('');
   const [totalTheatresCount, setTotalTheatresCount] = useState(0);
   const [activeTheatresCount, setActiveTheatresCount] = useState(0);
   const [totalShows, setTotalShows] = useState(0);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const navigate = useNavigate();
   const openPage = (route) => {
     navigate(route);
   };
+
   useEffect(() => {
     fetchTotalTheatresCount();
     fetchTotalShowsCount();
@@ -48,38 +46,6 @@ export default function Theatres() {
       setIsLoading(false);
     }, 500);
   }, []);
-
-  useEffect(() => {
-    const fetchTheatres = async () => {
-      if (name.trim() === '') {
-        setTheatres([]);
-        setError('');
-        setSearched(false);
-        return;
-      }
-      setLoading(true);
-      setError('');
-      setSearched(true);
-      try {
-        const { data, error } = await supabase
-          .from('theatres')
-          .select('*')
-          .ilike('name', `%${name}%`);
-
-        if (error) throw error;
-        setTheatres(data);
-      } catch (error) {
-        setError('Error fetching theatres');
-      } finally {
-        setLoading(false);
-      }
-    };
-    const delayDebounceFn = setTimeout(() => {
-      fetchTheatres();
-    }, 500);
-
-    return () => clearTimeout(delayDebounceFn);
-  }, [name]);
 
   const fetchTotalTheatresCount = async () => {
     try {
@@ -120,6 +86,17 @@ export default function Theatres() {
     }
   }
 
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const filteredRows = useMemo(() => {
+    return pRows.filter(row => {
+      const theatreName = row.name?.props?.name?.toLowerCase();
+      return theatreName?.includes(searchTerm.toLowerCase());
+    });
+  }, [searchTerm, pRows]);
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -157,21 +134,6 @@ export default function Theatres() {
           </Grid>
         </Grid>
       </MDBox>
-      <MDBox sx={{ mt: 2, mb: 2 }}>
-        <TextField fullWidth id="standard-basic" label="Search theatres here" variant="standard" value={name} onChange={(e) => setName(e.target.value)} sx={{ mb: 1 }} />
-        {loading && <MDTypography>Searching...<CircularProgress color="info" /></MDTypography>}
-        {error && <MDTypography>{error}</MDTypography>}
-        {!loading && searched && theatres.length === 0 && (
-          <MDTypography variant="body2">No theatres found</MDTypography>
-        )}
-        <List>
-          {theatres.map((theatre) => (
-            <ListItem key={theatre.id}>
-              <ListItemText primary={theatre.name} />
-            </ListItem>
-          ))}
-        </List>
-      </MDBox>
       <MDBox pt={6} pb={3}>
         <Grid container spacing={6}>
           <Grid item xs={12}>
@@ -196,23 +158,31 @@ export default function Theatres() {
                   <MDButton onClick={() => openPage("/theatres/add-theatre")}><AddIcon color="info" /></MDButton>
                 </MDBox>
               </MDBox>
+              <MDBox pt={3} pl={3} display="flex" justifyContent="left">
+                <MDInput
+                  placeholder="Search..."
+                  value={searchTerm}
+                  onChange={handleSearch}
+                />
+              </MDBox>
               {isLoading ? (
                 <MDBox p={3} display="flex" justifyContent="center">
                   <CircularProgress color="info" />
                 </MDBox>
-              ) : pRows && pRows.length > 0 ? (
+              ) : filteredRows && filteredRows.length > 0 ? (
                 <MDBox pt={3}>
                   <DataTable
-                    table={{ columns: pColumns, rows: pRows }}
+                    table={{ columns: pColumns, rows: filteredRows }}
                     isSorted={false}
                     entriesPerPage={false}
                     showTotalEntries={false}
                     noEndBorder
                   />
                 </MDBox>
-              ) : (
-                <DataNotFound message={'No Theatres To Show !'} image={noDataImage} />
-              )}
+              )
+                : (
+                  <DataNotFound message={'No Theatres To Show !'} image={noDataImage} />
+                )}
             </Card>
           </Grid>
         </Grid>
