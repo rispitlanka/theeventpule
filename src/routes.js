@@ -117,6 +117,7 @@ import FeedBacks from "pages/feedBack";
 import HelpAndSupport from "pages/helpAndSupport";
 import Reports from "pages/reports";
 import Settings from "pages/settings";
+import EventsAdmin from "pages/eventsAdmin";
 
 const routes = [
   {
@@ -156,8 +157,8 @@ const routes = [
     name: "Events",
     key: "events",
     icon: <Icon icon="fluent-emoji-high-contrast:party-popper" />,
-    route: "/events",
-    component: <Events />,
+    route: "/eventsAdmin",
+    component: <EventsAdmin />,
   },
   {
     type: "collapse",
@@ -199,6 +200,14 @@ const routes = [
     icon: <Icon icon="mdi:theater" />,
     route: "/theatre",
     component: <SingleTheatre />,
+  },
+  {
+    type: "collapse",
+    name: "Events",
+    key: "events",
+    icon: <Icon icon="fluent-emoji-high-contrast:party-popper" />,
+    route: "/events",
+    component: <Events />,
   },
   {
     type: "collapse",

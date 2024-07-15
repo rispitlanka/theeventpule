@@ -60,6 +60,7 @@ export default function useUserRoutes() {
                 '/theatreOwners',
                 '/customers',
                 '/theatres',
+                '/eventsAdmin',
                 '/theatreMasterData',
                 '/facilities',
                 '/movies',
