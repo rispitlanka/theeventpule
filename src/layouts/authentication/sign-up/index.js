@@ -10,6 +10,7 @@ import MDButton from 'components/MDButton';
 import CoverLayout from 'layouts/authentication/components/CoverLayout';
 import bgImage from 'assets/images/bg-sign-up-cover.jpeg';
 import { supabase } from "pages/supabaseClient";
+import { ToastContainer, toast } from 'react-toastify';
 
 function SignUp() {
   const [name, setName] = useState('');
@@ -29,24 +30,24 @@ function SignUp() {
 
       });
 
-
       const response = await supabase
         .from('users')
         .insert({ name: name, email: email })
         .select('*');
 
-
       if (error) {
-
-        console.error('Sign-up error:', error.message); // Log error message
+        console.error('Sign-up error:', error.message);
+        toast.error(error.message);
 
       } else {
-
         console.log('Sign-up successful:', user);
-        alert('Sign-up successful');
+        toast.success('You have successfully signed-up !');
         console.log('user added successfully:', response.data);
-        openPage(`/authentication/sign-in`);
+        setTimeout(() => {
+          openPage(`/authentication/sign-in`);
+        }, 1000)
       }
+
     } catch (error) {
       console.error('Sign-up error:', error.message); // Log error message
     }
@@ -149,6 +150,18 @@ function SignUp() {
           </MDBox>
         </MDBox>
       </Card>
+      <ToastContainer
+        position="bottom-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </CoverLayout>
   );
 }

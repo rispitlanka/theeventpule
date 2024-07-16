@@ -60,7 +60,6 @@ export default function useUserRoutes() {
                 '/theatreOwners',
                 '/customers',
                 '/theatres',
-                '/eventsAdmin',
                 '/theatreMasterData',
                 '/facilities',
                 '/movies',
@@ -96,6 +95,9 @@ export default function useUserRoutes() {
                 '/soundsystem/edit-soundsystem/:id',
                 '/projection-type/edit-projection-type/:id',
                 '/bookingsAdmin',
+                '/eventsAdmin',
+                '/events',
+                '/eventOrganizers',
                 '/facilities',
               ].includes(route.route);
             } else if (userRole === 'eventOrganizer') {
@@ -107,6 +109,7 @@ export default function useUserRoutes() {
                 '/customers',
                 '/theatres',
                 '/eventsAdmin',
+                '/eventOrganizers',
                 '/theatreMasterData',
                 '/facilities',
                 '/movies',
