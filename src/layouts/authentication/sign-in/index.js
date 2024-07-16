@@ -12,6 +12,7 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDInput from "components/MDInput";
 import MDButton from "components/MDButton";
+import { ToastContainer, toast } from 'react-toastify';
 
 // Authentication layout components
 import BasicLayout from "layouts/authentication/components/BasicLayout";
@@ -41,13 +42,20 @@ function Basic() {
 
       if (error) {
         console.error('Sign-in error:', error.message);
+        toast.error(error.message);
+
       } else if (data) {
-        console.log('Sign-in successful:', data);
+        console.log('Sign-in successful:');
+        toast.success('You have successfully signed-in !');
         localStorage.setItem('userEmail', JSON.stringify(data.user.email));
-        openPage(`/dashboard`);
+        setTimeout(() => {
+          openPage(`/dashboard`);
+        }, 1000);
       }
+      
     } catch (error) {
       console.error('Sign-in error:', error.message);
+      toast.error(error.message);
     }
   };
 
@@ -124,6 +132,18 @@ function Basic() {
           </MDBox>
         </MDBox>
       </Card>
+      <ToastContainer
+        position="bottom-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </BasicLayout>
   );
 }
