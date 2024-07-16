@@ -118,6 +118,7 @@ import HelpAndSupport from "pages/helpAndSupport";
 import Reports from "pages/reports";
 import Settings from "pages/settings";
 import EventsAdmin from "pages/eventsAdmin";
+import EventOrganizers from "pages/eventOrganizers";
 
 const routes = [
   {
@@ -155,7 +156,7 @@ const routes = [
   {
     type: "collapse",
     name: "Events",
-    key: "events",
+    key: "eventsAdmin",
     icon: <Icon icon="fluent-emoji-high-contrast:party-popper" />,
     route: "/eventsAdmin",
     component: <EventsAdmin />,
@@ -182,6 +183,14 @@ const routes = [
         icon: <Icon icon="solar:users-group-two-rounded-bold-duotone" />,
         route: "/theatreOwners",
         component: <TheatreOwners />,
+      },
+      {
+        type: "collapse",
+        name: "Event Organizers",
+        key: "eventOrganizers",
+        icon: <Icon icon="solar:users-group-two-rounded-bold-duotone" />,
+        route: "/eventOrganizers",
+        component: <EventOrganizers />,
       },
       {
         type: "collapse",

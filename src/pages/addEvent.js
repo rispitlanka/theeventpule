@@ -78,6 +78,7 @@ export default function AddEvent() {
             price: '',
             contactEmail: '',
             contactPhone: '',
+            organizer: '',
             screenId: '',
             theatreId: '',
             mainEventId: '',
@@ -265,6 +266,19 @@ export default function AddEvent() {
                                         helperText={newEvent.touched.contactPhone && newEvent.errors.contactPhone} />
                                 </MDBox>
                                 <MDBox p={1}>
+                                    <TextField
+                                        fullWidth
+                                        variant="outlined"
+                                        id="outlined-basic"
+                                        label="Organizer"
+                                        name="organizer"
+                                        value={newEvent.values.organizer}
+                                        onChange={newEvent.handleChange}
+                                        onBlur={newEvent.handleBlur}
+                                        error={newEvent.touched.organizer && Boolean(newEvent.errors.organizer)}
+                                        helperText={newEvent.touched.organizer && newEvent.errors.organizer} />
+                                </MDBox>
+                                {/* <MDBox p={1}>
                                     <FormControl fullWidth>
                                         <InputLabel>Select Screen</InputLabel>
                                         <Select
@@ -280,7 +294,7 @@ export default function AddEvent() {
                                             ))}
                                         </Select>
                                     </FormControl>
-                                </MDBox>
+                                </MDBox> */}
                                 <MDBox p={1}>
                                     <FormControl fullWidth>
                                         <InputLabel>Select Main Event</InputLabel>

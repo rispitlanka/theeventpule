@@ -151,7 +151,7 @@ export default function Events() {
                       label={event.title}
                       onClick={() => handleMainEventClick(event.id)}
                       value={index + 1}
-                      icon={<EditIcon onClick={(e) => { e.stopPropagation(); openPage(`/events/edit-mainEvent/${event.id}`); }} />}
+                      // icon={<EditIcon onClick={(e) => { e.stopPropagation(); openPage(`/events/edit-mainEvent/${event.id}`); }} />}
                     />
                   ))}
                   <Tab
