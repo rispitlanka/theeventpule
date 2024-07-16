@@ -117,6 +117,8 @@ import FeedBacks from "pages/feedBack";
 import HelpAndSupport from "pages/helpAndSupport";
 import Reports from "pages/reports";
 import Settings from "pages/settings";
+import EventsAdmin from "pages/eventsAdmin";
+import EventOrganizers from "pages/eventOrganizers";
 
 const routes = [
   {
@@ -154,10 +156,10 @@ const routes = [
   {
     type: "collapse",
     name: "Events",
-    key: "events",
+    key: "eventsAdmin",
     icon: <Icon icon="fluent-emoji-high-contrast:party-popper" />,
-    route: "/events",
-    component: <Events />,
+    route: "/eventsAdmin",
+    component: <EventsAdmin />,
   },
   {
     type: "collapse",
@@ -184,6 +186,14 @@ const routes = [
       },
       {
         type: "collapse",
+        name: "Event Organizers",
+        key: "eventOrganizers",
+        icon: <Icon icon="solar:users-group-two-rounded-bold-duotone" />,
+        route: "/eventOrganizers",
+        component: <EventOrganizers />,
+      },
+      {
+        type: "collapse",
         name: "Customers",
         key: "customers",
         icon: <Icon icon="la:users" />,
@@ -199,6 +209,14 @@ const routes = [
     icon: <Icon icon="mdi:theater" />,
     route: "/theatre",
     component: <SingleTheatre />,
+  },
+  {
+    type: "collapse",
+    name: "Events",
+    key: "events",
+    icon: <Icon icon="fluent-emoji-high-contrast:party-popper" />,
+    route: "/events",
+    component: <Events />,
   },
   {
     type: "collapse",

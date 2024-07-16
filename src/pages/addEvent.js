@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import { FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Select, Switch, TextField } from '@mui/material';
 
 // Material Dashboard 2 React example components
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout';
@@ -78,9 +78,11 @@ export default function AddEvent() {
             price: '',
             contactEmail: '',
             contactPhone: '',
+            organizer: '',
             screenId: '',
             theatreId: '',
             mainEventId: '',
+            isActive: true,
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
@@ -264,6 +266,19 @@ export default function AddEvent() {
                                         helperText={newEvent.touched.contactPhone && newEvent.errors.contactPhone} />
                                 </MDBox>
                                 <MDBox p={1}>
+                                    <TextField
+                                        fullWidth
+                                        variant="outlined"
+                                        id="outlined-basic"
+                                        label="Organizer"
+                                        name="organizer"
+                                        value={newEvent.values.organizer}
+                                        onChange={newEvent.handleChange}
+                                        onBlur={newEvent.handleBlur}
+                                        error={newEvent.touched.organizer && Boolean(newEvent.errors.organizer)}
+                                        helperText={newEvent.touched.organizer && newEvent.errors.organizer} />
+                                </MDBox>
+                                {/* <MDBox p={1}>
                                     <FormControl fullWidth>
                                         <InputLabel>Select Screen</InputLabel>
                                         <Select
@@ -279,7 +294,7 @@ export default function AddEvent() {
                                             ))}
                                         </Select>
                                     </FormControl>
-                                </MDBox>
+                                </MDBox> */}
                                 <MDBox p={1}>
                                     <FormControl fullWidth>
                                         <InputLabel>Select Main Event</InputLabel>
@@ -325,6 +340,13 @@ export default function AddEvent() {
                                             </LocalizationProvider>
                                         </MDBox>
                                     </Grid>
+                                </MDBox>
+                                <MDBox p={1}>
+                                    <MDTypography fontWeight={'light'}>
+                                        Status:
+                                        <Switch label="Status" checked={newEvent.values.isActive} onChange={(e) => newEvent.setFieldValue('isActive', e.target.checked)} />
+                                        {newEvent.values.isActive ? 'Active' : 'Inactive'}
+                                    </MDTypography>
                                 </MDBox>
                                 <MDBox p={1}>
                                     <MDButton color='info' type='submit'>Save</MDButton>

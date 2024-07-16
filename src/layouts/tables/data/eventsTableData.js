@@ -16,11 +16,11 @@ Coded by www.creative-tim.com
 */
 
 import { useNavigate } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
 import { supabase } from "pages/supabaseClient";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
-import { UserDataContext } from "context";
+import { Switch } from "@mui/material";
+import { useState, useEffect } from "react";
 
 export default function data() {
   const Screen = ({ name }) => (
@@ -31,8 +31,6 @@ export default function data() {
     </MDBox>
   );
 
-  const userDetails = useContext(UserDataContext);
-  const userTheatreId = userDetails && userDetails[0].theatreId;
   const [eventsData, setEventsData] = useState(null);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -40,13 +38,11 @@ export default function data() {
     navigate(route);
   };
 
-
   const fetchEventsData = async () => {
     try {
-      const { data, error } = await supabase.from('events').select('*').eq('theatreId', userTheatreId);
-      console.log(data);
-      if (error) throw error;
-      setEventsData(data);
+      const { data: eventsData, error: eventsError } = await supabase.from('events').select('*');
+      if (eventsError) throw error;
+      setEventsData(eventsData);
     } catch (error) {
       setError(error);
     }
@@ -57,79 +53,58 @@ export default function data() {
   }, [])
 
   const handleRowClick = (eventId) => {
-    openPage(`/events/single-event/${eventId}`);
+    openPage(`/events/single-event/${eventId}/view-registrations`);
+  };
+
+  const formattedDate = (date) => {
+    return ((new Date(date)).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', }))
+  }
+
+  const formattedTime = (time) => {
+    const [hours, minutes, seconds] = time.split(':');
+    const date = new Date(0, 0, 0, hours, minutes, seconds);
+    const options = { hour: '2-digit', minute: '2-digit' };
+    return date.toLocaleTimeString('en-US', options);
   };
 
   const rows = eventsData ? eventsData.map(event => ({
     name: <div onClick={() => handleRowClick(event.id)} style={{ cursor: 'pointer' }}>
       <Screen name={event.name} />
     </div>,
-    description: (
-      <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-        {event.description}
-      </MDTypography>
-    ),
     status: (
-      <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-        {event.status}
-      </MDTypography>
+      <Switch checked={event.isActive} onChange={e => handleChange(event.id, e.target.checked)} />
     ),
     category: (
       <MDTypography component="a" href="#" variant="button" color="text" fontWeight="medium">
         {event.category}
       </MDTypography>
     ),
-    location: (
+    organizerName: (
       <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-        {event.location}
+        {event.organizer}
       </MDTypography>
     ),
     date: (
       <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-        {event.date}
+        {formattedDate(event.date)}
       </MDTypography>
     ),
     startTime: (
-        <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {event.startTime}
-        </MDTypography>
-      ),
-      price: (
-        <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {event.price}
-        </MDTypography>
-      ),
-      contactEmail: (
-        <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {event.contactEmail}
-        </MDTypography>
-      ),
-      contactPhone: (
-        <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {event.contactPhone}
-        </MDTypography>
-      ),
-      screenId: (
-        <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {event.screenId}
-        </MDTypography>
-      ),  
+      <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        {formattedTime(event.startTime)}
+      </MDTypography>
+    ),
 
   })) : [{ name: <MDTypography color='warning' fontWeight='bold'>{error}</MDTypography> }];
 
   return {
     columns: [
       { Header: "name", accessor: "name", width: "30%", align: "left" },
-      { Header: "description", accessor: "description", align: "center" },
-      { Header: "status", accessor: "status", align: "center" },
       { Header: "category", accessor: "category", align: "center" },
-      { Header: "location", accessor: "location", align: "center" },
+      { Header: "organizer Name", accessor: "organizerName", align: "center" },
+      { Header: "status", accessor: "status", align: "center" },
       { Header: "date", accessor: "date", align: "center" },
       { Header: "start Time", accessor: "startTime", align: "center" },
-      { Header: "price", accessor: "price", align: "center" },
-      { Header: "contact Email", accessor: "contactEmail", align: "center" },
-      { Header: "contact Phone", accessor: "contactPhone", align: "center" },
-      { Header: "screenId", accessor: "screenId", align: "center" },
     ],
 
     rows: rows,

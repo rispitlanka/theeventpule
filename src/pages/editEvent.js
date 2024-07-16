@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import { FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Select, Switch, TextField } from '@mui/material';
 
 // Material Dashboard 2 React example components
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout';
@@ -71,7 +71,9 @@ export default function EditEvent() {
             price: '',
             contactEmail: '',
             contactPhone: '',
+            organizer: '',
             screenId: '',
+            isActive: '',
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
@@ -126,7 +128,10 @@ export default function EditEvent() {
                         price: event.price,
                         contactEmail: event.contactEmail,
                         contactPhone: event.contactPhone,
+                        organizer: event.organizer,
                         screenId: event.screenId,
+                        isActive: event.isActive,
+
                     });
                     setSelectedScreenId(event.screenId);
                 }
@@ -268,37 +273,27 @@ export default function EditEvent() {
                                         helperText={editEvent.touched.contactPhone && editEvent.errors.contactPhone} />
                                 </MDBox>
                                 <MDBox p={1}>
-                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                        <DemoContainer components={['MobileTimePicker']}>
-                                            <MobileTimePicker
-                                                label={'Time'}
-                                                openTo="hours"
-                                                value={selectedTime}
-                                                onChange={handleTimeChange}
-                                            />
-                                        </DemoContainer>
-                                    </LocalizationProvider>
+                                    <TextField
+                                        fullWidth
+                                        variant="outlined"
+                                        id="outlined-basic"
+                                        label="Organizer"
+                                        name="organizer"
+                                        value={editEvent.values.organizer}
+                                        onChange={editEvent.handleChange}
+                                        onBlur={editEvent.handleBlur}
+                                        error={editEvent.touched.organizer && Boolean(editEvent.errors.organizer)}
+                                        helperText={editEvent.touched.organizer && editEvent.errors.organizer} />
                                 </MDBox>
-                                <MDBox p={1} >
-                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                        <DemoContainer components={['DatePicker']}>
-                                            <DatePicker
-                                                label="Select Date"
-                                                value={selectedDate}
-                                                onChange={handleDateChange}
-                                            />
-                                        </DemoContainer>
-                                    </LocalizationProvider>
-                                </MDBox>
-                                <MDBox p={1}>
-                                    <FormControl fullWidth mb={3}>
+                                {/* <MDBox p={1}>
+                                    <FormControl fullWidth>
                                         <InputLabel>Select Screen</InputLabel>
                                         {selectedScreenId && (
                                             <Select
                                                 label='Select Screen'
                                                 value={selectedScreenId}
                                                 onChange={(e) => setSelectedScreenId(e.target.value)}
-                                                sx={{ height: '45px', mb: 3 }}
+                                                sx={{ height: '45px' }}
                                             >
                                                 {screensData && screensData.map((screen) => (
                                                     <MenuItem key={screen.id} value={screen.id}>
@@ -308,6 +303,40 @@ export default function EditEvent() {
                                             </Select>
                                         )}
                                     </FormControl>
+                                </MDBox> */}
+                                <MDBox ml={1} mb={1}>
+                                    <Grid sx={{ display: 'flex', flexDirection: 'row', }}>
+                                        <MDBox sx={{ mr: 2 }} >
+                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <DemoContainer components={['DatePicker']}>
+                                                    <DatePicker
+                                                        label="Select Date"
+                                                        value={selectedDate}
+                                                        onChange={handleDateChange}
+                                                    />
+                                                </DemoContainer>
+                                            </LocalizationProvider>
+                                        </MDBox>
+                                        <MDBox sx={{ ml: 2 }}>
+                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <DemoContainer components={['MobileTimePicker']}>
+                                                    <MobileTimePicker
+                                                        label={'Time'}
+                                                        openTo="hours"
+                                                        value={selectedTime}
+                                                        onChange={handleTimeChange}
+                                                    />
+                                                </DemoContainer>
+                                            </LocalizationProvider>
+                                        </MDBox>
+                                    </Grid>
+                                </MDBox>
+                                <MDBox p={1}>
+                                    <MDTypography fontWeight={'light'}>
+                                        Status:
+                                        <Switch label="Status" checked={editEvent.values.isActive} onChange={(e) => editEvent.setFieldValue('isActive', e.target.checked)} />
+                                        {editEvent.values.isActive ? 'Active' : 'Inactive'}
+                                    </MDTypography>
                                 </MDBox>
                                 <MDBox p={1}>
                                     <MDButton color='info' type='submit'>Save</MDButton>

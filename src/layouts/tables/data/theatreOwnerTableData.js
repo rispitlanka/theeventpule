@@ -51,7 +51,7 @@ export default function data() {
 
   const fetchUserData = async () => {
     try {
-      const { data, error } = await supabase.from('theatreOwners').select().neq('userRole', 'superAdmin');
+      const { data, error } = await supabase.from('theatreOwners').select().eq('userRole', 'admin');
       if (error) throw error;
       setUserData(data);
     } catch (error) {
