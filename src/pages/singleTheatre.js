@@ -4,10 +4,12 @@ import { supabase } from './supabaseClient';
 
 // @mui material components
 import Grid from "@mui/material/Grid";
-import { Box, Button, Card, CardContent, CircularProgress, Divider, IconButton, List, Menu, MenuItem } from '@mui/material';
+import { Box, Button, Card, CardContent, CircularProgress, IconButton, List, Menu, MenuItem, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 
 // @mui icons
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import ArrowDropDownCircleOutlinedIcon from '@mui/icons-material/ArrowDropDownCircleOutlined';
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -32,6 +34,8 @@ export default function SingleTheatre() {
   const [screensData, setScreensData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showsData, setShowsData] = useState([]);
+  const [allShowTimes, setAllShowTimes] = useState([]);
+  const [detailedView, setDetailedView] = useState({});
   const navigate = useNavigate();
   const openPage = (route) => {
     navigate(route);
@@ -45,7 +49,6 @@ export default function SingleTheatre() {
       if (error) throw error;
       if (data && data.length > 0) {
         setTheatreData(data);
-        console.log(data);
         fetchScreensData();
       }
     } catch (error) {
@@ -59,7 +62,6 @@ export default function SingleTheatre() {
       if (error) throw error;
       if (data) {
         setScreensData(data);
-        console.log(data);
       }
     } catch (error) {
       console.log(error);
@@ -69,6 +71,7 @@ export default function SingleTheatre() {
   useEffect(() => {
     fetchSingleTheatreData();
     fetchShows();
+    fetchAllShowTimes();
     setTimeout(() => {
       setIsLoading(false);
     }, 500);
@@ -124,6 +127,40 @@ export default function SingleTheatre() {
     } catch (error) {
       console.log(error)
     }
+  };
+
+  const fetchAllShowTimes = async () => {
+    try {
+      const { data: screenIdData, error: acreenIdDataError } = await supabase.from('screens').select('id').eq('theatreId', theatreID);
+      if (acreenIdDataError) throw error;
+      if (screenIdData) {
+        const screenIds = screenIdData.map(screen => screen.id);
+        const { data: showTimeData, error: showTimeDataError } = await supabase.from('showTime').select('*').in('screenId', screenIds);
+        if (showTimeData) {
+          const uniqueShowTimes = [];
+          const addedTimes = new Set();
+          showTimeData.forEach(showTime => {
+            if (!addedTimes.has(showTime.time)) {
+              uniqueShowTimes.push(showTime.time);
+              addedTimes.add(showTime.time);
+            }
+          });
+          uniqueShowTimes.sort();
+          setAllShowTimes(uniqueShowTimes);
+        }
+        if (showTimeDataError) throw error;
+      }
+    } catch (error) {
+      console.log(error);
+
+    }
+  };
+
+  const handleDetailedView = (id) => {
+    setDetailedView(prevState => ({
+      ...prevState,
+      [id]: !prevState[id]
+    }));
   };
 
   const [filterOption, setFilterOption] = useState('movie');
@@ -390,6 +427,7 @@ export default function SingleTheatre() {
               </MDBox>
             </>
           }
+          
           {showsData && showsData.length > 0 ?
             <MDBox pt={4} px={2} lineHeight={1.25}>
               <Grid container>
@@ -402,37 +440,45 @@ export default function SingleTheatre() {
                       <Grid key={movieId} item xs={12}>
                         <Card sx={{ p: 2, mt: 1, width: '100%' }}>
                           <CardContent>
-                            <MDTypography>
-                              Movie:&nbsp;{groupedShows[movieId] && groupedShows[movieId][Object.keys(groupedShows[movieId])[0]][Object.keys(groupedShows[movieId][Object.keys(groupedShows[movieId])[0]])[0]][0].movieName}
-                            </MDTypography>
-                            <Divider />
-                            <List>
-                              {groupedShows[movieId] && Object.keys(groupedShows[movieId]).map(screenId => (
-                                <Box key={screenId}>
-                                  <MDTypography>
-                                    Screen:&nbsp;{groupedShows[movieId][screenId][Object.keys(groupedShows[movieId][screenId])[0]][0].screenName}
-                                  </MDTypography>
-                                  <List>
-                                    <MDTypography>Date & Time:&nbsp;</MDTypography>
-                                    {Object.keys(groupedShows[movieId][screenId]).map(date => (
-                                      <Box key={date} display={'flex'} flexDirection={'row'} flexWrap={'wrap'}>
-                                        <MDTypography>
-                                          {date}
-                                        </MDTypography>
-                                        <MDBox display={'flex'} flexDirection={'row'} flexWrap={'wrap'} ml={2}>
-                                          {groupedShows[movieId][screenId][date].map(show => (
-                                            <MDTypography key={show.showId} mr={1}>
-                                              {formattedTime(show.showTime)},
-                                            </MDTypography>
+                            <Grid display='flex' flexDirection='row' alignItems={'center'}>
+                              <MDTypography mr={2}>
+                                Movie:&nbsp;{groupedShows[movieId] && groupedShows[movieId][Object.keys(groupedShows[movieId])[0]][Object.keys(groupedShows[movieId][Object.keys(groupedShows[movieId])[0]])[0]][0].movieName}
+                              </MDTypography>
+                              <ArrowDropDownCircleOutlinedIcon onClick={() => handleDetailedView(movieId)} />
+                            </Grid>
+                            {detailedView[movieId] &&
+                              <List>
+                                {groupedShows[movieId] && Object.keys(groupedShows[movieId]).map(screenId => (
+                                  <Box key={screenId}>
+                                    <MDTypography >
+                                      Screen:&nbsp;{groupedShows[movieId][screenId][Object.keys(groupedShows[movieId][screenId])[0]][0].screenName}
+                                    </MDTypography>
+                                    <Table>
+                                      <TableHead sx={{ display: "table-header-group" }}>
+                                        <TableRow>
+                                          <TableCell>Date</TableCell>
+                                          {allShowTimes && allShowTimes.map(time => (
+                                            <TableCell align="center" key={time}>{formattedTime(time)}</TableCell>
                                           ))}
-                                        </MDBox>
-                                      </Box>
-                                    ))}
-                                  </List>
-                                  <Divider />
-                                </Box>
-                              ))}
-                            </List>
+                                        </TableRow>
+                                      </TableHead>
+                                      <TableBody>
+                                        {Object.keys(groupedShows[movieId][screenId]).map(date => (
+                                          <TableRow key={date}>
+                                            <TableCell>{new Date(date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' })}</TableCell>
+                                            {allShowTimes && allShowTimes.map(time => (
+                                              <TableCell key={time} align="center" >
+                                                {groupedShows[movieId][screenId][date].some(show => show.showTime === time) ? (<TaskAltIcon style={{ color: 'green' }} />) : ''}
+                                              </TableCell>
+                                            ))}
+                                          </TableRow>
+                                        ))}
+                                      </TableBody>
+                                    </Table>
+                                  </Box>
+                                ))}
+                              </List>
+                            }
                           </CardContent>
                         </Card>
                       </Grid>
@@ -441,37 +487,45 @@ export default function SingleTheatre() {
                       <Grid key={screenId} item xs={12}>
                         <Card sx={{ p: 2, mt: 1, width: '100%' }}>
                           <CardContent>
-                            <MDTypography>
-                              Screen:&nbsp;{groupedShows[screenId] && groupedShows[screenId][Object.keys(groupedShows[screenId])[0]][Object.keys(groupedShows[screenId][Object.keys(groupedShows[screenId])[0]])[0]][0].screenName}
-                            </MDTypography>
-                            <Divider />
-                            <List>
-                              {groupedShows[screenId] && Object.keys(groupedShows[screenId]).map(movieId => (
-                                <Box key={movieId}>
-                                  <MDTypography>
-                                    Movie:&nbsp;{groupedShows[screenId][movieId][Object.keys(groupedShows[screenId][movieId])[0]][0].movieName}
-                                  </MDTypography>
-                                  <List>
-                                    <MDTypography>Date & Time:&nbsp;</MDTypography>
-                                    {Object.keys(groupedShows[screenId][movieId]).map(date => (
-                                      <Box key={date} display={'flex'} flexDirection={'row'} flexWrap={'wrap'}>
-                                        <MDTypography>
-                                          {date}
-                                        </MDTypography>
-                                        <MDBox display={'flex'} flexDirection={'row'} ml={2}>
-                                          {groupedShows[screenId][movieId][date].map(show => (
-                                            <MDTypography key={show.showId} mr={1}>
-                                              {formattedTime(show.showTime)},
-                                            </MDTypography>
+                            <Grid display='flex' flexDirection='row' alignItems={'center'}>
+                              <MDTypography mr={2}>
+                                Screen:&nbsp;{groupedShows[screenId] && groupedShows[screenId][Object.keys(groupedShows[screenId])[0]][Object.keys(groupedShows[screenId][Object.keys(groupedShows[screenId])[0]])[0]][0].screenName}
+                              </MDTypography>
+                              <ArrowDropDownCircleOutlinedIcon onClick={() => handleDetailedView(screenId)} />
+                            </Grid>
+                            {detailedView[screenId] &&
+                              <List>
+                                {groupedShows[screenId] && Object.keys(groupedShows[screenId]).map(movieId => (
+                                  <Box key={movieId}>
+                                    <MDTypography>
+                                      Movie:&nbsp;{groupedShows[screenId][movieId][Object.keys(groupedShows[screenId][movieId])[0]][0].movieName}
+                                    </MDTypography>
+                                    <Table>
+                                      <TableHead sx={{ display: "table-header-group" }}>
+                                        <TableRow>
+                                          <TableCell>Date</TableCell>
+                                          {allShowTimes && allShowTimes.map(time => (
+                                            <TableCell align="center" key={time}>{formattedTime(time)}</TableCell>
                                           ))}
-                                        </MDBox>
-                                      </Box>
-                                    ))}
-                                  </List>
-                                  <Divider />
-                                </Box>
-                              ))}
-                            </List>
+                                        </TableRow>
+                                      </TableHead>
+                                      <TableBody>
+                                        {Object.keys(groupedShows[screenId][movieId]).map(date => (
+                                          <TableRow key={date}>
+                                            <TableCell>{new Date(date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' })}</TableCell>
+                                            {allShowTimes && allShowTimes.map(time => (
+                                              <TableCell key={time} align="center" >
+                                                {groupedShows[screenId][movieId][date].some(show => show.showTime === time) ? (<TaskAltIcon style={{ color: 'green' }} />) : ''}
+                                              </TableCell>
+                                            ))}
+                                          </TableRow>
+                                        ))}
+                                      </TableBody>
+                                    </Table>
+                                  </Box>
+                                ))}
+                              </List>
+                            }
                           </CardContent>
                         </Card>
                       </Grid>
