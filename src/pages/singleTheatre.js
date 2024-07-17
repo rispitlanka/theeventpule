@@ -427,7 +427,7 @@ export default function SingleTheatre() {
               </MDBox>
             </>
           }
-          
+
           {showsData && showsData.length > 0 ?
             <MDBox pt={4} px={2} lineHeight={1.25}>
               <Grid container>
@@ -444,7 +444,7 @@ export default function SingleTheatre() {
                               <MDTypography mr={2}>
                                 Movie:&nbsp;{groupedShows[movieId] && groupedShows[movieId][Object.keys(groupedShows[movieId])[0]][Object.keys(groupedShows[movieId][Object.keys(groupedShows[movieId])[0]])[0]][0].movieName}
                               </MDTypography>
-                              <ArrowDropDownCircleOutlinedIcon onClick={() => handleDetailedView(movieId)} />
+                              <ArrowDropDownCircleOutlinedIcon onClick={() => handleDetailedView(movieId)} style={{ cursor: 'pointer' }} />
                             </Grid>
                             {detailedView[movieId] &&
                               <List>
@@ -491,7 +491,7 @@ export default function SingleTheatre() {
                               <MDTypography mr={2}>
                                 Screen:&nbsp;{groupedShows[screenId] && groupedShows[screenId][Object.keys(groupedShows[screenId])[0]][Object.keys(groupedShows[screenId][Object.keys(groupedShows[screenId])[0]])[0]][0].screenName}
                               </MDTypography>
-                              <ArrowDropDownCircleOutlinedIcon onClick={() => handleDetailedView(screenId)} />
+                              <ArrowDropDownCircleOutlinedIcon onClick={() => handleDetailedView(screenId)} style={{ cursor: 'pointer' }} />
                             </Grid>
                             {detailedView[screenId] &&
                               <List>
