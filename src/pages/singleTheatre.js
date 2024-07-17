@@ -456,7 +456,11 @@ export default function SingleTheatre() {
                                     <Table>
                                       <TableHead sx={{ display: "table-header-group" }}>
                                         <TableRow>
-                                          <TableCell>Date</TableCell>
+                                          <TableCell sx={{ width: '120px' }}>Date</TableCell>
+                                          <TableCell align="center" colSpan={allShowTimes ? allShowTimes.length : 1}>Time</TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                          <TableCell></TableCell>
                                           {allShowTimes && allShowTimes.map(time => (
                                             <TableCell align="center" key={time}>{formattedTime(time)}</TableCell>
                                           ))}
@@ -465,7 +469,7 @@ export default function SingleTheatre() {
                                       <TableBody>
                                         {Object.keys(groupedShows[movieId][screenId]).map(date => (
                                           <TableRow key={date}>
-                                            <TableCell>{new Date(date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' })}</TableCell>
+                                            <TableCell>{date}</TableCell>
                                             {allShowTimes && allShowTimes.map(time => (
                                               <TableCell key={time} align="center" >
                                                 {groupedShows[movieId][screenId][date].some(show => show.showTime === time) ? (<TaskAltIcon style={{ color: 'green' }} />) : ''}
@@ -503,7 +507,11 @@ export default function SingleTheatre() {
                                     <Table>
                                       <TableHead sx={{ display: "table-header-group" }}>
                                         <TableRow>
-                                          <TableCell>Date</TableCell>
+                                          <TableCell sx={{ width: '120px' }}>Date</TableCell>
+                                          <TableCell align="center" colSpan={allShowTimes ? allShowTimes.length : 1}>Time</TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                          <TableCell></TableCell>
                                           {allShowTimes && allShowTimes.map(time => (
                                             <TableCell align="center" key={time}>{formattedTime(time)}</TableCell>
                                           ))}
@@ -512,7 +520,7 @@ export default function SingleTheatre() {
                                       <TableBody>
                                         {Object.keys(groupedShows[screenId][movieId]).map(date => (
                                           <TableRow key={date}>
-                                            <TableCell>{new Date(date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' })}</TableCell>
+                                            <TableCell>{date}</TableCell>
                                             {allShowTimes && allShowTimes.map(time => (
                                               <TableCell key={time} align="center" >
                                                 {groupedShows[screenId][movieId][date].some(show => show.showTime === time) ? (<TaskAltIcon style={{ color: 'green' }} />) : ''}
