@@ -51,7 +51,7 @@ export default function data() {
 
   const fetchUserData = async () => {
     try {
-      const { data, error } = await supabase.from('theatreOwners').select().eq('userRole', 'admin');
+      const { data, error } = await supabase.from('allUsers').select().eq('userRole', 'theatreOwner');
       if (error) throw error;
       setUserData(data);
     } catch (error) {
@@ -82,7 +82,7 @@ export default function data() {
   const handleChange = async (userId, newValue) => {
     try {
       const { error } = await supabase
-        .from('theatreOwners')
+        .from('allUsers')
         .update({ isActive: newValue })
         .eq('id', userId);
       if (error) throw error;
@@ -126,8 +126,8 @@ export default function data() {
     ),
     action: (
       <>
-        <MDButton onClick={() => openPage(`/theatreOwners/theatreOwner/${user.id}`)} variant='text' size='medium' color='info'><VisibilityIcon /></MDButton>
-        <MDButton onClick={() => openPage(`/theatreOwners/edit-theatreOwner/${user.id}`)} variant='text' size='medium' color='info'><EditIcon /></MDButton>
+        <MDButton onClick={() => openPage(`/allUsers/theatreOwner/${user.id}`)} variant='text' size='medium' color='info'><VisibilityIcon /></MDButton>
+        <MDButton onClick={() => openPage(`/allUsers/edit-theatreOwner/${user.id}`)} variant='text' size='medium' color='info'><EditIcon /></MDButton>
       </>
     ),
 

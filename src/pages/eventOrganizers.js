@@ -25,12 +25,11 @@ import noUserImage from "assets/images/illustrations/noUsers.png";
 export default function EventOrganizers() {
 
     const { columns: pColumns, rows: pRows } = eventOrganizersTableData();
+    const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
     const openPage = (route) => {
         navigate(route);
     };
-
-    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         setTimeout(() => {
@@ -61,9 +60,9 @@ export default function EventOrganizers() {
                                 <MDTypography variant="h6" color="white">
                                     Event Organizers
                                 </MDTypography>
-                                {/* <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
-                                    <MDButton onClick={() => openPage("/theatreOwners/add-theatreOwner")}><AddIcon color="info" /></MDButton>
-                                </MDBox> */}
+                                <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
+                                    <MDButton onClick={() => openPage("/allUsers/add-eventOrganizer")}><AddIcon color="info" /></MDButton>
+                                </MDBox>
                             </MDBox>
                             {isLoading ? (
                                 <MDBox p={3} display="flex" justifyContent="center">

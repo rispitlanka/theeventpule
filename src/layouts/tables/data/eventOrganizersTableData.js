@@ -41,7 +41,7 @@ export default function data() {
     );
 
     const [userData, setUserData] = useState(null);
-    //   const [theatreData, setTheatreData] = useState(null);
+    const [organizationData, setOrganizationData] = useState(null);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
     const openPage = (route) => {
@@ -50,7 +50,7 @@ export default function data() {
 
     const fetchUserData = async () => {
         try {
-            const { data, error } = await supabase.from('theatreOwners').select().eq('userRole', 'eventOrganizer');
+            const { data, error } = await supabase.from('allUsers').select().eq('userRole', 'eventOrganizer');
             if (error) throw error;
             setUserData(data);
         } catch (error) {
@@ -58,30 +58,30 @@ export default function data() {
         }
     };
 
-    //   const fetchTheatreData = async () => {
-    //     try {
-    //       const { data, error } = await supabase.from('theatres').select();
-    //       if (error) throw error;
-    //       setTheatreData(data);
-    //     } catch (error) {
-    //       setError(error);
-    //     }
-    //   };
+    const fetchOrganizationData = async () => {
+        try {
+            const { data, error } = await supabase.from('eventOrganizations').select();
+            if (error) throw error;
+            setOrganizationData(data);
+        } catch (error) {
+            setError(error);
+        }
+    };
 
-    //   const getTheatreName = (theatreId) => {
-    //     const theatre = theatreData && theatreData.find(theatre => theatre.id === theatreId);
-    //     return theatre ? theatre.name : "Unknown";
-    //   };
+    const getOrganizationName = (id) => {
+        const organization = organizationData && organizationData.find(organization => organization.id === id);
+        return organization ? organization.name : "Unknown";
+    };
 
     useEffect(() => {
         fetchUserData();
-        // fetchTheatreData();
+        fetchOrganizationData();
     }, [])
 
     const handleChange = async (userId, newValue) => {
         try {
             const { error } = await supabase
-                .from('theatreOwners')
+                .from('allUsers')
                 .update({ isActive: newValue })
                 .eq('id', userId);
             if (error) throw error;
@@ -115,20 +115,20 @@ export default function data() {
                 {user.email}
             </MDTypography>
         ),
-        // theatreName: (
-        //   <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-        //     {getTheatreName(user.theatreId)}
-        //   </MDTypography>
-        // ),
+        organizationName: (
+            <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+                {getOrganizationName(user.eventOrganizationId)}
+            </MDTypography>
+        ),
         status: (
             <Switch checked={user.isActive} onChange={e => handleChange(user.id, e.target.checked)} />
         ),
-        // action: (
-        //     <>
-        //         <MDButton onClick={() => openPage(`/theatreOwners/theatreOwner/${user.id}`)} variant='text' size='medium' color='info'><VisibilityIcon /></MDButton>
-        //         <MDButton onClick={() => openPage(`/theatreOwners/edit-theatreOwner/${user.id}`)} variant='text' size='medium' color='info'><EditIcon /></MDButton>
-        //     </>
-        // ),
+        action: (
+            <>
+                <MDButton onClick={() => openPage(`/allUsers/eventOrganizer/${user.id}`)} variant='text' size='medium' color='info'><VisibilityIcon /></MDButton>
+                <MDButton onClick={() => openPage(`/allUsers/edit-eventOrganizer/${user.id}`)} variant='text' size='medium' color='info'><EditIcon /></MDButton>
+            </>
+        ),
 
     })) : [{ name: <MDTypography color='warning' fontWeight='bold'>{error}</MDTypography> }];
 
@@ -136,11 +136,11 @@ export default function data() {
         columns: [
             { Header: "name", accessor: "name", width: "30%", align: "left" },
             { Header: "user role", accessor: "userRole", align: "center" },
-            //   { Header: "theatre name", accessor: "theatreName", align: "center" },
+            { Header: "organization name", accessor: "organizationName", align: "center" },
             { Header: "mobile", accessor: "mobile", align: "center" },
             { Header: "email", accessor: "email", align: "center" },
             { Header: "status", accessor: "status", align: "center" },
-            // { Header: "other", accessor: "action", align: "center" },
+            { Header: "other", accessor: "action", align: "center" },
         ],
 
         rows: rows,

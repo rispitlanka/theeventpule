@@ -16,7 +16,7 @@ export default function useUserRoutes() {
 
         if (userEmail) {
           const { data, error } = await supabase
-            .from('theatreOwners')
+            .from('allUsers')
             .select('userRole')
             .eq('email', userEmail);
 
@@ -52,12 +52,12 @@ export default function useUserRoutes() {
                 '/shows',
               ].includes(route.route);
 
-            } else if (userRole === 'admin') {
+            } else if (userRole === 'theatreOwner') {
               return ![
                 '/authentication/sign-in',
                 '/authentication/sign-up',
                 '/users',
-                '/theatreOwners',
+                '/allUsers',
                 '/customers',
                 '/theatres',
                 '/theatreMasterData',
@@ -99,13 +99,18 @@ export default function useUserRoutes() {
                 '/events',
                 '/eventOrganizers',
                 '/facilities',
+                '/eventOrganizations',
+                '/allUsers/add-eventOrganizer',
+                '/allUsers/eventOrganizer/:id',
+                '/allUsers/edit-eventOrganizer/:id',
+                '/eventOrganizations/add-eventOrganization',
               ].includes(route.route);
             } else if (userRole === 'eventOrganizer') {
               return ![
                 '/authentication/sign-in',
                 '/authentication/sign-up',
                 '/users',
-                '/theatreOwners',
+                '/allUsers',
                 '/customers',
                 '/theatres',
                 '/eventsAdmin',
@@ -158,6 +163,11 @@ export default function useUserRoutes() {
                 '/bookings/book-seats/:showId/:screenId',
                 '/bookings/book-seats/get-tickets',
                 '/shows',
+                '/eventOrganizations',
+                '/allUsers/add-eventOrganizer',
+                '/allUsers/eventOrganizer/:id',
+                '/allUsers/edit-eventOrganizer/:id',
+                '/eventOrganizations/add-eventOrganization',
               ].includes(route.route);
             }
             return route.route === '/dashboard';

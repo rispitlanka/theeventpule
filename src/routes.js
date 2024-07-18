@@ -119,6 +119,11 @@ import Reports from "pages/reports";
 import Settings from "pages/settings";
 import EventsAdmin from "pages/eventsAdmin";
 import EventOrganizers from "pages/eventOrganizers";
+import AddEventOrganizer from "pages/addEventOrganizer";
+import EventOrganizer from "pages/eventOrganizer";
+import EditEventOrganizer from "pages/editEventOrganizer";
+import EventOrganizations from "pages/eventOrganizations";
+import AddEventOrganization from "pages/addEventOrganization";
 
 const routes = [
   {
@@ -155,6 +160,14 @@ const routes = [
   },
   {
     type: "collapse",
+    name: "Organizations",
+    key: "eventOrganizations",
+    icon: <Icon icon="octicon:organization-16" />,
+    route: "/eventOrganizations",
+    component: <EventOrganizations />,
+  },
+  {
+    type: "collapse",
     name: "Events",
     key: "eventsAdmin",
     icon: <Icon icon="fluent-emoji-high-contrast:party-popper" />,
@@ -166,14 +179,14 @@ const routes = [
     name: "Users",
     key: "users",
     icon: <Icon icon="gridicons:multiple-users" />,
-    route: "/users",
+    route: "/allUsers",
     collapse: [
       {
         type: "collapse",
         name: "Admin",
         key: "admin",
         icon: <Icon icon="wpf:administrator" />,
-        route: "/admin",
+        route: "allUsers/admin",
         component: <SuperAdmin />,
       },
       {
@@ -181,7 +194,7 @@ const routes = [
         name: "Theatre Owners",
         key: "theatreOwners",
         icon: <Icon icon="solar:users-group-two-rounded-bold-duotone" />,
-        route: "/theatreOwners",
+        route: "/allUsers/theatreOwners",
         component: <TheatreOwners />,
       },
       {
@@ -189,7 +202,7 @@ const routes = [
         name: "Event Organizers",
         key: "eventOrganizers",
         icon: <Icon icon="solar:users-group-two-rounded-bold-duotone" />,
-        route: "/eventOrganizers",
+        route: "/allUsers/eventOrganizers",
         component: <EventOrganizers />,
       },
       {
@@ -493,6 +506,10 @@ const routes = [
     component: <SingleTheatre />,
   },
   {
+    route: "/eventOrganizations/add-eventOrganization",
+    component: <AddEventOrganization />,
+  },
+  {
     route: "/theatres/single-theatre/add-screen/:id",
     component: <AddScreen />,
   },
@@ -525,16 +542,28 @@ const routes = [
     component: <EditZone />,
   },
   {
-    route: "/theatreOwners/add-theatreOwner",
+    route: "/allUsers/add-theatreOwner",
     component: <AddTheatreOwner />,
   },
   {
-    route: "/theatreOwners/edit-theatreOwner/:id",
+    route: "/allUsers/edit-theatreOwner/:id",
     component: <EditTheatreOwner />,
   },
   {
-    route: "/theatreOwners/theatreOwner/:id",
+    route: "/allUsers/theatreOwner/:id",
     component: <TheatreOwner />,
+  },
+  {
+    route: "/allUsers/add-eventOrganizer",
+    component: <AddEventOrganizer />,
+  },
+  {
+    route: "/allUsers/eventOrganizer/:id",
+    component: <EventOrganizer />,
+  },
+  {
+    route: "/allUsers/edit-eventOrganizer/:id",
+    component: <EditEventOrganizer />,
   },
   {
     route: "/bookings/book-seats/:showId/:screenId",
