@@ -31,8 +31,8 @@ export default function EditEvent() {
     const navigate = useNavigate();
     const [selectedTime, setSelectedTime] = useState(null);
     const [selectedDate, setSelectedDate] = useState();
-    const [selectedScreenId, setSelectedScreenId] = useState();
-    const [screensData, setScreensData] = useState([]);
+    // const [selectedScreenId, setSelectedScreenId] = useState();
+    // const [screensData, setScreensData] = useState([]);
 
     const handleTimeChange = (newTime) => {
         setSelectedTime(newTime);
@@ -47,7 +47,7 @@ export default function EditEvent() {
             const formattedDate = dayjs(selectedDate).format('YYYY-MM-DD');
             values.startTime = formattedTime;
             values.date = formattedDate;
-            values.screenId = selectedScreenId;
+            // values.screenId = selectedScreenId;
             await editEventData(values);
             resetForm();
             toast.info('Event has been successfully updated!');
@@ -63,7 +63,6 @@ export default function EditEvent() {
         initialValues: {
             name: '',
             description: '',
-            status: '',
             category: '',
             location: '',
             date: '',
@@ -71,8 +70,7 @@ export default function EditEvent() {
             price: '',
             contactEmail: '',
             contactPhone: '',
-            organizer: '',
-            screenId: '',
+            // screenId: '',
             isActive: '',
         },
         validationSchema: Yup.object({
@@ -95,17 +93,17 @@ export default function EditEvent() {
         }
     };
 
-    const fetchScreensData = async () => {
-        try {
-            const { data, error } = await supabase.from('screens').select('*');
-            if (error) throw error;
-            if (data) {
-                setScreensData(data);
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    };
+    // const fetchScreensData = async () => {
+    //     try {
+    //         const { data, error } = await supabase.from('screens').select('*');
+    //         if (error) throw error;
+    //         if (data) {
+    //             setScreensData(data);
+    //         }
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // };
 
     useEffect(() => {
         const fetchEventData = async () => {
@@ -120,7 +118,6 @@ export default function EditEvent() {
                     editEvent.setValues({
                         name: event.name,
                         description: event.description,
-                        status: event.status,
                         category: event.category,
                         location: event.location,
                         date: event.date,
@@ -128,8 +125,7 @@ export default function EditEvent() {
                         price: event.price,
                         contactEmail: event.contactEmail,
                         contactPhone: event.contactPhone,
-                        organizer: event.organizer,
-                        screenId: event.screenId,
+                        // screenId: event.screenId,
                         isActive: event.isActive,
 
                     });
@@ -143,10 +139,10 @@ export default function EditEvent() {
         fetchEventData();
     }, [id]);
 
-    useEffect(() => {
-        fetchScreensData();
-        selectedScreenId
-    }, [])
+    // useEffect(() => {
+    //     fetchScreensData();
+    //     selectedScreenId
+    // }, [])
 
     return (
         <DashboardLayout><DashboardNavbar /> <MDBox pt={6} pb={3}>
@@ -196,19 +192,6 @@ export default function EditEvent() {
                                         onBlur={editEvent.handleBlur}
                                         error={editEvent.touched.description && Boolean(editEvent.errors.description)}
                                         helperText={editEvent.touched.description && editEvent.errors.description} />
-                                </MDBox>
-                                <MDBox p={1}>
-                                    <TextField
-                                        fullWidth
-                                        variant="outlined"
-                                        id="outlined-basic"
-                                        label="Status"
-                                        name="status"
-                                        value={editEvent.values.status}
-                                        onChange={editEvent.handleChange}
-                                        onBlur={editEvent.handleBlur}
-                                        error={editEvent.touched.status && Boolean(editEvent.errors.status)}
-                                        helperText={editEvent.touched.status && editEvent.errors.status} />
                                 </MDBox>
                                 <MDBox p={1}>
                                     <TextField
@@ -271,19 +254,6 @@ export default function EditEvent() {
                                         onBlur={editEvent.handleBlur}
                                         error={editEvent.touched.contactPhone && Boolean(editEvent.errors.contactPhone)}
                                         helperText={editEvent.touched.contactPhone && editEvent.errors.contactPhone} />
-                                </MDBox>
-                                <MDBox p={1}>
-                                    <TextField
-                                        fullWidth
-                                        variant="outlined"
-                                        id="outlined-basic"
-                                        label="Organizer"
-                                        name="organizer"
-                                        value={editEvent.values.organizer}
-                                        onChange={editEvent.handleChange}
-                                        onBlur={editEvent.handleBlur}
-                                        error={editEvent.touched.organizer && Boolean(editEvent.errors.organizer)}
-                                        helperText={editEvent.touched.organizer && editEvent.errors.organizer} />
                                 </MDBox>
                                 {/* <MDBox p={1}>
                                     <FormControl fullWidth>

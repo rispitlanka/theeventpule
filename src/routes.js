@@ -124,6 +124,7 @@ import EventOrganizer from "pages/eventOrganizer";
 import EditEventOrganizer from "pages/editEventOrganizer";
 import EventOrganizations from "pages/eventOrganizations";
 import AddEventOrganization from "pages/addEventOrganization";
+import SingleEventOrganization from "pages/singleEventOrganization";
 
 const routes = [
   {
@@ -222,6 +223,14 @@ const routes = [
     icon: <Icon icon="mdi:theater" />,
     route: "/theatre",
     component: <SingleTheatre />,
+  },
+  {
+    type: "collapse",
+    name: "Organization",
+    key: "eventOrganization",
+    icon: <Icon icon="octicon:organization-16" />,
+    route: "/eventOrganization",
+    component: <SingleEventOrganization />,
   },
   {
     type: "collapse",
@@ -504,6 +513,10 @@ const routes = [
   {
     route: "/theatres/single-theatre/:id",
     component: <SingleTheatre />,
+  },
+  {
+    route: "/eventOrganizations/single-eventOrganization/:id",
+    component: <SingleEventOrganization />,
   },
   {
     route: "/eventOrganizations/add-eventOrganization",

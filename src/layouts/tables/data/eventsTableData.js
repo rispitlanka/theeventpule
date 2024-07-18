@@ -79,11 +79,11 @@ export default function data() {
         {event.category}
       </MDTypography>
     ),
-    organizerName: (
-      <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-        {event.organizer}
-      </MDTypography>
-    ),
+    // organizerName: (
+    //   <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+    //     {event.organizer}
+    //   </MDTypography>
+    // ),
     date: (
       <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
         {formattedDate(event.date)}
@@ -101,7 +101,7 @@ export default function data() {
     columns: [
       { Header: "name", accessor: "name", width: "30%", align: "left" },
       { Header: "category", accessor: "category", align: "center" },
-      { Header: "organizer Name", accessor: "organizerName", align: "center" },
+      // { Header: "organizer Name", accessor: "organizerName", align: "center" },
       { Header: "status", accessor: "status", align: "center" },
       { Header: "date", accessor: "date", align: "center" },
       { Header: "start Time", accessor: "startTime", align: "center" },

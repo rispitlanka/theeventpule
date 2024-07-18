@@ -23,11 +23,11 @@ import { UserDataContext } from 'context';
 export default function AddMainEvent() {
     const navigate = useNavigate();
     const userDetails = useContext(UserDataContext);
-    const userTheatreId = userDetails && userDetails[0].theatreId;
+    const userOrganizationId = userDetails && userDetails[0].eventOrganizationId;
 
     const onSubmit = async (values, { resetForm }) => {
         try {
-            values.theatreId = userTheatreId;
+            values.eventOrganizationId = userOrganizationId;
             await addMainEventData(values);
             resetForm();
             toast.info('Main Event has been successfully created!');
@@ -43,8 +43,7 @@ export default function AddMainEvent() {
         initialValues: {
             title: '',
             description: '',
-            organizer: '',
-            theatreId: '',
+            eventOrganizationId: '',
         },
         validationSchema: Yup.object({
             title: Yup.string().required('Required'),
@@ -114,20 +113,7 @@ export default function AddMainEvent() {
                                         onBlur={newMainEvent.handleBlur}
                                         error={newMainEvent.touched.description && Boolean(newMainEvent.errors.description)}
                                         helperText={newMainEvent.touched.description && newMainEvent.errors.description} />
-                                </MDBox>
-                                <MDBox p={1}>
-                                    <TextField
-                                        fullWidth
-                                        variant="outlined"
-                                        id="outlined-basic"
-                                        label="Organizer"
-                                        name="organizer"
-                                        value={newMainEvent.values.organizer}
-                                        onChange={newMainEvent.handleChange}
-                                        onBlur={newMainEvent.handleBlur}
-                                        error={newMainEvent.touched.organizer && Boolean(newMainEvent.errors.organizer)}
-                                        helperText={newMainEvent.touched.organizer && newMainEvent.errors.organizer} />
-                                </MDBox>                              
+                                </MDBox>                                                                                   
                                 <MDBox p={1}>
                                     <MDButton color='info' type='submit'>Save</MDButton>
                                 </MDBox>

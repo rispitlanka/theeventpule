@@ -50,6 +50,7 @@ export default function useUserRoutes() {
                 '/events/add-mainEvent',
                 '/events/edit-mainEvent/:id',
                 '/shows',
+                '/eventOrganization',
               ].includes(route.route);
 
             } else if (userRole === 'theatreOwner') {
@@ -104,6 +105,7 @@ export default function useUserRoutes() {
                 '/allUsers/eventOrganizer/:id',
                 '/allUsers/edit-eventOrganizer/:id',
                 '/eventOrganizations/add-eventOrganization',
+                '/eventOrganization',
               ].includes(route.route);
             } else if (userRole === 'eventOrganizer') {
               return ![
