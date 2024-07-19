@@ -126,6 +126,10 @@ import EventOrganizations from "pages/eventOrganizations";
 import AddEventOrganization from "pages/addEventOrganization";
 import SingleEventOrganization from "pages/singleEventOrganization";
 import EditEventOrganization from "pages/editEventOrganization";
+import Venues from "pages/venues";
+import AddVenue from "pages/addVenue";
+import SingleVenue from "pages/singleVenue";
+import EditVenue from "pages/editVenue";
 
 const routes = [
   {
@@ -167,6 +171,14 @@ const routes = [
     icon: <Icon icon="octicon:organization-16" />,
     route: "/eventOrganizations",
     component: <EventOrganizations />,
+  },
+  {
+    type: "collapse",
+    name: "Venues",
+    key: "venues",
+    icon: <Icon icon="maki:town-hall" />,
+    route: "/venues",
+    component: <Venues />,
   },
   {
     type: "collapse",
@@ -526,6 +538,18 @@ const routes = [
   {
     route: "/eventOrganizations/edit-eventOrganization/:id",
     component: <EditEventOrganization />,
+  },
+  {
+    route: "/venues/add-venue",
+    component: <AddVenue />,
+  },
+  {
+    route: "/venues/single-venue/:id",
+    component: <SingleVenue />,
+  },
+  {
+    route: "/venues/edit-venue/:id",
+    component: <EditVenue />,
   },
   {
     route: "/theatres/single-theatre/add-screen/:id",

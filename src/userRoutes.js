@@ -107,6 +107,7 @@ export default function useUserRoutes() {
                 '/eventOrganizations/add-eventOrganization',
                 '/eventOrganization',
                 '/eventOrganizations/edit-eventOrganization/:id',
+                '/venues',
               ].includes(route.route);
             } else if (userRole === 'eventOrganizer') {
               return ![
