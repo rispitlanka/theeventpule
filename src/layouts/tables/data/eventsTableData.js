@@ -20,7 +20,8 @@ import { supabase } from "pages/supabaseClient";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import { Switch } from "@mui/material";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { UserDataContext } from "context";
 
 export default function data() {
   const Screen = ({ name }) => (
@@ -31,6 +32,8 @@ export default function data() {
     </MDBox>
   );
 
+  const userDetails = useContext(UserDataContext);
+  const userRole = userDetails && userDetails[0].userRole;
   const [eventsData, setEventsData] = useState(null);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -72,7 +75,7 @@ export default function data() {
       <Screen name={event.name} />
     </div>,
     status: (
-      <Switch checked={event.isActive} onChange={e => handleChange(event.id, e.target.checked)} />
+      <Switch checked={event.isActive} onChange={e => handleChange(event.id, e.target.checked)} disabled={userRole === 'superAdmin'} />
     ),
     category: (
       <MDTypography component="a" href="#" variant="button" color="text" fontWeight="medium">

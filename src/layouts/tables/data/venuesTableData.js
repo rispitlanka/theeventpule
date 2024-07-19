@@ -111,9 +111,8 @@ export default function data() {
                 {venue.ownerEmail}
             </MDTypography>
         ),
-
         status: (
-            <Switch checked={venue.isActive} onChange={e => handleChange(venue.id, e.target.checked)} />
+            <Switch checked={venue.isActive} onChange={e => handleChange(venue.id, e.target.checked)} disabled={userRole !== 'superAdmin'} />
         ),
         action: (
             <>

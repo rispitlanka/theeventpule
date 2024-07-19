@@ -104,7 +104,7 @@ export default function AddEvent() {
 
     const fetchVenuesData = async () => {
         try {
-            const { data, error } = await supabase.from('venues').select('*');
+            const { data, error } = await supabase.from('venues').select('*').eq('isActive', true);
             if (error) throw error;
             if (data) {
                 setVenuesData(data);
