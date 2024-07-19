@@ -26,215 +26,215 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import dayjs from 'dayjs';
 
 export default function AddEventOrganization() {
-    const navigate = useNavigate();
-    //   const [facilitiesData, setFacilitiesData] = useState([]);
-    //   const [selectedFacilityIds, setSelectedFacilityIds] = useState([]);
-    //   const [regDate, setRegDate] = useState();
-    //   const [coverImagePreview, setCoverImagePreview] = useState(null);
-    //   const [theatreImagePreview, setTheatreImagePreview] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  //   const [facilitiesData, setFacilitiesData] = useState([]);
+  //   const [selectedFacilityIds, setSelectedFacilityIds] = useState([]);
+  //   const [regDate, setRegDate] = useState();
+  //   const [coverImagePreview, setCoverImagePreview] = useState(null);
+  //   const [theatreImagePreview, setTheatreImagePreview] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-    // const handleDateChange = (date) => {
-    //   setRegDate(date);
-    // }
+  // const handleDateChange = (date) => {
+  //   setRegDate(date);
+  // }
 
-    //   const handleCheckboxChange = (facilityId) => {
-    //     setSelectedFacilityIds((prevSelected) =>
-    //       prevSelected.includes(facilityId)
-    //         ? prevSelected.filter((id) => id !== facilityId)
-    //         : [...prevSelected, facilityId]
-    //     );
-    //   };
+  //   const handleCheckboxChange = (facilityId) => {
+  //     setSelectedFacilityIds((prevSelected) =>
+  //       prevSelected.includes(facilityId)
+  //         ? prevSelected.filter((id) => id !== facilityId)
+  //         : [...prevSelected, facilityId]
+  //     );
+  //   };
 
-    //   const handleCoverImageChange = (event) => {
-    //     const file = event.currentTarget.files[0];
-    //     newOrganization.setFieldValue('coverImage', file);
-    //     setCoverImagePreview(URL.createObjectURL(file));
-    //   };
+  //   const handleCoverImageChange = (event) => {
+  //     const file = event.currentTarget.files[0];
+  //     newOrganization.setFieldValue('coverImage', file);
+  //     setCoverImagePreview(URL.createObjectURL(file));
+  //   };
 
-    //   const handleTheatreImageChange = (event) => {
-    //     const file = event.currentTarget.files[0];
-    //     newOrganization.setFieldValue('theatreImage', file);
-    //     setTheatreImagePreview(URL.createObjectURL(file));
-    //   };
+  //   const handleTheatreImageChange = (event) => {
+  //     const file = event.currentTarget.files[0];
+  //     newOrganization.setFieldValue('theatreImage', file);
+  //     setTheatreImagePreview(URL.createObjectURL(file));
+  //   };
 
-    //   useEffect(() => {
-    //     const fetchFacilities = async () => {
-    //       try {
-    //         const { data, error } = await supabase.from('facilities').select('*').eq('isActive', true);
-    //         if (error) throw error;
-    //         if (data) {
-    //           setFacilitiesData(data);
-    //         }
-    //       } catch (error) {
-    //         console.error('Error fetching questions:', error.message);
-    //       }
-    //     };
-    //     fetchFacilities();
-    //   }, [])
+  //   useEffect(() => {
+  //     const fetchFacilities = async () => {
+  //       try {
+  //         const { data, error } = await supabase.from('facilities').select('*').eq('isActive', true);
+  //         if (error) throw error;
+  //         if (data) {
+  //           setFacilitiesData(data);
+  //         }
+  //       } catch (error) {
+  //         console.error('Error fetching questions:', error.message);
+  //       }
+  //     };
+  //     fetchFacilities();
+  //   }, [])
 
-    const onSubmit = async (values, { resetForm }) => {
-        setIsLoading(true);
-        try {
-            //   if (newOrganization.values.coverImage) {
-            //     const file = newOrganization.values.coverImage;
+  const onSubmit = async (values, { resetForm }) => {
+    setIsLoading(true);
+    try {
+      //   if (newOrganization.values.coverImage) {
+      //     const file = newOrganization.values.coverImage;
 
-            //     const { data: imageData, error: imageError } = await supabase.storage
-            //       .from('theatre_images')
-            //       .upload(`cover_images/${file.name}`, file, {
-            //         cacheControl: '3600',
-            //         upsert: false,
-            //       });
+      //     const { data: imageData, error: imageError } = await supabase.storage
+      //       .from('theatre_images')
+      //       .upload(`cover_images/${file.name}`, file, {
+      //         cacheControl: '3600',
+      //         upsert: false,
+      //       });
 
-            //     if (imageError) {
-            //       throw imageError;
-            //     }
+      //     if (imageError) {
+      //       throw imageError;
+      //     }
 
-            //     if (imageData) {
-            //       const imgURL = supabase.storage.from('theatre_images').getPublicUrl(imageData.path);
-            //       values.coverImage = imgURL.data.publicUrl;
-            //     } else {
-            //       throw new Error('Failed to upload image');
-            //     }
-            //   }
+      //     if (imageData) {
+      //       const imgURL = supabase.storage.from('theatre_images').getPublicUrl(imageData.path);
+      //       values.coverImage = imgURL.data.publicUrl;
+      //     } else {
+      //       throw new Error('Failed to upload image');
+      //     }
+      //   }
 
-            //   if (newOrganization.values.theatreImage) {
-            //     const file = newOrganization.values.theatreImage;
+      //   if (newOrganization.values.theatreImage) {
+      //     const file = newOrganization.values.theatreImage;
 
-            //     const { data: imageData, error: imageError } = await supabase.storage
-            //       .from('theatre_images')
-            //       .upload(`images/${file.name}`, file, {
-            //         cacheControl: '3600',
-            //         upsert: false,
-            //       });
+      //     const { data: imageData, error: imageError } = await supabase.storage
+      //       .from('theatre_images')
+      //       .upload(`images/${file.name}`, file, {
+      //         cacheControl: '3600',
+      //         upsert: false,
+      //       });
 
-            //     if (imageError) {
-            //       throw imageError;
-            //     }
+      //     if (imageError) {
+      //       throw imageError;
+      //     }
 
-            //     if (imageData) {
-            //       const imgURL = supabase.storage.from('theatre_images').getPublicUrl(imageData.path);
-            //       values.theatreImage = imgURL.data.publicUrl;
-            //     } else {
-            //       throw new Error('Failed to upload image');
-            //     }
-            //   }
+      //     if (imageData) {
+      //       const imgURL = supabase.storage.from('theatre_images').getPublicUrl(imageData.path);
+      //       values.theatreImage = imgURL.data.publicUrl;
+      //     } else {
+      //       throw new Error('Failed to upload image');
+      //     }
+      //   }
 
-            //   const selectedFacilityNames = facilitiesData
-            //     .filter(facility => selectedFacilityIds.includes(facility.id))
-            //     .map(facility => facility.facility_name);
-            //   values.facilities = selectedFacilityNames
-            //   const formattedDate = dayjs(regDate).format('YYYY-MM-DD');
-            //   values.registeredDate = dayjs(new Date).format('YYYY-MM-DD');
+      //   const selectedFacilityNames = facilitiesData
+      //     .filter(facility => selectedFacilityIds.includes(facility.id))
+      //     .map(facility => facility.facility_name);
+      //   values.facilities = selectedFacilityNames
+      //   const formattedDate = dayjs(regDate).format('YYYY-MM-DD');
+      //   values.registeredDate = dayjs(new Date).format('YYYY-MM-DD');
 
-            await addEventOrganization(values);
-            resetForm();
-            toast.info('Organization has been successfully created!');
-            setTimeout(() => {
-                navigate(-1);
-            }, 1500);
-            setIsLoading(false);
+      await addEventOrganization(values);
+      resetForm();
+      toast.info('Organization has been successfully created!');
+      setTimeout(() => {
+        navigate(-1);
+      }, 1500);
+      setIsLoading(false);
 
-        } catch (error) {
-            console.error('Error submitting form:', error.message);
-            setIsLoading(false);
-        }
-    };
+    } catch (error) {
+      console.error('Error submitting form:', error.message);
+      setIsLoading(false);
+    }
+  };
 
-    const newOrganization = useFormik({
-        initialValues: {
-            name: '',
-            //   address: '',
-            //   city: '',
-            //   telephone: '',
-            //   ownerName: '',
-            //   ownerPhoneNumber: '',
-            //   ownerEmail: '',
-            //   facilities: [],
-            //   websiteURL: '',
-            //   latitude: '',
-            //   longitude: '',
-            //   licenseInfo: '',
-            //   description: '',
-            //   isActive: true,
-            //   registeredDate: '',
-            //   notes: '',
-            //   coverImage: '',
-            //   theatreImage: '',
-        },
-        validationSchema: Yup.object({
-            name: Yup.string().required('Required'),
-            //   city: Yup.string().required('Required'),
-            //   ownerName: Yup.string().required('Required'),
-            //   ownerPhoneNumber: Yup.string()
-            //     .required('Required')
-            //     .matches(phoneRegExp, 'Mobile number is not valid')
-            //     .min(10, 'Not a valid mobile number')
-            //     .max(10, 'Not a valid mobile number'),
-            //   telephone: Yup.string()
-            //     .required('Required')
-            //     .matches(phoneRegExp, 'Telephone number is not valid')
-            //     .min(10, 'Not a valid telephone number')
-            //     .max(10, 'Not a valid telephone number'),
-            //   ownerEmail: Yup.string().required('Email is required').email('Enter a valid email'),
-        }),
-        onSubmit,
-    });
+  const newOrganization = useFormik({
+    initialValues: {
+      name: '',
+      //   address: '',
+      //   city: '',
+      //   telephone: '',
+      //   ownerName: '',
+      //   ownerPhoneNumber: '',
+      //   ownerEmail: '',
+      //   facilities: [],
+      //   websiteURL: '',
+      //   latitude: '',
+      //   longitude: '',
+      //   licenseInfo: '',
+      //   description: '',
+      isActive: true,
+      //   registeredDate: '',
+      //   notes: '',
+      //   coverImage: '',
+      //   theatreImage: '',
+    },
+    validationSchema: Yup.object({
+      name: Yup.string().required('Required'),
+      //   city: Yup.string().required('Required'),
+      //   ownerName: Yup.string().required('Required'),
+      //   ownerPhoneNumber: Yup.string()
+      //     .required('Required')
+      //     .matches(phoneRegExp, 'Mobile number is not valid')
+      //     .min(10, 'Not a valid mobile number')
+      //     .max(10, 'Not a valid mobile number'),
+      //   telephone: Yup.string()
+      //     .required('Required')
+      //     .matches(phoneRegExp, 'Telephone number is not valid')
+      //     .min(10, 'Not a valid telephone number')
+      //     .max(10, 'Not a valid telephone number'),
+      //   ownerEmail: Yup.string().required('Email is required').email('Enter a valid email'),
+    }),
+    onSubmit,
+  });
 
-    const addEventOrganization = async (values) => {
-        try {
-            const { data, error } = await supabase.from('eventOrganizations').insert([values]).select('*');
-            if (data) {
-                console.log('Data added succesfully:', data);
-            }
-            if (error) {
-                throw error;
-            }
-        } catch (error) {
-            throw new Error('Error inserting data:', error.message);
-        }
-    };
+  const addEventOrganization = async (values) => {
+    try {
+      const { data, error } = await supabase.from('eventOrganizations').insert([values]).select('*');
+      if (data) {
+        console.log('Data added succesfully:', data);
+      }
+      if (error) {
+        throw error;
+      }
+    } catch (error) {
+      throw new Error('Error inserting data:', error.message);
+    }
+  };
 
-    return (
-        <DashboardLayout><DashboardNavbar /> <MDBox pt={6} pb={3}>
-            <Grid container spacing={6}>
-                <Grid item xs={12}>
-                    <form onSubmit={newOrganization.handleSubmit}>
-                        <Card>
-                            <MDBox
-                                mx={2}
-                                mt={-3}
-                                py={3}
-                                px={2}
-                                variant="gradient"
-                                bgColor="info"
-                                borderRadius="lg"
-                                coloredShadow="info"
-                                display="flex"
-                                justifyContent="space-between"
-                            >
-                                <MDTypography variant="h6" color="white">
-                                    Add New Organization
-                                </MDTypography>
-                            </MDBox>
-                            <MDBox p={2}>
-                                <MDTypography>Organization Info</MDTypography>
-                                <Grid container spacing={5} display={'flex'} flexDirection={'row'}>
-                                    <Grid item xs={6}>
-                                        <MDBox p={1}>
-                                            <TextField
-                                                fullWidth
-                                                variant="outlined"
-                                                id="outlined-basic"
-                                                label="Name"
-                                                name="name"
-                                                value={newOrganization.values.name}
-                                                onChange={newOrganization.handleChange}
-                                                onBlur={newOrganization.handleBlur}
-                                                error={newOrganization.touched.name && Boolean(newOrganization.errors.name)}
-                                                helperText={newOrganization.touched.name && newOrganization.errors.name} />
-                                        </MDBox>
-                                        {/* <MDBox p={1}>
+  return (
+    <DashboardLayout><DashboardNavbar /> <MDBox pt={6} pb={3}>
+      <Grid container spacing={6}>
+        <Grid item xs={12}>
+          <form onSubmit={newOrganization.handleSubmit}>
+            <Card>
+              <MDBox
+                mx={2}
+                mt={-3}
+                py={3}
+                px={2}
+                variant="gradient"
+                bgColor="info"
+                borderRadius="lg"
+                coloredShadow="info"
+                display="flex"
+                justifyContent="space-between"
+              >
+                <MDTypography variant="h6" color="white">
+                  Add New Organization
+                </MDTypography>
+              </MDBox>
+              <MDBox p={2}>
+                <MDTypography>Organization Info</MDTypography>
+                <Grid container spacing={5} display={'flex'} flexDirection={'row'}>
+                  <Grid item xs={6}>
+                    <MDBox p={1}>
+                      <TextField
+                        fullWidth
+                        variant="outlined"
+                        id="outlined-basic"
+                        label="Name"
+                        name="name"
+                        value={newOrganization.values.name}
+                        onChange={newOrganization.handleChange}
+                        onBlur={newOrganization.handleBlur}
+                        error={newOrganization.touched.name && Boolean(newOrganization.errors.name)}
+                        helperText={newOrganization.touched.name && newOrganization.errors.name} />
+                    </MDBox>
+                    {/* <MDBox p={1}>
                       <TextField
                         fullWidth
                         variant="outlined"
@@ -321,7 +321,7 @@ export default function AddEventOrganization() {
                         error={newOrganization.touched.notes && Boolean(newOrganization.errors.notes)}
                         helperText={newOrganization.touched.notes && newOrganization.errors.notes} />
                     </MDBox> */}
-                                        {/* <MDBox p={1} >
+                    {/* <MDBox p={1} >
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DemoContainer components={['DatePicker']}>
                           <DatePicker
@@ -332,8 +332,8 @@ export default function AddEventOrganization() {
                         </DemoContainer>
                       </LocalizationProvider>
                     </MDBox> */}
-                                    </Grid>
-                                    {/* <Grid item xs={6} >
+                  </Grid>
+                  <Grid item xs={6} >
                     <MDBox p={1}>
                       <MDTypography>
                         Status:
@@ -341,15 +341,15 @@ export default function AddEventOrganization() {
                         {newOrganization.values.isActive ? 'Active' : 'Inactive'}
                       </MDTypography>
                     </MDBox>
-                    <MDBox p={1} display="flex" flexDirection="row" alignItems="center" flexWrap="wrap">
+                    {/* <MDBox p={1} display="flex" flexDirection="row" alignItems="center" flexWrap="wrap">
                       <MDTypography mr={1}>Facilities: </MDTypography>
                       {facilitiesData && facilitiesData.length > 0 && facilitiesData.map((facility) => (
                         <MDBox key={facility.id} mr={1} minWidth="100px">
                           <FormControlLabel control={<Checkbox checked={selectedFacilityIds.includes(facility.id)} onChange={() => handleCheckboxChange(facility.id)} />} label={facility.facility_name} />
                         </MDBox>
                       ))}
-                    </MDBox>
-                    <MDBox p={1}>
+                    </MDBox> */}
+                    {/* <MDBox p={1}>
                       <Grid container spacing={3}>
                         <Grid item xs={6} display={'flex'} flexDirection={'column'}>
                           <MDTypography>Theatre Image</MDTypography>
@@ -454,10 +454,10 @@ export default function AddEventOrganization() {
                           )}
                         </Grid>
                       </Grid>
-                    </MDBox>
-                  </Grid> */}
-                                </Grid>
-                                {/* <Grid mt={2}>
+                    </MDBox> */}
+                  </Grid>
+                </Grid>
+                {/* <Grid mt={2}>
                   <MDTypography>Theatre Owner Info</MDTypography>
                   <MDBox p={1}>
                     <TextField
@@ -498,31 +498,31 @@ export default function AddEventOrganization() {
                       helperText={newOrganization.touched.ownerEmail && newOrganization.errors.ownerEmail} />
                   </MDBox>
                 </Grid> */}
-                                <MDBox p={1} display={'flex'} flexDirection={'row'} alignItems='center'>
-                                    <MDButton color='info' type='submit' disabled={isLoading}>Save</MDButton>
-                                    {isLoading &&
-                                        <MDTypography variant='body2' ml={1}>saving....</MDTypography>
-                                    }
-                                </MDBox>
-                            </MDBox>
-                        </Card>
-                    </form>
-                </Grid>
-            </Grid>
-        </MDBox>
-            <Footer />
-            <ToastContainer
-                position="bottom-right"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="light"
-            />
-        </DashboardLayout>
-    )
+                <MDBox p={1} display={'flex'} flexDirection={'row'} alignItems='center'>
+                  <MDButton color='info' type='submit' disabled={isLoading}>Save</MDButton>
+                  {isLoading &&
+                    <MDTypography variant='body2' ml={1}>saving....</MDTypography>
+                  }
+                </MDBox>
+              </MDBox>
+            </Card>
+          </form>
+        </Grid>
+      </Grid>
+    </MDBox>
+      <Footer />
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+    </DashboardLayout>
+  )
 }

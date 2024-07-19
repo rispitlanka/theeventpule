@@ -125,6 +125,7 @@ import EditEventOrganizer from "pages/editEventOrganizer";
 import EventOrganizations from "pages/eventOrganizations";
 import AddEventOrganization from "pages/addEventOrganization";
 import SingleEventOrganization from "pages/singleEventOrganization";
+import EditEventOrganization from "pages/editEventOrganization";
 
 const routes = [
   {
@@ -521,6 +522,10 @@ const routes = [
   {
     route: "/eventOrganizations/add-eventOrganization",
     component: <AddEventOrganization />,
+  },
+  {
+    route: "/eventOrganizations/edit-eventOrganization/:id",
+    component: <EditEventOrganization />,
   },
   {
     route: "/theatres/single-theatre/add-screen/:id",

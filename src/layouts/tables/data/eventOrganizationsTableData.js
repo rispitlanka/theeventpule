@@ -84,7 +84,7 @@ export default function data() {
     const handleChange = async (organizationId, newValue) => {
         try {
             const { error } = await supabase
-                .from('theatres')
+                .from('eventOrganizations')
                 .update({ isActive: newValue })
                 .eq('id', organizationId);
             if (error) throw error;
@@ -128,15 +128,15 @@ export default function data() {
         //     {organization.ownerPhoneNumber}
         //   </MDTypography>
         // ),
-        // status: (
-        //   <Switch checked={organization.isActive} onChange={e => handleChange(organization.id, e.target.checked)} />
-        // ),
-        // action: (
-        //   <>
-        //     <MDButton onClick={() => openPage(`/theatres/single-organization/${organization.id}`)} variant='text' size='medium' color='info'><VisibilityIcon /></MDButton>
-        //     <MDButton onClick={() => openPage(`/theatres/edit-organization/${organization.id}`)} variant='text' size='medium' color='info'><EditIcon /></MDButton>
-        //   </>
-        // ),
+        status: (
+            <Switch checked={organization.isActive} onChange={e => handleChange(organization.id, e.target.checked)} />
+        ),
+        action: (
+            <>
+                <MDButton onClick={() => openPage(`/eventOrganizations/single-eventOrganization/${organization.id}`)} variant='text' size='medium' color='info'><VisibilityIcon /></MDButton>
+                <MDButton onClick={() => openPage(`/eventOrganizations/edit-eventOrganization/${organization.id}`)} variant='text' size='medium' color='info'><EditIcon /></MDButton>
+            </>
+        ),
 
     })) : [{ name: <MDTypography color='warning' fontWeight='bold'>{error}</MDTypography> }];
 
@@ -148,8 +148,8 @@ export default function data() {
             //   { Header: "screens", accessor: "screens", align: "center" },
             //   { Header: "owner Name", accessor: "ownerName", align: "center" },
             //   { Header: "owner Phone Number", accessor: "ownerPhoneNumber", align: "center" },
-            //   { Header: "status", accessor: "status", align: "center" },
-            //   { Header: "actions", accessor: "action", align: "center" },
+            { Header: "status", accessor: "status", align: "center" },
+            { Header: "actions", accessor: "action", align: "center" },
         ],
 
         rows: rows,

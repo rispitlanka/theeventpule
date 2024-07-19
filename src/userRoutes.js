@@ -106,6 +106,7 @@ export default function useUserRoutes() {
                 '/allUsers/edit-eventOrganizer/:id',
                 '/eventOrganizations/add-eventOrganization',
                 '/eventOrganization',
+                '/eventOrganizations/edit-eventOrganization/:id',
               ].includes(route.route);
             } else if (userRole === 'eventOrganizer') {
               return ![
@@ -170,6 +171,7 @@ export default function useUserRoutes() {
                 '/allUsers/eventOrganizer/:id',
                 '/allUsers/edit-eventOrganizer/:id',
                 '/eventOrganizations/add-eventOrganization',
+                '/eventOrganizations/edit-eventOrganization/:id',
               ].includes(route.route);
             }
             return route.route === '/dashboard';
