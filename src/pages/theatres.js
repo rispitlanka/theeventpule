@@ -174,8 +174,8 @@ export default function Theatres() {
                   <DataTable
                     table={{ columns: pColumns, rows: filteredRows }}
                     isSorted={false}
-                    entriesPerPage={false}
-                    showTotalEntries={false}
+                    entriesPerPage={true}
+                    showTotalEntries={true}
                     noEndBorder
                   />
                 </MDBox>
