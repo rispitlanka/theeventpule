@@ -25,8 +25,8 @@ import dayjs from 'dayjs';
 import DataNotFound from 'components/NoData/dataNotFound';
 
 export default function SingleEvent() {
-    const userDetails = useContext(UserDataContext);
-    const userTheatreId = userDetails && userDetails[0].theatreId;
+    // const userDetails = useContext(UserDataContext);
+    // const userTheatreId = userDetails && userDetails[0].theatreId;
     const [eventData, setEventData] = useState([]);
     const [openEditDialogBox, setOpenEditDialogBox] = useState();
     const [formFieldData, setFormFieldData] = useState([]);
@@ -36,15 +36,14 @@ export default function SingleEvent() {
         navigate(route);
     };
     const { id } = useParams();
-    const theatreID = userTheatreId ? userTheatreId : id;
+    // const theatreID = userTheatreId ? userTheatreId : id;
 
     const fetchSingleEventData = async () => {
         try {
-            const { data, error } = await supabase.from('events').select().eq('id', id);
+            const { data, error } = await supabase.from('events').select(`*,venues(name)`).eq('id', id);
             if (error) throw error;
             if (data) {
                 setEventData(data);
-                console.log(data);
             }
         } catch (error) {
             console.log(error);
@@ -141,7 +140,7 @@ export default function SingleEvent() {
                         overflow: "hidden",
                     }}
                 />
-                {eventData.length > 0 &&
+                {eventData && eventData.length > 0 &&
                     <>
                         <Card
                             sx={{
@@ -166,8 +165,11 @@ export default function SingleEvent() {
                                             <MDTypography sx={{ mr: 1 }} variant="body2" color="text" fontWeight="regular">
                                                 Time: {formattedTime(eventData[0].startTime)}
                                             </MDTypography>
-                                            <MDTypography variant="body2" color="text" fontWeight="regular">
+                                            <MDTypography sx={{ mr: 1 }} variant="body2" color="text" fontWeight="regular">
                                                 Location: {eventData[0].location}
+                                            </MDTypography>
+                                            <MDTypography variant="body2" color="text" fontWeight="regular">
+                                                Venue: {eventData[0].venues?.name}
                                             </MDTypography>
                                         </Grid>
 
@@ -223,7 +225,7 @@ export default function SingleEvent() {
                             </TableContainer>
                             :
                             <MDBox sx={{ mt: 9 }}>
-                            <DataNotFound message={'No Fields To Show !'} image={noDataImage}/>
+                                <DataNotFound message={'No Fields To Show !'} image={noDataImage} />
                             </MDBox>
                         }
                     </>

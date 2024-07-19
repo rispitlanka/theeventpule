@@ -31,8 +31,8 @@ export default function EditEvent() {
     const navigate = useNavigate();
     const [selectedTime, setSelectedTime] = useState(null);
     const [selectedDate, setSelectedDate] = useState();
-    // const [selectedScreenId, setSelectedScreenId] = useState();
-    // const [screensData, setScreensData] = useState([]);
+    const [selectedVenueId, setSelectedVenueId] = useState();
+    const [venuesData, setVenuesData] = useState([]);
 
     const handleTimeChange = (newTime) => {
         setSelectedTime(newTime);
@@ -47,7 +47,7 @@ export default function EditEvent() {
             const formattedDate = dayjs(selectedDate).format('YYYY-MM-DD');
             values.startTime = formattedTime;
             values.date = formattedDate;
-            // values.screenId = selectedScreenId;
+            values.venueId = selectedVenueId;
             await editEventData(values);
             resetForm();
             toast.info('Event has been successfully updated!');
@@ -70,7 +70,7 @@ export default function EditEvent() {
             price: '',
             contactEmail: '',
             contactPhone: '',
-            // screenId: '',
+            venueId: '',
             isActive: '',
         },
         validationSchema: Yup.object({
@@ -93,17 +93,17 @@ export default function EditEvent() {
         }
     };
 
-    // const fetchScreensData = async () => {
-    //     try {
-    //         const { data, error } = await supabase.from('screens').select('*');
-    //         if (error) throw error;
-    //         if (data) {
-    //             setScreensData(data);
-    //         }
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // };
+    const fetchVenuesData = async () => {
+        try {
+            const { data, error } = await supabase.from('venues').select('*');
+            if (error) throw error;
+            if (data) {
+                setVenuesData(data);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     useEffect(() => {
         const fetchEventData = async () => {
@@ -125,11 +125,11 @@ export default function EditEvent() {
                         price: event.price,
                         contactEmail: event.contactEmail,
                         contactPhone: event.contactPhone,
-                        // screenId: event.screenId,
+                        venueId: event.venueId,
                         isActive: event.isActive,
 
                     });
-                    setSelectedScreenId(event.screenId);
+                    setSelectedVenueId(event.venueId);
                 }
             } catch (error) {
                 console.error('Error fetching event data:', error.message);
@@ -139,10 +139,10 @@ export default function EditEvent() {
         fetchEventData();
     }, [id]);
 
-    // useEffect(() => {
-    //     fetchScreensData();
-    //     selectedScreenId
-    // }, [])
+    useEffect(() => {
+        fetchVenuesData();
+        selectedVenueId
+    }, [])
 
     return (
         <DashboardLayout><DashboardNavbar /> <MDBox pt={6} pb={3}>
@@ -255,25 +255,25 @@ export default function EditEvent() {
                                         error={editEvent.touched.contactPhone && Boolean(editEvent.errors.contactPhone)}
                                         helperText={editEvent.touched.contactPhone && editEvent.errors.contactPhone} />
                                 </MDBox>
-                                {/* <MDBox p={1}>
+                                <MDBox p={1}>
                                     <FormControl fullWidth>
-                                        <InputLabel>Select Screen</InputLabel>
-                                        {selectedScreenId && (
+                                        <InputLabel>Select Venue</InputLabel>
+                                        {selectedVenueId && (
                                             <Select
-                                                label='Select Screen'
-                                                value={selectedScreenId}
-                                                onChange={(e) => setSelectedScreenId(e.target.value)}
+                                                label='Select Venue'
+                                                value={selectedVenueId}
+                                                onChange={(e) => setSelectedVenueId(e.target.value)}
                                                 sx={{ height: '45px' }}
                                             >
-                                                {screensData && screensData.map((screen) => (
-                                                    <MenuItem key={screen.id} value={screen.id}>
-                                                        {screen.name}
+                                                {venuesData && venuesData.map((venue) => (
+                                                    <MenuItem key={venue.id} value={venue.id}>
+                                                        {venue.name}
                                                     </MenuItem>
                                                 ))}
                                             </Select>
                                         )}
                                     </FormControl>
-                                </MDBox> */}
+                                </MDBox>
                                 <MDBox ml={1} mb={1}>
                                     <Grid sx={{ display: 'flex', flexDirection: 'row', }}>
                                         <MDBox sx={{ mr: 2 }} >
