@@ -458,7 +458,7 @@ export default function AddVenue() {
                   </Grid>
                 </Grid>
                 <Grid mt={2}>
-                  <MDTypography>Theatre Owner Info</MDTypography>
+                  <MDTypography>Venue Owner Info</MDTypography>
                   <MDBox p={1}>
                     <TextField
                       fullWidth
