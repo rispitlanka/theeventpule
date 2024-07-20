@@ -38,7 +38,6 @@ export default function EditMainEvent() {
         initialValues: {
             title: '',
             description: '',
-            organizer: '',
         },
         validationSchema: Yup.object({
             title: Yup.string().required('Required'),
@@ -72,7 +71,6 @@ export default function EditMainEvent() {
                     editMainEvent.setValues({
                         title: event.title,
                         description: event.description,
-                        organizer: event.organizer,
                     });
                 }
             } catch (error) {
@@ -130,19 +128,6 @@ export default function EditMainEvent() {
                                         onBlur={editMainEvent.handleBlur}
                                         error={editMainEvent.touched.description && Boolean(editMainEvent.errors.description)}
                                         helperText={editMainEvent.touched.description && editMainEvent.errors.description} />
-                                </MDBox>
-                                <MDBox p={1}>
-                                    <TextField
-                                        fullWidth
-                                        variant="outlined"
-                                        id="outlined-basic"
-                                        label="Organizer"
-                                        name="organizer"
-                                        value={editMainEvent.values.organizer}
-                                        onChange={editMainEvent.handleChange}
-                                        onBlur={editMainEvent.handleBlur}
-                                        error={editMainEvent.touched.organizer && Boolean(editMainEvent.errors.organizer)}
-                                        helperText={editMainEvent.touched.organizer && editMainEvent.errors.organizer} />
                                 </MDBox>
                                 <MDBox p={1}>
                                     <MDButton color='info' type='submit'>Save</MDButton>

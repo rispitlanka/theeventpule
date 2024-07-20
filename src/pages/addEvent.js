@@ -30,11 +30,11 @@ import { UserDataContext } from 'context';
 export default function AddEvent() {
     const navigate = useNavigate();
     const userDetails = useContext(UserDataContext);
-    const userTheatreId = userDetails && userDetails[0].theatreId;
+    const userOrganizationId = userDetails && userDetails[0].eventOrganizationId;
     const [selectedTime, setSelectedTime] = useState(null);
     const [selectedDate, setSelectedDate] = useState();
-    const [selectedScreenId, setSelectedScreenId] = useState();
-    const [screensData, setScreensData] = useState([]);
+    const [selectedVenueId, setSelectedVenueId] = useState();
+    const [venuesData, setVenuesData] = useState([]);
     const [mainEventData, setMainEventdata] = useState([]);
     const [selectedMainEventId, setSelectedMainEventId] = useState(null);
 
@@ -52,9 +52,9 @@ export default function AddEvent() {
             const formattedDate = dayjs(selectedDate).format('YYYY-MM-DD');
             values.startTime = formattedTime;
             values.date = formattedDate;
-            values.screenId = selectedScreenId;
+            values.venueId = selectedVenueId;
             values.mainEventId = selectedMainEventId;
-            values.theatreId = userTheatreId;
+            values.eventOrganizationId = userOrganizationId;
             await addEventData(values);
             resetForm();
             toast.info('Event has been successfully created!');
@@ -70,7 +70,6 @@ export default function AddEvent() {
         initialValues: {
             name: '',
             description: '',
-            status: '',
             category: '',
             location: '',
             date: '',
@@ -78,9 +77,8 @@ export default function AddEvent() {
             price: '',
             contactEmail: '',
             contactPhone: '',
-            organizer: '',
-            screenId: '',
-            theatreId: '',
+            venueId: '',
+            eventOrganizationId: '',
             mainEventId: '',
             isActive: true,
         },
@@ -104,12 +102,12 @@ export default function AddEvent() {
         }
     };
 
-    const fetchScreensData = async () => {
+    const fetchVenuesData = async () => {
         try {
-            const { data, error } = await supabase.from('screens').select('*').eq('theatreId', userTheatreId);
+            const { data, error } = await supabase.from('venues').select('*').eq('isActive', true);
             if (error) throw error;
             if (data) {
-                setScreensData(data);
+                setVenuesData(data);
             }
         } catch (error) {
             console.log(error);
@@ -118,7 +116,7 @@ export default function AddEvent() {
 
     const fetchMainEventData = async () => {
         try {
-            const { data, error } = await supabase.from('mainEvent').select('*').eq('theatreId', userTheatreId);
+            const { data, error } = await supabase.from('mainEvent').select('*').eq('eventOrganizationId', userOrganizationId);
             if (data) {
                 setMainEventdata(data);
                 console.log('Data fetched succesfully:', data);
@@ -132,8 +130,8 @@ export default function AddEvent() {
     };
 
     useEffect(() => {
-        fetchScreensData();
-        selectedScreenId
+        fetchVenuesData();
+        selectedVenueId
     }, [])
 
     useEffect(() => {
@@ -189,19 +187,6 @@ export default function AddEvent() {
                                         onBlur={newEvent.handleBlur}
                                         error={newEvent.touched.description && Boolean(newEvent.errors.description)}
                                         helperText={newEvent.touched.description && newEvent.errors.description} />
-                                </MDBox>
-                                <MDBox p={1}>
-                                    <TextField
-                                        fullWidth
-                                        variant="outlined"
-                                        id="outlined-basic"
-                                        label="Status"
-                                        name="status"
-                                        value={newEvent.values.status}
-                                        onChange={newEvent.handleChange}
-                                        onBlur={newEvent.handleBlur}
-                                        error={newEvent.touched.status && Boolean(newEvent.errors.status)}
-                                        helperText={newEvent.touched.status && newEvent.errors.status} />
                                 </MDBox>
                                 <MDBox p={1}>
                                     <TextField
@@ -266,35 +251,22 @@ export default function AddEvent() {
                                         helperText={newEvent.touched.contactPhone && newEvent.errors.contactPhone} />
                                 </MDBox>
                                 <MDBox p={1}>
-                                    <TextField
-                                        fullWidth
-                                        variant="outlined"
-                                        id="outlined-basic"
-                                        label="Organizer"
-                                        name="organizer"
-                                        value={newEvent.values.organizer}
-                                        onChange={newEvent.handleChange}
-                                        onBlur={newEvent.handleBlur}
-                                        error={newEvent.touched.organizer && Boolean(newEvent.errors.organizer)}
-                                        helperText={newEvent.touched.organizer && newEvent.errors.organizer} />
-                                </MDBox>
-                                {/* <MDBox p={1}>
                                     <FormControl fullWidth>
-                                        <InputLabel>Select Screen</InputLabel>
+                                        <InputLabel>Select Venue</InputLabel>
                                         <Select
-                                            label="Select Screen"
-                                            value={selectedScreenId}
-                                            onChange={(e) => setSelectedScreenId(e.target.value)}
+                                            label="Select Venue"
+                                            value={selectedVenueId}
+                                            onChange={(e) => setSelectedVenueId(e.target.value)}
                                             sx={{ height: '45px' }}
                                         >
-                                            {screensData.map((screen) => (
-                                                <MenuItem key={screen.id} value={screen.id}>
-                                                    {screen.name}
+                                            {venuesData.map((venue) => (
+                                                <MenuItem key={venue.id} value={venue.id}>
+                                                    {venue.name}
                                                 </MenuItem>
                                             ))}
                                         </Select>
                                     </FormControl>
-                                </MDBox> */}
+                                </MDBox>
                                 <MDBox p={1}>
                                     <FormControl fullWidth>
                                         <InputLabel>Select Main Event</InputLabel>

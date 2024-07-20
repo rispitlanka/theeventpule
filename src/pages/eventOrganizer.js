@@ -19,9 +19,9 @@ import Footer from "examples/Footer";
 // Images
 import backgroundImage from "assets/images/user2.jpg";
 
-export default function TheatreOwner() {
+export default function EventOrganizer() {
     const [userData, setUserData] = useState([]);
-    const [theatreData, setTheatreData] = useState([]);
+    const [organizationData, setOrganizationData] = useState([]);
     const { id } = useParams();
 
     const fetchSingleUserData = async () => {
@@ -36,12 +36,12 @@ export default function TheatreOwner() {
         }
     };
 
-    const fetchTheatreData = async () => {
+    const fetchOrganizationData = async () => {
         try {
-            const { data, error } = await supabase.from('theatres').select('*');
+            const { data, error } = await supabase.from('eventOrganizations').select('*');
             if (error) throw error;
             if (data) {
-                setTheatreData(data);
+                setOrganizationData(data);
             }
         } catch (error) {
             console.log(error);
@@ -50,12 +50,12 @@ export default function TheatreOwner() {
 
     useEffect(() => {
         fetchSingleUserData();
-        fetchTheatreData();
+        fetchOrganizationData();
     }, [id])
 
-    const getTheatreName = (theatreId) => {
-        const theatre = theatreData && theatreData.find(theatre => theatre.id === theatreId);
-        return theatre ? theatre.name : "Unknown";
+    const getOrganizationName = (eventOrganizationId) => {
+        const organization = organizationData && organizationData.find(organization => organization.id === eventOrganizationId);
+        return organization ? organization.name : "Unknown";
     };
 
     return (
@@ -166,12 +166,12 @@ export default function TheatreOwner() {
                                         </MDBox>
                                         <MDBox pt={1} pb={2} px={2} lineHeight={1.25}>
                                             <MDTypography variant="caption" fontWeight="bold" color="text" textTransform="uppercase">
-                                                Theatre
+                                                Organization
                                             </MDTypography>
                                             <MDBox display="flex" alignItems="center" mb={0.5}>
                                                 <MDBox width="80%" ml={0.5}>
                                                     <MDTypography variant="button" fontWeight="regular" color="text">
-                                                        {getTheatreName(userData[0].theatreId)}
+                                                        {getOrganizationName(userData[0].eventOrganizationId)}
                                                     </MDTypography>
                                                 </MDBox>
                                             </MDBox>

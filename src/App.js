@@ -86,7 +86,7 @@ export default function App() {
       try {
         if (userEmailModified) {
           const { data, error } = await supabase
-            .from('theatreOwners')
+            .from('allUsers')
             .select('*')
             .eq('email', userEmailModified);
 

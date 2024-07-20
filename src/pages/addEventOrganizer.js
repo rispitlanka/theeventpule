@@ -19,30 +19,29 @@ import MDTypography from 'components/MDTypography';
 import MDButton from 'components/MDButton';
 import { useNavigate } from 'react-router-dom';
 
-export default function AddTheatreOwner() {
-    const [theatreData, setTheatreData] = useState();
-    const [selectedTheatreId, setSelectedTheatreId] = useState();
+export default function AddEventOrganizer() {
+    const [organizationData, setOrganizationData] = useState([]);
+    const [selectedOrganizationId, setSelectedOrganizationId] = useState();
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchTheatreData()
-    }, [])
-
-    const fetchTheatreData = async () => {
-        try {
-            const { data, error } = await supabase.from('theatres').select('*');
-            if (data) {
-                setTheatreData(data);
+        const fetchOrganizationData = async () => {
+            try {
+                const { data, error } = await supabase.from('eventOrganizations').select('*');
+                if (data) {
+                    setOrganizationData(data);
+                }
+                if (error) throw error;
+            } catch (error) {
+                console.log(error);
             }
-            if (error) throw error;
-        } catch (error) {
-            console.log(error);
-        }
-    };
+        };
+        fetchOrganizationData();
+    }, [])
 
     const onSubmit = async (values, { resetForm }) => {
         try {
-            await addUserData({ ...values, theatreId: selectedTheatreId });
+            await addUserData({ ...values, eventOrganizationId: selectedOrganizationId });
             resetForm();
         } catch (error) {
             console.error('Error submitting form:', error.message);
@@ -55,7 +54,7 @@ export default function AddTheatreOwner() {
             mobile: '',
             email: '',
             userRole: '',
-            theatreId: '',
+            eventOrganizationId: '',
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
@@ -74,7 +73,7 @@ export default function AddTheatreOwner() {
             const { data, error } = await supabase.from('allUsers').insert([values]).select('*');
             if (data) {
                 console.log('Data added succesfully:', data);
-                toast.info('Theatre Owner has been successfully created!');
+                toast.info('Event Organizer has been successfully created!');
                 setTimeout(() => {
                     navigate(-1);
                 }, 1500);
@@ -106,7 +105,7 @@ export default function AddTheatreOwner() {
                                 justifyContent="space-between"
                             >
                                 <MDTypography variant="h6" color="white">
-                                    Add New Theatre Owner
+                                    Add New Event Organizer
                                 </MDTypography>
                             </MDBox>
                             <MDBox p={2}>
@@ -161,22 +160,22 @@ export default function AddTheatreOwner() {
                                             helperText={newUser.touched.userRole && newUser.errors.userRole}
                                             sx={{ height: '45px' }}
                                         >
-                                            <MenuItem value="theatreOwner">Theatre Owner</MenuItem>
+                                            <MenuItem value="eventOrganizer">Event Organizer</MenuItem>
                                         </Select>
                                     </FormControl>
                                 </MDBox>
                                 <MDBox p={1}>
                                     <FormControl fullWidth mb={3}>
-                                        <InputLabel>Select Theatre</InputLabel>
+                                        <InputLabel>Select Organization</InputLabel>
                                         <Select
-                                            label="Select Theatre"
-                                            value={selectedTheatreId}
-                                            onChange={(e) => setSelectedTheatreId(e.target.value)}
+                                            label="Select Organization"
+                                            value={selectedOrganizationId}
+                                            onChange={(e) => setSelectedOrganizationId(e.target.value)}
                                             sx={{ height: '45px', mb: 3 }}
                                         >
-                                            {theatreData && theatreData.map((theatre) => (
-                                                <MenuItem key={theatre.id} value={theatre.id}>
-                                                    {theatre.name}
+                                            {organizationData && organizationData.map((organization) => (
+                                                <MenuItem key={organization.id} value={organization.id}>
+                                                    {organization.name}
                                                 </MenuItem>
                                             ))}
                                         </Select>

@@ -19,7 +19,7 @@ import EditIcon from '@mui/icons-material/Edit';
 
 export default function Events() {
   const userDetails = useContext(UserDataContext);
-  const userTheatreId = userDetails && userDetails[0].theatreId;
+  const userOrganizationId = userDetails && userDetails[0].eventOrganizationId;
   const navigate = useNavigate();
   const openPage = (route) => {
     navigate(route);
@@ -37,7 +37,7 @@ export default function Events() {
 
   const fetchMainEventData = async () => {
     try {
-      const { data, error } = await supabase.from('mainEvent').select('*').eq('theatreId', userTheatreId);
+      const { data, error } = await supabase.from('mainEvent').select('*').eq('eventOrganizationId', userOrganizationId);
       if (data) {
         setMainEventdata(data);
         console.log('Data fetched succesfully:', data);
@@ -46,13 +46,13 @@ export default function Events() {
         throw error;
       }
     } catch (error) {
-      throw new Error('Error inserting data:', error.message);
+      throw new Error('Error in fetching data:', error.message);
     }
   };
 
   const fetchEventsData = async () => {
     try {
-      let query = supabase.from('events').select('*').eq('theatreId', userTheatreId);
+      let query = supabase.from('events').select('*').eq('eventOrganizationId', userOrganizationId);
       if (mainEventId !== null) {
         query = query.eq('mainEventId', mainEventId);
       } else {
@@ -69,11 +69,11 @@ export default function Events() {
 
   useEffect(() => {
     fetchMainEventData();
-  }, [userTheatreId]);
+  }, [userOrganizationId]);
 
   useEffect(() => {
     fetchEventsData();
-  }, [userTheatreId, mainEventId]);
+  }, [userOrganizationId, mainEventId]);
 
   const handleMainEventClick = (mainEventId) => {
     setMainEventId(mainEventId);

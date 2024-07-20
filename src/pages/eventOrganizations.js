@@ -17,7 +17,7 @@ import MDTypography from 'components/MDTypography';
 import MDButton from 'components/MDButton';
 
 // Data
-import eventsTableData from "layouts/tables/data/eventsTableData";
+import eventOrganizationsTableData from "layouts/tables/data/eventOrganizationsTableData";
 import DataNotFound from 'components/NoData/dataNotFound';
 import { CircularProgress } from '@mui/material';
 import noDataImage from "assets/images/illustrations/noData3.svg";
@@ -25,9 +25,8 @@ import { supabase } from './supabaseClient';
 import ComplexStatisticsCard from 'examples/Cards/StatisticsCards/ComplexStatisticsCard';
 import MDInput from 'components/MDInput';
 
-export default function EventsAdmin() {
-    const { columns: pColumns, rows: pRows } = eventsTableData();
-    console.log('prows', pRows)
+export default function EventOrganizations() {
+    const { columns: pColumns, rows: pRows } = eventOrganizationsTableData();
     const [isLoading, setIsLoading] = useState(true);
     //   const [totalTheatresCount, setTotalTheatresCount] = useState(0);
     //   const [activeTheatresCount, setActiveTheatresCount] = useState(0);
@@ -93,8 +92,8 @@ export default function EventsAdmin() {
 
     const filteredRows = useMemo(() => {
         return pRows.filter(row => {
-            const eventName = row.name?.props?.children?.props?.name?.toLowerCase();
-            return eventName?.includes(searchTerm.toLowerCase());
+            const theatreName = row.name?.props?.name?.toLowerCase();
+            return theatreName?.includes(searchTerm.toLowerCase());
         });
     }, [searchTerm, pRows]);
 
@@ -108,7 +107,7 @@ export default function EventsAdmin() {
               <ComplexStatisticsCard
                 color="primary"
                 icon="theaters"
-                title="Total Active Theatres"
+                title="Total Active EventOrganizations"
                 count={activeTheatresCount}
               />
             </MDBox>
@@ -118,7 +117,7 @@ export default function EventsAdmin() {
               <ComplexStatisticsCard
                 color="dark"
                 icon="theaters"
-                title="Total Theatres"
+                title="Total EventOrganizations"
                 count={totalTheatresCount}
               />
             </MDBox>
@@ -153,8 +152,11 @@ export default function EventsAdmin() {
                                 justifyContent="space-between"
                             >
                                 <MDTypography variant="h6" color="white">
-                                    Events
+                                    Organizations
                                 </MDTypography>
+                                <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
+                                    <MDButton onClick={() => openPage("/eventOrganizations/add-eventOrganization")}><AddIcon color="info" /></MDButton>
+                                </MDBox>
                             </MDBox>
                             <MDBox pt={3} pl={3} display="flex" justifyContent="left">
                                 <MDInput
@@ -172,14 +174,14 @@ export default function EventsAdmin() {
                                     <DataTable
                                         table={{ columns: pColumns, rows: filteredRows }}
                                         isSorted={false}
-                                        entriesPerPage={true}
-                                        showTotalEntries={true}
+                                        entriesPerPage={false}
+                                        showTotalEntries={false}
                                         noEndBorder
                                     />
                                 </MDBox>
                             )
                                 : (
-                                    <DataNotFound message={'No Events To Show !'} image={noDataImage} />
+                                    <DataNotFound message={'No EventOrganizations To Show !'} image={noDataImage} />
                                 )}
                         </Card>
                     </Grid>

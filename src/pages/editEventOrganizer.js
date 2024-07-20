@@ -20,11 +20,11 @@ import MDTypography from 'components/MDTypography';
 import MDButton from 'components/MDButton';
 import DeleteDialog from 'components/DeleteDialogBox/deleteDialog';
 
-export default function EditTheatreOwner() {
+export default function EditEventOrganizer() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const [theatreData, setTheatreData] = useState();
-    const [selectedTheatreId, setSelectedTheatreId] = useState();
+    const [organizationData, setOrganizationData] = useState();
+    const [selectedOrganizationId, setSelectedOrganizationId] = useState();
     const [openDeleteDialogBox, setOpenDeleteDialogBox] = useState();
 
     useEffect(() => {
@@ -38,9 +38,9 @@ export default function EditTheatreOwner() {
                         userRole: user.userRole,
                         mobile: user.mobile,
                         email: user.email,
-                        theatreId: user.theatreId
+                        eventOrganizationId: user.eventOrganizationId
                     });
-                    setSelectedTheatreId(user.theatreId);
+                    setSelectedOrganizationId(user.eventOrganizationId);
                     if (error) {
                         throw error;
                     }
@@ -50,20 +50,19 @@ export default function EditTheatreOwner() {
             }
         };
 
-        const fetchTheatreData = async () => {
+        const fetchOrganizationData = async () => {
             try {
-                const { data, error } = await supabase.from('theatres').select('*');
+                const { data, error } = await supabase.from('eventOrganizations').select('*');
                 if (data) {
-                    setTheatreData(data);
+                    setOrganizationData(data);
                 }
                 if (error) throw error;
             } catch (error) {
                 console.log(error);
             }
         };
-
         fetchUserData();
-        fetchTheatreData();
+        fetchOrganizationData();
     }, [id]);
 
     const editUser = useFormik({
@@ -72,7 +71,7 @@ export default function EditTheatreOwner() {
             userRole: '',
             mobile: '',
             email: '',
-            theatreId: '',
+            eventOrganizationId: '',
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
@@ -84,7 +83,7 @@ export default function EditTheatreOwner() {
             email: Yup.string().required('Email is required').email('Enter a valid email'),
         }),
         onSubmit: async (values, { resetForm }) => {
-            await editUserData({ ...values, theatreId: selectedTheatreId });
+            await editUserData({ ...values, eventOrganizationId: selectedOrganizationId });
             resetForm();
         },
     });
@@ -96,7 +95,7 @@ export default function EditTheatreOwner() {
                 throw error;
             }
             console.log('Data updated successfully');
-            toast.info('Theatre Owner has been successfully updated!');
+            toast.info('Event Organizer has been successfully updated!');
             setTimeout(() => {
                 navigate(-1);
             }, 1500);
@@ -149,7 +148,7 @@ export default function EditTheatreOwner() {
                                 justifyContent="space-between"
                             >
                                 <MDTypography variant="h6" color="white">
-                                    Manage Theatre Owner
+                                    Manage Event Organizers
                                 </MDTypography>
                             </MDBox>
                             <MDBox p={2}>
@@ -204,23 +203,23 @@ export default function EditTheatreOwner() {
                                             helperText={editUser.touched.userRole && editUser.errors.userRole}
                                             sx={{ height: '45px' }}
                                         >
-                                            <MenuItem value="theatreOwner">Theatre Owner</MenuItem>
+                                            <MenuItem value="eventOrganizer">Event Organizer</MenuItem>
                                         </Select>
                                     </FormControl>
                                 </MDBox>
                                 <MDBox p={1}>
                                     <FormControl fullWidth mb={3}>
-                                        <InputLabel>Select Theatre</InputLabel>
-                                        {selectedTheatreId && (
+                                        <InputLabel>Select Organization</InputLabel>
+                                        {selectedOrganizationId && (
                                             <Select
-                                                label='Select Theatre'
-                                                value={selectedTheatreId}
-                                                onChange={(e) => setSelectedTheatreId(e.target.value)}
+                                                label='Select Organization'
+                                                value={selectedOrganizationId}
+                                                onChange={(e) => setSelectedOrganizationId(e.target.value)}
                                                 sx={{ height: '45px', mb: 3 }}
                                             >
-                                                {theatreData && theatreData.map((theatre) => (
-                                                    <MenuItem key={theatre.id} value={theatre.id}>
-                                                        {theatre.name}
+                                                {organizationData && organizationData.map((organization) => (
+                                                    <MenuItem key={organization.id} value={organization.id}>
+                                                        {organization.name}
                                                     </MenuItem>
                                                 ))}
                                             </Select>
