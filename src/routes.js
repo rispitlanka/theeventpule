@@ -174,6 +174,14 @@ const routes = [
   },
   {
     type: "collapse",
+    name: "Organization",
+    key: "eventOrganization",
+    icon: <Icon icon="octicon:organization-16" />,
+    route: "/eventOrganization",
+    component: <SingleEventOrganization />,
+  },
+  {
+    type: "collapse",
     name: "Venues",
     key: "venues",
     icon: <Icon icon="maki:town-hall" />,
@@ -236,14 +244,6 @@ const routes = [
     icon: <Icon icon="mdi:theater" />,
     route: "/theatre",
     component: <SingleTheatre />,
-  },
-  {
-    type: "collapse",
-    name: "Organization",
-    key: "eventOrganization",
-    icon: <Icon icon="octicon:organization-16" />,
-    route: "/eventOrganization",
-    component: <SingleEventOrganization />,
   },
   {
     type: "collapse",
