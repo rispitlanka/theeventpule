@@ -130,6 +130,7 @@ import Venues from "pages/venues";
 import AddVenue from "pages/addVenue";
 import SingleVenue from "pages/singleVenue";
 import EditVenue from "pages/editVenue";
+import EventBookings from "pages/eventBookings";
 
 const routes = [
   {
@@ -382,6 +383,14 @@ const routes = [
     icon: <Icon icon="teenyicons:appointments-solid" />,
     route: "/bookingsAdmin",
     component: <BookingsAdmin />,
+  },
+  {
+    type: "collapse",
+    name: "Bookings",
+    key: "eventBookings",
+    icon: <Icon icon="teenyicons:appointments-solid" />,
+    route: "/eventBookings",
+    component: <EventBookings />,
   },
   {
     type: "collapse",

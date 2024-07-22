@@ -55,7 +55,7 @@ export default function ShowsOnDate(date) {
             }
         }
         catch (error) {
-            console.log('Error in fetching shows', error)
+            console.log('Error in fetching movies', error)
         }
     }
 
@@ -71,7 +71,7 @@ export default function ShowsOnDate(date) {
             }
         }
         catch (error) {
-            console.log('Error in fetching shows', error)
+            console.log('Error in fetching screens', error)
         }
     }
 
@@ -87,7 +87,7 @@ export default function ShowsOnDate(date) {
             }
         }
         catch (error) {
-            console.log('Error in fetching shows', error)
+            console.log('Error in fetching showTime', error)
         }
     }
 
@@ -222,7 +222,7 @@ export default function ShowsOnDate(date) {
                                                             })}
                                                         </Box>
                                                     ) : (
-                                                        <MDTypography>No show times available</MDTypography>
+                                                        <MDTypography>No Shows Scheduled Yet</MDTypography>
                                                     )}
                                                 </Box>
                                             );
