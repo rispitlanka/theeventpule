@@ -84,6 +84,7 @@ export default function EditMovies() {
                     release_date: data.release_date,
                     duration: data.duration,
                     trailer_link: data.trailer_link,
+                    synopsis:data.synopsis,
                 });
                 setMovieData(data);
                 // Extracting genres from data.movie_genre
@@ -261,6 +262,7 @@ export default function EditMovies() {
             release_date: '',
             duration: '',
             trailer_link: '',
+            synopsis:'',
         },
         validationSchema: Yup.object({
             title: Yup.string().required('Required'),
@@ -641,6 +643,19 @@ export default function EditMovies() {
                                                 onBlur={editMovie.handleBlur}
                                                 error={editMovie.touched.trailer_link && Boolean(editMovie.errors.trailer_link)}
                                                 helperText={editMovie.touched.trailer_link && editMovie.errors.trailer_link} />
+                                        </MDBox>
+                                        <MDBox p={1}>
+                                            <TextField
+                                                fullWidth
+                                                variant="outlined"
+                                                id="synopsis"
+                                                label="Synopsis"
+                                                name="synopsis"
+                                                value={editMovie.values.synopsis}
+                                                onChange={editMovie.handleChange}
+                                                onBlur={editMovie.handleBlur}
+                                                error={editMovie.touched.synopsis && Boolean(editMovie.errors.synopsis)}
+                                                helperText={editMovie.touched.synopsis && editMovie.errors.synopsis} />
                                         </MDBox>
                                         <MDBox p={2}>
                                             <FormControl fullWidth>

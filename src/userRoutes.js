@@ -26,7 +26,7 @@ export default function useUserRoutes() {
             return;
           }
 
-          const userRole = data[0]?.userRole || 'user';
+          const userRole = data[0]?.userRole;
 
           filteredRoutes = routes.filter(route => {
             if (userRole === 'superAdmin') {
@@ -36,7 +36,6 @@ export default function useUserRoutes() {
                 '/theatre',
                 '/bookings',
                 '/view-tickets',
-                '/events',
                 '/theatres/single-theatre/add-screen/:id',
                 '/theatres/single-theatre/edit-screen/:screenId',
                 '/theatres/single-theatre/single-screen/add-showTime/:screenId',
@@ -45,12 +44,16 @@ export default function useUserRoutes() {
                 '/theatres/single-theatre/single-screen/single-zone/edit-zone/:id',
                 '/bookings/book-seats/:showId/:screenId',
                 '/bookings/book-seats/get-tickets',
+                '/events',
                 '/events/add-event',
                 '/events/edit-event/:id',
                 '/events/add-mainEvent',
                 '/events/edit-mainEvent/:id',
+                '/events/single-event/:id/view-form',
+                '/register/:eventId',
                 '/shows',
                 '/eventOrganization',
+                '/eventBookings',
               ].includes(route.route);
 
             } else if (userRole === 'theatreOwner') {
@@ -98,16 +101,27 @@ export default function useUserRoutes() {
                 '/bookingsAdmin',
                 '/eventsAdmin',
                 '/events',
+                '/events/add-event',
+                '/events/edit-event/:id',
+                '/events/add-mainEvent',
+                '/events/edit-mainEvent/:id',
+                '/events/single-event/:id/view-form',
+                '/events/single-event/:id/view-registrations',
                 '/eventOrganizers',
                 '/facilities',
-                '/eventOrganizations',
                 '/allUsers/add-eventOrganizer',
                 '/allUsers/eventOrganizer/:id',
                 '/allUsers/edit-eventOrganizer/:id',
-                '/eventOrganizations/add-eventOrganization',
                 '/eventOrganization',
+                '/eventOrganizations',
+                '/eventOrganizations/single-eventOrganization/:id',
+                '/eventOrganizations/add-eventOrganization',
                 '/eventOrganizations/edit-eventOrganization/:id',
                 '/venues',
+                '/venues/single-venue/:id',
+                '/venues/add-venue"',
+                '/venues/edit-venue/:id',
+                '/eventBookings',
               ].includes(route.route);
             } else if (userRole === 'eventOrganizer') {
               return ![
@@ -167,12 +181,15 @@ export default function useUserRoutes() {
                 '/bookings/book-seats/:showId/:screenId',
                 '/bookings/book-seats/get-tickets',
                 '/shows',
-                '/eventOrganizations',
                 '/allUsers/add-eventOrganizer',
                 '/allUsers/eventOrganizer/:id',
                 '/allUsers/edit-eventOrganizer/:id',
+                '/eventOrganizations',
+                '/eventOrganizations/single-eventOrganization/:id',
                 '/eventOrganizations/add-eventOrganization',
                 '/eventOrganizations/edit-eventOrganization/:id',
+                '/venues/add-venue"',
+                '/venues/edit-venue/:id',
               ].includes(route.route);
             }
             return route.route === '/dashboard';
@@ -196,4 +213,3 @@ export default function useUserRoutes() {
 
   return { userRoutes, isLoading };
 }
-
