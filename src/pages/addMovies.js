@@ -221,6 +221,7 @@ export default function AddMovies() {
             release_date: "",
             duration: "",
             trailer_link: "",
+            synopsis: "",
         },
         validationSchema: Yup.object({
             movie_name: Yup.string().required("Required"),
@@ -256,6 +257,7 @@ export default function AddMovies() {
                         release_date: movie.release_date,
                         trailer_link: movie.trailer_link,
                         poster: movieImgUrl.data.publicUrl,
+                        synopsis:movie.synopsis,
                     })
                     .select("*");
 
@@ -537,6 +539,20 @@ export default function AddMovies() {
                                             helperText={newMovie.touched.trailer_link && newMovie.errors.trailer_link}
                                         />
                                     </MDBox>
+                                    <MDBox p={1}>
+                                        <TextField
+                                            fullWidth
+                                            variant="outlined"
+                                            id="outlined-basic"
+                                            label="Synopsis"
+                                            name="synopsis"
+                                            value={newMovie.values.synopsis}
+                                            onChange={newMovie.handleChange}
+                                            onBlur={newMovie.handleBlur}
+                                            error={newMovie.touched.synopsis && Boolean(newMovie.errors.synopsis)}
+                                            helperText={newMovie.touched.synopsis && newMovie.errors.synopsis}
+                                        />
+                                    </MDBox>
 
                                     <MDBox p={1}>
                                         <input
@@ -613,12 +629,7 @@ export default function AddMovies() {
                                                 )}
                                             />
                                         </FormControl>
-                                    </MDBox>
-
-
-
-
-
+                                    </MDBox>                               
                                     <MDBox p={2}>
                                         <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
                                             <FormLabel component="legend"> Languages </FormLabel>
