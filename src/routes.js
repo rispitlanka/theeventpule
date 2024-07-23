@@ -131,6 +131,8 @@ import AddVenue from "pages/addVenue";
 import SingleVenue from "pages/singleVenue";
 import EditVenue from "pages/editVenue";
 import EventBookings from "pages/eventBookings";
+import AddEventZone from "pages/addEventZone";
+import SingleEventZone from "pages/singleEventZone";
 
 const routes = [
   {
@@ -591,6 +593,14 @@ const routes = [
   {
     route: "/theatres/single-theatre/single-screen/single-zone/edit-zone/:id",
     component: <EditZone />,
+  },
+  {
+    route: "/venues/single-venue/add-zone/:venueId",
+    component: <AddEventZone />,
+  },
+  {
+    route: "/venues/single-venue/single-zone/:id",
+    component: <SingleEventZone />,
   },
   {
     route: "/allUsers/add-theatreOwner",

@@ -17,8 +17,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
-export default function AddZone() {
-    const { screenId } = useParams();
+export default function AddEventZone() {
+    const { venueId } = useParams();
     const [columns, setColumns] = useState(0);
     const [rows, setRows] = useState(0);
     const [columnHeads, setColumnHeads] = useState([]);
@@ -58,7 +58,7 @@ export default function AddZone() {
                     row: rowIndex + 1,
                     column: columnIndex + 1,
                     zoneId: currentZoneId,
-                    screenId: screenId,
+                    venueId: venueId,
                     type: 'enabled',
                 };
                 seatDetails.push(seatDetail);
@@ -73,7 +73,7 @@ export default function AddZone() {
             name: '',
             price: '',
             halfPrice: '',
-            screenId: screenId,
+            venueId: venueId,
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
@@ -85,7 +85,7 @@ export default function AddZone() {
                     name: values.name,
                     price: values.price,
                     halfPrice: values.halfPrice,
-                    screenId: screenId,
+                    venueId: venueId,
                 }
                 await addZoneData(zoneData);
             } catch (error) {
@@ -96,7 +96,7 @@ export default function AddZone() {
     });
     const addZoneData = async (values) => {
         try {
-            const { data, error } = await supabase.from('zones').insert(values).select('*');
+            const { data, error } = await supabase.from('zones_events').insert(values).select('*');
             if (data) {
                 console.log('Data inserted successfully:', data[0].id);
                 return (data[0].id);
@@ -123,7 +123,7 @@ export default function AddZone() {
                     ...values,
                     seatName: seatDetail.seatName,
                     zoneId: currentZoneId,
-                    screenId: seatDetail.screenId,
+                    venueId: seatDetail.venueId,
                     row: seatDetail.row,
                     column: seatDetail.column,
                 }));
@@ -137,7 +137,7 @@ export default function AddZone() {
 
     const addSeatData = async (values) => {
         try {
-            const { data, error } = await supabase.from('seats').insert(values);
+            const { data, error } = await supabase.from('seats_events').insert(values);
             if (data) {
                 console.log(data);
                 setIsSubmitting(false);

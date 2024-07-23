@@ -161,6 +161,9 @@ export default function AddVenue() {
       //   notes: '',
       //   coverImage: '',
       //   theatreImage: '',
+      isSeat: false,
+      ticketsCount: '',
+      ticketPrice: '',
     },
     validationSchema: Yup.object({
       name: Yup.string().required('Required'),
@@ -340,6 +343,49 @@ export default function AddVenue() {
                         <Switch label="Status" checked={newVenue.values.isActive} onChange={(e) => newVenue.setFieldValue('isActive', e.target.checked)} />
                         {newVenue.values.isActive ? 'Active' : 'Inactive'}
                       </MDTypography>
+                    </MDBox>
+                    <MDBox p={1}>
+                      <MDTypography>
+                        Enable Seats:
+                        <Switch label="Seats" checked={newVenue.values.isSeat} onChange={(e) => newVenue.setFieldValue('isSeat', e.target.checked)} />
+                        {newVenue.values.isSeat ? 'Yes' : 'No'}
+                      </MDTypography>
+                    </MDBox>
+                    <MDBox p={1}>
+                      {!newVenue.values.isSeat &&
+                        <Grid container spacing={3}>
+                          <Grid item xs={6} display={'flex'} flexDirection={'column'}>
+                            <MDBox>
+                              <TextField
+                                fullWidth
+                                variant="outlined"
+                                id="outlined-basic"
+                                label="Number Of Tickets"
+                                name="ticketsCount"
+                                value={newVenue.values.ticketsCount}
+                                onChange={newVenue.handleChange}
+                                onBlur={newVenue.handleBlur}
+                                error={newVenue.touched.ticketsCount && Boolean(newVenue.errors.ticketsCount)}
+                                helperText={newVenue.touched.ticketsCount && newVenue.errors.ticketsCount} />
+                            </MDBox>
+                          </Grid>
+                          <Grid item xs={6} display={'flex'} flexDirection={'column'}>
+                            <MDBox>
+                              <TextField
+                                fullWidth
+                                variant="outlined"
+                                id="outlined-basic"
+                                label="Price"
+                                name="ticketPrice"
+                                value={newVenue.values.ticketPrice}
+                                onChange={newVenue.handleChange}
+                                onBlur={newVenue.handleBlur}
+                                error={newVenue.touched.ticketPrice && Boolean(newVenue.errors.ticketPrice)}
+                                helperText={newVenue.touched.ticketPrice && newVenue.errors.ticketPrice} />
+                            </MDBox>
+                          </Grid>
+                        </Grid>
+                      }
                     </MDBox>
                     {/* <MDBox p={1} display="flex" flexDirection="row" alignItems="center" flexWrap="wrap">
                       <MDTypography mr={1}>Facilities: </MDTypography>
