@@ -133,17 +133,16 @@ export default function SeatBookings() {
     const fetchBookedTickets = async () => {
         try {
             const { data, error } = await supabase
-                .from('tickets')
+                .from('tickets_events')
                 .select('*')
                 .eq('eventId', eventId);
 
             if (data) {
-                console.log('booked tickets', data);
                 const seatIds = data.map(ticket => ticket.seatId);
                 const seatResponses = await Promise.all(
                     seatIds.map(async seatId => {
                         const { data: seatData, error: seatError } = await supabase
-                            .from('seats')
+                            .from('seats_events')
                             .select('zoneId, row, column')
                             .eq('id', seatId);
                         if (seatData) {
@@ -155,10 +154,8 @@ export default function SeatBookings() {
                         }
                     })
                 );
-                console.log('Seat details:', seatResponses);
                 setSeatResponses(seatResponses);
             }
-
             if (error) {
                 console.log(error);
             }
@@ -168,7 +165,6 @@ export default function SeatBookings() {
     };
 
     const updateBookedSeats = (newBookedSeats) => {
-        console.log('Updating booked seats:', newBookedSeats);
         setBookedSeats(newBookedSeats);
     };
 
@@ -177,7 +173,6 @@ export default function SeatBookings() {
         if (seatType === 'half') {
             newPrice = zonesData.find(zone => zone.id === zoneId).halfPrice;
         }
-        console.log(seatData)
         const seatIndex = bookedSeats.findIndex(seat => seat.zoneId === zoneId && seat.rowIndex === rowIndex && seat.columnIndex === columnIndex);
         if (seatIndex !== -1) {
             // Seat is already booked, so deselect it
@@ -211,18 +206,18 @@ export default function SeatBookings() {
     }
 
     const venueName = venues && venues.length > 0 ? venues[0].name : '';
-    const time = eventsData && eventsData.length > 0 ? eventsData[0].startTime : '';
+    const eventTime = eventsData && eventsData.length > 0 ? eventsData[0].startTime : '';
     const eventDate = eventsData && eventsData.length > 0 ? eventsData[0].date : '';
     const eventName = eventsData && eventsData.length > 0 ? eventsData[0].name : '';
 
     const handleProceed = () => {
         setClicked(true);
-        navigate('/bookings/book-seats/get-tickets', { state: { bookedSeats, eventDate, movieId, eventName, time, venueName } });
+        navigate('/eventBookings/book-seats/get-tickets', { state: { bookedSeats, eventName, eventDate, eventTime, venueName } });
     }
 
     const handleOtherShows = (showTimeId) => {
         const eventId = otherShows.find((show) => show.showTimeId === showTimeId)?.id;
-        openPage(`/bookings/book-seats/${eventId}/${venueId}?date=${date}&movieId=${movieId}`);
+        openPage(`/eventBookings/book-seats/${eventId}/${venueId}?date=${date}&movieId=${movieId}`);
     }
 
     useEffect(() => {
@@ -265,16 +260,16 @@ export default function SeatBookings() {
                             <MDBox>
                                 <Grid display={'flex'} flexDirection={'row'}>
                                     <MDTypography sx={{ mr: 2 }}>{formattedDate(eventDate)}</MDTypography>
-                                    <MDTypography>{formattedTime(time)}</MDTypography>
+                                    <MDTypography>{formattedTime(eventTime)}</MDTypography>
                                 </Grid>
                             </MDBox>
                             {/* <MDBox sx={{ position: 'absolute', bottom: 16, right: 16, }}>
                                 <MDTypography variant='body2' p={1}>Other Shows</MDTypography>
                                 <Grid display={'flex'} flexDirection={'row'}>
                                     {otherShowTimes && otherShowTimes
-                                        .filter(otherTime => otherTime.time !== time)
+                                        .filter(otherTime => otherTime.eventTime !== eventTime)
                                         .map(times => (
-                                            <Chip label={formattedTime(times.time)} sx={{ mr: 1 }} key={times.id} onClick={() => handleOtherShows(times.id)} />
+                                            <Chip label={formattedTime(times.eventTime)} sx={{ mr: 1 }} key={times.id} onClick={() => handleOtherShows(times.id)} />
                                         ))}
                                 </Grid>
                             </MDBox> */}

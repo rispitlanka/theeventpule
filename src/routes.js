@@ -134,6 +134,7 @@ import EventBookings from "pages/eventBookings";
 import AddEventZone from "pages/addEventZone";
 import SingleEventZone from "pages/singleEventZone";
 import SeatBookings from "components/EventBooking/seatBookings";
+import GetEventTicket from "components/EventBooking/getEventTicket";
 
 const routes = [
   {
@@ -638,6 +639,10 @@ const routes = [
   {
     route: "/bookings/book-seats/get-tickets",
     component: <GetTickets />,
+  },
+  {
+    route: "/eventBookings/book-seats/get-tickets",
+    component: <GetEventTicket />,
   },
   {
     route: "/events/add-event",

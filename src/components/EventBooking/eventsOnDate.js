@@ -14,11 +14,10 @@ export default function EventsOnDate(date) {
     const eqDate = date.date;
     const [events, setEvents] = useState();
     const [isLoading, setIsLoading] = useState(true);
-    // const [bookedSeatsCount, setBookedSeatsCount] = useState({});
-    // const [totalSeatsCount, setTotalSeatsCount] = useState({});
+    const [bookedSeatsCount, setBookedSeatsCount] = useState({});
+    const [totalSeatsCount, setTotalSeatsCount] = useState({});
     const userDetails = useContext(UserDataContext);
     const userOrganizationId = userDetails && userDetails[0].eventOrganizationId;
-
     const navigate = useNavigate();
     const openPage = (route) => {
         navigate(route);
@@ -29,7 +28,6 @@ export default function EventsOnDate(date) {
             const { data, error } = await supabase.from('events').select('*, venues (name)').eq('date', eqDate).eq('eventOrganizationId', userOrganizationId).eq('isActive', true);
             if (data) {
                 setEvents(data);
-                console.log('events', data);
                 setIsLoading(false);
             }
             if (error) {
@@ -53,48 +51,48 @@ export default function EventsOnDate(date) {
         return date.toLocaleTimeString('en-US', options);
     };
 
-    // const fetchBookedSeatsCount = async (showId) => {
-    //     try {
-    //         const { data, error } = await supabase
-    //             .rpc('get_booked_seats_count', { show_id: showId });
-    //         if (data) {
-    //             const bookedSeatsCount = data[0].booked_seats_count;
-    //             setBookedSeatsCount(prevCounts => ({ ...prevCounts, [showId]: bookedSeatsCount }));
-    //         }
-    //         if (error) {
-    //             console.log(error);
-    //             return 0;
-    //         }
-    //     } catch (error) {
-    //         console.log('Error in fetching booked tickets', error);
-    //         return 0;
-    //     }
-    // };
+    const fetchBookedSeatsCount = async (eventId) => {
+        try {
+            const { data, error } = await supabase
+                .rpc('get_booked_event_seats_count', { event_id: eventId });
+            if (data) {
+                const bookedSeatsCount = data[0].booked_event_seats_count;
+                setBookedSeatsCount(prevCounts => ({ ...prevCounts, [eventId]: bookedSeatsCount }));
+            }
+            if (error) {
+                console.log(error);
+                return 0;
+            }
+        } catch (error) {
+            console.log('Error in fetching booked tickets', error);
+            return 0;
+        }
+    };
 
-    // const fetchTotalSeatsCount = async (screenId) => {
-    //     try {
-    //         const { data, error } = await supabase
-    //             .rpc('get_all_seats_count', { screen_id: screenId });
-    //         if (data) {
-    //             const totalSeatsCount = data[0].seats_count;
-    //             setTotalSeatsCount(prevCounts => ({ ...prevCounts, [screenId]: totalSeatsCount }));
-    //         }
-    //         if (error) {
-    //             console.log(error);
-    //             return 0;
-    //         }
-    //     } catch (error) {
-    //         console.log('Error in fetching seats count', error);
-    //         return 0;
-    //     }
-    // };
+    const fetchTotalSeatsCount = async (venueId) => {
+        try {
+            const { data, error } = await supabase
+                .rpc('get_all_event_seats_count', { venue_id: venueId });
+            if (data) {
+                const totalSeatsCount = data[0].event_seats_count;
+                setTotalSeatsCount(prevCounts => ({ ...prevCounts, [venueId]: totalSeatsCount }));
+            }
+            if (error) {
+                console.log(error);
+                return 0;
+            }
+        } catch (error) {
+            console.log('Error in fetching seats count', error);
+            return 0;
+        }
+    };
 
-    // useEffect(() => {
-    //     shows.forEach(show => {
-    //         fetchBookedSeatsCount(show.id);
-    //         fetchTotalSeatsCount(show.screenId);
-    //     });
-    // }, [shows]);
+    useEffect(() => {
+        events?.forEach(event => {
+            fetchBookedSeatsCount(event.id);
+            fetchTotalSeatsCount(event.venueId);
+        });
+    }, [events]);
 
     return (
         <>
@@ -116,18 +114,25 @@ export default function EventsOnDate(date) {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {events.map((row) => (
-                                        <TableRow key={row.id} >
-                                            <TableCell>{row.name}</TableCell>
-                                            <TableCell>{row.venues?.name}</TableCell>
-                                            <TableCell>{formattedTime(row.startTime)}</TableCell>
-                                            <TableCell align='center'>
-                                                <MDButton color='info' variant='contained' onClick={() => { openPage(`/eventBookings/book-seats/${row.id}/${row.venueId}`) }}>
-                                                    Book Now
-                                                </MDButton>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
+                                    {events.map((row) => {
+                                        const bookedCount = bookedSeatsCount[row.id] || 0;
+                                        const totalCount = totalSeatsCount[row.venueId] || 0;
+                                        const isFull = bookedCount >= totalCount;
+
+                                        return (
+                                            <TableRow key={row.id} >
+                                                <TableCell>{row.name}</TableCell>
+                                                <TableCell>{row.venues?.name}</TableCell>
+                                                <TableCell>{formattedTime(row.startTime)}</TableCell>
+                                                <TableCell align='center'>
+                                                    <MDButton color='info' variant='contained' onClick={() => { openPage(`/eventBookings/book-seats/${row.id}/${row.venueId}`) }} disabled={isFull} >
+                                                        Book Now
+                                                    </MDButton>
+                                                </TableCell>
+                                            </TableRow>
+                                        )
+
+                                    })}
                                 </TableBody>
                             </Table>
                         </TableContainer>
@@ -141,5 +146,5 @@ export default function EventsOnDate(date) {
 }
 
 EventsOnDate.propTypes = {
-    date: PropTypes.isRequired,
+    date: PropTypes.string.isRequired,
 };
