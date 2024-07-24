@@ -46,10 +46,6 @@ export default function EventsOnDate(date) {
         fetchEvents();
     }, [eqDate])
 
-    const handleChipClick = (show, screen, movie) => {
-        openPage(`/bookings/book-seats/${show.id}/${screen.id}?date=${show.date}&movieId=${movie.id}`);
-    }
-
     const formattedTime = (time) => {
         const [hours, minutes, seconds] = time.split(':');
         const date = new Date(0, 0, 0, hours, minutes, seconds);
@@ -125,7 +121,11 @@ export default function EventsOnDate(date) {
                                             <TableCell>{row.name}</TableCell>
                                             <TableCell>{row.venues?.name}</TableCell>
                                             <TableCell>{formattedTime(row.startTime)}</TableCell>
-                                            <TableCell align='center'><MDButton color='info' variant='contained'>Book Now</MDButton></TableCell>
+                                            <TableCell align='center'>
+                                                <MDButton color='info' variant='contained' onClick={() => { openPage(`/eventBookings/book-seats/${row.id}/${row.venueId}`) }}>
+                                                    Book Now
+                                                </MDButton>
+                                            </TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
