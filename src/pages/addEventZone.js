@@ -32,6 +32,8 @@ export default function AddEventZone() {
     const [isLoading, setIsLoading] = useState(false);
     const [isClicked, setIsClicked] = useState(false);
     const [error, setError] = useState(null);
+    const queryParams = new URLSearchParams(location.search);
+    const isSeatLayout = queryParams.get('isSeatLayout') === 'true';
     const navigate = useNavigate();
     let currentZoneId = '';
 
@@ -79,7 +81,7 @@ export default function AddEventZone() {
             name: Yup.string().required('Required'),
         }),
         onSubmit: async (values) => {
-            setIsSubmitting(true);
+            // setIsSubmitting(true);
             try {
                 const zoneData = {
                     name: values.name,
@@ -116,7 +118,7 @@ export default function AddEventZone() {
             zoneId: '',
         },
         onSubmit: async (values) => {
-            setIsSubmitting(true);
+            // setIsSubmitting(true);
             try {
                 const enabledSeatDetails = seatDetails.filter(seatDetail => seatDetail.type === 'enabled');
                 const seatDataArray = enabledSeatDetails.map(seatDetail => ({
@@ -140,15 +142,15 @@ export default function AddEventZone() {
             const { data, error } = await supabase.from('seats_events').insert(values);
             if (data) {
                 console.log(data);
-                setIsSubmitting(false);
+                // setIsSubmitting(false);
             }
             if (error) {
                 throw error;
             }
-            toast.info('Zone has been successfully created!');
-            setTimeout(() => {
-                navigate(-1);
-            }, 1500);
+            // toast.info('Zone has been successfully created!');
+            // setTimeout(() => {
+            //     navigate(-1);
+            // }, 1500);
         } catch (error) {
             throw new Error('Error inserting data:', error.message);
         }
@@ -290,13 +292,22 @@ export default function AddEventZone() {
     };
 
     const handleFormsSubmit = async () => {
+        setIsSubmitting(true);
         try {
             const zoneid = await addZoneData(newZone.values);
             if (zoneid) {
                 currentZoneId = zoneid;
-                newSeat.submitForm();
+                if (isSeatLayout) {
+                    newSeat.submitForm();
+                }
             }
+            toast.info('Zone has been successfully created!');
+            setTimeout(() => {
+                navigate(-1);
+            }, 1500);
+            setIsSubmitting(false);
         } catch (error) {
+            setIsSubmitting(false);
             console.error('Error submitting forms:', error.message);
         }
     };
@@ -366,38 +377,42 @@ export default function AddEventZone() {
                                             error={newZone.touched.halfPrice && Boolean(newZone.errors.halfPrice)}
                                             helperText={newZone.touched.halfPrice && newZone.errors.halfPrice} />
                                     </MDBox>
-                                    <MDBox p={1}>
-                                        <TextField
-                                            fullWidth
-                                            variant="outlined"
-                                            id="outlined-basic"
-                                            label="Rows"
-                                            name="rows"
-                                            value={rows}
-                                            onChange={handleRowsChange}
-                                            onBlur={newZone.handleBlur}
-                                            error={newZone.touched.rows && Boolean(newZone.errors.rows)}
-                                            helperText={newZone.touched.rows && newZone.errors.rows}
-                                        />
-                                    </MDBox>
-                                    <MDBox p={1}>
-                                        <TextField
-                                            fullWidth
-                                            variant="outlined"
-                                            id="outlined-basic"
-                                            label="Columns"
-                                            name="columns"
-                                            value={columns}
-                                            onChange={handleColumnsChange}
-                                            onBlur={newZone.handleBlur}
-                                            error={newZone.touched.columns && Boolean(newZone.errors.columns)}
-                                            helperText={newZone.touched.columns && newZone.errors.columns}
-                                        />
-                                    </MDBox>
+                                    {isSeatLayout &&
+                                        <>
+                                            <MDBox p={1}>
+                                                <TextField
+                                                    fullWidth
+                                                    variant="outlined"
+                                                    id="outlined-basic"
+                                                    label="Rows"
+                                                    name="rows"
+                                                    value={rows}
+                                                    onChange={handleRowsChange}
+                                                    onBlur={newZone.handleBlur}
+                                                    error={newZone.touched.rows && Boolean(newZone.errors.rows)}
+                                                    helperText={newZone.touched.rows && newZone.errors.rows}
+                                                />
+                                            </MDBox>
+                                            <MDBox p={1}>
+                                                <TextField
+                                                    fullWidth
+                                                    variant="outlined"
+                                                    id="outlined-basic"
+                                                    label="Columns"
+                                                    name="columns"
+                                                    value={columns}
+                                                    onChange={handleColumnsChange}
+                                                    onBlur={newZone.handleBlur}
+                                                    error={newZone.touched.columns && Boolean(newZone.errors.columns)}
+                                                    helperText={newZone.touched.columns && newZone.errors.columns}
+                                                />
+                                            </MDBox>
+                                        </>
+                                    }
                                 </form>
-                                <MDBox ml={-2}><Button onClick={() => handleShowClick()}>Generate Seat Layout</Button></MDBox>
+                                {isSeatLayout && <MDBox ml={-2}><Button onClick={() => handleShowClick()}>Generate Seat Layout</Button></MDBox>}
                                 <form onSubmit={newSeat.handleSubmit}>
-                                    {isClicked &&
+                                    {isClicked && isSeatLayout &&
                                         <>
                                             <MDTypography m={1} variant="h6">Seat Layout</MDTypography>
                                             <MDBox m={1} p={3} sx={{ overflowX: 'auto' }}>
@@ -497,7 +512,7 @@ export default function AddEventZone() {
                                     }
                                 </form>
                                 <MDBox p={1} sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <MDButton color='info' onClick={handleFormsSubmit} disabled={seatDetails.length <= 0 || !isClicked}>Save</MDButton>
+                                    <MDButton color='info' onClick={handleFormsSubmit} disabled={isSeatLayout && (seatDetails.length <= 0 || !isClicked)}>Save</MDButton>
                                     {isSubmitting && <CircularProgress color='info' sx={{ marginLeft: '15px' }} />}
                                 </MDBox>
                             </MDBox>

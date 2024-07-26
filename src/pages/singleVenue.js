@@ -371,7 +371,7 @@ export default function SingleVenue() {
           }
 
           {/* zones */}
-          {venueData[0].isSeat &&
+          {/* {venueData[0].isSeat && */}
             <>
               <MDBox mt={5} pt={3} px={2} lineHeight={1.25}>
                 <MDTypography variant="h6" fontWeight="medium">
@@ -429,7 +429,7 @@ export default function SingleVenue() {
                         alignItems: 'center',
                         height: '150px'
                       }}>
-                      <IconButton onClick={() => openPage(`/venues/single-venue/add-zone/${id}`)}>
+                      <IconButton onClick={() => openPage(`/venues/single-venue/add-zone/${id}?isSeatLayout=${venueData[0].isSeat}`)}>
                         <AddCircleIcon color='info' sx={{ fontSize: 48 }} />
                       </IconButton>
                       <MDTypography>Add New Zone</MDTypography>
@@ -438,7 +438,7 @@ export default function SingleVenue() {
                 </Grid>
               </MDBox>
             </>
-          }
+          {/* } */}
         </MDBox>
       }
       <Footer />

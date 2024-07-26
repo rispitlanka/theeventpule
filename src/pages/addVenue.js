@@ -351,7 +351,7 @@ export default function AddVenue() {
                         {newVenue.values.isSeat ? 'Yes' : 'No'}
                       </MDTypography>
                     </MDBox>
-                    <MDBox p={1}>
+                    {/* <MDBox p={1}>
                       {!newVenue.values.isSeat &&
                         <Grid container spacing={3}>
                           <Grid item xs={6} display={'flex'} flexDirection={'column'}>
@@ -386,7 +386,7 @@ export default function AddVenue() {
                           </Grid>
                         </Grid>
                       }
-                    </MDBox>
+                    </MDBox> */}
                     {/* <MDBox p={1} display="flex" flexDirection="row" alignItems="center" flexWrap="wrap">
                       <MDTypography mr={1}>Facilities: </MDTypography>
                       {facilitiesData && facilitiesData.length > 0 && facilitiesData.map((facility) => (
