@@ -1,8 +1,7 @@
-import MDTypography from 'components/MDTypography'
 import { supabase } from 'pages/supabaseClient'
 import React, { useContext, useEffect, useState } from 'react'
 import PropTypes from 'prop-types';
-import { Box, Card, CardContent, Chip, CircularProgress, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import DataNotFound from 'components/NoData/dataNotFound';
 import MDBox from 'components/MDBox';
@@ -12,6 +11,9 @@ import MDButton from 'components/MDButton';
 
 export default function EventsOnDate(date) {
     const eqDate = date.date;
+    const today = new Date();
+    const formattedDate = new Date(today).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+    const isValidDate = eqDate >= formattedDate;
     const [events, setEvents] = useState();
     const [isLoading, setIsLoading] = useState(true);
     const [bookedSeatsCount, setBookedSeatsCount] = useState({});
@@ -125,13 +127,17 @@ export default function EventsOnDate(date) {
                                                 <TableCell>{row.venues?.name}</TableCell>
                                                 <TableCell>{formattedTime(row.startTime)}</TableCell>
                                                 <TableCell align='center'>
-                                                    <MDButton color='info' variant='contained' onClick={() => { openPage(`/eventBookings/book-seats/${row.id}/${row.venueId}`) }} disabled={isFull} >
+                                                    <MDButton
+                                                        color='info'
+                                                        variant='contained'
+                                                        onClick={() => { openPage(`/eventBookings/book-seats/${row.id}/${row.venueId}`) }}
+                                                        disabled={isFull || !isValidDate}
+                                                    >
                                                         Book Now
                                                     </MDButton>
                                                 </TableCell>
                                             </TableRow>
                                         )
-
                                     })}
                                 </TableBody>
                             </Table>
