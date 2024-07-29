@@ -8,6 +8,7 @@ import MDBox from 'components/MDBox';
 import noDataImage from "assets/images/illustrations/noData3.svg";
 import { UserDataContext } from 'context';
 import MDButton from 'components/MDButton';
+import TicketsCountModel from './ticketsCountModel';
 
 export default function EventsOnDate(date) {
     const eqDate = date.date;
@@ -24,10 +25,21 @@ export default function EventsOnDate(date) {
     const openPage = (route) => {
         navigate(route);
     };
+    const [open, setOpen] = useState(false);
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+    const handleClose = () => {
+        setOpen(false);
+    };
 
     const fetchEvents = async () => {
         try {
-            const { data, error } = await supabase.from('events').select('*, venues (name)').eq('date', eqDate).eq('eventOrganizationId', userOrganizationId).eq('isActive', true);
+            const { data, error } = await supabase
+                .from('events')
+                .select('*, venues (name,isSeat,zones_events(price,halfPrice))')
+                .eq('date', eqDate).eq('eventOrganizationId', userOrganizationId)
+                .eq('isActive', true);
             if (data) {
                 setEvents(data);
                 setIsLoading(false);
@@ -119,7 +131,7 @@ export default function EventsOnDate(date) {
                                     {events.map((row) => {
                                         const bookedCount = bookedSeatsCount[row.id] || 0;
                                         const totalCount = totalSeatsCount[row.venueId] || 0;
-                                        const isFull = bookedCount >= totalCount;
+                                        const isFull = (totalCount > 0) && (bookedCount >= totalCount);
 
                                         return (
                                             <TableRow key={row.id} >
@@ -130,12 +142,13 @@ export default function EventsOnDate(date) {
                                                     <MDButton
                                                         color='info'
                                                         variant='contained'
-                                                        onClick={() => { openPage(`/eventBookings/book-seats/${row.id}/${row.venueId}`) }}
+                                                        onClick={() => { row.venues?.isSeat ? openPage(`/eventBookings/book-seats/${row.id}/${row.venueId}`) : handleClickOpen() }}
                                                         disabled={isFull || !isValidDate}
                                                     >
                                                         Book Now
                                                     </MDButton>
                                                 </TableCell>
+                                                <TicketsCountModel open={open} handleClose={handleClose} eventId={row.id} eventName={row.name} eventDate={row.date} eventTime={row.startTime} venueName={row.venues?.name} fullPrice={row.venues?.zones_events[0]?.price} halfPrice={row.venues?.zones_events[0]?.halfPrice} />
                                             </TableRow>
                                         )
                                     })}

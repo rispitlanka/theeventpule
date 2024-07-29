@@ -346,7 +346,7 @@ export default function AddVenue() {
                     </MDBox>
                     <MDBox p={1}>
                       <MDTypography>
-                        Enable Seats:
+                        Enable Seat Setup:
                         <Switch label="Seats" checked={newVenue.values.isSeat} onChange={(e) => newVenue.setFieldValue('isSeat', e.target.checked)} />
                         {newVenue.values.isSeat ? 'Yes' : 'No'}
                       </MDTypography>

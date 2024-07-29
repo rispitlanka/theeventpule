@@ -74,7 +74,6 @@ export default function AddEvent() {
             location: '',
             date: '',
             startTime: '',
-            price: '',
             contactEmail: '',
             contactPhone: '',
             venueId: '',
@@ -213,18 +212,6 @@ export default function AddEvent() {
                                         onBlur={newEvent.handleBlur}
                                         error={newEvent.touched.location && Boolean(newEvent.errors.location)}
                                         helperText={newEvent.touched.location && newEvent.errors.location} />
-                                </MDBox>
-                                <MDBox p={1}>
-                                    <TextField fullWidth
-                                        variant="outlined"
-                                        id="outlined-basic"
-                                        label="Price"
-                                        name="price"
-                                        value={newEvent.values.price}
-                                        onChange={newEvent.handleChange}
-                                        onBlur={newEvent.handleBlur}
-                                        error={newEvent.touched.price && Boolean(newEvent.errors.price)}
-                                        helperText={newEvent.touched.price && newEvent.errors.price} />
                                 </MDBox>
                                 <MDBox p={1}>
                                     <TextField fullWidth

@@ -73,6 +73,7 @@ export default function AddEventZone() {
     const newZone = useFormik({
         initialValues: {
             name: '',
+            ticketsCount: '',
             price: '',
             halfPrice: '',
             venueId: venueId,
@@ -85,6 +86,7 @@ export default function AddEventZone() {
             try {
                 const zoneData = {
                     name: values.name,
+                    ticketsCount: values.ticketsCount,
                     price: values.price,
                     halfPrice: values.halfPrice,
                     venueId: venueId,
@@ -292,7 +294,6 @@ export default function AddEventZone() {
     };
 
     const handleFormsSubmit = async () => {
-        setIsSubmitting(true);
         try {
             const zoneid = await addZoneData(newZone.values);
             if (zoneid) {
@@ -300,14 +301,14 @@ export default function AddEventZone() {
                 if (isSeatLayout) {
                     newSeat.submitForm();
                 }
+                toast.info('Zone has been successfully created!');
+                setTimeout(() => {
+                    navigate(-1);
+                }, 1500);
             }
-            toast.info('Zone has been successfully created!');
-            setTimeout(() => {
-                navigate(-1);
-            }, 1500);
-            setIsSubmitting(false);
+            // setIsSubmitting(false);
         } catch (error) {
-            setIsSubmitting(false);
+            // setIsSubmitting(false);
             console.error('Error submitting forms:', error.message);
         }
     };
@@ -351,6 +352,20 @@ export default function AddEventZone() {
                                             error={newZone.touched.name && Boolean(newZone.errors.name)}
                                             helperText={newZone.touched.name && newZone.errors.name} />
                                     </MDBox>
+                                    {!isSeatLayout &&
+                                        <MDBox p={1}>
+                                            <TextField
+                                                fullWidth
+                                                variant="outlined"
+                                                id="outlined-basic"
+                                                label="Number Of Tickets"
+                                                name="ticketsCount"
+                                                value={newZone.values.ticketsCount}
+                                                onChange={newZone.handleChange}
+                                                onBlur={newZone.handleBlur}
+                                                error={newZone.touched.ticketsCount && Boolean(newZone.errors.ticketsCount)}
+                                                helperText={newZone.touched.ticketsCount && newZone.errors.ticketsCount} />
+                                        </MDBox>}
                                     <MDBox p={1}>
                                         <TextField
                                             fullWidth
