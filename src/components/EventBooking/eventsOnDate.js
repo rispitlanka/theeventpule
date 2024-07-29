@@ -37,7 +37,7 @@ export default function EventsOnDate(date) {
         try {
             const { data, error } = await supabase
                 .from('events')
-                .select('*, venues (name,isSeat,zones_events(price,halfPrice))')
+                .select('*, venues (name,isSeat,zones_events(price,halfPrice,ticketsCount))')
                 .eq('date', eqDate).eq('eventOrganizationId', userOrganizationId)
                 .eq('isActive', true);
             if (data) {
@@ -148,7 +148,7 @@ export default function EventsOnDate(date) {
                                                         Book Now
                                                     </MDButton>
                                                 </TableCell>
-                                                <TicketsCountModel open={open} handleClose={handleClose} eventId={row.id} eventName={row.name} eventDate={row.date} eventTime={row.startTime} venueName={row.venues?.name} fullPrice={row.venues?.zones_events[0]?.price} halfPrice={row.venues?.zones_events[0]?.halfPrice} />
+                                                <TicketsCountModel open={open} handleClose={handleClose} eventId={row.id} venueId={row.venueId} eventName={row.name} eventDate={row.date} eventTime={row.startTime} venueName={row.venues?.name} fullPrice={row.venues?.zones_events[0]?.price} halfPrice={row.venues?.zones_events[0]?.halfPrice} />
                                             </TableRow>
                                         )
                                     })}

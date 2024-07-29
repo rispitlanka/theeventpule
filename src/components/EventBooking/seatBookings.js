@@ -191,6 +191,7 @@ export default function SeatBookings() {
                 seatId: seatData.id,
                 seatName: seatData.seatName,
                 eventId: eventId,
+                venueId:venueId
             };
             const updatedSeats = [...bookedSeats, newBookedSeat];
             setBookedSeats(updatedSeats);

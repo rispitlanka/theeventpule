@@ -162,8 +162,6 @@ export default function AddVenue() {
       //   coverImage: '',
       //   theatreImage: '',
       isSeat: false,
-      ticketsCount: '',
-      ticketPrice: '',
     },
     validationSchema: Yup.object({
       name: Yup.string().required('Required'),

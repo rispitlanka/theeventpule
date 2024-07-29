@@ -23,7 +23,7 @@ export default function GetEventTicket() {
     const userOrganizationId = userDetails && userDetails[0].eventOrganizationId;
     const navigate = useNavigate();
     const location = useLocation();
-    const { bookedSeats, eventId, eventName, eventDate, eventTime, venueName, fullTicketsCount, halfTicketsCount, fullPrice, halfPrice } = location.state || { bookedSeats: [] };
+    const { bookedSeats, eventId, venueId, zoneId, eventName, eventDate, eventTime, venueName, zoneName, fullTicketsCount, halfTicketsCount, fullTicketPrice, halfTicketPrice } = location.state || { bookedSeats: [] };
     const [organizationName, setOrganizationName] = useState([]);
     const [bookedTicketsData, setBookedTicketsData] = useState([]);
     const [qrCodes, setQrCodes] = useState({});
@@ -54,7 +54,7 @@ export default function GetEventTicket() {
             });
             return totalPrice;
         } else {
-            totalPrice = (fullTicketsCount ? fullTicketsCount * Number(fullPrice) : 0) + (halfTicketsCount ? halfTicketsCount * Number(halfPrice) : 0);
+            totalPrice = (fullTicketsCount ? fullTicketsCount * Number(fullTicketPrice) : 0) + (halfTicketsCount ? halfTicketsCount * Number(halfTicketPrice) : 0);
             return totalPrice;
         }
     }
@@ -66,6 +66,8 @@ export default function GetEventTicket() {
                 ? bookedSeats.map(seat => ({
                     seatId: seat.seatId,
                     eventId: seat.eventId,
+                    zoneId: seat.zoneId,
+                    venueId: seat.venueId,
                     eventOrganizationId: userOrganizationId,
                     bookedBy: organizationName,
                     price: seat.price,
@@ -74,21 +76,23 @@ export default function GetEventTicket() {
                 }))
                 : (
                     Array.from({ length: fullTicketsCount }, (_, index) => ({
-                        // seatId: 0,
                         eventId: eventId,
+                        venueId: venueId,
+                        zoneId: zoneId,
                         eventOrganizationId: userOrganizationId,
                         bookedBy: organizationName,
-                        price: fullPrice,
+                        price: fullTicketPrice,
                         totalPrice: calculateTotalPrice(),
                         referenceId: refId,
                     }))
                         .concat(
                             Array.from({ length: halfTicketsCount }, (_, index) => ({
-                                // seatId: 0,
                                 eventId: eventId,
+                                venueId: venueId,
+                                zoneId: zoneId,
                                 eventOrganizationId: userOrganizationId,
                                 bookedBy: organizationName,
-                                price: halfPrice,
+                                price: halfTicketPrice,
                                 totalPrice: calculateTotalPrice(),
                                 referenceId: refId,
                             }))
@@ -239,16 +243,12 @@ export default function GetEventTicket() {
                                                 </Box>
                                                 <Box display="flex" alignItems='center' mt={1}>
                                                     <MDTypography sx={{ mr: 1 }}>Venue:</MDTypography>
-                                                    <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{venueName}</MDTypography>
+                                                    <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{venueName}-{zoneName}</MDTypography>
                                                 </Box>
                                                 <Box display="flex" alignItems='center' mt={1}>
                                                     <MDTypography sx={{ mr: 1 }}>Price:</MDTypography>
-                                                    <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{fullPrice}</MDTypography>
+                                                    <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{fullTicketPrice}</MDTypography>
                                                 </Box>
-                                                {/* <Box display="flex" alignItems='center' mt={1}>
-                                                <MDTypography sx={{ mr: 1 }}>Seat:</MDTypography>
-                                                <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{seat.seatName}</MDTypography>
-                                            </Box> */}
                                                 <Grid container mt={3}>
                                                     <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: { xs: 'center', sm: 'flex-start' } }}>
                                                         <MDTypography sx={{ fontSize: { xs: '0.75rem', md: '1rem' } }}>{currentDate()}</MDTypography>
@@ -291,16 +291,12 @@ export default function GetEventTicket() {
                                                 </Box>
                                                 <Box display="flex" alignItems='center' mt={1}>
                                                     <MDTypography sx={{ mr: 1 }}>Venue:</MDTypography>
-                                                    <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{venueName}</MDTypography>
+                                                    <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{venueName}-{zoneName}</MDTypography>
                                                 </Box>
                                                 <Box display="flex" alignItems='center' mt={1}>
                                                     <MDTypography sx={{ mr: 1 }}>Price:</MDTypography>
-                                                    <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{halfPrice}</MDTypography>
+                                                    <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{halfTicketPrice}</MDTypography>
                                                 </Box>
-                                                {/* <Box display="flex" alignItems='center' mt={1}>
-                                                <MDTypography sx={{ mr: 1 }}>Seat:</MDTypography>
-                                                <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{seat.seatName}</MDTypography>
-                                            </Box> */}
                                                 <Grid container mt={3}>
                                                     <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: { xs: 'center', sm: 'flex-start' } }}>
                                                         <MDTypography sx={{ fontSize: { xs: '0.75rem', md: '1rem' } }}>{currentDate()}</MDTypography>
