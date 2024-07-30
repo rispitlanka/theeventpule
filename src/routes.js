@@ -131,6 +131,10 @@ import AddVenue from "pages/addVenue";
 import SingleVenue from "pages/singleVenue";
 import EditVenue from "pages/editVenue";
 import EventBookings from "pages/eventBookings";
+import AddEventZone from "pages/addEventZone";
+import SingleEventZone from "pages/singleEventZone";
+import SeatBookings from "components/EventBooking/seatBookings";
+import GetEventTicket from "components/EventBooking/getEventTicket";
 
 const routes = [
   {
@@ -593,6 +597,14 @@ const routes = [
     component: <EditZone />,
   },
   {
+    route: "/venues/single-venue/add-zone/:venueId",
+    component: <AddEventZone />,
+  },
+  {
+    route: "/venues/single-venue/single-zone/:id",
+    component: <SingleEventZone />,
+  },
+  {
     route: "/allUsers/add-theatreOwner",
     component: <AddTheatreOwner />,
   },
@@ -621,8 +633,16 @@ const routes = [
     component: <BookSeats />,
   },
   {
+    route: "/eventBookings/book-seats/:eventId/:venueId",
+    component: <SeatBookings />,
+  },
+  {
     route: "/bookings/book-seats/get-tickets",
     component: <GetTickets />,
+  },
+  {
+    route: "/eventBookings/book-seats/get-tickets",
+    component: <GetEventTicket />,
   },
   {
     route: "/events/add-event",

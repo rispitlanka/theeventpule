@@ -117,9 +117,7 @@ export default function data() {
         action: (
             <>
                 <MDButton onClick={() => openPage(`/venues/single-venue/${venue.id}`)} variant='text' size='medium' color='info'><VisibilityIcon /></MDButton>
-                {userRole === "superAdmin" &&
-                    <MDButton onClick={() => openPage(`/venues/edit-venue/${venue.id}`)} variant='text' size='medium' color='info'><EditIcon /></MDButton>
-                }
+                <MDButton onClick={() => openPage(`/venues/edit-venue/${venue.id}`)} variant='text' size='medium' color='info'><EditIcon /></MDButton>
             </>
         ),
 

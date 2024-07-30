@@ -188,8 +188,6 @@ export default function useUserRoutes() {
                 '/eventOrganizations/single-eventOrganization/:id',
                 '/eventOrganizations/add-eventOrganization',
                 '/eventOrganizations/edit-eventOrganization/:id',
-                '/venues/add-venue"',
-                '/venues/edit-venue/:id',
               ].includes(route.route);
             }
             return route.route === '/dashboard';

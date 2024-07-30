@@ -17,8 +17,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
-export default function AddZone() {
-    const { screenId } = useParams();
+export default function AddEventZone() {
+    const { venueId } = useParams();
     const [columns, setColumns] = useState(0);
     const [rows, setRows] = useState(0);
     const [columnHeads, setColumnHeads] = useState([]);
@@ -32,6 +32,8 @@ export default function AddZone() {
     const [isLoading, setIsLoading] = useState(false);
     const [isClicked, setIsClicked] = useState(false);
     const [error, setError] = useState(null);
+    const queryParams = new URLSearchParams(location.search);
+    const isSeatLayout = queryParams.get('isSeatLayout') === 'true';
     const navigate = useNavigate();
     let currentZoneId = '';
 
@@ -58,7 +60,7 @@ export default function AddZone() {
                     row: rowIndex + 1,
                     column: columnIndex + 1,
                     zoneId: currentZoneId,
-                    screenId: screenId,
+                    venueId: venueId,
                     type: 'enabled',
                 };
                 seatDetails.push(seatDetail);
@@ -71,21 +73,23 @@ export default function AddZone() {
     const newZone = useFormik({
         initialValues: {
             name: '',
+            ticketsCount: '',
             price: '',
             halfPrice: '',
-            screenId: screenId,
+            venueId: venueId,
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
         }),
         onSubmit: async (values) => {
-            setIsSubmitting(true);
+            // setIsSubmitting(true);
             try {
                 const zoneData = {
                     name: values.name,
+                    ticketsCount: values.ticketsCount,
                     price: values.price,
                     halfPrice: values.halfPrice,
-                    screenId: screenId,
+                    venueId: venueId,
                 }
                 await addZoneData(zoneData);
             } catch (error) {
@@ -96,7 +100,7 @@ export default function AddZone() {
     });
     const addZoneData = async (values) => {
         try {
-            const { data, error } = await supabase.from('zones').insert(values).select('*');
+            const { data, error } = await supabase.from('zones_events').insert(values).select('*');
             if (data) {
                 console.log('Data inserted successfully:', data[0].id);
                 return (data[0].id);
@@ -116,14 +120,14 @@ export default function AddZone() {
             zoneId: '',
         },
         onSubmit: async (values) => {
-            setIsSubmitting(true);
+            // setIsSubmitting(true);
             try {
                 const enabledSeatDetails = seatDetails.filter(seatDetail => seatDetail.type === 'enabled');
                 const seatDataArray = enabledSeatDetails.map(seatDetail => ({
                     ...values,
                     seatName: seatDetail.seatName,
                     zoneId: currentZoneId,
-                    screenId: seatDetail.screenId,
+                    venueId: seatDetail.venueId,
                     row: seatDetail.row,
                     column: seatDetail.column,
                 }));
@@ -137,18 +141,18 @@ export default function AddZone() {
 
     const addSeatData = async (values) => {
         try {
-            const { data, error } = await supabase.from('seats').insert(values);
+            const { data, error } = await supabase.from('seats_events').insert(values);
             if (data) {
                 console.log(data);
-                setIsSubmitting(false);
+                // setIsSubmitting(false);
             }
             if (error) {
                 throw error;
             }
-            toast.info('Zone has been successfully created!');
-            setTimeout(() => {
-                navigate(-1);
-            }, 1500);
+            // toast.info('Zone has been successfully created!');
+            // setTimeout(() => {
+            //     navigate(-1);
+            // }, 1500);
         } catch (error) {
             throw new Error('Error inserting data:', error.message);
         }
@@ -294,9 +298,17 @@ export default function AddZone() {
             const zoneid = await addZoneData(newZone.values);
             if (zoneid) {
                 currentZoneId = zoneid;
-                newSeat.submitForm();
+                if (isSeatLayout) {
+                    newSeat.submitForm();
+                }
+                toast.info('Zone has been successfully created!');
+                setTimeout(() => {
+                    navigate(-1);
+                }, 1500);
             }
+            // setIsSubmitting(false);
         } catch (error) {
+            // setIsSubmitting(false);
             console.error('Error submitting forms:', error.message);
         }
     };
@@ -340,6 +352,20 @@ export default function AddZone() {
                                             error={newZone.touched.name && Boolean(newZone.errors.name)}
                                             helperText={newZone.touched.name && newZone.errors.name} />
                                     </MDBox>
+                                    {!isSeatLayout &&
+                                        <MDBox p={1}>
+                                            <TextField
+                                                fullWidth
+                                                variant="outlined"
+                                                id="outlined-basic"
+                                                label="Number Of Tickets"
+                                                name="ticketsCount"
+                                                value={newZone.values.ticketsCount}
+                                                onChange={newZone.handleChange}
+                                                onBlur={newZone.handleBlur}
+                                                error={newZone.touched.ticketsCount && Boolean(newZone.errors.ticketsCount)}
+                                                helperText={newZone.touched.ticketsCount && newZone.errors.ticketsCount} />
+                                        </MDBox>}
                                     <MDBox p={1}>
                                         <TextField
                                             fullWidth
@@ -366,38 +392,42 @@ export default function AddZone() {
                                             error={newZone.touched.halfPrice && Boolean(newZone.errors.halfPrice)}
                                             helperText={newZone.touched.halfPrice && newZone.errors.halfPrice} />
                                     </MDBox>
-                                    <MDBox p={1}>
-                                        <TextField
-                                            fullWidth
-                                            variant="outlined"
-                                            id="outlined-basic"
-                                            label="Rows"
-                                            name="rows"
-                                            value={rows}
-                                            onChange={handleRowsChange}
-                                            onBlur={newZone.handleBlur}
-                                            error={newZone.touched.rows && Boolean(newZone.errors.rows)}
-                                            helperText={newZone.touched.rows && newZone.errors.rows}
-                                        />
-                                    </MDBox>
-                                    <MDBox p={1}>
-                                        <TextField
-                                            fullWidth
-                                            variant="outlined"
-                                            id="outlined-basic"
-                                            label="Columns"
-                                            name="columns"
-                                            value={columns}
-                                            onChange={handleColumnsChange}
-                                            onBlur={newZone.handleBlur}
-                                            error={newZone.touched.columns && Boolean(newZone.errors.columns)}
-                                            helperText={newZone.touched.columns && newZone.errors.columns}
-                                        />
-                                    </MDBox>
+                                    {isSeatLayout &&
+                                        <>
+                                            <MDBox p={1}>
+                                                <TextField
+                                                    fullWidth
+                                                    variant="outlined"
+                                                    id="outlined-basic"
+                                                    label="Rows"
+                                                    name="rows"
+                                                    value={rows}
+                                                    onChange={handleRowsChange}
+                                                    onBlur={newZone.handleBlur}
+                                                    error={newZone.touched.rows && Boolean(newZone.errors.rows)}
+                                                    helperText={newZone.touched.rows && newZone.errors.rows}
+                                                />
+                                            </MDBox>
+                                            <MDBox p={1}>
+                                                <TextField
+                                                    fullWidth
+                                                    variant="outlined"
+                                                    id="outlined-basic"
+                                                    label="Columns"
+                                                    name="columns"
+                                                    value={columns}
+                                                    onChange={handleColumnsChange}
+                                                    onBlur={newZone.handleBlur}
+                                                    error={newZone.touched.columns && Boolean(newZone.errors.columns)}
+                                                    helperText={newZone.touched.columns && newZone.errors.columns}
+                                                />
+                                            </MDBox>
+                                        </>
+                                    }
                                 </form>
-                                <MDBox ml={-2}><Button onClick={() => handleShowClick()}>Generate Seat Layout</Button></MDBox>
+                                {isSeatLayout && <MDBox ml={-2}><Button onClick={() => handleShowClick()}>Generate Seat Layout</Button></MDBox>}
                                 <form onSubmit={newSeat.handleSubmit}>
-                                    {isClicked &&
+                                    {isClicked && isSeatLayout &&
                                         <>
                                             <MDTypography m={1} variant="h6">Seat Layout</MDTypography>
                                             <MDBox m={1} p={3} sx={{ overflowX: 'auto' }}>
@@ -497,7 +527,7 @@ export default function AddZone() {
                                     }
                                 </form>
                                 <MDBox p={1} sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <MDButton color='info' onClick={handleFormsSubmit} disabled={seatDetails.length <= 0 || !isClicked}>Save</MDButton>
+                                    <MDButton color='info' onClick={handleFormsSubmit} disabled={isSeatLayout && (seatDetails.length <= 0 || !isClicked)}>Save</MDButton>
                                     {isSubmitting && <CircularProgress color='info' sx={{ marginLeft: '15px' }} />}
                                 </MDBox>
                             </MDBox>

@@ -288,8 +288,8 @@ export default function ShowDateSetup({ screenId, movieId, afterShowsSaved }) {
         return date.toLocaleTimeString('en-US', options);
     };
 
-    const formatDate = (time) => {
-        return dayjs(time).format('DD/MM/YYYY');
+    const formatDate = (date) => {
+        return dayjs(date).format('DD/MM/YYYY');
     }
 
     // const handleSaveShows = async () => {
