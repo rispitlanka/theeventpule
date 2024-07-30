@@ -80,11 +80,9 @@ export default function Venues() {
                                 <MDTypography variant="h6" color="white">
                                     Venues
                                 </MDTypography>
-                                {userRole === "superAdmin" &&
                                     <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
                                         <MDButton onClick={() => openPage("/venues/add-venue")}><AddIcon color="info" /></MDButton>
                                     </MDBox>
-                                }
                             </MDBox>
                             <MDBox pt={3} pl={3} display="flex" justifyContent="left">
                                 <MDInput
