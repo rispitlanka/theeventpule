@@ -108,6 +108,17 @@ export default function EventsOnDate(date) {
         });
     }, [events]);
 
+    const [selectedEvent, setSelectedEvent] = useState(null);
+
+    const handleBookNowClick = (event) => {
+        if (event.venues?.isSeat) {
+            openPage(`/eventBookings/book-seats/${event.id}/${event.venueId}`);
+        } else {
+            setSelectedEvent(event);
+            handleClickOpen();
+        }
+    };
+
     return (
         <>
             {isLoading ? (
@@ -116,7 +127,7 @@ export default function EventsOnDate(date) {
                 </MDBox>
             ) : (
                 <>
-                    {events && events.length > 0 ?
+                    {events && events.length > 0 ? (
                         <TableContainer component={Paper} sx={{ p: 2 }}>
                             <Table>
                                 <TableHead sx={{ display: "table-header-group" }}>
@@ -134,7 +145,7 @@ export default function EventsOnDate(date) {
                                         const isFull = (totalCount > 0) && (bookedCount >= totalCount);
 
                                         return (
-                                            <TableRow key={row.id} >
+                                            <TableRow key={row.id}>
                                                 <TableCell>{row.name}</TableCell>
                                                 <TableCell>{row.venues?.name}</TableCell>
                                                 <TableCell>{formattedTime(row.startTime)}</TableCell>
@@ -142,22 +153,36 @@ export default function EventsOnDate(date) {
                                                     <MDButton
                                                         color='info'
                                                         variant='contained'
-                                                        onClick={() => { row.venues?.isSeat ? openPage(`/eventBookings/book-seats/${row.id}/${row.venueId}`) : handleClickOpen() }}
+                                                        onClick={() => handleBookNowClick(row)}
                                                         disabled={isFull || !isValidDate}
                                                     >
                                                         Book Now
                                                     </MDButton>
                                                 </TableCell>
-                                                <TicketsCountModel open={open} handleClose={handleClose} eventId={row.id} venueId={row.venueId} eventName={row.name} eventDate={row.date} eventTime={row.startTime} venueName={row.venues?.name} fullPrice={row.venues?.zones_events[0]?.price} halfPrice={row.venues?.zones_events[0]?.halfPrice} />
                                             </TableRow>
-                                        )
+                                        );
                                     })}
                                 </TableBody>
                             </Table>
                         </TableContainer>
-                        : (
-                            <DataNotFound message={'No Events Scheduled Yet !'} image={noDataImage} />
-                        )}
+                    ) : (
+                        <DataNotFound message={'No Events Scheduled Yet !'} image={noDataImage} />
+                    )}
+
+                    {selectedEvent && (
+                        <TicketsCountModel
+                            open={open}
+                            handleClose={() => { setSelectedEvent(null); handleClose(); }}
+                            eventId={selectedEvent.id}
+                            venueId={selectedEvent.venueId}
+                            eventName={selectedEvent.name}
+                            eventDate={selectedEvent.date}
+                            eventTime={selectedEvent.startTime}
+                            venueName={selectedEvent.venues?.name}
+                            fullPrice={selectedEvent.venues?.zones_events[0]?.price}
+                            halfPrice={selectedEvent.venues?.zones_events[0]?.halfPrice}
+                        />
+                    )}
                 </>
             )}
         </>
