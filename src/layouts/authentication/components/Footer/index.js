@@ -50,7 +50,7 @@ function Footer({ light }) {
             color={light ? "white" : "text"}
             fontSize={size.sm}
           >
-            &copy; {new Date().getFullYear()}, the event pulse | by
+            &copy; {new Date().getFullYear()}, Seatsnaps | by
             <Link href="https://www.creative-tim.com/" target="_blank">
               <MDTypography variant="button" fontWeight="medium" color={light ? "white" : "dark"}>
                 &nbsp;Rispit&nbsp;
