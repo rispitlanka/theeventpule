@@ -67,7 +67,6 @@ export default function EditEvent() {
             location: '',
             date: '',
             startTime: '',
-            price: '',
             contactEmail: '',
             contactPhone: '',
             venueId: '',
@@ -122,7 +121,6 @@ export default function EditEvent() {
                         location: event.location,
                         date: event.date,
                         startTime: event.startTime,
-                        price: event.price,
                         contactEmail: event.contactEmail,
                         contactPhone: event.contactPhone,
                         venueId: event.venueId,
@@ -218,18 +216,6 @@ export default function EditEvent() {
                                         onBlur={editEvent.handleBlur}
                                         error={editEvent.touched.location && Boolean(editEvent.errors.location)}
                                         helperText={editEvent.touched.location && editEvent.errors.location} />
-                                </MDBox>
-                                <MDBox p={1}>
-                                    <TextField fullWidth
-                                        variant="outlined"
-                                        id="outlined-basic"
-                                        label="Price"
-                                        name="price"
-                                        value={editEvent.values.price}
-                                        onChange={editEvent.handleChange}
-                                        onBlur={editEvent.handleBlur}
-                                        error={editEvent.touched.price && Boolean(editEvent.errors.price)}
-                                        helperText={editEvent.touched.price && editEvent.errors.price} />
                                 </MDBox>
                                 <MDBox p={1}>
                                     <TextField fullWidth
