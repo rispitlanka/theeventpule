@@ -25,12 +25,14 @@ export default function GetEventTicket() {
     const location = useLocation();
     const { bookedSeats, eventId, venueId, zoneId, eventName, eventDate, eventTime, venueName, zoneName, fullTicketsCount, halfTicketsCount, fullTicketPrice, halfTicketPrice } = location.state || { bookedSeats: [] };
     const [organizationName, setOrganizationName] = useState([]);
+    const [stageIds, setStageIds] = useState([]);
     const [bookedTicketsData, setBookedTicketsData] = useState([]);
     const [qrCodes, setQrCodes] = useState({});
     const [open, setOpen] = useState(false);
 
     useEffect(() => {
         fetchOrganization();
+        fetchStages();
     }, [bookedSeats])
 
     const fetchOrganization = async () => {
@@ -39,6 +41,18 @@ export default function GetEventTicket() {
             if (error) throw error;
             if (data) {
                 setOrganizationName(data[0].name)
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const fetchStages = async () => {
+        try {
+            const { data, error } = await supabase.from('stages').select('id').eq('eventId', eventId);
+            if (error) throw error;
+            if (data) {
+                setStageIds(data)
             }
         } catch (error) {
             console.log(error);
@@ -102,9 +116,29 @@ export default function GetEventTicket() {
             const { data, error } = await supabase.from('tickets_events').insert(dataToInsert).select('*');
             if (data) {
                 handleClickOpen();
-                console.log('tickets booked', data);
                 toast.info('Tickets have been successfully booked!');
                 setBookedTicketsData(data);
+                if (stageIds?.length > 0 && data?.length > 0) {
+                    const stageParticipantsData = [];
+                    for (const ticket of data) {
+                        for (const stage of stageIds) {
+                            stageParticipantsData.push({
+                                stageId: stage.id,
+                                ticketId: ticket.id,
+                                eventId: ticket.eventId
+                            });
+                        }
+                    }
+                    const { data: stageParticipantsDataResponse, error: stageParticipantsError } = await supabase
+                        .from('stage_participants')
+                        .insert(stageParticipantsData)
+                        .select('*');
+                    if (stageParticipantsError) {
+                        console.error('Error inserting into stage_participants', stageParticipantsError);
+                    } else {
+                        console.log('Stage participants added', stageParticipantsDataResponse);
+                    }
+                }
                 data.forEach(ticket => generateQRCode(ticket.id));
             }
             if (error) {
