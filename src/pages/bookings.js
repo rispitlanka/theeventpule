@@ -13,14 +13,13 @@ export default function Bookings() {
     const formattedDate = new Date(selectedDate).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
     const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const today = new Date();
-    const currentDayOfWeek = today.getDay();
     const currentDate = today.getDate();
 
     const getCurrentWeekDates = () => {
         const currentWeekDates = [];
         for (let i = 0; i < 7; i++) {
             const date = new Date();
-            date.setDate(currentDate - currentDayOfWeek + i);
+            date.setDate(currentDate + i);
             currentWeekDates.push(date);
         }
         return currentWeekDates;

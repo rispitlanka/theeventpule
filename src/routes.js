@@ -100,6 +100,7 @@ import Bookings from "pages/bookings";
 import BookSeats from "components/TicketBooking/bookSeats";
 import GetTickets from "components/TicketBooking/getTickets";
 import ViewTickets from "pages/viewTickets";
+import ViewEventTickets from "pages/viewEventTickets";
 import Events from "pages/events";
 import AddEvent from "pages/addEvent";
 import EditEvent from "pages/editEvent";
@@ -403,6 +404,14 @@ const routes = [
     icon: <Icon icon="f7:tickets-fill" />,
     route: "/view-tickets",
     component: <ViewTickets />,
+  },
+  {
+    type: "collapse",
+    name: "View Tickets",
+    key: "viewEventTickets",
+    icon: <Icon icon="f7:tickets-fill" />,
+    route: "/view-eventTickets",
+    component: <ViewEventTickets />,
   },
   {
     type: "collapse",

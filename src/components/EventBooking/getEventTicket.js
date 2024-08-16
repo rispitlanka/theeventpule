@@ -25,12 +25,14 @@ export default function GetEventTicket() {
     const location = useLocation();
     const { bookedSeats, eventId, venueId, zoneId, eventName, eventDate, eventTime, venueName, zoneName, fullTicketsCount, halfTicketsCount, fullTicketPrice, halfTicketPrice } = location.state || { bookedSeats: [] };
     const [organizationName, setOrganizationName] = useState([]);
+    const [stageIds, setStageIds] = useState([]);
     const [bookedTicketsData, setBookedTicketsData] = useState([]);
     const [qrCodes, setQrCodes] = useState({});
     const [open, setOpen] = useState(false);
 
     useEffect(() => {
         fetchOrganization();
+        fetchStages();
     }, [bookedSeats])
 
     const fetchOrganization = async () => {
@@ -39,6 +41,18 @@ export default function GetEventTicket() {
             if (error) throw error;
             if (data) {
                 setOrganizationName(data[0].name)
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const fetchStages = async () => {
+        try {
+            const { data, error } = await supabase.from('stages').select('id').eq('eventId', eventId);
+            if (error) throw error;
+            if (data) {
+                setStageIds(data)
             }
         } catch (error) {
             console.log(error);
@@ -102,9 +116,29 @@ export default function GetEventTicket() {
             const { data, error } = await supabase.from('tickets_events').insert(dataToInsert).select('*');
             if (data) {
                 handleClickOpen();
-                console.log('tickets booked', data);
                 toast.info('Tickets have been successfully booked!');
                 setBookedTicketsData(data);
+                if (stageIds?.length > 0 && data?.length > 0) {
+                    const stageParticipantsData = [];
+                    for (const ticket of data) {
+                        for (const stage of stageIds) {
+                            stageParticipantsData.push({
+                                stageId: stage.id,
+                                ticketId: ticket.id,
+                                eventId: ticket.eventId
+                            });
+                        }
+                    }
+                    const { data: stageParticipantsDataResponse, error: stageParticipantsError } = await supabase
+                        .from('stage_participants')
+                        .insert(stageParticipantsData)
+                        .select('*');
+                    if (stageParticipantsError) {
+                        console.error('Error inserting into stage_participants', stageParticipantsError);
+                    } else {
+                        console.log('Stage participants added', stageParticipantsDataResponse);
+                    }
+                }
                 data.forEach(ticket => generateQRCode(ticket.id));
             }
             if (error) {
@@ -215,8 +249,8 @@ export default function GetEventTicket() {
                                 ))
                                 :
                                 <>
-                                    {Array.from({ length: fullTicketsCount }, (_, index) => (
-                                        <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+                                    {Array.from({ length: fullTicketsCount }, (_, fullIndex) => (
+                                        <Grid item xs={12} sm={6} md={4} lg={3} key={fullIndex}>
                                             <Card sx={{
                                                 position: 'relative',
                                                 p: 2,
@@ -228,9 +262,9 @@ export default function GetEventTicket() {
                                                 <Box sx={{ backgroundColor: '#e0e0e0', textAlign: 'center', mt: 1, mb: 3 }}>
                                                     <MDTypography variant="h2" sx={{ fontSize: { xs: '1.5rem', md: '2rem' } }}>{organizationName}</MDTypography>
                                                 </Box>
-                                                {bookedTicketsData.length > 0 && (
+                                                {bookedTicketsData.length > fullIndex && (
                                                     <MDTypography variant='body2' sx={{ position: 'absolute', top: { xs: 60, md: 75 }, right: { xs: 15, md: 20 }, fontSize: { xs: '0.75rem', md: '1rem' } }}>
-                                                        Ticket ID : {bookedTicketsData[index]?.id}
+                                                        Ticket ID : {bookedTicketsData[fullIndex]?.id}
                                                     </MDTypography>
                                                 )}
                                                 <Box display="flex" alignItems='center' mt={3}>
@@ -255,16 +289,17 @@ export default function GetEventTicket() {
                                                         <MDTypography sx={{ fontSize: { xs: '0.75rem', md: '1rem' } }}>theEventPulse</MDTypography>
                                                     </Grid>
                                                     <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: { xs: 'center', sm: 'flex-end' } }}>
-                                                        {qrCodes[bookedTicketsData[index]?.id] && (
-                                                            <img src={qrCodes[bookedTicketsData[index]?.id]} alt="qr" style={{ height: '200px', width: '200px', border: '1px solid', maxWidth: '100%' }} />
+                                                        {qrCodes[bookedTicketsData[fullIndex]?.id] && (
+                                                            <img src={qrCodes[bookedTicketsData[fullIndex]?.id]} alt="qr" style={{ height: '200px', width: '200px', border: '1px solid', maxWidth: '100%' }} />
                                                         )}
                                                     </Grid>
                                                 </Grid>
                                             </Card>
                                         </Grid>
                                     ))}
-                                    {Array.from({ length: halfTicketsCount }, (_, index) => (
-                                        <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+
+                                    {Array.from({ length: halfTicketsCount }, (_, halfIndex) => (
+                                        <Grid item xs={12} sm={6} md={4} lg={3} key={halfIndex + fullTicketsCount}>
                                             <Card sx={{
                                                 position: 'relative',
                                                 p: 2,
@@ -276,9 +311,9 @@ export default function GetEventTicket() {
                                                 <Box sx={{ backgroundColor: '#e0e0e0', textAlign: 'center', mt: 1, mb: 3 }}>
                                                     <MDTypography variant="h2" sx={{ fontSize: { xs: '1.5rem', md: '2rem' } }}>{organizationName}</MDTypography>
                                                 </Box>
-                                                {bookedTicketsData.length > 0 && (
+                                                {bookedTicketsData.length > (halfIndex + fullTicketsCount) && (
                                                     <MDTypography variant='body2' sx={{ position: 'absolute', top: { xs: 60, md: 75 }, right: { xs: 15, md: 20 }, fontSize: { xs: '0.75rem', md: '1rem' } }}>
-                                                        Ticket ID : {bookedTicketsData[index]?.id}
+                                                        Ticket ID : {bookedTicketsData[halfIndex + fullTicketsCount]?.id}
                                                     </MDTypography>
                                                 )}
                                                 <Box display="flex" alignItems='center' mt={3}>
@@ -303,14 +338,15 @@ export default function GetEventTicket() {
                                                         <MDTypography sx={{ fontSize: { xs: '0.75rem', md: '1rem' } }}>theEventPulse</MDTypography>
                                                     </Grid>
                                                     <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: { xs: 'center', sm: 'flex-end' } }}>
-                                                        {qrCodes[bookedTicketsData[index]?.id] && (
-                                                            <img src={qrCodes[bookedTicketsData[index]?.id]} alt="qr" style={{ height: '200px', width: '200px', border: '1px solid', maxWidth: '100%' }} />
+                                                        {qrCodes[bookedTicketsData[halfIndex + fullTicketsCount]?.id] && (
+                                                            <img src={qrCodes[bookedTicketsData[halfIndex + fullTicketsCount]?.id]} alt="qr" style={{ height: '200px', width: '200px', border: '1px solid', maxWidth: '100%' }} />
                                                         )}
                                                     </Grid>
                                                 </Grid>
                                             </Card>
                                         </Grid>
                                     ))}
+
                                 </>
                             }
                         </Grid>

@@ -23,13 +23,16 @@ import MDButton from 'components/MDButton';
 import RegistrationFormModel from './Models/registrationFormModel';
 import dayjs from 'dayjs';
 import DataNotFound from 'components/NoData/dataNotFound';
+import AddStageModel from './Models/addStageModel';
 
 export default function SingleEvent() {
     // const userDetails = useContext(UserDataContext);
     // const userTheatreId = userDetails && userDetails[0].theatreId;
     const [eventData, setEventData] = useState([]);
     const [openEditDialogBox, setOpenEditDialogBox] = useState();
+    const [openEditStageDialogBox, setOpenEditStageDialogBox] = useState();
     const [formFieldData, setFormFieldData] = useState([]);
+    const [stageData, setStageData] = useState([]);
 
     const navigate = useNavigate();
     const openPage = (route) => {
@@ -64,9 +67,25 @@ export default function SingleEvent() {
         }
     };
 
+    const fetchStages = async () => {
+        try {
+            const { data, error } = await supabase.from('stages').select('*').eq('eventId', id);
+            if (data) {
+                setStageData(data);
+                console.log('stage data', data);
+            }
+
+            if (error) throw error;
+        } catch (error) {
+            console.log(error)
+        }
+    };
+
+
     useEffect(() => {
         fetchSingleEventData();
         fetchRegistrationFormField();
+        fetchStages();
     }, [id])
 
     const deleteRow = (id) => {
@@ -91,12 +110,45 @@ export default function SingleEvent() {
             console.log('Error:', error.message);
         }
     };
+
+    const deleteStageRow = (id) => {
+        deleteStage(id, fetchStages);
+    };
+
+    const deleteStage = async (stageId, fetchDataCallback) => {
+        try {
+            const response = await supabase.from('stages').delete().eq('id', stageId);
+            console.log('Response from Supabase:', response);
+
+            const { data, error } = response;
+            if (error) throw error;
+
+            if (data && data.length > 0) {
+                console.log('Deleted:', data);
+            } else {
+                console.log('No data returned, but deletion was successful');
+            }
+            fetchDataCallback();
+        } catch (error) {
+            console.log('Error:', error.message);
+        }
+    };
+
     const handleDialogBox = () => {
         setOpenEditDialogBox(true);
     }
+
     const handleEditDialogClose = () => {
         setOpenEditDialogBox(false);
         fetchRegistrationFormField();
+    };
+
+    const handleStageDialogBox = () => {
+        setOpenEditStageDialogBox(true);
+    }
+    const handleEditStageDialogClose = () => {
+        setOpenEditStageDialogBox(false);
+        fetchStages();
     };
 
     const handleViewForm = () => {
@@ -195,13 +247,13 @@ export default function SingleEvent() {
                                 </Grid>
                             </Grid>
                         </Card>
-                        <Grid sx={{ display: 'flex', flexDirection: 'row', position: 'absolute', right: 0, mt: 2 }}>
+                        <Grid sx={{ display: 'flex', flexDirection: 'row', position: 'absolute', right: 0, mt: 4 }}>
                             <MDButton sx={{ mr: 2 }} color='info' onClick={() => handleDialogBox()}>Add Registration Form</MDButton>
                             <MDButton sx={{ mr: 2 }} color='info' onClick={() => handleViewForm()}>View Registration Form</MDButton>
                             <MDButton color='info' onClick={handleViewEventRegistrations}>View Event Registrations</MDButton>
                         </Grid>
                         {formFieldData.length > 0 ?
-                            <TableContainer component={Paper} sx={{ mt: 9, p: 2 }}>
+                            <TableContainer component={Paper} sx={{ mt: 11, p: 2 }}>
                                 <Table>
                                     <TableHead sx={{ display: "table-header-group" }}>
                                         <TableRow>
@@ -224,15 +276,51 @@ export default function SingleEvent() {
                                 </Table>
                             </TableContainer>
                             :
-                            <MDBox sx={{ mt: 9 }}>
+                            <MDBox sx={{ mt: 11 }}>
                                 <DataNotFound message={'No Fields To Show !'} image={noDataImage} />
                             </MDBox>
                         }
+                        <>
+                            <Grid sx={{ display: 'flex', flexDirection: 'row', position: 'absolute', right: 0, mt: 4 }}>
+                                <MDButton sx={{ mr: 2 }} color='info' onClick={() => handleStageDialogBox()}>Add Stage</MDButton>
+                            </Grid>
+                            {stageData.length > 0 ?
+                                <TableContainer component={Paper} sx={{ mt: 11, p: 2 }}>
+                                    <Table>
+                                        <TableHead sx={{ display: "table-header-group" }}>
+                                            <TableRow>
+                                                <TableCell>Name</TableCell>
+                                                <TableCell align='center'>Description</TableCell>
+                                                <TableCell align='center'>Action</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {stageData.map((row) => (
+                                                <TableRow key={row.id}>
+                                                    <TableCell >{row.name}</TableCell>
+                                                    <TableCell align='center'>{row.description}</TableCell>
+                                                    <TableCell align='center'><Button onClick={() => deleteStageRow(row.id)}>Delete</Button></TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                                :
+                                <MDBox sx={{ mt: 11 }}>
+                                    <DataNotFound message={'No Stages To Show !'} image={noDataImage} />
+                                </MDBox>
+                            }
+                        </>
                     </>
                 }
                 <RegistrationFormModel
                     open={openEditDialogBox}
                     onClose={handleEditDialogClose}
+                    eventId={id}
+                />
+                <AddStageModel
+                    open={openEditStageDialogBox}
+                    onClose={handleEditStageDialogClose}
                     eventId={id}
                 />
             </MDBox>
