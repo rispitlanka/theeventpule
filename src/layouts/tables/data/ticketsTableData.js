@@ -47,7 +47,6 @@ export default function data() {
           console.log('ticketsResponseError', ticketsResponseError)
         }
         if (ticketsResponse) {
-          console.log('ticketsResponse', ticketsResponse)
           setAllTickets(ticketsResponse);
 
           const movieIds = ticketsResponse && ticketsResponse.length > 0 && ticketsResponse.map(ticket => ticket.movieId);
@@ -56,7 +55,6 @@ export default function data() {
             console.log('movieResponseError', movieResponseError)
           }
           if (movieResponse) {
-            console.log('movieResponse', movieResponse)
             setMovies(movieResponse);
           }
         }
