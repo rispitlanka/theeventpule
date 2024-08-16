@@ -249,8 +249,8 @@ export default function GetEventTicket() {
                                 ))
                                 :
                                 <>
-                                    {Array.from({ length: fullTicketsCount }, (_, index) => (
-                                        <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+                                    {Array.from({ length: fullTicketsCount }, (_, fullIndex) => (
+                                        <Grid item xs={12} sm={6} md={4} lg={3} key={fullIndex}>
                                             <Card sx={{
                                                 position: 'relative',
                                                 p: 2,
@@ -262,9 +262,9 @@ export default function GetEventTicket() {
                                                 <Box sx={{ backgroundColor: '#e0e0e0', textAlign: 'center', mt: 1, mb: 3 }}>
                                                     <MDTypography variant="h2" sx={{ fontSize: { xs: '1.5rem', md: '2rem' } }}>{organizationName}</MDTypography>
                                                 </Box>
-                                                {bookedTicketsData.length > 0 && (
+                                                {bookedTicketsData.length > fullIndex && (
                                                     <MDTypography variant='body2' sx={{ position: 'absolute', top: { xs: 60, md: 75 }, right: { xs: 15, md: 20 }, fontSize: { xs: '0.75rem', md: '1rem' } }}>
-                                                        Ticket ID : {bookedTicketsData[index]?.id}
+                                                        Ticket ID : {bookedTicketsData[fullIndex]?.id}
                                                     </MDTypography>
                                                 )}
                                                 <Box display="flex" alignItems='center' mt={3}>
@@ -289,16 +289,17 @@ export default function GetEventTicket() {
                                                         <MDTypography sx={{ fontSize: { xs: '0.75rem', md: '1rem' } }}>theEventPulse</MDTypography>
                                                     </Grid>
                                                     <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: { xs: 'center', sm: 'flex-end' } }}>
-                                                        {qrCodes[bookedTicketsData[index]?.id] && (
-                                                            <img src={qrCodes[bookedTicketsData[index]?.id]} alt="qr" style={{ height: '200px', width: '200px', border: '1px solid', maxWidth: '100%' }} />
+                                                        {qrCodes[bookedTicketsData[fullIndex]?.id] && (
+                                                            <img src={qrCodes[bookedTicketsData[fullIndex]?.id]} alt="qr" style={{ height: '200px', width: '200px', border: '1px solid', maxWidth: '100%' }} />
                                                         )}
                                                     </Grid>
                                                 </Grid>
                                             </Card>
                                         </Grid>
                                     ))}
-                                    {Array.from({ length: halfTicketsCount }, (_, index) => (
-                                        <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+
+                                    {Array.from({ length: halfTicketsCount }, (_, halfIndex) => (
+                                        <Grid item xs={12} sm={6} md={4} lg={3} key={halfIndex + fullTicketsCount}>
                                             <Card sx={{
                                                 position: 'relative',
                                                 p: 2,
@@ -310,9 +311,9 @@ export default function GetEventTicket() {
                                                 <Box sx={{ backgroundColor: '#e0e0e0', textAlign: 'center', mt: 1, mb: 3 }}>
                                                     <MDTypography variant="h2" sx={{ fontSize: { xs: '1.5rem', md: '2rem' } }}>{organizationName}</MDTypography>
                                                 </Box>
-                                                {bookedTicketsData.length > 0 && (
+                                                {bookedTicketsData.length > (halfIndex + fullTicketsCount) && (
                                                     <MDTypography variant='body2' sx={{ position: 'absolute', top: { xs: 60, md: 75 }, right: { xs: 15, md: 20 }, fontSize: { xs: '0.75rem', md: '1rem' } }}>
-                                                        Ticket ID : {bookedTicketsData[index]?.id}
+                                                        Ticket ID : {bookedTicketsData[halfIndex + fullTicketsCount]?.id}
                                                     </MDTypography>
                                                 )}
                                                 <Box display="flex" alignItems='center' mt={3}>
@@ -337,14 +338,15 @@ export default function GetEventTicket() {
                                                         <MDTypography sx={{ fontSize: { xs: '0.75rem', md: '1rem' } }}>theEventPulse</MDTypography>
                                                     </Grid>
                                                     <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: { xs: 'center', sm: 'flex-end' } }}>
-                                                        {qrCodes[bookedTicketsData[index]?.id] && (
-                                                            <img src={qrCodes[bookedTicketsData[index]?.id]} alt="qr" style={{ height: '200px', width: '200px', border: '1px solid', maxWidth: '100%' }} />
+                                                        {qrCodes[bookedTicketsData[halfIndex + fullTicketsCount]?.id] && (
+                                                            <img src={qrCodes[bookedTicketsData[halfIndex + fullTicketsCount]?.id]} alt="qr" style={{ height: '200px', width: '200px', border: '1px solid', maxWidth: '100%' }} />
                                                         )}
                                                     </Grid>
                                                 </Grid>
                                             </Card>
                                         </Grid>
                                     ))}
+
                                 </>
                             }
                         </Grid>
