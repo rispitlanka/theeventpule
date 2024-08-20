@@ -146,23 +146,26 @@ export default function TicketsCountModel({ open, handleClose, eventId, venueId,
                         </Box>
                         <Box><Typography>{bookedTicketsCount}/{totalZoneTicketsCount}</Typography></Box>
                         <MDBox p={1}>
-                            <FormControl fullWidth>
-                                <InputLabel>Select Ticket Category</InputLabel>
-                                <Select
-                                    label="Select Ticket Category"
-                                    value={selectedCategoryId}
-                                    onChange={(e) => setSelectedCategoryId(e.target.value)}
-                                    sx={{ height: '45px' }}
-                                >
-                                    {venueData[0]?.zone_ticket_category
-                                        ?.filter(category => category.zoneId === selectedZoneId)
-                                        .map((category) => (
-                                            <MenuItem key={category.id} value={category.id}>
-                                                {category.name}
-                                            </MenuItem>
-                                        ))}
-                                </Select>
-                            </FormControl>
+                            {venueData[0]?.zone_ticket_category
+                                ?.filter(category => category.zoneId === selectedZoneId)
+                                .map((category) => (
+                                    <Box key={category.id} sx={{ mt: 2 }}>
+                                        <TextField
+                                            margin="dense"
+                                            id={`fullTicketsCount-${category.id}`}
+                                            name={`fullTicketsCount-${category.id}`}
+                                            label={`Tickets count for ${category.name}`}
+                                            type="number"
+                                            fullWidth
+                                            variant="standard"
+                                            value={ticketsCount.values[category.id] || 0}
+                                            onChange={(e) => ticketsCount.setFieldValue(category.id, e.target.value)}
+                                            onBlur={ticketsCount.handleBlur}
+                                            error={ticketsCount.touched[category.id] && Boolean(ticketsCount.errors[category.id])}
+                                            helperText={ticketsCount.touched[category.id] && ticketsCount.errors[category.id]}
+                                        />
+                                    </Box>
+                                ))}
                         </MDBox>
                     </MDBox>
                 </DialogContent>
