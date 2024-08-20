@@ -15,6 +15,7 @@ import { FixedSizeGrid } from 'react-window';
 import MDButton from 'components/MDButton'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import AddTicketCategoryModel from './Models/addTicketCategoryModel'
 
 
 export default function AddEventZone() {
@@ -32,6 +33,8 @@ export default function AddEventZone() {
     const [isLoading, setIsLoading] = useState(false);
     const [isClicked, setIsClicked] = useState(false);
     const [error, setError] = useState(null);
+    const [ticketCategories, setTicketCategories] = useState([]);
+    const [openDialogBox, setOpenDialogBox] = useState();
     const queryParams = new URLSearchParams(location.search);
     const isSeatLayout = queryParams.get('isSeatLayout') === 'true';
     const navigate = useNavigate();
@@ -68,6 +71,18 @@ export default function AddEventZone() {
         });
         setIsLoading(false);
         return seatDetails;
+    };
+
+    // dialog model for ticket category
+    const handleAddTicketCategory = (newCategory) => {
+        setTicketCategories((prevCategories) => [...prevCategories, newCategory]);
+    };
+
+    const handleDialogBoxOpen = () => {
+        setOpenDialogBox(true);
+    }
+    const handleDialogBoxClose = () => {
+        setOpenDialogBox(false);
     };
 
     const newZone = useFormik({
@@ -301,6 +316,26 @@ export default function AddEventZone() {
                 if (isSeatLayout) {
                     newSeat.submitForm();
                 }
+                if (!isSeatLayout) {
+                    const dataToInsert = ticketCategories?.map(category => ({
+                        name: category.name,
+                        price: category.price,
+                        zoneId: currentZoneId,
+                        venueId: venueId,
+                    }));
+                    try {
+                        const { data, error } = await supabase.from('zone_ticket_category').insert(dataToInsert).select('*');
+                        if (data) {
+                            console.log('Data added successfully:', data);
+                        }
+                        if (error) {
+                            throw error;
+                        }
+                    } catch (error) {
+                        throw new Error('Error inserting data:', error.message);
+                    }
+                }
+
                 toast.info('Zone has been successfully created!');
                 setTimeout(() => {
                     navigate(-1);
@@ -367,30 +402,48 @@ export default function AddEventZone() {
                                                 helperText={newZone.touched.ticketsCount && newZone.errors.ticketsCount} />
                                         </MDBox>}
                                     <MDBox p={1}>
-                                        <TextField
-                                            fullWidth
-                                            variant="outlined"
-                                            id="outlined-basic"
-                                            label="Full Ticket Price"
-                                            name="price"
-                                            value={newZone.values.price}
-                                            onChange={newZone.handleChange}
-                                            onBlur={newZone.handleBlur}
-                                            error={newZone.touched.price && Boolean(newZone.errors.price)}
-                                            helperText={newZone.touched.price && newZone.errors.price} />
+                                        {!isSeatLayout &&
+                                            ticketCategories.map((ticket, index) => (
+                                                <MDBox mb={2} key={index} display="flex" flexDirection='row' justifyContent="space-between">
+                                                    <MDTypography>{ticket.name}</MDTypography>
+                                                    <MDTypography>{ticket.price}</MDTypography>
+                                                </MDBox>
+                                            ))
+                                        }
+                                    </MDBox>
+                                    {!isSeatLayout &&
+                                        <MDBox p={1}>
+                                            <MDButton color='info' onClick={() => handleDialogBoxOpen()}>Ticket Option</MDButton>
+                                        </MDBox>}
+                                    <MDBox p={1}>
+                                        {isSeatLayout &&
+                                            <TextField
+                                                fullWidth
+                                                variant="outlined"
+                                                id="outlined-basic"
+                                                label="Full Ticket Price"
+                                                name="price"
+                                                value={newZone.values.price}
+                                                onChange={newZone.handleChange}
+                                                onBlur={newZone.handleBlur}
+                                                error={newZone.touched.price && Boolean(newZone.errors.price)}
+                                                helperText={newZone.touched.price && newZone.errors.price} />
+                                        }
                                     </MDBox>
                                     <MDBox p={1}>
-                                        <TextField
-                                            fullWidth
-                                            variant="outlined"
-                                            id="outlined-basic"
-                                            label="Half Ticket Price"
-                                            name="halfPrice"
-                                            value={newZone.values.halfPrice}
-                                            onChange={newZone.handleChange}
-                                            onBlur={newZone.handleBlur}
-                                            error={newZone.touched.halfPrice && Boolean(newZone.errors.halfPrice)}
-                                            helperText={newZone.touched.halfPrice && newZone.errors.halfPrice} />
+                                        {isSeatLayout &&
+                                            <TextField
+                                                fullWidth
+                                                variant="outlined"
+                                                id="outlined-basic"
+                                                label="Half Ticket Price"
+                                                name="halfPrice"
+                                                value={newZone.values.halfPrice}
+                                                onChange={newZone.handleChange}
+                                                onBlur={newZone.handleBlur}
+                                                error={newZone.touched.halfPrice && Boolean(newZone.errors.halfPrice)}
+                                                helperText={newZone.touched.halfPrice && newZone.errors.halfPrice} />
+                                        }
                                     </MDBox>
                                     {isSeatLayout &&
                                         <>
@@ -535,6 +588,11 @@ export default function AddEventZone() {
                     </Grid>
                 </Grid>
             </MDBox>
+            <AddTicketCategoryModel
+                open={openDialogBox}
+                onClose={handleDialogBoxClose}
+                onAddTicketCategory={handleAddTicketCategory}
+            />
             <Footer />
             <ToastContainer
                 position="bottom-right"
