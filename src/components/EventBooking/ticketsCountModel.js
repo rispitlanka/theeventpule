@@ -12,12 +12,13 @@ export default function TicketsCountModel({ open, handleClose, eventId, venueId,
     const [venueData, setVenueData] = useState([]);
     const [selectedZoneId, setSelectedZoneId] = useState(null);
     const [bookedTicketsCount, setBookedTicketsCount] = useState(0);
+    const [selectedCategoryId, setSelectedCategoryId] = useState(null);
 
     const fetchVenue = async () => {
         try {
             const { data, error } = await supabase
                 .from('venues')
-                .select('*, zones_events (*)')
+                .select('*, zones_events (*), zone_ticket_category(*)')
                 .eq('id', venueId)
             if (data) {
                 setVenueData(data);
@@ -144,36 +145,25 @@ export default function TicketsCountModel({ open, handleClose, eventId, venueId,
                             </FormControl>
                         </Box>
                         <Box><Typography>{bookedTicketsCount}/{totalZoneTicketsCount}</Typography></Box>
-                        <TextField
-                            // autoFocus
-                            required
-                            margin="dense"
-                            id="fullTicketsCount"
-                            name="fullTicketsCount"
-                            label="Number Of Full Tickets"
-                            type="number"
-                            fullWidth
-                            variant="standard"
-                            value={ticketsCount.values.fullTicketsCount}
-                            onChange={ticketsCount.handleChange}
-                            onBlur={ticketsCount.handleBlur}
-                            error={ticketsCount.touched.fullTicketsCount && Boolean(ticketsCount.errors.fullTicketsCount)}
-                            helperText={ticketsCount.touched.fullTicketsCount && ticketsCount.errors.fullTicketsCount}
-                        />
-                        <TextField
-                            margin="dense"
-                            id="halfTicketsCount"
-                            name="halfTicketsCount"
-                            label="Number Of Half Tickets"
-                            type="number"
-                            fullWidth
-                            variant="standard"
-                            value={ticketsCount.values.halfTicketsCount}
-                            onChange={ticketsCount.handleChange}
-                            onBlur={ticketsCount.handleBlur}
-                            error={ticketsCount.touched.halfTicketsCount && Boolean(ticketsCount.errors.halfTicketsCount)}
-                            helperText={ticketsCount.touched.halfTicketsCount && ticketsCount.errors.halfTicketsCount}
-                        />
+                        <MDBox p={1}>
+                            <FormControl fullWidth>
+                                <InputLabel>Select Ticket Category</InputLabel>
+                                <Select
+                                    label="Select Ticket Category"
+                                    value={selectedCategoryId}
+                                    onChange={(e) => setSelectedCategoryId(e.target.value)}
+                                    sx={{ height: '45px' }}
+                                >
+                                    {venueData[0]?.zone_ticket_category
+                                        ?.filter(category => category.zoneId === selectedZoneId)
+                                        .map((category) => (
+                                            <MenuItem key={category.id} value={category.id}>
+                                                {category.name}
+                                            </MenuItem>
+                                        ))}
+                                </Select>
+                            </FormControl>
+                        </MDBox>
                     </MDBox>
                 </DialogContent>
                 <DialogActions>
