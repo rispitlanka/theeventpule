@@ -12,7 +12,6 @@ export default function TicketsCountModel({ open, handleClose, eventId, venueId,
     const [venueData, setVenueData] = useState([]);
     const [selectedZoneId, setSelectedZoneId] = useState(null);
     const [bookedTicketsCount, setBookedTicketsCount] = useState(0);
-    const [selectedCategoryId, setSelectedCategoryId] = useState(null);
 
     const fetchVenue = async () => {
         try {
@@ -36,8 +35,6 @@ export default function TicketsCountModel({ open, handleClose, eventId, venueId,
         fetchVenue();
     }, [])
 
-    const fullTicketPrice = selectedZoneId && (venueData[0]?.zones_events?.filter(zone => zone.id === selectedZoneId).map(zone => zone.price)[0]);
-    const halfTicketPrice = selectedZoneId && (venueData[0]?.zones_events?.filter(zone => zone.id === selectedZoneId).map(zone => zone.halfPrice)[0]);
     const zoneName = selectedZoneId && (venueData[0]?.zones_events?.filter(zone => zone.id === selectedZoneId).map(zone => zone.name)[0]);
     const totalZoneTicketsCount = selectedZoneId && (venueData[0]?.zones_events?.filter(zone => zone.id === selectedZoneId).map(zone => zone.ticketsCount)[0]) || 0;
 
@@ -69,30 +66,22 @@ export default function TicketsCountModel({ open, handleClose, eventId, venueId,
         fetchBookedTicketsCount(Number(selectedZoneId), eventId);
     }, [selectedZoneId, eventId])
 
+    const maxTicketsAllowed = totalZoneTicketsCount - bookedTicketsCount;
+
     const ticketsCount = useFormik({
-        initialValues: {
-            fullTicketsCount: '',
-            halfTicketsCount: '',
+        initialValues: {},
+        validationSchema: Yup.object().shape({}),
+        validate: (values) => {
+            const errors = {};
+            const totalTickets = Object.values(values).reduce((sum, val) => sum + (parseInt(val) || 0), 0);
+            if (totalTickets > maxTicketsAllowed) {
+                errors.totalTickets = `Total number of tickets cannot exceed ${maxTicketsAllowed}`;
+            }
+            if (totalTickets <= 0) {
+                errors.totalTickets = `Total number of tickets should be more than 0`;
+            }
+            return errors;
         },
-        validationSchema: Yup.object({
-            fullTicketsCount: Yup
-                .number()
-                .required('Required')
-                .min(0)
-                .test('max-tickets', 'Exceeds available tickets', function (value) {
-                    const { halfTicketsCount } = this.parent;
-                    const maxAvailableTickets = totalZoneTicketsCount - bookedTicketsCount;
-                    return value + (halfTicketsCount || 0) <= maxAvailableTickets;
-                }),
-            halfTicketsCount: Yup
-                .number()
-                .min(0)
-                .test('max-tickets', 'Exceeds available tickets', function (value) {
-                    const { fullTicketsCount } = this.parent;
-                    const maxAvailableTickets = totalZoneTicketsCount - bookedTicketsCount;
-                    return value + (fullTicketsCount || 0) <= maxAvailableTickets;
-                }),
-        }),
         onSubmit: (values) => {
             navigate('/eventBookings/book-seats/get-tickets', {
                 state: {
@@ -103,11 +92,8 @@ export default function TicketsCountModel({ open, handleClose, eventId, venueId,
                     eventDate,
                     eventTime,
                     venueName,
-                    zoneName: zoneName,
-                    fullTicketsCount: values.fullTicketsCount,
-                    halfTicketsCount: values.halfTicketsCount,
-                    fullTicketPrice,
-                    halfTicketPrice,
+                    zoneName,
+                    ticketsCount: values,
                 }
             });
         },
@@ -166,6 +152,11 @@ export default function TicketsCountModel({ open, handleClose, eventId, venueId,
                                         />
                                     </Box>
                                 ))}
+                            {ticketsCount.errors.totalTickets && (
+                                <MDBox mt={2} color="error">
+                                    {ticketsCount.errors.totalTickets}
+                                </MDBox>
+                            )}
                         </MDBox>
                     </MDBox>
                 </DialogContent>
