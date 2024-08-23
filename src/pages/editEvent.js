@@ -32,6 +32,8 @@ export default function EditEvent() {
     const [selectedTime, setSelectedTime] = useState(null);
     const [selectedDate, setSelectedDate] = useState();
     const [selectedVenueId, setSelectedVenueId] = useState();
+    const [selectedCategoryId, setSelectedCategoryId] = useState();
+    const [categoryData, setCategoryData] = useState([]);
     const [venuesData, setVenuesData] = useState([]);
 
     const handleTimeChange = (newTime) => {
@@ -47,6 +49,7 @@ export default function EditEvent() {
             const formattedDate = dayjs(selectedDate).format('YYYY-MM-DD');
             values.startTime = formattedTime;
             values.date = formattedDate;
+            values.categoryId = selectedCategoryId;
             values.venueId = selectedVenueId;
             await editEventData(values);
             resetForm();
@@ -63,7 +66,7 @@ export default function EditEvent() {
         initialValues: {
             name: '',
             description: '',
-            category: '',
+            categoryId: '',
             location: '',
             date: '',
             startTime: '',
@@ -82,7 +85,7 @@ export default function EditEvent() {
         try {
             const { data, error } = await supabase.from('events').update([values]).select('*').eq('id', id);
             if (data) {
-                console.log('Data updated succesfully:', data);
+                console.log('Data updated succesfully:');
             }
             if (error) {
                 throw error;
@@ -104,6 +107,18 @@ export default function EditEvent() {
         }
     };
 
+    const fetchCategoryData = async () => {
+        try {
+            const { data, error } = await supabase.from('event_categories').select('*');
+            if (error) throw error;
+            if (data) {
+                setCategoryData(data);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     useEffect(() => {
         const fetchEventData = async () => {
             try {
@@ -112,12 +127,11 @@ export default function EditEvent() {
                     throw error;
                 }
                 if (data && data.length > 0) {
-                    console.log('event data', data)
                     const event = data[0];
                     editEvent.setValues({
                         name: event.name,
                         description: event.description,
-                        category: event.category,
+                        categoryId: event.categoryId,
                         location: event.location,
                         date: event.date,
                         startTime: event.startTime,
@@ -125,9 +139,9 @@ export default function EditEvent() {
                         contactPhone: event.contactPhone,
                         venueId: event.venueId,
                         isActive: event.isActive,
-
                     });
                     setSelectedVenueId(event.venueId);
+                    setSelectedCategoryId(event.categoryId);
                 }
             } catch (error) {
                 console.error('Error fetching event data:', error.message);
@@ -139,7 +153,7 @@ export default function EditEvent() {
 
     useEffect(() => {
         fetchVenuesData();
-        selectedVenueId
+        fetchCategoryData();
     }, [])
 
     return (
@@ -192,17 +206,23 @@ export default function EditEvent() {
                                         helperText={editEvent.touched.description && editEvent.errors.description} />
                                 </MDBox>
                                 <MDBox p={1}>
-                                    <TextField
-                                        fullWidth
-                                        variant="outlined"
-                                        id="outlined-basic"
-                                        label="Category"
-                                        name="category"
-                                        value={editEvent.values.category}
-                                        onChange={editEvent.handleChange}
-                                        onBlur={editEvent.handleBlur}
-                                        error={editEvent.touched.category && Boolean(editEvent.errors.category)}
-                                        helperText={editEvent.touched.category && editEvent.errors.category} />
+                                    <FormControl fullWidth>
+                                        <InputLabel>Select Category</InputLabel>
+                                        {selectedCategoryId &&
+                                            <Select
+                                                label="Select Category"
+                                                value={selectedCategoryId}
+                                                onChange={(e) => setSelectedCategoryId(e.target.value)}
+                                                sx={{ height: '45px' }}
+                                            >
+                                                {categoryData.map((category) => (
+                                                    <MenuItem key={category.id} value={category.id}>
+                                                        {category.name}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        }
+                                    </FormControl>
                                 </MDBox>
                                 <MDBox p={1}>
                                     <TextField

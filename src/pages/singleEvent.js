@@ -43,7 +43,7 @@ export default function SingleEvent() {
 
     const fetchSingleEventData = async () => {
         try {
-            const { data, error } = await supabase.from('events').select(`*,venues(name)`).eq('id', id);
+            const { data, error } = await supabase.from('events').select(`*,venues(name),event_categories(name)`).eq('id', id);
             if (error) throw error;
             if (data) {
                 setEventData(data);
@@ -58,7 +58,6 @@ export default function SingleEvent() {
             const { data, error } = await supabase.from('registrationForm').select('*').eq('eventId', id);
             if (data) {
                 setFormFieldData(data);
-                console.log('form data', data);
             }
 
             if (error) throw error;
@@ -72,7 +71,6 @@ export default function SingleEvent() {
             const { data, error } = await supabase.from('stages').select('*').eq('eventId', id);
             if (data) {
                 setStageData(data);
-                console.log('stage data', data);
             }
 
             if (error) throw error;
@@ -233,10 +231,10 @@ export default function SingleEvent() {
                                                 Mail: {eventData[0].contactEmail}
                                             </MDTypography>
                                             <MDTypography sx={{ mr: 1 }} variant="button" color="text" fontWeight="regular">
-                                                Status: {eventData[0].status}
+                                                Status: {`${eventData[0].isActive ? 'Active' : 'Inactive'}`}
                                             </MDTypography>
                                             <MDTypography sx={{ mr: 1 }} variant="button" color="text" fontWeight="regular">
-                                                Category: {eventData[0].category}
+                                                Category: {eventData[0].event_categories?.name}
                                             </MDTypography>
                                             <MDTypography variant="button" color="text" fontWeight="regular">
                                                 Description: {eventData[0].description}

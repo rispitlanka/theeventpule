@@ -40,7 +40,7 @@ export default function Events() {
       const { data, error } = await supabase.from('mainEvent').select('*').eq('eventOrganizationId', userOrganizationId);
       if (data) {
         setMainEventdata(data);
-        console.log('Data fetched succesfully:', data);
+        console.log('Data fetched succesfully:');
       }
       if (error) {
         throw error;
@@ -52,7 +52,7 @@ export default function Events() {
 
   const fetchEventsData = async () => {
     try {
-      let query = supabase.from('events').select('*').eq('eventOrganizationId', userOrganizationId);
+      let query = supabase.from('events').select('*,event_categories(name)').eq('eventOrganizationId', userOrganizationId);
       if (mainEventId !== null) {
         query = query.eq('mainEventId', mainEventId);
       } else {
@@ -61,7 +61,7 @@ export default function Events() {
       const { data, error } = await query;
       if (error) throw error;
       setEventsData(data);
-      console.log('Events fetched successfully:', data);
+      console.log('Events fetched successfully:');
     } catch (error) {
       console.error('Error fetching events:', error.message);
     }
@@ -192,7 +192,7 @@ export default function Events() {
                             <TableCell onClick={(e) => { e.stopPropagation(); openPage(`/events/single-event/${row.id}`); }} style={{ cursor: 'pointer' }}>{row.name}</TableCell>
                             <TableCell align='center'>{row.description}</TableCell>
                             <TableCell align='center'><Switch checked={row.isActive} onChange={(e) => handleStatusChange(row.id, e.target.checked)} /></TableCell>
-                            <TableCell align='center'>{row.category}</TableCell>
+                            <TableCell align='center'>{row.event_categories?.name}</TableCell>
                             <TableCell align='center' onClick={(e) => { e.stopPropagation(); openPage(`/events/edit-event/${row.id}`); }} style={{ cursor: 'pointer' }}>Edit</TableCell>
                           </TableRow>
                         ))}
