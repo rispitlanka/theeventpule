@@ -184,7 +184,7 @@ export default function SingleEvent() {
                             `${linearGradient(
                                 rgba(gradients.info.main, 0.6),
                                 rgba(gradients.info.state, 0.6)
-                            )}, url(${backgroundImage})`,
+                            )}, url(${eventData[0]?.eventImage || ''})`,
                         backgroundSize: "cover",
                         backgroundPosition: "50%",
                         overflow: "hidden",
@@ -214,7 +214,7 @@ export default function SingleEvent() {
                                             </MDTypography>
                                             <MDTypography sx={{ mr: 1 }} variant="body2" color="text" fontWeight="regular">
                                                 Time: {formattedTime(eventData[0].startTime)}
-                                            </MDTypography>                                         
+                                            </MDTypography>
                                             <MDTypography variant="body2" color="text" fontWeight="regular">
                                                 Venue: {eventData[0].venues?.name}
                                             </MDTypography>
