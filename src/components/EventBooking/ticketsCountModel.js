@@ -7,7 +7,7 @@ import * as Yup from 'yup';
 import { supabase } from 'pages/supabaseClient';
 import MDBox from 'components/MDBox';
 
-export default function TicketsCountModel({ open, handleClose, eventId, venueId, eventName, eventDate, eventTime, venueName, fullPrice, halfPrice }) {
+export default function TicketsCountModel({ open, handleClose, eventId, venueId, eventName, eventDate, eventTime, venueName, isFree }) {
     const navigate = useNavigate();
     const [venueData, setVenueData] = useState([]);
     const [selectedZoneId, setSelectedZoneId] = useState(null);
@@ -17,7 +17,7 @@ export default function TicketsCountModel({ open, handleClose, eventId, venueId,
         try {
             const { data, error } = await supabase
                 .from('venues')
-                .select('*, zones_events (*)')
+                .select('*, zones_events (*), zone_ticket_category(*)')
                 .eq('id', venueId)
             if (data) {
                 setVenueData(data);
@@ -35,8 +35,6 @@ export default function TicketsCountModel({ open, handleClose, eventId, venueId,
         fetchVenue();
     }, [])
 
-    const fullTicketPrice = selectedZoneId && (venueData[0]?.zones_events?.filter(zone => zone.id === selectedZoneId).map(zone => zone.price)[0]);
-    const halfTicketPrice = selectedZoneId && (venueData[0]?.zones_events?.filter(zone => zone.id === selectedZoneId).map(zone => zone.halfPrice)[0]);
     const zoneName = selectedZoneId && (venueData[0]?.zones_events?.filter(zone => zone.id === selectedZoneId).map(zone => zone.name)[0]);
     const totalZoneTicketsCount = selectedZoneId && (venueData[0]?.zones_events?.filter(zone => zone.id === selectedZoneId).map(zone => zone.ticketsCount)[0]) || 0;
 
@@ -68,30 +66,22 @@ export default function TicketsCountModel({ open, handleClose, eventId, venueId,
         fetchBookedTicketsCount(Number(selectedZoneId), eventId);
     }, [selectedZoneId, eventId])
 
+    const maxTicketsAllowed = totalZoneTicketsCount - bookedTicketsCount;
+
     const ticketsCount = useFormik({
-        initialValues: {
-            fullTicketsCount: '',
-            halfTicketsCount: '',
+        initialValues: {},
+        validationSchema: Yup.object().shape({}),
+        validate: (values) => {
+            const errors = {};
+            const totalTickets = Object.values(values).reduce((sum, val) => sum + (parseInt(val) || 0), 0);
+            if (totalTickets > maxTicketsAllowed) {
+                errors.totalTickets = `Total number of tickets cannot exceed ${maxTicketsAllowed}`;
+            }
+            if (totalTickets <= 0) {
+                errors.totalTickets = `Total number of tickets should be more than 0`;
+            }
+            return errors;
         },
-        validationSchema: Yup.object({
-            fullTicketsCount: Yup
-                .number()
-                .required('Required')
-                .min(0)
-                .test('max-tickets', 'Exceeds available tickets', function (value) {
-                    const { halfTicketsCount } = this.parent;
-                    const maxAvailableTickets = totalZoneTicketsCount - bookedTicketsCount;
-                    return value + (halfTicketsCount || 0) <= maxAvailableTickets;
-                }),
-            halfTicketsCount: Yup
-                .number()
-                .min(0)
-                .test('max-tickets', 'Exceeds available tickets', function (value) {
-                    const { fullTicketsCount } = this.parent;
-                    const maxAvailableTickets = totalZoneTicketsCount - bookedTicketsCount;
-                    return value + (fullTicketsCount || 0) <= maxAvailableTickets;
-                }),
-        }),
         onSubmit: (values) => {
             navigate('/eventBookings/book-seats/get-tickets', {
                 state: {
@@ -102,11 +92,9 @@ export default function TicketsCountModel({ open, handleClose, eventId, venueId,
                     eventDate,
                     eventTime,
                     venueName,
-                    zoneName: zoneName,
-                    fullTicketsCount: values.fullTicketsCount,
-                    halfTicketsCount: values.halfTicketsCount,
-                    fullTicketPrice,
-                    halfTicketPrice,
+                    zoneName,
+                    ticketsCount: values,
+                    isFree,
                 }
             });
         },
@@ -144,36 +132,33 @@ export default function TicketsCountModel({ open, handleClose, eventId, venueId,
                             </FormControl>
                         </Box>
                         <Box><Typography>{bookedTicketsCount}/{totalZoneTicketsCount}</Typography></Box>
-                        <TextField
-                            // autoFocus
-                            required
-                            margin="dense"
-                            id="fullTicketsCount"
-                            name="fullTicketsCount"
-                            label="Number Of Full Tickets"
-                            type="number"
-                            fullWidth
-                            variant="standard"
-                            value={ticketsCount.values.fullTicketsCount}
-                            onChange={ticketsCount.handleChange}
-                            onBlur={ticketsCount.handleBlur}
-                            error={ticketsCount.touched.fullTicketsCount && Boolean(ticketsCount.errors.fullTicketsCount)}
-                            helperText={ticketsCount.touched.fullTicketsCount && ticketsCount.errors.fullTicketsCount}
-                        />
-                        <TextField
-                            margin="dense"
-                            id="halfTicketsCount"
-                            name="halfTicketsCount"
-                            label="Number Of Half Tickets"
-                            type="number"
-                            fullWidth
-                            variant="standard"
-                            value={ticketsCount.values.halfTicketsCount}
-                            onChange={ticketsCount.handleChange}
-                            onBlur={ticketsCount.handleBlur}
-                            error={ticketsCount.touched.halfTicketsCount && Boolean(ticketsCount.errors.halfTicketsCount)}
-                            helperText={ticketsCount.touched.halfTicketsCount && ticketsCount.errors.halfTicketsCount}
-                        />
+                        <MDBox p={1}>
+                            {venueData[0]?.zone_ticket_category
+                                ?.filter(category => category.zoneId === selectedZoneId)
+                                .map((category) => (
+                                    <Box key={category.id} sx={{ mt: 2 }}>
+                                        <TextField
+                                            margin="dense"
+                                            id={`fullTicketsCount-${category.id}`}
+                                            name={`fullTicketsCount-${category.id}`}
+                                            label={`Tickets count for ${category.name}`}
+                                            type="number"
+                                            fullWidth
+                                            variant="standard"
+                                            value={ticketsCount.values[category.id] || 0}
+                                            onChange={(e) => ticketsCount.setFieldValue(category.id, e.target.value)}
+                                            onBlur={ticketsCount.handleBlur}
+                                            error={ticketsCount.touched[category.id] && Boolean(ticketsCount.errors[category.id])}
+                                            helperText={ticketsCount.touched[category.id] && ticketsCount.errors[category.id]}
+                                        />
+                                    </Box>
+                                ))}
+                            {ticketsCount.errors.totalTickets && (
+                                <MDBox mt={2} color="error">
+                                    {ticketsCount.errors.totalTickets}
+                                </MDBox>
+                            )}
+                        </MDBox>
                     </MDBox>
                 </DialogContent>
                 <DialogActions>
@@ -196,4 +181,5 @@ TicketsCountModel.propTypes = {
     eventTime: PropTypes.isRequired,
     fullPrice: PropTypes.isRequired,
     halfPrice: PropTypes.isRequired,
+    isFree: PropTypes.isRequired,
 };

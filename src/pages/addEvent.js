@@ -34,7 +34,9 @@ export default function AddEvent() {
     const [selectedTime, setSelectedTime] = useState(null);
     const [selectedDate, setSelectedDate] = useState();
     const [selectedVenueId, setSelectedVenueId] = useState();
+    const [selectedCategoryId, setSelectedCategoryId] = useState();
     const [venuesData, setVenuesData] = useState([]);
+    const [categoryData, setCategoryData] = useState([]);
     const [mainEventData, setMainEventdata] = useState([]);
     const [selectedMainEventId, setSelectedMainEventId] = useState(null);
 
@@ -52,6 +54,7 @@ export default function AddEvent() {
             const formattedDate = dayjs(selectedDate).format('YYYY-MM-DD');
             values.startTime = formattedTime;
             values.date = formattedDate;
+            values.categoryId = selectedCategoryId;
             values.venueId = selectedVenueId;
             values.mainEventId = selectedMainEventId;
             values.eventOrganizationId = userOrganizationId;
@@ -70,8 +73,7 @@ export default function AddEvent() {
         initialValues: {
             name: '',
             description: '',
-            category: '',
-            location: '',
+            categoryId: '',
             date: '',
             startTime: '',
             contactEmail: '',
@@ -80,6 +82,7 @@ export default function AddEvent() {
             eventOrganizationId: '',
             mainEventId: '',
             isActive: true,
+            isFree: false,
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
@@ -91,7 +94,7 @@ export default function AddEvent() {
         try {
             const { data, error } = await supabase.from('events').insert([values]).select('*');
             if (data) {
-                console.log('Data added succesfully:', data);
+                console.log('Data added succesfully:');
             }
             if (error) {
                 throw error;
@@ -113,12 +116,23 @@ export default function AddEvent() {
         }
     };
 
+    const fetchCategoryData = async () => {
+        try {
+            const { data, error } = await supabase.from('event_categories').select('*');
+            if (error) throw error;
+            if (data) {
+                setCategoryData(data);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     const fetchMainEventData = async () => {
         try {
             const { data, error } = await supabase.from('mainEvent').select('*').eq('eventOrganizationId', userOrganizationId);
             if (data) {
                 setMainEventdata(data);
-                console.log('Data fetched succesfully:', data);
             }
             if (error) {
                 throw error;
@@ -130,12 +144,8 @@ export default function AddEvent() {
 
     useEffect(() => {
         fetchVenuesData();
-        selectedVenueId
-    }, [])
-
-    useEffect(() => {
+        fetchCategoryData();
         fetchMainEventData();
-        selectedMainEventId
     }, [])
 
     return (
@@ -188,30 +198,21 @@ export default function AddEvent() {
                                         helperText={newEvent.touched.description && newEvent.errors.description} />
                                 </MDBox>
                                 <MDBox p={1}>
-                                    <TextField
-                                        fullWidth
-                                        variant="outlined"
-                                        id="outlined-basic"
-                                        label="Category"
-                                        name="category"
-                                        value={newEvent.values.category}
-                                        onChange={newEvent.handleChange}
-                                        onBlur={newEvent.handleBlur}
-                                        error={newEvent.touched.category && Boolean(newEvent.errors.category)}
-                                        helperText={newEvent.touched.category && newEvent.errors.category} />
-                                </MDBox>
-                                <MDBox p={1}>
-                                    <TextField
-                                        fullWidth
-                                        variant="outlined"
-                                        id="outlined-basic"
-                                        label="Location"
-                                        name="location"
-                                        value={newEvent.values.location}
-                                        onChange={newEvent.handleChange}
-                                        onBlur={newEvent.handleBlur}
-                                        error={newEvent.touched.location && Boolean(newEvent.errors.location)}
-                                        helperText={newEvent.touched.location && newEvent.errors.location} />
+                                    <FormControl fullWidth>
+                                        <InputLabel>Select Category</InputLabel>
+                                        <Select
+                                            label="Select Category"
+                                            value={selectedCategoryId}
+                                            onChange={(e) => setSelectedCategoryId(e.target.value)}
+                                            sx={{ height: '45px' }}
+                                        >
+                                            {categoryData.map((category) => (
+                                                <MenuItem key={category.id} value={category.id}>
+                                                    {category.name}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
                                 </MDBox>
                                 <MDBox p={1}>
                                     <TextField fullWidth
@@ -305,6 +306,13 @@ export default function AddEvent() {
                                         Status:
                                         <Switch label="Status" checked={newEvent.values.isActive} onChange={(e) => newEvent.setFieldValue('isActive', e.target.checked)} />
                                         {newEvent.values.isActive ? 'Active' : 'Inactive'}
+                                    </MDTypography>
+                                </MDBox>
+                                <MDBox p={1}>
+                                    <MDTypography fontWeight={'light'}>
+                                        Ticket:
+                                        <Switch label="Ticket" checked={newEvent.values.isFree} onChange={(e) => newEvent.setFieldValue('isFree', e.target.checked)} />
+                                        {newEvent.values.isFree ? 'Free' : 'Paid'}
                                     </MDTypography>
                                 </MDBox>
                                 <MDBox p={1}>
