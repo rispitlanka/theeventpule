@@ -67,7 +67,6 @@ export default function EditEvent() {
             name: '',
             description: '',
             categoryId: '',
-            location: '',
             date: '',
             startTime: '',
             contactEmail: '',
@@ -133,7 +132,6 @@ export default function EditEvent() {
                         name: event.name,
                         description: event.description,
                         categoryId: event.categoryId,
-                        location: event.location,
                         date: event.date,
                         startTime: event.startTime,
                         contactEmail: event.contactEmail,
@@ -225,20 +223,7 @@ export default function EditEvent() {
                                             </Select>
                                         }
                                     </FormControl>
-                                </MDBox>
-                                <MDBox p={1}>
-                                    <TextField
-                                        fullWidth
-                                        variant="outlined"
-                                        id="outlined-basic"
-                                        label="Location"
-                                        name="location"
-                                        value={editEvent.values.location}
-                                        onChange={editEvent.handleChange}
-                                        onBlur={editEvent.handleBlur}
-                                        error={editEvent.touched.location && Boolean(editEvent.errors.location)}
-                                        helperText={editEvent.touched.location && editEvent.errors.location} />
-                                </MDBox>
+                                </MDBox>                               
                                 <MDBox p={1}>
                                     <TextField fullWidth
                                         variant="outlined"
