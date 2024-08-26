@@ -74,7 +74,6 @@ export default function AddEvent() {
             name: '',
             description: '',
             categoryId: '',
-            location: '',
             date: '',
             startTime: '',
             contactEmail: '',
@@ -214,19 +213,6 @@ export default function AddEvent() {
                                             ))}
                                         </Select>
                                     </FormControl>
-                                </MDBox>
-                                <MDBox p={1}>
-                                    <TextField
-                                        fullWidth
-                                        variant="outlined"
-                                        id="outlined-basic"
-                                        label="Location"
-                                        name="location"
-                                        value={newEvent.values.location}
-                                        onChange={newEvent.handleChange}
-                                        onBlur={newEvent.handleBlur}
-                                        error={newEvent.touched.location && Boolean(newEvent.errors.location)}
-                                        helperText={newEvent.touched.location && newEvent.errors.location} />
                                 </MDBox>
                                 <MDBox p={1}>
                                     <TextField fullWidth

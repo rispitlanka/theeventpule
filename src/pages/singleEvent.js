@@ -214,10 +214,7 @@ export default function SingleEvent() {
                                             </MDTypography>
                                             <MDTypography sx={{ mr: 1 }} variant="body2" color="text" fontWeight="regular">
                                                 Time: {formattedTime(eventData[0].startTime)}
-                                            </MDTypography>
-                                            <MDTypography sx={{ mr: 1 }} variant="body2" color="text" fontWeight="regular">
-                                                Location: {eventData[0].location}
-                                            </MDTypography>
+                                            </MDTypography>                                         
                                             <MDTypography variant="body2" color="text" fontWeight="regular">
                                                 Venue: {eventData[0].venues?.name}
                                             </MDTypography>
