@@ -74,6 +74,7 @@ export default function EditEvent() {
             contactPhone: '',
             venueId: '',
             isActive: '',
+            isFree: '',
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
@@ -139,6 +140,7 @@ export default function EditEvent() {
                         contactPhone: event.contactPhone,
                         venueId: event.venueId,
                         isActive: event.isActive,
+                        isFree: event.isFree,
                     });
                     setSelectedVenueId(event.venueId);
                     setSelectedCategoryId(event.categoryId);
@@ -312,6 +314,13 @@ export default function EditEvent() {
                                         Status:
                                         <Switch label="Status" checked={editEvent.values.isActive} onChange={(e) => editEvent.setFieldValue('isActive', e.target.checked)} />
                                         {editEvent.values.isActive ? 'Active' : 'Inactive'}
+                                    </MDTypography>
+                                </MDBox>
+                                <MDBox p={1}>
+                                    <MDTypography fontWeight={'light'}>
+                                        Ticket:
+                                        <Switch label="Ticket" checked={editEvent.values.isFree} onChange={(e) => editEvent.setFieldValue('isFree', e.target.checked)} />
+                                        {editEvent.values.isFree ? 'Free' : 'Paid'}
                                     </MDTypography>
                                 </MDBox>
                                 <MDBox p={1}>

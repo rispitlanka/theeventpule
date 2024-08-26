@@ -23,7 +23,7 @@ export default function GetEventTicket() {
     const userOrganizationId = userDetails && userDetails[0].eventOrganizationId;
     const navigate = useNavigate();
     const location = useLocation();
-    const { bookedSeats, eventId, venueId, zoneId, eventName, eventDate, eventTime, venueName, zoneName, ticketsCount, } = location.state || { bookedSeats: [] };
+    const { bookedSeats, eventId, venueId, zoneId, eventName, eventDate, eventTime, venueName, zoneName, ticketsCount, isFree } = location.state || { bookedSeats: [] };
     const [organizationName, setOrganizationName] = useState([]);
     const [stageIds, setStageIds] = useState([]);
     const [bookedTicketsData, setBookedTicketsData] = useState([]);
@@ -77,6 +77,9 @@ export default function GetEventTicket() {
 
     const calculateTotalPrice = () => {
         let totalPrice = 0;
+        if (isFree) {
+            return totalPrice = 'Free';
+        }
         if (bookedSeats && bookedSeats.length > 0) {
             bookedSeats.forEach(seat => {
                 const price = parseInt(seat.price);
@@ -124,7 +127,7 @@ export default function GetEventTicket() {
                                 zoneId: zoneId,
                                 eventOrganizationId: userOrganizationId,
                                 bookedBy: organizationName,
-                                price: category.price,
+                                price: isFree ? 'Free' : category.price,
                                 totalPrice: calculateTotalPrice(),
                                 referenceId: refId,
                                 categoryId: category.id,
@@ -309,7 +312,7 @@ export default function GetEventTicket() {
                                                     <Box display="flex" alignItems='center' mt={1}>
                                                         <MDTypography sx={{ mr: 1 }}>Price:</MDTypography>
                                                         <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>
-                                                            {categoryData.find(category => category.id === parseInt(categoryId))?.price || "Price not available"}
+                                                            {isFree ? 'Free' : (categoryData.find(category => category.id === parseInt(categoryId))?.price || "Price not available")}
                                                         </MDTypography>
                                                     </Box>
                                                     <Grid container mt={3}>
@@ -334,7 +337,7 @@ export default function GetEventTicket() {
                     </div>
                 </Box>
                 <Box sx={{ mt: 'auto', textAlign: 'right', p: 2 }}>
-                    <MDTypography sx={{ mb: 2 }}>Total Price: LKR {calculateTotalPrice()}</MDTypography>
+                    <MDTypography sx={{ mb: 2 }}>Total Price: {isFree ? 'Free' : calculateTotalPrice()}</MDTypography>
                     <MDButton color='info' onClick={handleBookTickets} disabled={bookedTicketsData.length > 0}>Book Tickets</MDButton>
                 </Box>
             </MDBox>

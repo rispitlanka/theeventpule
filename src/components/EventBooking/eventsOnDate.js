@@ -181,6 +181,7 @@ export default function EventsOnDate(date) {
                             venueName={selectedEvent.venues?.name}
                             fullPrice={selectedEvent.venues?.zones_events[0]?.price}
                             halfPrice={selectedEvent.venues?.zones_events[0]?.halfPrice}
+                            isFree={selectedEvent.isFree}
                         />
                     )}
                 </>

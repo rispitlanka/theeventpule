@@ -83,6 +83,7 @@ export default function AddEvent() {
             eventOrganizationId: '',
             mainEventId: '',
             isActive: true,
+            isFree: false,
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
@@ -319,6 +320,13 @@ export default function AddEvent() {
                                         Status:
                                         <Switch label="Status" checked={newEvent.values.isActive} onChange={(e) => newEvent.setFieldValue('isActive', e.target.checked)} />
                                         {newEvent.values.isActive ? 'Active' : 'Inactive'}
+                                    </MDTypography>
+                                </MDBox>
+                                <MDBox p={1}>
+                                    <MDTypography fontWeight={'light'}>
+                                        Ticket:
+                                        <Switch label="Ticket" checked={newEvent.values.isFree} onChange={(e) => newEvent.setFieldValue('isFree', e.target.checked)} />
+                                        {newEvent.values.isFree ? 'Free' : 'Paid'}
                                     </MDTypography>
                                 </MDBox>
                                 <MDBox p={1}>

@@ -7,7 +7,7 @@ import * as Yup from 'yup';
 import { supabase } from 'pages/supabaseClient';
 import MDBox from 'components/MDBox';
 
-export default function TicketsCountModel({ open, handleClose, eventId, venueId, eventName, eventDate, eventTime, venueName, fullPrice, halfPrice }) {
+export default function TicketsCountModel({ open, handleClose, eventId, venueId, eventName, eventDate, eventTime, venueName, isFree }) {
     const navigate = useNavigate();
     const [venueData, setVenueData] = useState([]);
     const [selectedZoneId, setSelectedZoneId] = useState(null);
@@ -94,6 +94,7 @@ export default function TicketsCountModel({ open, handleClose, eventId, venueId,
                     venueName,
                     zoneName,
                     ticketsCount: values,
+                    isFree,
                 }
             });
         },
@@ -180,4 +181,5 @@ TicketsCountModel.propTypes = {
     eventTime: PropTypes.isRequired,
     fullPrice: PropTypes.isRequired,
     halfPrice: PropTypes.isRequired,
+    isFree: PropTypes.isRequired,
 };
