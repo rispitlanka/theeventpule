@@ -9,6 +9,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import { FormControl, InputLabel, MenuItem, Select, Switch, TextField } from '@mui/material';
+import ImageIcon from '@mui/icons-material/Image';
+import UploadIcon from '@mui/icons-material/Upload';
 
 // Material Dashboard 2 React example components
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout';
@@ -35,6 +37,8 @@ export default function EditEvent() {
     const [selectedCategoryId, setSelectedCategoryId] = useState();
     const [categoryData, setCategoryData] = useState([]);
     const [venuesData, setVenuesData] = useState([]);
+    const [eventImagePreview, setEventImagePreview] = useState(null);
+    const [eventImageChanged, setEventImageChanged] = useState(false);
 
     const handleTimeChange = (newTime) => {
         setSelectedTime(newTime);
@@ -43,8 +47,36 @@ export default function EditEvent() {
         setSelectedDate((date));
     }
 
+    const handleEventImageChange = (event) => {
+        const file = event.currentTarget.files[0];
+        editEvent.setFieldValue('eventImage', file);
+        setEventImagePreview(URL.createObjectURL(file));
+        setEventImageChanged(true);
+    };
+
     const onSubmit = async (values, { resetForm }) => {
         try {
+            if (eventImageChanged && editEvent.values.eventImage) {
+                const file = editEvent.values.eventImage;
+
+                const { data: imageData, error: imageError } = await supabase.storage
+                    .from('events_images')
+                    .upload(`${file.name}`, file, {
+                        cacheControl: '3600',
+                        upsert: false,
+                    });
+
+                if (imageError) {
+                    throw imageError;
+                }
+
+                if (imageData) {
+                    const imgURL = supabase.storage.from('events_images').getPublicUrl(imageData.path);
+                    values.eventImage = imgURL.data.publicUrl;
+                } else {
+                    throw new Error('Failed to upload image');
+                }
+            }
             const formattedTime = dayjs(selectedTime).format('hh:mm A');
             const formattedDate = dayjs(selectedDate).format('YYYY-MM-DD');
             values.startTime = formattedTime;
@@ -74,6 +106,7 @@ export default function EditEvent() {
             venueId: '',
             isActive: '',
             isFree: '',
+            eventImage: '',
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
@@ -139,15 +172,16 @@ export default function EditEvent() {
                         venueId: event.venueId,
                         isActive: event.isActive,
                         isFree: event.isFree,
+                        eventImage: event.eventImage,
                     });
                     setSelectedVenueId(event.venueId);
                     setSelectedCategoryId(event.categoryId);
+                    setEventImagePreview(event.eventImage);
                 }
             } catch (error) {
                 console.error('Error fetching event data:', error.message);
             }
         };
-
         fetchEventData();
     }, [id]);
 
@@ -179,135 +213,196 @@ export default function EditEvent() {
                                 </MDTypography>
                             </MDBox>
                             <MDBox p={2}>
-                                <MDBox p={1}>
-                                    <TextField
-                                        fullWidth
-                                        variant="outlined"
-                                        id="outlined-basic"
-                                        label="Name"
-                                        name="name"
-                                        value={editEvent.values.name}
-                                        onChange={editEvent.handleChange}
-                                        onBlur={editEvent.handleBlur}
-                                        error={editEvent.touched.name && Boolean(editEvent.errors.name)}
-                                        helperText={editEvent.touched.name && editEvent.errors.name} />
-                                </MDBox>
-                                <MDBox p={1}>
-                                    <TextField
-                                        fullWidth
-                                        variant="outlined"
-                                        id="outlined-basic"
-                                        label="Description"
-                                        name="description"
-                                        value={editEvent.values.description}
-                                        onChange={editEvent.handleChange}
-                                        onBlur={editEvent.handleBlur}
-                                        error={editEvent.touched.description && Boolean(editEvent.errors.description)}
-                                        helperText={editEvent.touched.description && editEvent.errors.description} />
-                                </MDBox>
-                                <MDBox p={1}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>Select Category</InputLabel>
-                                        {selectedCategoryId &&
-                                            <Select
-                                                label="Select Category"
-                                                value={selectedCategoryId}
-                                                onChange={(e) => setSelectedCategoryId(e.target.value)}
-                                                sx={{ height: '45px' }}
-                                            >
-                                                {categoryData.map((category) => (
-                                                    <MenuItem key={category.id} value={category.id}>
-                                                        {category.name}
-                                                    </MenuItem>
-                                                ))}
-                                            </Select>
-                                        }
-                                    </FormControl>
-                                </MDBox>                               
-                                <MDBox p={1}>
-                                    <TextField fullWidth
-                                        variant="outlined"
-                                        id="outlined-basic"
-                                        label="Contact Email"
-                                        name="contactEmail"
-                                        value={editEvent.values.contactEmail}
-                                        onChange={editEvent.handleChange}
-                                        onBlur={editEvent.handleBlur}
-                                        error={editEvent.touched.contactEmail && Boolean(editEvent.errors.contactEmail)}
-                                        helperText={editEvent.touched.contactEmail && editEvent.errors.contactEmail} />
-                                </MDBox>
-                                <MDBox p={1}>
-                                    <TextField fullWidth
-                                        variant="outlined"
-                                        id="outlined-basic"
-                                        label="Contact Phone"
-                                        name="contactPhone"
-                                        value={editEvent.values.contactPhone}
-                                        onChange={editEvent.handleChange}
-                                        onBlur={editEvent.handleBlur}
-                                        error={editEvent.touched.contactPhone && Boolean(editEvent.errors.contactPhone)}
-                                        helperText={editEvent.touched.contactPhone && editEvent.errors.contactPhone} />
-                                </MDBox>
-                                <MDBox p={1}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>Select Venue</InputLabel>
-                                        {selectedVenueId && (
-                                            <Select
-                                                label='Select Venue'
-                                                value={selectedVenueId}
-                                                onChange={(e) => setSelectedVenueId(e.target.value)}
-                                                sx={{ height: '45px' }}
-                                            >
-                                                {venuesData && venuesData.map((venue) => (
-                                                    <MenuItem key={venue.id} value={venue.id}>
-                                                        {venue.name}
-                                                    </MenuItem>
-                                                ))}
-                                            </Select>
-                                        )}
-                                    </FormControl>
-                                </MDBox>
-                                <MDBox ml={1} mb={1}>
-                                    <Grid sx={{ display: 'flex', flexDirection: 'row', }}>
-                                        <MDBox sx={{ mr: 2 }} >
-                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                <DemoContainer components={['DatePicker']}>
-                                                    <DatePicker
-                                                        label="Select Date"
-                                                        value={selectedDate}
-                                                        onChange={handleDateChange}
-                                                    />
-                                                </DemoContainer>
-                                            </LocalizationProvider>
+                                <Grid container spacing={5} display={'flex'} flexDirection={'row'}>
+                                    <Grid item xs={6}>
+                                        <MDBox p={1}>
+                                            <TextField
+                                                fullWidth
+                                                variant="outlined"
+                                                id="outlined-basic"
+                                                label="Name"
+                                                name="name"
+                                                value={editEvent.values.name}
+                                                onChange={editEvent.handleChange}
+                                                onBlur={editEvent.handleBlur}
+                                                error={editEvent.touched.name && Boolean(editEvent.errors.name)}
+                                                helperText={editEvent.touched.name && editEvent.errors.name} />
                                         </MDBox>
-                                        <MDBox sx={{ ml: 2 }}>
-                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                <DemoContainer components={['MobileTimePicker']}>
-                                                    <MobileTimePicker
-                                                        label={'Time'}
-                                                        openTo="hours"
-                                                        value={selectedTime}
-                                                        onChange={handleTimeChange}
-                                                    />
-                                                </DemoContainer>
-                                            </LocalizationProvider>
+                                        <MDBox p={1}>
+                                            <TextField
+                                                fullWidth
+                                                variant="outlined"
+                                                id="outlined-basic"
+                                                label="Description"
+                                                name="description"
+                                                value={editEvent.values.description}
+                                                onChange={editEvent.handleChange}
+                                                onBlur={editEvent.handleBlur}
+                                                error={editEvent.touched.description && Boolean(editEvent.errors.description)}
+                                                helperText={editEvent.touched.description && editEvent.errors.description} />
+                                        </MDBox>
+                                        <MDBox p={1}>
+                                            <FormControl fullWidth>
+                                                <InputLabel>Select Category</InputLabel>
+                                                {selectedCategoryId &&
+                                                    <Select
+                                                        label="Select Category"
+                                                        value={selectedCategoryId}
+                                                        onChange={(e) => setSelectedCategoryId(e.target.value)}
+                                                        sx={{ height: '45px' }}
+                                                    >
+                                                        {categoryData.map((category) => (
+                                                            <MenuItem key={category.id} value={category.id}>
+                                                                {category.name}
+                                                            </MenuItem>
+                                                        ))}
+                                                    </Select>
+                                                }
+                                            </FormControl>
+                                        </MDBox>
+                                        <MDBox p={1}>
+                                            <TextField fullWidth
+                                                variant="outlined"
+                                                id="outlined-basic"
+                                                label="Contact Email"
+                                                name="contactEmail"
+                                                value={editEvent.values.contactEmail}
+                                                onChange={editEvent.handleChange}
+                                                onBlur={editEvent.handleBlur}
+                                                error={editEvent.touched.contactEmail && Boolean(editEvent.errors.contactEmail)}
+                                                helperText={editEvent.touched.contactEmail && editEvent.errors.contactEmail} />
+                                        </MDBox>
+                                        <MDBox p={1}>
+                                            <TextField fullWidth
+                                                variant="outlined"
+                                                id="outlined-basic"
+                                                label="Contact Phone"
+                                                name="contactPhone"
+                                                value={editEvent.values.contactPhone}
+                                                onChange={editEvent.handleChange}
+                                                onBlur={editEvent.handleBlur}
+                                                error={editEvent.touched.contactPhone && Boolean(editEvent.errors.contactPhone)}
+                                                helperText={editEvent.touched.contactPhone && editEvent.errors.contactPhone} />
+                                        </MDBox>
+                                        <MDBox p={1}>
+                                            <FormControl fullWidth>
+                                                <InputLabel>Select Venue</InputLabel>
+                                                {selectedVenueId && (
+                                                    <Select
+                                                        label='Select Venue'
+                                                        value={selectedVenueId}
+                                                        onChange={(e) => setSelectedVenueId(e.target.value)}
+                                                        sx={{ height: '45px' }}
+                                                    >
+                                                        {venuesData && venuesData.map((venue) => (
+                                                            <MenuItem key={venue.id} value={venue.id}>
+                                                                {venue.name}
+                                                            </MenuItem>
+                                                        ))}
+                                                    </Select>
+                                                )}
+                                            </FormControl>
+                                        </MDBox>
+                                        <MDBox ml={1} mb={1}>
+                                            <Grid sx={{ display: 'flex', flexDirection: 'row', }}>
+                                                <MDBox sx={{ mr: 2 }} >
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <DemoContainer components={['DatePicker']}>
+                                                            <DatePicker
+                                                                label="Select Date"
+                                                                value={selectedDate}
+                                                                onChange={handleDateChange}
+                                                            />
+                                                        </DemoContainer>
+                                                    </LocalizationProvider>
+                                                </MDBox>
+                                                <MDBox sx={{ ml: 2 }}>
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <DemoContainer components={['MobileTimePicker']}>
+                                                            <MobileTimePicker
+                                                                label={'Time'}
+                                                                openTo="hours"
+                                                                value={selectedTime}
+                                                                onChange={handleTimeChange}
+                                                            />
+                                                        </DemoContainer>
+                                                    </LocalizationProvider>
+                                                </MDBox>
+                                            </Grid>
                                         </MDBox>
                                     </Grid>
-                                </MDBox>
-                                <MDBox p={1}>
-                                    <MDTypography fontWeight={'light'}>
-                                        Status:
-                                        <Switch label="Status" checked={editEvent.values.isActive} onChange={(e) => editEvent.setFieldValue('isActive', e.target.checked)} />
-                                        {editEvent.values.isActive ? 'Active' : 'Inactive'}
-                                    </MDTypography>
-                                </MDBox>
-                                <MDBox p={1}>
-                                    <MDTypography fontWeight={'light'}>
-                                        Ticket:
-                                        <Switch label="Ticket" checked={editEvent.values.isFree} onChange={(e) => editEvent.setFieldValue('isFree', e.target.checked)} />
-                                        {editEvent.values.isFree ? 'Free' : 'Paid'}
-                                    </MDTypography>
-                                </MDBox>
+                                    <Grid item xs={6}>
+                                        <MDBox p={1}>
+                                            <Grid container spacing={3}>
+                                                <Grid item xs={6} display={'flex'} flexDirection={'column'}>
+                                                    <MDTypography>Event Image</MDTypography>
+                                                    {eventImagePreview ? (
+                                                        <MDBox
+                                                            display="flex"
+                                                            justifyContent="center"
+                                                            alignItems="center"
+                                                            border="1px dashed"
+                                                            borderRadius="4px"
+                                                            width="50%"
+                                                            maxHeight="200px"
+                                                            mb={1}
+                                                            height="100px"
+                                                        >
+                                                            <img src={eventImagePreview} alt="Theatre Preview" style={{ width: '100%', maxHeight: '100px' }} />
+                                                        </MDBox>
+                                                    ) : (
+                                                        <MDBox
+                                                            display="flex"
+                                                            justifyContent="center"
+                                                            alignItems="center"
+                                                            border="1px dashed"
+                                                            borderRadius="4px"
+                                                            width="50%"
+                                                            maxHeheight="200px"
+                                                            mb={1}
+                                                            height="100px"
+                                                        >
+                                                            <ImageIcon />
+                                                        </MDBox>
+                                                    )}
+                                                    <MDBox display="flex" justifyContent='left'>
+                                                        <MDButton
+                                                            size="small"
+                                                            variant="outlined"
+                                                            component="label"
+                                                            color="info"
+                                                            startIcon={<UploadIcon />}
+                                                        >
+                                                            Upload
+                                                            <input
+                                                                type="file"
+                                                                hidden
+                                                                onChange={handleEventImageChange}
+                                                            />
+                                                        </MDButton>
+                                                    </MDBox>
+                                                    {editEvent.touched.eventImage && editEvent.errors.eventImage && (
+                                                        <MDTypography color="error">{editEvent.errors.eventImage}</MDTypography>
+                                                    )}
+                                                </Grid>
+                                            </Grid>
+                                        </MDBox>
+                                        <MDBox p={1}>
+                                            <MDTypography fontWeight={'light'}>
+                                                Status:
+                                                <Switch label="Status" checked={editEvent.values.isActive} onChange={(e) => editEvent.setFieldValue('isActive', e.target.checked)} />
+                                                {editEvent.values.isActive ? 'Active' : 'Inactive'}
+                                            </MDTypography>
+                                        </MDBox>
+                                        <MDBox p={1}>
+                                            <MDTypography fontWeight={'light'}>
+                                                Ticket:
+                                                <Switch label="Ticket" checked={editEvent.values.isFree} onChange={(e) => editEvent.setFieldValue('isFree', e.target.checked)} />
+                                                {editEvent.values.isFree ? 'Free' : 'Paid'}
+                                            </MDTypography>
+                                        </MDBox>
+                                    </Grid>
+                                </Grid>
                                 <MDBox p={1}>
                                     <MDButton color='info' type='submit'>Save</MDButton>
                                 </MDBox>
