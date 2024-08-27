@@ -1,4 +1,4 @@
-import { Box, Button, Card, CircularProgress, Grid, IconButton, TextField, Typography } from '@mui/material'
+import { Box, Button, Card, CircularProgress, Grid, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material'
 import MDBox from 'components/MDBox'
 import MDTypography from 'components/MDTypography'
 import Footer from 'examples/Footer'
@@ -322,6 +322,7 @@ export default function AddEventZone() {
                         price: category.price,
                         zoneId: currentZoneId,
                         venueId: venueId,
+                        ticketsCount: category.ticketsCount,
                     }));
                     try {
                         const { data, error } = await supabase.from('zone_ticket_category').insert(dataToInsert).select('*');
@@ -403,12 +404,26 @@ export default function AddEventZone() {
                                         </MDBox>}
                                     <MDBox p={1}>
                                         {!isSeatLayout &&
-                                            ticketCategories.map((ticket, index) => (
-                                                <MDBox mb={2} key={index} display="flex" flexDirection='row' justifyContent="space-between">
-                                                    <MDTypography>{ticket.name}</MDTypography>
-                                                    <MDTypography>{ticket.price}</MDTypography>
-                                                </MDBox>
-                                            ))
+                                            <TableContainer component={Paper}>
+                                                <Table >
+                                                    <TableHead sx={{ display: "table-header-group" }}>
+                                                        <TableRow>
+                                                            <TableCell>Name</TableCell>
+                                                            <TableCell align="right">Price</TableCell>
+                                                            <TableCell align="right">Tickets Count</TableCell>
+                                                        </TableRow>
+                                                    </TableHead>
+                                                    <TableBody>
+                                                        {ticketCategories.map((ticket, index) => (
+                                                            <TableRow key={index}>
+                                                                <TableCell>{ticket.name}</TableCell>
+                                                                <TableCell align="right">{ticket.price}</TableCell>
+                                                                <TableCell align="right">{ticket.ticketsCount}</TableCell>
+                                                            </TableRow>
+                                                        ))}
+                                                    </TableBody>
+                                                </Table>
+                                            </TableContainer>
                                         }
                                     </MDBox>
                                     {!isSeatLayout &&

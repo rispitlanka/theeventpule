@@ -28,15 +28,18 @@ export default function AddTicketCategoryModel({ open, onClose, onAddTicketCateg
         initialValues: {
             name: '',
             price: '',
+            ticketsCount: '',
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
             price: Yup.number().required('Required'),
+            ticketsCount: Yup.number().required('Required'),
         }),
         onSubmit,
     });
 
     return (
+        
         <Dialog onClose={handleClose} open={open} maxWidth="sm" fullWidth>
             <DialogTitle>Add New Ticket Category</DialogTitle>
             <form onSubmit={newTicketCategory.handleSubmit}>
@@ -54,7 +57,6 @@ export default function AddTicketCategoryModel({ open, onClose, onAddTicketCateg
                                 helperText={newTicketCategory.touched.name && newTicketCategory.errors.name}
                             />
                         </Grid>
-
                         <Grid item xs={12}>
                             <TextField
                                 fullWidth
@@ -65,6 +67,19 @@ export default function AddTicketCategoryModel({ open, onClose, onAddTicketCateg
                                 onBlur={newTicketCategory.handleBlur}
                                 error={newTicketCategory.touched.price && Boolean(newTicketCategory.errors.price)}
                                 helperText={newTicketCategory.touched.price && newTicketCategory.errors.price}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                fullWidth
+                                type="number"
+                                label="Tickets Count"
+                                name="ticketsCount"
+                                value={newTicketCategory.values.ticketsCount}
+                                onChange={newTicketCategory.handleChange}
+                                onBlur={newTicketCategory.handleBlur}
+                                error={newTicketCategory.touched.ticketsCount && Boolean(newTicketCategory.errors.ticketsCount)}
+                                helperText={newTicketCategory.touched.ticketsCount && newTicketCategory.errors.ticketsCount}
                             />
                         </Grid>
                     </Grid>
