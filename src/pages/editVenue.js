@@ -24,7 +24,6 @@ export default function EditVenue() {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [locationData, setLocationData] = useState([]);
-    const [selectedLocationId, setSelectedLocationId] = useState();
 
     useEffect(() => {
         const fetchLocations = async () => {
@@ -59,7 +58,6 @@ export default function EditVenue() {
                         ownerEmail: venue.ownerEmail,
                         isActive: venue.isActive,
                     });
-                    setSelectedLocationId(venue.locationId);
                 }
             } catch (error) {
                 console.error('Error fetching venue data:', error.message);
@@ -81,23 +79,21 @@ export default function EditVenue() {
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
-            // city: Yup.string().required('Required'),
-            // ownerName: Yup.string().required('Required'),
-            // ownerMobile: Yup.string()
-            //     .required('Required')
-            //     // .matches(phoneRegExp, 'Mobile number is not valid')
-            //     .min(10, 'Not a valid mobile number')
-            //     .max(10, 'Not a valid mobile number'),
-            // telephone: Yup.string()
-            //     .required('Required')
-            //     // .matches(phoneRegExp, 'Telephone number is not valid')
-            //     .min(10, 'Not a valid telephone number')
-            //     .max(10, 'Not a valid telephone number'),
-            // ownerEmail: Yup.string().required('Email is required').email('Enter a valid email'),
+            ownerName: Yup.string().required('Required'),
+            ownerMobile: Yup.string()
+                .required('Required')
+                .min(10, 'Not a valid Mobile number')
+                .max(10, 'Not a valid Mobile number'),
+            telephone: Yup.string()
+                .required('Required')
+                .min(10, 'Not a valid telephone number')
+                .max(10, 'Not a valid telephone number'),
+            ownerEmail: Yup.string()
+                .required('Email is required')
+                .email('Enter a valid ownerEmail'),
         }),
         onSubmit: async (values, { resetForm }) => {
             setIsLoading(true);
-            values.locationId = selectedLocationId;
             await editVenueData(values);
             resetForm();
             toast.info('Venue has been successfully updated!');
@@ -164,22 +160,25 @@ export default function EditVenue() {
                                                     helperText={editVenue.touched.name && editVenue.errors.name} />
                                             </MDBox>
                                             <MDBox p={1}>
-                                                <FormControl fullWidth>
+                                                <FormControl fullWidth >
                                                     <InputLabel>Select Location</InputLabel>
-                                                    {selectedLocationId &&
-                                                        <Select
-                                                            label="Select Location"
-                                                            value={selectedLocationId}
-                                                            onChange={(e) => setSelectedLocationId(e.target.value)}
-                                                            sx={{ height: '45px' }}
-                                                        >
-                                                            {locationData.map((location) => (
-                                                                <MenuItem key={location.id} value={location.id}>
-                                                                    {location.city}
-                                                                </MenuItem>
-                                                            ))}
-                                                        </Select>
-                                                    }
+                                                    <Select
+                                                        label="Select Location"
+                                                        name="locationId"
+                                                        value={editVenue.values.locationId}
+                                                        onChange={(e) => editVenue.setFieldValue('locationId', e.target.value)}
+                                                        onBlur={editVenue.handleBlur}
+                                                        sx={{ height: '45px' }}
+                                                    >
+                                                        {locationData.map((location) => (
+                                                            <MenuItem key={location.id} value={location.id}>
+                                                                {location.city}
+                                                            </MenuItem>
+                                                        ))}
+                                                    </Select>
+                                                    {/* {editVenue.touched.locationId && editVenue.errors.locationId && (
+                                                        <FormHelperText>{editVenue.errors.locationId}</FormHelperText>
+                                                    )} */}
                                                 </FormControl>
                                             </MDBox>
                                             <MDBox p={1}>
