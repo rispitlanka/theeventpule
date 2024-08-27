@@ -26,6 +26,7 @@ function Basic() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const [emailError, setEmailError] = useState('');
   const navigate = useNavigate();
   const openPage = (route) => {
     navigate(route);
@@ -33,7 +34,26 @@ function Basic() {
 
   const handleSetRememberMe = () => setRememberMe(!rememberMe);
 
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleEmailBlur = () => {
+    if (!validateEmail(email)) {
+      setEmailError('Please enter a valid email address');
+    } else {
+      setEmailError('');
+    }
+  };
+
   const handleSignIn = async () => {
+
+    if (!validateEmail(email)) {
+      setEmailError('Please enter a valid email address');
+      return;
+    }
+
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -52,7 +72,7 @@ function Basic() {
           openPage(`/dashboard`);
         }, 1000);
       }
-      
+
     } catch (error) {
       console.error('Sign-in error:', error.message);
       toast.error(error.message);
@@ -86,7 +106,13 @@ function Basic() {
                 fullWidth
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onBlur={handleEmailBlur}
               />
+              {emailError && (
+                <MDTypography variant="caption" color="error">
+                  {emailError}
+                </MDTypography>
+              )}
             </MDBox>
             <MDBox mb={2}>
               <MDInput

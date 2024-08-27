@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import { FormControl, InputLabel, MenuItem, Select, Switch, TextField } from '@mui/material';
+import { FormControl, FormHelperText, InputLabel, MenuItem, Select, Switch, TextField } from '@mui/material';
 import ImageIcon from '@mui/icons-material/Image';
 import UploadIcon from '@mui/icons-material/Upload';
 
@@ -25,7 +25,6 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { MobileTimePicker } from '@mui/x-date-pickers/MobileTimePicker';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-
 import dayjs from 'dayjs';
 import { UserDataContext } from 'context';
 
@@ -33,21 +32,28 @@ export default function AddEvent() {
     const navigate = useNavigate();
     const userDetails = useContext(UserDataContext);
     const userOrganizationId = userDetails && userDetails[0].eventOrganizationId;
-    const [selectedTime, setSelectedTime] = useState(null);
-    const [selectedDate, setSelectedDate] = useState();
-    const [selectedVenueId, setSelectedVenueId] = useState();
-    const [selectedCategoryId, setSelectedCategoryId] = useState();
+    const [selectedStartTime, setSelectedStartTime] = useState(null);
+    const [selectedEndTime, setSelectedEndTime] = useState(null);
+    const [selectedStartDate, setSelectedStartDate] = useState();
+    const [selectedEndDate, setSelectedEndDate] = useState();
     const [venuesData, setVenuesData] = useState([]);
     const [categoryData, setCategoryData] = useState([]);
     const [mainEventData, setMainEventdata] = useState([]);
-    const [selectedMainEventId, setSelectedMainEventId] = useState(null);
     const [eventImagePreview, setEventImagePreview] = useState(null);
+    const today = dayjs();
 
     const handleTimeChange = (newTime) => {
-        setSelectedTime(newTime);
+        setSelectedStartTime(newTime);
     };
     const handleDateChange = (date) => {
-        setSelectedDate((date));
+        setSelectedStartDate((date));
+    }
+
+    const handleEndTimeChange = (newTime) => {
+        setSelectedEndTime(newTime);
+    };
+    const handleEndDateChange = (date) => {
+        setSelectedEndDate((date));
     }
 
     const handleEventImagePreview = (event) => {
@@ -79,13 +85,14 @@ export default function AddEvent() {
                     throw new Error('Failed to upload image');
                 }
             }
-            const formattedTime = dayjs(selectedTime).format('hh:mm A');
-            const formattedDate = dayjs(selectedDate).format('YYYY-MM-DD');
+            const formattedTime = dayjs(selectedStartTime).format('hh:mm A');
+            const formattedDate = dayjs(selectedStartDate).format('YYYY-MM-DD');
+            const formattedEndTime = dayjs(selectedEndTime).format('hh:mm A');
+            const formattedEndDate = dayjs(selectedEndDate).format('YYYY-MM-DD');
             values.startTime = formattedTime;
             values.date = formattedDate;
-            values.categoryId = selectedCategoryId;
-            values.venueId = selectedVenueId;
-            values.mainEventId = selectedMainEventId;
+            values.endTime = formattedEndTime;
+            values.endDate = formattedEndDate;
             values.eventOrganizationId = userOrganizationId;
             await addEventData(values);
             resetForm();
@@ -104,7 +111,9 @@ export default function AddEvent() {
             description: '',
             categoryId: '',
             date: '',
+            endDate: '',
             startTime: '',
+            endTime: '',
             contactEmail: '',
             contactPhone: '',
             venueId: '',
@@ -116,6 +125,15 @@ export default function AddEvent() {
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
+            categoryId: Yup.mixed().required('Category is required'),
+            venueId: Yup.mixed().required('Venue is required'),
+            contactPhone: Yup.string()
+                .required('Required')
+                .min(10, 'Not a valid phone number')
+                .max(10, 'Not a valid phone number'),
+            contactEmail: Yup.string()
+                .required('Email is required')
+                .email('Enter a valid Email'),
         }),
         onSubmit,
     });
@@ -231,12 +249,14 @@ export default function AddEvent() {
                                                 helperText={newEvent.touched.description && newEvent.errors.description} />
                                         </MDBox>
                                         <MDBox p={1}>
-                                            <FormControl fullWidth>
+                                            <FormControl fullWidth error={Boolean(newEvent.touched.categoryId && newEvent.errors.categoryId)}>
                                                 <InputLabel>Select Category</InputLabel>
                                                 <Select
                                                     label="Select Category"
-                                                    value={selectedCategoryId}
-                                                    onChange={(e) => setSelectedCategoryId(e.target.value)}
+                                                    name="categoryId"
+                                                    value={newEvent.values.categoryId}
+                                                    onChange={(e) => newEvent.setFieldValue('categoryId', e.target.value)}
+                                                    onBlur={newEvent.handleBlur}
                                                     sx={{ height: '45px' }}
                                                 >
                                                     {categoryData.map((category) => (
@@ -245,6 +265,9 @@ export default function AddEvent() {
                                                         </MenuItem>
                                                     ))}
                                                 </Select>
+                                                {newEvent.touched.categoryId && newEvent.errors.categoryId && (
+                                                    <FormHelperText>{newEvent.errors.categoryId}</FormHelperText>
+                                                )}
                                             </FormControl>
                                         </MDBox>
                                         <MDBox p={1}>
@@ -272,12 +295,14 @@ export default function AddEvent() {
                                                 helperText={newEvent.touched.contactPhone && newEvent.errors.contactPhone} />
                                         </MDBox>
                                         <MDBox p={1}>
-                                            <FormControl fullWidth>
+                                            <FormControl fullWidth error={Boolean(newEvent.touched.venueId && newEvent.errors.venueId)}>
                                                 <InputLabel>Select Venue</InputLabel>
                                                 <Select
                                                     label="Select Venue"
-                                                    value={selectedVenueId}
-                                                    onChange={(e) => setSelectedVenueId(e.target.value)}
+                                                    name="venueId"
+                                                    value={newEvent.values.venueId}
+                                                    onChange={(e) => newEvent.setFieldValue('venueId', e.target.value)}
+                                                    onBlur={newEvent.handleBlur}
                                                     sx={{ height: '45px' }}
                                                 >
                                                     {venuesData.map((venue) => (
@@ -286,6 +311,9 @@ export default function AddEvent() {
                                                         </MenuItem>
                                                     ))}
                                                 </Select>
+                                                {newEvent.touched.venueId && newEvent.errors.venueId && (
+                                                    <FormHelperText>{newEvent.errors.venueId}</FormHelperText>
+                                                )}
                                             </FormControl>
                                         </MDBox>
                                         <MDBox p={1}>
@@ -293,8 +321,10 @@ export default function AddEvent() {
                                                 <InputLabel>Select Main Event</InputLabel>
                                                 <Select
                                                     label="Select Main Event"
-                                                    value={selectedMainEventId}
-                                                    onChange={(e) => setSelectedMainEventId(e.target.value)}
+                                                    name="mainEventId"
+                                                    value={newEvent.values.mainEventId}
+                                                    onChange={(e) => newEvent.setFieldValue('mainEventId', e.target.value)}
+                                                    onBlur={newEvent.handleBlur}
                                                     sx={{ height: '45px' }}
                                                 >
                                                     <MenuItem value={null}>Null</MenuItem>
@@ -303,7 +333,6 @@ export default function AddEvent() {
                                                             {event.title}
                                                         </MenuItem>
                                                     ))}
-
                                                 </Select>
                                             </FormControl>
                                         </MDBox>
@@ -313,8 +342,9 @@ export default function AddEvent() {
                                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                         <DemoContainer components={['DatePicker']}>
                                                             <DatePicker
-                                                                label="Select Date"
-                                                                value={selectedDate}
+                                                                disablePast
+                                                                label="Select Start Date"
+                                                                value={selectedStartDate}
                                                                 onChange={handleDateChange}
                                                             />
                                                         </DemoContainer>
@@ -324,11 +354,52 @@ export default function AddEvent() {
                                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                         <DemoContainer components={['MobileTimePicker']}>
                                                             <MobileTimePicker
-                                                                label={'Time'}
+                                                                label={'Start Time'}
                                                                 openTo="hours"
-                                                                value={selectedTime}
+                                                                value={selectedStartTime}
                                                                 onChange={handleTimeChange}
+                                                            // minTime={
+                                                            //     selectedStartDate && selectedStartDate.isSame(today, 'day') 
+                                                            //         ? today 
+                                                            //         : null
+                                                            // }
                                                             />
+                                                        </DemoContainer>
+                                                    </LocalizationProvider>
+                                                </MDBox>
+                                            </Grid>
+                                        </MDBox>
+                                        <MDBox ml={1} mb={1}>
+                                            <Grid sx={{ display: 'flex', flexDirection: 'row', }}>
+                                                <MDBox sx={{ mr: 2 }}>
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <DemoContainer components={['DatePicker']}>
+                                                            <DatePicker
+                                                                disablePast
+                                                                label="Select End Date"
+                                                                value={selectedEndDate}
+                                                                onChange={handleEndDateChange}
+                                                                minDate={selectedStartDate}
+                                                            />
+                                                        </DemoContainer>
+                                                    </LocalizationProvider>
+                                                </MDBox>
+                                                <MDBox sx={{ ml: 2 }}>
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <DemoContainer components={['MobileTimePicker']}>
+                                                            <MobileTimePicker
+                                                                label={'End Time'}
+                                                                openTo="hours"
+                                                                value={selectedEndTime}
+                                                                onChange={handleEndTimeChange}
+                                                                minTime={
+                                                                    selectedStartDate &&
+                                                                        selectedEndDate &&
+                                                                        selectedStartDate.isSame(selectedEndDate, 'day') &&
+                                                                        selectedStartTime
+                                                                        ? selectedStartTime
+                                                                        : null
+                                                                } />
                                                         </DemoContainer>
                                                     </LocalizationProvider>
                                                 </MDBox>

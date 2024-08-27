@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import { Checkbox, FormControl, FormControlLabel, InputLabel, MenuItem, Select, Switch, TextField } from '@mui/material';
+import { FormControl, FormHelperText, InputLabel, MenuItem, Select, Switch, TextField } from '@mui/material';
 import ImageIcon from '@mui/icons-material/Image';
 import UploadIcon from '@mui/icons-material/Upload';
 
@@ -25,7 +25,6 @@ export default function AddVenue() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [locationData, setLocationData] = useState([]);
-  const [selectedLocationId, setSelectedLocationId] = useState();
 
   useEffect(() => {
     const fetchLocations = async () => {
@@ -45,7 +44,6 @@ export default function AddVenue() {
   const onSubmit = async (values, { resetForm }) => {
     setIsLoading(true);
     try {
-      values.locationId = selectedLocationId;
       await addVenue(values);
       resetForm();
       toast.info('Venue has been successfully created!');
@@ -73,19 +71,19 @@ export default function AddVenue() {
     },
     validationSchema: Yup.object({
       name: Yup.string().required('Required'),
-      //   city: Yup.string().required('Required'),
-      //   ownerName: Yup.string().required('Required'),
-      //   ownerMobile: Yup.string()
-      //     .required('Required')
-      //     .matches(phoneRegExp, 'Mobile number is not valid')
-      //     .min(10, 'Not a valid telephone number')
-      //     .max(10, 'Not a valid telephone number'),
-      //   telephone: Yup.string()
-      //     .required('Required')
-      //     .matches(phoneRegExp, 'Telephone number is not valid')
-      //     .min(10, 'Not a valid telephone number')
-      //     .max(10, 'Not a valid telephone number'),
-      //   ownerEmail: Yup.string().required('Email is required').ownerEmail('Enter a valid ownerEmail'),
+      locationId: Yup.mixed().required('Location is required'),
+      ownerName: Yup.string().required('Required'),
+      ownerMobile: Yup.string()
+        .required('Required')
+        .min(10, 'Not a valid Mobile number')
+        .max(10, 'Not a valid Mobile number'),
+      telephone: Yup.string()
+        .required('Required')
+        .min(10, 'Not a valid telephone number')
+        .max(10, 'Not a valid telephone number'),
+      ownerEmail: Yup.string()
+        .required('Email is required')
+        .email('Enter a valid ownerEmail'),
     }),
     onSubmit,
   });
@@ -144,12 +142,14 @@ export default function AddVenue() {
                         helperText={newVenue.touched.name && newVenue.errors.name} />
                     </MDBox>
                     <MDBox p={1}>
-                      <FormControl fullWidth>
+                      <FormControl fullWidth error={Boolean(newVenue.touched.locationId && newVenue.errors.locationId)}>
                         <InputLabel>Select Location</InputLabel>
                         <Select
                           label="Select Location"
-                          value={selectedLocationId}
-                          onChange={(e) => setSelectedLocationId(e.target.value)}
+                          name="locationId"
+                          value={newVenue.values.locationId}
+                          onChange={(e) => newVenue.setFieldValue('locationId', e.target.value)} 
+                          onBlur={newVenue.handleBlur}
                           sx={{ height: '45px' }}
                         >
                           {locationData.map((location) => (
@@ -158,6 +158,9 @@ export default function AddVenue() {
                             </MenuItem>
                           ))}
                         </Select>
+                        {newVenue.touched.locationId && newVenue.errors.locationId && (
+                          <FormHelperText>{newVenue.errors.locationId}</FormHelperText>
+                        )}
                       </FormControl>
                     </MDBox>
                     <MDBox p={1}>
