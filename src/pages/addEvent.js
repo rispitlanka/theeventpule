@@ -186,7 +186,7 @@ export default function AddEvent() {
                 throw error;
             }
         } catch (error) {
-            throw new Error('Error inserting data:', error.message);
+            throw new Error('Error fetching data:', error.message);
         }
     };
 
@@ -259,7 +259,7 @@ export default function AddEvent() {
                                                     onBlur={newEvent.handleBlur}
                                                     sx={{ height: '45px' }}
                                                 >
-                                                    {categoryData.map((category) => (
+                                                    {categoryData?.map((category) => (
                                                         <MenuItem key={category.id} value={category.id}>
                                                             {category.name}
                                                         </MenuItem>
@@ -305,7 +305,7 @@ export default function AddEvent() {
                                                     onBlur={newEvent.handleBlur}
                                                     sx={{ height: '45px' }}
                                                 >
-                                                    {venuesData.map((venue) => (
+                                                    {venuesData?.map((venue) => (
                                                         <MenuItem key={venue.id} value={venue.id}>
                                                             {venue.name}
                                                         </MenuItem>
@@ -328,7 +328,7 @@ export default function AddEvent() {
                                                     sx={{ height: '45px' }}
                                                 >
                                                     <MenuItem value={null}>Null</MenuItem>
-                                                    {mainEventData.map((event) => (
+                                                    {mainEventData?.map((event) => (
                                                         <MenuItem key={event.id} value={event.id}>
                                                             {event.title}
                                                         </MenuItem>
