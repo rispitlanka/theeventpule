@@ -122,6 +122,7 @@ export default function EditEvent() {
             isActive: '',
             isFree: '',
             eventImage: '',
+            mainEventId: '',
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
@@ -218,8 +219,14 @@ export default function EditEvent() {
                     setEventImagePreview(event.eventImage);
                     setSelectedStartDate(event.date);
                     setSelectedEndDate(event.endDate);
-                    setSelectedStartTime(event.startTime);
-                    setSelectedEndTime(event.endTime);
+                    const parsedStartTime = dayjs().startOf('day').set('hour', dayjs(event.startTime, "HH:mm:ss").hour())
+                        .set('minute', dayjs(event.startTime, "HH:mm:ss").minute())
+                        .set('second', dayjs(event.startTime, "HH:mm:ss").second());
+                    setSelectedStartTime(parsedStartTime);
+                    const parsedEndTime = dayjs().startOf('day').set('hour', dayjs(event.endTime, "HH:mm:ss").hour())
+                        .set('minute', dayjs(event.endTime, "HH:mm:ss").minute())
+                        .set('second', dayjs(event.endTime, "HH:mm:ss").second());
+                    setSelectedEndTime(parsedEndTime);
                 }
             } catch (error) {
                 console.error('Error fetching event data:', error.message);
@@ -393,13 +400,9 @@ export default function EditEvent() {
                                                             <MobileTimePicker
                                                                 label={'Start Time'}
                                                                 openTo="hours"
-                                                                value={dayjs(selectedStartTime)}
+                                                                value={selectedStartTime}
                                                                 onChange={handleTimeChange}
-                                                            // minTime={
-                                                            //     selectedStartDate && selectedStartDate.isSame(today, 'day') 
-                                                            //         ? today 
-                                                            //         : null
-                                                            // }
+                                                                minTime={dayjs()}
                                                             />
                                                         </DemoContainer>
                                                     </LocalizationProvider>
@@ -416,7 +419,7 @@ export default function EditEvent() {
                                                                 label="Select End Date"
                                                                 value={dayjs(selectedEndDate)}
                                                                 onChange={handleEndDateChange}
-                                                            // minDate={dayjs(selectedStartDate)}
+                                                                minDate={dayjs(selectedStartDate)}
                                                             />
                                                         </DemoContainer>
                                                     </LocalizationProvider>
@@ -427,16 +430,16 @@ export default function EditEvent() {
                                                             <MobileTimePicker
                                                                 label={'End Time'}
                                                                 openTo="hours"
-                                                                value={dayjs(selectedEndTime)}
+                                                                value={selectedEndTime}
                                                                 onChange={handleEndTimeChange}
-                                                            // minTime={
-                                                            //     selectedStartDate &&
-                                                            //         selectedEndDate &&
-                                                            //         selectedStartDate.isSame(selectedEndDate, 'day') &&
-                                                            //         selectedStartTime
-                                                            //         ? selectedStartTime
-                                                            //         : null
-                                                            // } 
+                                                                minTime={
+                                                                    selectedStartDate &&
+                                                                        selectedEndDate &&
+                                                                        dayjs(selectedStartDate).isSame(selectedEndDate, 'day') &&
+                                                                        selectedStartTime
+                                                                        ? selectedStartTime
+                                                                        : null
+                                                                }
                                                             />
                                                         </DemoContainer>
                                                     </LocalizationProvider>
