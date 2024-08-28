@@ -32,9 +32,7 @@ export default function RegistrationFormModel({ open, onClose, eventId }) {
             options: '',
         },
         validationSchema: Yup.object({
-            // name: Yup.string().required('Required'),
-            // type: Yup.string().required('Required'),
-            // options: Yup.string().required('Required'),
+            name: Yup.string().required('Required'),
         }),
         onSubmit,
     });
@@ -75,6 +73,7 @@ export default function RegistrationFormModel({ open, onClose, eventId }) {
                             <FormControl fullWidth>
                                 <InputLabel>Select Type</InputLabel>
                                 <Select
+                                    required
                                     label="Select Type"
                                     value={selectedType}
                                     onChange={(e) => setSelectedType(e.target.value)}
@@ -94,8 +93,10 @@ export default function RegistrationFormModel({ open, onClose, eventId }) {
                             selectedType !== 'Text' &&
                             selectedType !== 'Number' &&
                             selectedType !== 'Date' &&
+                            selectedType !== 'Password' &&
                             <Grid item xs={12}>
                                 <TextField
+                                    required
                                     fullWidth
                                     label="Options"
                                     name="options"
