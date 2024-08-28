@@ -9,12 +9,9 @@ import noDataImage from "assets/images/illustrations/noData3.svg";
 import { UserDataContext } from 'context';
 import MDButton from 'components/MDButton';
 import TicketsCountModel from './ticketsCountModel';
+import dayjs from 'dayjs';
 
-export default function EventsOnDate(date) {
-    const eqDate = date.date;
-    const today = new Date();
-    const formattedDate = new Date(today).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
-    const isValidDate = eqDate >= formattedDate;
+export default function EventsOnDate() {
     const [events, setEvents] = useState();
     const [isLoading, setIsLoading] = useState(true);
     const [bookedSeatsCount, setBookedSeatsCount] = useState({});
@@ -32,16 +29,19 @@ export default function EventsOnDate(date) {
     const handleClose = () => {
         setOpen(false);
     };
+    const currentDate = dayjs().startOf('day').format('YYYY-MM-DDTHH:mm:ss');
 
     const fetchEvents = async () => {
         try {
             const { data, error } = await supabase
                 .from('events')
-                .select('*, venues (name,isSeat,zones_events(price,halfPrice,ticketsCount))')
-                .eq('date', eqDate).eq('eventOrganizationId', userOrganizationId)
+                .select('*, venues (name,isSeat,zones_events(price,halfPrice))')
+                .gte('date', currentDate)
+                .eq('eventOrganizationId', userOrganizationId)
                 .eq('isActive', true);
             if (data) {
                 setEvents(data);
+                console.log('event', data);
                 setIsLoading(false);
             }
             if (error) {
@@ -56,7 +56,7 @@ export default function EventsOnDate(date) {
 
     useEffect(() => {
         fetchEvents();
-    }, [eqDate])
+    }, [])
 
     const formattedTime = (time) => {
         const [hours, minutes, seconds] = time.split(':');
@@ -154,7 +154,7 @@ export default function EventsOnDate(date) {
                                                         color='info'
                                                         variant='contained'
                                                         onClick={() => handleBookNowClick(row)}
-                                                        disabled={isFull || !isValidDate}
+                                                        disabled={isFull}
                                                     >
                                                         Book Now
                                                     </MDButton>

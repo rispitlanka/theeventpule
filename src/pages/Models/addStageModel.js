@@ -28,8 +28,8 @@ export default function AddStageModel({ open, onClose, eventId }) {
             description: '',
         },
         validationSchema: Yup.object({
-            // name: Yup.string().required('Required'),
-            // type: Yup.string().required('Required'),
+            name: Yup.string().required('Required'),
+            description: Yup.string().required('Required'),
         }),
         onSubmit,
     });

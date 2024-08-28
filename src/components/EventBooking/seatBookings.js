@@ -138,9 +138,9 @@ export default function SeatBookings() {
                 .eq('eventId', eventId);
 
             if (data) {
-                const seatIds = data.map(ticket => ticket.seatId);
+                const seatIds = data.filter(ticket => ticket.seatId !== null).map(ticket => ticket.seatId);
                 const seatResponses = await Promise.all(
-                    seatIds.map(async seatId => {
+                    seatIds?.map(async seatId => {
                         const { data: seatData, error: seatError } = await supabase
                             .from('seats_events')
                             .select('zoneId, row, column')
