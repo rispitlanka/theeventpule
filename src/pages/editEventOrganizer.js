@@ -80,7 +80,7 @@ export default function EditEventOrganizer() {
                 // .matches(phoneRegExp, 'Mobile number is not valid')
                 .min(10, 'Not a valid mobile number')
                 .max(10, 'Not a valid mobile number'),
-            email: Yup.string().required('Email is required').email('Enter a valid email'),
+            email: Yup.string().required('Email is required').matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Enter a valid Email').email('Enter a valid email'),
         }),
         onSubmit: async (values, { resetForm }) => {
             await editUserData({ ...values, eventOrganizationId: selectedOrganizationId });

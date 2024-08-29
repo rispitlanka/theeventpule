@@ -133,6 +133,7 @@ export default function AddEvent() {
                 .max(10, 'Not a valid phone number'),
             contactEmail: Yup.string()
                 .required('Email is required')
+                .matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Enter a valid Email')
                 .email('Enter a valid Email'),
         }),
         onSubmit,
