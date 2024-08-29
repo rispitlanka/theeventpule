@@ -258,7 +258,7 @@ export default function SingleVenue() {
                         alignItems: 'center',
                         height: '150px'
                       }}
-                      onClick={() => openPage(`/venues/single-venue/single-zone/${zone.id}`)} style={{ cursor: 'pointer' }}
+                      onClick={() => openPage(`/venues/single-venue/single-zone/${zone.id}?isSeatLayout=${venueData[0].isSeat}`)} style={{ cursor: 'pointer' }}
                     >
                       <MDTypography>{zone.name}</MDTypography>
                     </Card>
