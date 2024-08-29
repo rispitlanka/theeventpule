@@ -29,6 +29,7 @@ export default function EventsOnDate() {
     const handleClose = () => {
         setOpen(false);
     };
+    
     const currentDate = dayjs().startOf('day').format('YYYY-MM-DDTHH:mm:ss');
 
     const fetchEvents = async () => {
@@ -41,7 +42,6 @@ export default function EventsOnDate() {
                 .eq('isActive', true);
             if (data) {
                 setEvents(data);
-                console.log('event', data);
                 setIsLoading(false);
             }
             if (error) {
@@ -64,6 +64,10 @@ export default function EventsOnDate() {
         const options = { hour: '2-digit', minute: '2-digit' };
         return date.toLocaleTimeString('en-US', options);
     };
+
+    const formattedDate = (date) => {
+        return dayjs(date).format('DD/MM/YYYY');
+    }
 
     const fetchBookedSeatsCount = async (eventId) => {
         try {
@@ -134,6 +138,7 @@ export default function EventsOnDate() {
                                     <TableRow>
                                         <TableCell>Event</TableCell>
                                         <TableCell>Venue</TableCell>
+                                        <TableCell>Date</TableCell>
                                         <TableCell>Time</TableCell>
                                         <TableCell align='center'></TableCell>
                                     </TableRow>
@@ -148,6 +153,7 @@ export default function EventsOnDate() {
                                             <TableRow key={row.id}>
                                                 <TableCell>{row.name}</TableCell>
                                                 <TableCell>{row.venues?.name}</TableCell>
+                                                <TableCell>{formattedDate(row.date)}</TableCell>
                                                 <TableCell>{formattedTime(row.startTime)}</TableCell>
                                                 <TableCell align='center'>
                                                     <MDButton
