@@ -50,7 +50,7 @@ export default function data() {
             const { data: venueResponses, error: venueError } = await supabase
                 .from('venues')
                 .select()
-                .order('id', { ascending: true });
+                .order('id', { ascending: false });
 
             if (venueError) throw venueError;
 
