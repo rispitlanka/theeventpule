@@ -15,6 +15,8 @@ import { UserDataContext } from "context";
 export default function SingleEventZone() {
     const userDetails = useContext(UserDataContext);
     const userRole = userDetails && userDetails[0].userRole;
+    const queryParams = new URLSearchParams(location.search);
+    const isSeatLayout = queryParams.get('isSeatLayout') === 'true';
     const { id } = useParams();
     const [seatsData, setSeatsData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -31,7 +33,7 @@ export default function SingleEventZone() {
 
     const fetchZoneData = async () => {
         try {
-            const { data, error } = await supabase.from('zones_events').select('*').eq('id', id);
+            const { data, error } = await supabase.from('zones_events').select('*,zone_ticket_category(*)').eq('id', id);
             if (error) throw error;
             if (data) {
                 setZoneData(data);
@@ -88,76 +90,83 @@ export default function SingleEventZone() {
                 mb: 2,
             }}>
                 {zoneData && zoneData.length > 0 && zoneData.map((zone => (
-                    <Grid key={zone.id} sx={{ display: 'flex', flexDirection: 'row', justifyContent: "space-between", mb: 1 }}>
-                        <Grid item>
-                            <Grid display={'flex'} flexDirection={'row'}>
-                                <MDTypography fontWeight="bold" mr={2}>{zone.name}</MDTypography>
-                                <MDTypography fontWeight="light" mr={1}>Full Ticket : Rs.{zone.price}</MDTypography>
-                                <MDTypography fontWeight="light" mr={1}>Half Ticket : Rs.{zone.halfPrice}</MDTypography>
+                    <Grid key={zone.id} sx={{ display: 'flex', flexDirection: 'column', mb: 2 }}>
+                        <MDTypography fontWeight="bold" mb={1}>{zone.name}</MDTypography>
+                        {isSeatLayout ? (
+                            <Grid>
+                                <MDTypography fontWeight="light" mr={1}>Full Ticket: Rs.{zone.price}</MDTypography>
+                                <MDTypography fontWeight="light" mr={1}>Half Ticket: Rs.{zone.halfPrice}</MDTypography>
                             </Grid>
-                        </Grid>
-                        {userRole !== "superAdmin" &&
-                            <Grid item >
-                                <EditIcon onClick={() => { openPage(`/theatres/single-theatre/single-screen/single-zone/edit-zone/${id}`) }} sx={{ cursor: 'pointer', mr: 1 }} />
-                            </Grid>
-                        }
+                        ) : (
+                            zone?.zone_ticket_category?.map((category, index) => (
+                                <Grid key={index} display="flex" flexDirection="row" justifyContent="space-between" mb={1}>
+                                    <MDTypography fontWeight="light" mr={1}>Category: {category.name}</MDTypography>
+                                    <MDTypography fontWeight="light" mr={1}>Price: Rs.{category.price}</MDTypography>
+                                    <MDTypography fontWeight="light" mr={1}>Count: {category.ticketsCount}</MDTypography>
+                                </Grid>
+                            ))
+                        )}
                     </Grid>
                 )))}
                 <MDBox>
-                    <MDTypography variant="h6" gutterBottom>
-                        Seat Layout
-                    </MDTypography>
-                    <MDBox p={2}>
-                        {isLoading ?
-                            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                                <CircularProgress color="info" />
-                            </Box>
-                            :
-                            <FixedSizeGrid
-                                columnCount={maxColumn + 1}
-                                columnWidth={80}
-                                rowCount={maxRow + 1}
-                                rowHeight={80}
-                                width={1600}
-                                height={600}
-                            >
-                                {({ columnIndex, rowIndex, style }) => {
-                                    const isHeaderRow = rowIndex === 0;
-                                    const isHeaderColumn = columnIndex === 0;
+                    {isSeatLayout &&
+                        <>
+                            <MDTypography variant="h6" gutterBottom>
+                                Seat Layout
+                            </MDTypography>
+                            <MDBox p={2}>
+                                {isLoading ?
+                                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                        <CircularProgress color="info" />
+                                    </Box>
+                                    :
+                                    <FixedSizeGrid
+                                        columnCount={maxColumn + 1}
+                                        columnWidth={80}
+                                        rowCount={maxRow + 1}
+                                        rowHeight={80}
+                                        width={1600}
+                                        height={600}
+                                    >
+                                        {({ columnIndex, rowIndex, style }) => {
+                                            const isHeaderRow = rowIndex === 0;
+                                            const isHeaderColumn = columnIndex === 0;
 
-                                    if (isHeaderRow && isHeaderColumn) {
-                                        return <div style={style}></div>;
-                                    }
+                                            if (isHeaderRow && isHeaderColumn) {
+                                                return <div style={style}></div>;
+                                            }
 
-                                    const columnHead = columnIndex.toString();
-                                    const rowHead = rowIndex.toString();
-                                    const rowHeadAlphabetic = getRowHeadAlphabetic(rowIndex - 1);
+                                            const columnHead = columnIndex.toString();
+                                            const rowHead = rowIndex.toString();
+                                            const rowHeadAlphabetic = getRowHeadAlphabetic(rowIndex - 1);
 
-                                    const seat = seatsData.find(seat => seat.row === rowHead && seat.column === columnHead);
-                                    const seatName = seat ? seat.seatName : '';
+                                            const seat = seatsData.find(seat => seat.row === rowHead && seat.column === columnHead);
+                                            const seatName = seat ? seat.seatName : '';
 
-                                    return (
-                                        <div style={{ ...style, display: 'flex', alignItems: 'center', justifyContent: 'center', }}>
-                                            {isHeaderRow ? (
-                                                <MDTypography>{columnHead}</MDTypography>
-                                            ) : isHeaderColumn ? (
-                                                <MDTypography>{rowHeadAlphabetic}</MDTypography>
-                                            ) : (
-                                                <Grid container direction="column" alignItems="center" spacing={1} m={1}>
-                                                    {seat &&
-                                                        <>
-                                                            <IconButton><ChairIcon style={{ color: 'green' }} /></IconButton>
-                                                            <MDTypography>{seatName}</MDTypography>
-                                                        </>
-                                                    }
-                                                </Grid>
-                                            )}
-                                        </div>
-                                    );
-                                }}
-                            </FixedSizeGrid>
-                        }
-                    </MDBox>
+                                            return (
+                                                <div style={{ ...style, display: 'flex', alignItems: 'center', justifyContent: 'center', }}>
+                                                    {isHeaderRow ? (
+                                                        <MDTypography>{columnHead}</MDTypography>
+                                                    ) : isHeaderColumn ? (
+                                                        <MDTypography>{rowHeadAlphabetic}</MDTypography>
+                                                    ) : (
+                                                        <Grid container direction="column" alignItems="center" spacing={1} m={1}>
+                                                            {seat &&
+                                                                <>
+                                                                    <IconButton><ChairIcon style={{ color: 'green' }} /></IconButton>
+                                                                    <MDTypography>{seatName}</MDTypography>
+                                                                </>
+                                                            }
+                                                        </Grid>
+                                                    )}
+                                                </div>
+                                            );
+                                        }}
+                                    </FixedSizeGrid>
+                                }
+                            </MDBox>
+                        </>
+                    }
                 </MDBox>
             </Card>
             <Footer />
