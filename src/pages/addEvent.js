@@ -358,7 +358,7 @@ export default function AddEvent() {
                                                                 openTo="hours"
                                                                 value={selectedStartTime}
                                                                 onChange={handleTimeChange}
-                                                            // minTime={dayjs()}
+                                                                minTime={selectedStartDate && dayjs(selectedStartDate).isSame(today, 'day') ? today : null}
                                                             />
                                                         </DemoContainer>
                                                     </LocalizationProvider>
