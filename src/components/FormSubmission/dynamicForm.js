@@ -90,6 +90,16 @@ const DynamicForm = ({ fields, eventId }) => {
 
     const navigate = useNavigate();
 
+    const validate = (values) => {
+        const errors = {};
+        fields.forEach((field) => {
+            if (!values[field.name]) {
+                errors[field.name] = `${field.name} is required`;
+            }
+        });
+        return errors;
+    };
+
     const handleSubmit = async (values, { resetForm }) => {
         try {
             values.details = JSON.stringify(values);
@@ -125,8 +135,8 @@ const DynamicForm = ({ fields, eventId }) => {
 
     return (
         <>
-            <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-                {({ values }) => (
+            <Formik initialValues={initialValues} validate={validate} onSubmit={handleSubmit}>
+                {({ values, errors, touched }) => (
                     <Form>
                         <Box sx={{}}>
                             {fields.map((field) => (
@@ -135,6 +145,11 @@ const DynamicForm = ({ fields, eventId }) => {
                                         {field.name}
                                     </Typography>
                                     {renderField(field)}
+                                    {errors[field.name] && touched[field.name] && (
+                                        <Typography variant="body2" color="error">
+                                            {errors[field.name]}
+                                        </Typography>
+                                    )}
                                 </Box>
                             ))}
                             <MDButton sx={{ marginTop: '10px' }} ariant="contained" type="submit" color='info' >
