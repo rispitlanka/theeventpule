@@ -61,7 +61,7 @@ export default function GetEventTicket() {
         }
     };
 
-    const ticketCategoryIds = Object.keys(ticketsCount);
+    const ticketCategoryIds = ticketsCount && Object.keys(ticketsCount);
 
     const fetchTicketCategory = async () => {
         try {

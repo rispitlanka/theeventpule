@@ -29,7 +29,7 @@ export default function EventsOnDate() {
     const handleClose = () => {
         setOpen(false);
     };
-    
+
     const currentDate = dayjs().startOf('day').format('YYYY-MM-DDTHH:mm:ss');
 
     const fetchEvents = async () => {
@@ -39,7 +39,8 @@ export default function EventsOnDate() {
                 .select('*, venues (name,isSeat,zones_events(price,halfPrice))')
                 .gte('date', currentDate)
                 .eq('eventOrganizationId', userOrganizationId)
-                .eq('isActive', true);
+                .eq('isActive', true)
+                .order('date', { ascending: true });
             if (data) {
                 setEvents(data);
                 setIsLoading(false);

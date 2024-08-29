@@ -135,7 +135,8 @@ export default function SeatBookings() {
             const { data, error } = await supabase
                 .from('tickets_events')
                 .select('*')
-                .eq('eventId', eventId);
+                .eq('eventId', eventId)
+                .eq('isActive', true);
 
             if (data) {
                 const seatIds = data.filter(ticket => ticket.seatId !== null).map(ticket => ticket.seatId);
@@ -191,7 +192,7 @@ export default function SeatBookings() {
                 seatId: seatData.id,
                 seatName: seatData.seatName,
                 eventId: eventId,
-                venueId:venueId
+                venueId: venueId
             };
             const updatedSeats = [...bookedSeats, newBookedSeat];
             setBookedSeats(updatedSeats);

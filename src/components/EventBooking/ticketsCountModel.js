@@ -50,7 +50,7 @@ export default function TicketsCountModel({ open, handleClose, eventId, venueId,
         const fetchBookedTicketsCount = async (selectedZoneId, eventId) => {
             try {
                 const { data, error } = await supabase
-                    .rpc('get_booked_tickets_count_test', { zone_id: selectedZoneId, event_id: eventId });
+                    .rpc('get_booked_tickets_count', { zone_id: selectedZoneId, event_id: eventId });
                 if (data) {
                     const countByCategory = data.reduce((acc, item) => {
                         acc[item.category_id] = item.count;
