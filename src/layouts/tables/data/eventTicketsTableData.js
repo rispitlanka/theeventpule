@@ -22,6 +22,7 @@ import { supabase } from "pages/supabaseClient";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import { UserDataContext } from "context";
+import MDButton from "components/MDButton";
 
 export default function data() {
     const Screen = ({ id }) => (
@@ -37,32 +38,33 @@ export default function data() {
     const [allTickets, setAllTickets] = useState([]);
     const [events, setEvents] = useState([]);
 
+    const getAllTickets = async () => {
+        try {
+            const { data: ticketsResponse, error: ticketsResponseError } = await supabase.from('tickets_events').select('*').eq('eventOrganizationId', userOrganizationId).order('id', { ascending: false });
+            if (ticketsResponseError) {
+                console.log('ticketsResponseError', ticketsResponseError)
+            }
+            if (ticketsResponse) {
+                setAllTickets(ticketsResponse);
+
+                const eventIds = ticketsResponse && ticketsResponse.length > 0 && ticketsResponse.map(ticket => ticket.eventId);
+                const { data: eventResponse, error: eventResponseError } = await supabase.from('events').select('*').in('id', eventIds);
+                if (eventResponseError) {
+                    console.log('eventResponseError', eventResponseError)
+                }
+                if (eventResponse) {
+                    setEvents(eventResponse);
+                }
+            }
+        }
+        catch {
+
+        }
+    };
+
     useEffect(() => {
-        const getAlltickets = async () => {
-            try {
-                const { data: ticketsResponse, error: ticketsResponseError } = await supabase.from('tickets_events').select('*').eq('eventOrganizationId', userOrganizationId);
-                if (ticketsResponseError) {
-                    console.log('ticketsResponseError', ticketsResponseError)
-                }
-                if (ticketsResponse) {
-                    setAllTickets(ticketsResponse);
-
-                    const eventIds = ticketsResponse && ticketsResponse.length > 0 && ticketsResponse.map(ticket => ticket.eventId);
-                    const { data: eventResponse, error: eventResponseError } = await supabase.from('events').select('*').in('id', eventIds);
-                    if (eventResponseError) {
-                        console.log('eventResponseError', eventResponseError)
-                    }
-                    if (eventResponse) {
-                        setEvents(eventResponse);
-                    }
-                }
-            }
-            catch {
-
-            }
-        };
-        getAlltickets();
-    }, [userOrganizationId])
+        getAllTickets();
+    }, [userOrganizationId]);
 
     const getEventNameById = (id) => {
         const eventId = Number(id);
@@ -73,6 +75,25 @@ export default function data() {
     const formattedDate = (date) => {
         return ((new Date(date)).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true, }))
     }
+
+    const cancelTicket = async (id) => {
+        try {
+            const { data, error } = await supabase
+                .from('tickets_events')
+                .update({ isActive: false })
+                .eq('id', id)
+                .select('*');
+            if (error) {
+                throw error;
+            }
+            if (data) {
+                getAllTickets();
+                console.log('Ticket Cancelled successfully');
+            }
+        } catch (error) {
+            console.error('Error in ticket cancelling:', error.message);
+        }
+    };
 
     const rows = allTickets ? allTickets.map(ticket => ({
         id: <div>
@@ -98,6 +119,9 @@ export default function data() {
                 {ticket.bookedBy}
             </MDTypography>
         ),
+        actions: (
+            <MDButton onClick={() => (cancelTicket(ticket.id))} disabled={!ticket.isActive} color='warning'>Cancel</MDButton>
+        ),
 
     })) : [{ id: <MDTypography color='warning' fontWeight='bold'>{error}</MDTypography> }];
 
@@ -108,6 +132,7 @@ export default function data() {
             { Header: "event name", accessor: "eventId", align: "center" },
             { Header: "booked Date", accessor: "bookedDate", align: "center" },
             { Header: "booked by", accessor: "bookedBy", align: "center" },
+            { Header: "Actions", accessor: "actions", align: "center" },
         ],
 
         rows: rows,

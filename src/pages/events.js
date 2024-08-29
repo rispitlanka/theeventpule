@@ -52,7 +52,7 @@ export default function Events() {
 
   const fetchEventsData = async () => {
     try {
-      let query = supabase.from('events').select('*,event_categories(name)').eq('eventOrganizationId', userOrganizationId);
+      let query = supabase.from('events').select('*,event_categories(name)').eq('eventOrganizationId', userOrganizationId).order('id', { ascending: false });
       if (mainEventId !== null) {
         query = query.eq('mainEventId', mainEventId);
       } else {
