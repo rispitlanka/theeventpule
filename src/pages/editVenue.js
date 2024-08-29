@@ -90,6 +90,7 @@ export default function EditVenue() {
                 .max(10, 'Not a valid telephone number'),
             ownerEmail: Yup.string()
                 .required('Email is required')
+                .matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Enter a valid Email')
                 .email('Enter a valid ownerEmail'),
         }),
         onSubmit: async (values, { resetForm }) => {
