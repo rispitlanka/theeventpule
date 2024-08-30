@@ -7,11 +7,12 @@ import ticketsTableData from "layouts/tables/data/eventTicketsTableData";
 import MDBox from 'components/MDBox'
 import MDTypography from 'components/MDTypography'
 import DataNotFound from 'components/NoData/dataNotFound'
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import noTicketImage from "assets/images/illustrations/noTicket.png";
 import ReportsLineChart from 'examples/Charts/LineCharts/ReportsLineChart';
 import { supabase } from './supabaseClient';
 import { UserDataContext } from 'context';
+import MDInput from 'components/MDInput';
 
 export default function ViewTickets() {
     const { columns: pColumns, rows: pRows } = ticketsTableData();
@@ -26,6 +27,7 @@ export default function ViewTickets() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [searched, setSearched] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
 
     const getCurrentDate = () => {
         const today = new Date();
@@ -121,6 +123,18 @@ export default function ViewTickets() {
 
     const groupedTickets = groupTicketsByReferenceId(tickets);
 
+    // search and filter inside table
+    const handleSearch = (event) => {
+        setSearchTerm(event.target.value);
+    };
+
+    const filteredRows = useMemo(() => {
+        return pRows?.filter(row => {
+            const reference = row.referenceId?.props?.children;
+            return reference?.includes(searchTerm);
+        });
+    }, [searchTerm, pRows]);
+
     return (
         <DashboardLayout>
             <DashboardNavbar />
@@ -186,17 +200,24 @@ export default function ViewTickets() {
                                     Tickets
                                 </MDTypography>
                             </MDBox>
+                            <MDBox pt={3} pl={3} display="flex" justifyContent="left">
+                                <MDInput
+                                    placeholder="Search by reference id..."
+                                    value={searchTerm}
+                                    onChange={handleSearch}
+                                />
+                            </MDBox>
                             {isLoading ? (
                                 <MDBox p={3} display="flex" justifyContent="center">
                                     <CircularProgress color="info" />
                                 </MDBox>
-                            ) : pRows && pRows.length > 0 ? (
+                            ) : filteredRows && filteredRows.length > 0 ? (
                                 <MDBox pt={3}>
                                     <DataTable
-                                        table={{ columns: pColumns, rows: pRows }}
+                                        table={{ columns: pColumns, rows: filteredRows }}
                                         isSorted={false}
-                                        entriesPerPage={false}
-                                        showTotalEntries={false}
+                                        entriesPerPage={true}
+                                        showTotalEntries={true}
                                         noEndBorder
                                     />
                                 </MDBox>

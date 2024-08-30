@@ -57,8 +57,8 @@ export default function data() {
                 }
             }
         }
-        catch {
-
+        catch (error) {
+            console.error('Error in fetching tickets:', error.message);
         }
     };
 
@@ -119,8 +119,21 @@ export default function data() {
                 {ticket.bookedBy}
             </MDTypography>
         ),
+        referenceId: (
+            <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+                {ticket.referenceId}
+            </MDTypography>
+        ),
         actions: (
-            <MDButton onClick={() => (cancelTicket(ticket.id))} disabled={!ticket.isActive} color='warning'>Cancel</MDButton>
+            <>
+                {
+                    ticket.isActive ?
+                        <MDButton onClick={() => (cancelTicket(ticket.id))} disabled={!ticket.isActive} color='warning'>Cancel</MDButton>
+                        :
+                        <MDButton color='warning' variant='text' disabled >Cancelled</MDButton>
+                }
+            </>
+
         ),
 
     })) : [{ id: <MDTypography color='warning' fontWeight='bold'>{error}</MDTypography> }];
@@ -132,6 +145,7 @@ export default function data() {
             { Header: "event name", accessor: "eventId", align: "center" },
             { Header: "booked Date", accessor: "bookedDate", align: "center" },
             { Header: "booked by", accessor: "bookedBy", align: "center" },
+            { Header: "reference id", accessor: "referenceId", align: "center" },
             { Header: "Actions", accessor: "actions", align: "center" },
         ],
 
