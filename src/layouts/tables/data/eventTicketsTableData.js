@@ -22,7 +22,7 @@ import { supabase } from "pages/supabaseClient";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import { UserDataContext } from "context";
-import MDButton from "components/MDButton";
+import { useNavigate } from "react-router-dom";
 
 export default function data() {
     const Screen = ({ id }) => (
@@ -35,68 +35,42 @@ export default function data() {
 
     const userDetails = useContext(UserDataContext);
     const userOrganizationId = userDetails && userDetails[0].eventOrganizationId;
-    const [allTickets, setAllTickets] = useState([]);
-    const [events, setEvents] = useState([]);
+    const [allEventTickets, setAllEventTickets] = useState([]);
+    const navigate = useNavigate();
+    const openPage = (route) => {
+        navigate(route);
+    };
 
-    const getAllTickets = async () => {
+    const getAllEventTickets = async () => {
         try {
-            const { data: ticketsResponse, error: ticketsResponseError } = await supabase.from('tickets_events').select('*').eq('eventOrganizationId', userOrganizationId).order('id', { ascending: false });
-            if (ticketsResponseError) {
-                console.log('ticketsResponseError', ticketsResponseError)
+            const { data, error } = await supabase.from('tickets_events').select('*,events(name),zone_ticket_category(name)').eq('eventOrganizationId', userOrganizationId).order('id', { ascending: false });
+            if (error) {
+                console.log('ticketsResponseError', error)
             }
-            if (ticketsResponse) {
-                setAllTickets(ticketsResponse);
-
-                const eventIds = ticketsResponse && ticketsResponse.length > 0 && ticketsResponse.map(ticket => ticket.eventId);
-                const { data: eventResponse, error: eventResponseError } = await supabase.from('events').select('*').in('id', eventIds);
-                if (eventResponseError) {
-                    console.log('eventResponseError', eventResponseError)
-                }
-                if (eventResponse) {
-                    setEvents(eventResponse);
-                }
+            if (data) {
+                setAllEventTickets(data);
+                console.log('getAllEventTickets', data);
             }
         }
-        catch {
-
+        catch (error) {
+            console.error('Error in fetching tickets:', error.message);
         }
     };
 
     useEffect(() => {
-        getAllTickets();
+        getAllEventTickets();
     }, [userOrganizationId]);
-
-    const getEventNameById = (id) => {
-        const eventId = Number(id);
-        const event = events && events.length > 0 && events.find(event => event.id === eventId);
-        return event ? event.name : 'Unknown Event';
-    };
 
     const formattedDate = (date) => {
         return ((new Date(date)).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true, }))
     }
 
-    const cancelTicket = async (id) => {
-        try {
-            const { data, error } = await supabase
-                .from('tickets_events')
-                .update({ isActive: false })
-                .eq('id', id)
-                .select('*');
-            if (error) {
-                throw error;
-            }
-            if (data) {
-                getAllTickets();
-                console.log('Ticket Cancelled successfully');
-            }
-        } catch (error) {
-            console.error('Error in ticket cancelling:', error.message);
-        }
+    const handleRowClick = (ticketId) => {
+        openPage(`/viewTickets/single-ticket/${ticketId}`);
     };
 
-    const rows = allTickets ? allTickets.map(ticket => ({
-        id: <div>
+    const rows = allEventTickets ? allEventTickets.map(ticket => ({
+        id: <div onClick={() => handleRowClick(ticket.id)} style={{ cursor: 'pointer' }}>
             <Screen id={ticket.id} />
         </div>,
         seatId: (
@@ -106,7 +80,7 @@ export default function data() {
         ),
         eventId: (
             <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-                {getEventNameById(ticket.eventId)}
+                {ticket.events?.name}
             </MDTypography>
         ),
         bookedDate: (
@@ -119,8 +93,15 @@ export default function data() {
                 {ticket.bookedBy}
             </MDTypography>
         ),
-        actions: (
-            <MDButton onClick={() => (cancelTicket(ticket.id))} disabled={!ticket.isActive} color='warning'>Cancel</MDButton>
+        referenceId: (
+            <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+                {ticket.referenceId}
+            </MDTypography>
+        ),
+        category: (
+            <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+                {ticket.zone_ticket_category?.name ?? 'N/A'}
+            </MDTypography>
         ),
 
     })) : [{ id: <MDTypography color='warning' fontWeight='bold'>{error}</MDTypography> }];
@@ -132,7 +113,8 @@ export default function data() {
             { Header: "event name", accessor: "eventId", align: "center" },
             { Header: "booked Date", accessor: "bookedDate", align: "center" },
             { Header: "booked by", accessor: "bookedBy", align: "center" },
-            { Header: "Actions", accessor: "actions", align: "center" },
+            { Header: "reference id", accessor: "referenceId", align: "center" },
+            { Header: "category", accessor: "category", align: "center" },
         ],
 
         rows: rows,
