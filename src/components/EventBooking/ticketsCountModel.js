@@ -75,6 +75,7 @@ export default function TicketsCountModel({ open, handleClose, eventId, venueId,
         validationSchema: Yup.object(),
         validate: (values) => {
             const errors = {};
+            let totalTicketsSelected = 0;
             // Check each category for available tickets
             venueData[0]?.zone_ticket_category
                 .filter(category => category.zoneId === selectedZoneId)
@@ -83,6 +84,7 @@ export default function TicketsCountModel({ open, handleClose, eventId, venueId,
                     const totalTickets = totalTicketsCount[category.id] || 0;
                     const bookedTickets = bookedTicketsCount[category.id] || 0;
                     const availableTickets = totalTickets - bookedTickets;
+                    totalTicketsSelected += currentCount;
 
                     if (currentCount > availableTickets) {
                         errors[category.id] = `Cannot exceed available tickets (${availableTickets})`;
@@ -91,7 +93,9 @@ export default function TicketsCountModel({ open, handleClose, eventId, venueId,
                         errors[category.id] = `Tickets count cannot be negative`;
                     }
                 });
-
+            if (totalTicketsSelected === 0) {
+                errors._form = 'You must select at least one ticket.';
+            }
             return errors;
         },
         onSubmit: (values) => {
@@ -153,34 +157,43 @@ export default function TicketsCountModel({ open, handleClose, eventId, venueId,
                                     const currentCount = parseInt(ticketsCount.values[category.id], 10) || 0;
 
                                     return (
-                                        <Box key={category.id} sx={{ mt: 2 }}>
-                                            <TextField
-                                                margin="dense"
-                                                id={`fullTicketsCount-${category.id}`}
-                                                name={`fullTicketsCount-${category.id}`}
-                                                label={`Tickets count for ${category.name}`}
-                                                type="number"
-                                                fullWidth
-                                                variant="standard"
-                                                value={currentCount}
-                                                onChange={(e) => ticketsCount.setFieldValue(category.id, e.target.value)}
-                                                onBlur={ticketsCount.handleBlur}
-                                                error={ticketsCount.touched[category.id] && Boolean(ticketsCount.errors[category.id])}
-                                                helperText={ticketsCount.touched[category.id] && ticketsCount.errors[category.id]}
-                                            />
-                                            <MDTypography fontWeight='light'>
-                                                Available Tickets: {availableTickets}
-                                            </MDTypography>
-                                        </Box>
+                                        <>
+                                            <Box key={category.id} sx={{ mt: 2 }}>
+                                                <TextField
+                                                    margin="dense"
+                                                    id={`fullTicketsCount-${category.id}`}
+                                                    name={`fullTicketsCount-${category.id}`}
+                                                    label={`Tickets count for ${category.name}`}
+                                                    type="number"
+                                                    fullWidth
+                                                    variant="standard"
+                                                    value={currentCount}
+                                                    onChange={(e) => ticketsCount.setFieldValue(category.id, e.target.value)}
+                                                    onBlur={ticketsCount.handleBlur}
+                                                    error={ticketsCount.touched[category.id] && Boolean(ticketsCount.errors[category.id])}
+                                                    helperText={ticketsCount.touched[category.id] && ticketsCount.errors[category.id]}
+                                                />
+                                                <MDTypography fontWeight='light'>
+                                                    Available Tickets: {availableTickets}
+                                                </MDTypography>
+                                            </Box>
+                                        </>
                                     );
 
                                 })}
+                            <Box>
+                                {ticketsCount.errors._form && (
+                                    <MDTypography color="error" align="center">
+                                        {ticketsCount.errors._form}
+                                    </MDTypography>
+                                )}
+                            </Box>
                         </MDBox>
                     </MDBox>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Cancel</Button>
-                    <Button type="submit">Continue</Button>
+                    <Button type="submit" disabled={!selectedZoneId || ticketsCount.errors._form}>Continue</Button>
                 </DialogActions>
             </form>
         </Dialog>
