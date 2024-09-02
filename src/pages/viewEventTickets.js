@@ -1,7 +1,7 @@
 import Footer from 'examples/Footer'
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout'
 import DashboardNavbar from 'examples/Navbars/DashboardNavbar'
-import { Card, CardContent, CircularProgress, Grid, List, ListItem, ListItemText, TextField } from '@mui/material'
+import { Button, Card, CardContent, CircularProgress, Grid, List, ListItem, ListItemText, TextField } from '@mui/material'
 import DataTable from "examples/Tables/DataTable";
 import ticketsTableData from "layouts/tables/data/eventTicketsTableData";
 import MDBox from 'components/MDBox'
@@ -13,6 +13,8 @@ import ReportsLineChart from 'examples/Charts/LineCharts/ReportsLineChart';
 import { supabase } from './supabaseClient';
 import { UserDataContext } from 'context';
 import MDInput from 'components/MDInput';
+import { CSVLink, CSVDownload } from "react-csv";
+import MDButton from 'components/MDButton';
 
 export default function ViewTickets() {
     const { columns: pColumns, rows: pRows } = ticketsTableData();
@@ -28,6 +30,7 @@ export default function ViewTickets() {
     const [error, setError] = useState('');
     const [searched, setSearched] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const [allEventTickets, setAllEventTickets] = useState([]);
 
     const getCurrentDate = () => {
         const today = new Date();
@@ -135,6 +138,38 @@ export default function ViewTickets() {
         });
     }, [searchTerm, pRows]);
 
+    const headers = [
+        { label: "Id", key: "id" },
+        { label: "Seat Id", key: "seatId" },
+        { label: "Category", key: "category" },
+        { label: "Price", key: "price" },
+        { label: "Event", key: "eventName" },
+        { label: "Checked In", key: "checkedIn" },
+        { label: "Active", key: "isActive" },
+        { label: "Zone", key: "zone" },
+        { label: "Venue", key: "venue" },
+        { label: "Organizers", key: "organizationName" },
+        { label: "Reference Id", key: "referenceId" },
+        { label: "Booked By", key: "bookedBy" },
+        { label: "Booked Date", key: "created_at" },
+    ];
+
+    const data = filteredRows ? filteredRows.map(ticket => ({
+        id: ticket.id?.props?.children?.props?.id,
+        created_at: ticket.bookedDate?.props?.children,
+        seatId: ticket.seatId?.props?.children,
+        bookedBy: ticket.bookedBy?.props?.children,
+        referenceId: ticket.referenceId?.props?.children,
+        eventName: ticket.eventName?.props?.children,
+        category: ticket.category?.props?.children,
+        checkedIn: ticket.checkedIn?.props?.children,
+        isActive: ticket.isActive?.props?.children,
+        organizationName: ticket.organizationName?.props.children,
+        price: ticket.price?.props.children,
+        venue: ticket.venue?.props.children,
+        zone: ticket.zone?.props.children,
+    })) : [];
+
     return (
         <DashboardLayout>
             <DashboardNavbar />
@@ -206,6 +241,11 @@ export default function ViewTickets() {
                                     value={searchTerm}
                                     onChange={handleSearch}
                                 />
+                            </MDBox>
+                            <MDBox pt={3} pr={3} display="flex" justifyContent="right">
+                                <CSVLink data={data} headers={headers} filename={"Tickets"}>
+                                    <MDButton variant='contained' color='info'>Download Tickets as CSV</MDButton>
+                                </CSVLink>
                             </MDBox>
                             {isLoading ? (
                                 <MDBox p={3} display="flex" justifyContent="center">
