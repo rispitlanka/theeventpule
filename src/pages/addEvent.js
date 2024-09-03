@@ -94,6 +94,9 @@ export default function AddEvent() {
             values.endTime = formattedEndTime;
             values.endDate = formattedEndDate;
             values.eventOrganizationId = userOrganizationId;
+            if (values.eventTags) {
+                values.eventTags = values.eventTags.split(',').map(tag => tag.trim());
+            }
             await addEventData(values);
             resetForm();
             toast.info('Event has been successfully created!');
@@ -123,6 +126,7 @@ export default function AddEvent() {
             isFree: false,
             eventImage: '',
             eventTrailer: '',
+            eventTags: '',
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
@@ -228,7 +232,7 @@ export default function AddEvent() {
                                             <TextField
                                                 fullWidth
                                                 variant="outlined"
-                                                id="outlined-basic"
+                                                id="name"
                                                 label="Name"
                                                 name="name"
                                                 value={newEvent.values.name}
@@ -241,7 +245,7 @@ export default function AddEvent() {
                                             <TextField
                                                 fullWidth
                                                 variant="outlined"
-                                                id="outlined-basic"
+                                                id="description"
                                                 label="Description"
                                                 name="description"
                                                 value={newEvent.values.description}
@@ -275,7 +279,7 @@ export default function AddEvent() {
                                         <MDBox p={1}>
                                             <TextField fullWidth
                                                 variant="outlined"
-                                                id="outlined-basic"
+                                                id="contactEmail"
                                                 label="Contact Email"
                                                 name="contactEmail"
                                                 value={newEvent.values.contactEmail}
@@ -287,7 +291,7 @@ export default function AddEvent() {
                                         <MDBox p={1}>
                                             <TextField fullWidth
                                                 variant="outlined"
-                                                id="outlined-basic"
+                                                id="contactPhone"
                                                 label="Contact Phone"
                                                 name="contactPhone"
                                                 value={newEvent.values.contactPhone}
@@ -342,7 +346,7 @@ export default function AddEvent() {
                                             <TextField
                                                 fullWidth
                                                 variant="outlined"
-                                                id="outlined-basic"
+                                                id="eventTrailer"
                                                 label="Trailer Link"
                                                 name="eventTrailer"
                                                 value={newEvent.values.eventTrailer}
@@ -350,6 +354,19 @@ export default function AddEvent() {
                                                 onBlur={newEvent.handleBlur}
                                                 error={newEvent.touched.eventTrailer && Boolean(newEvent.errors.eventTrailer)}
                                                 helperText={newEvent.touched.eventTrailer && newEvent.errors.eventTrailer} />
+                                        </MDBox>
+                                        <MDBox p={1}>
+                                            <TextField
+                                                fullWidth
+                                                variant="outlined"
+                                                id="eventTags"
+                                                label="Tags (separate with commas)"
+                                                name="eventTags"
+                                                value={newEvent.values.eventTags}
+                                                onChange={newEvent.handleChange}
+                                                onBlur={newEvent.handleBlur}
+                                                error={newEvent.touched.eventTags && Boolean(newEvent.errors.eventTags)}
+                                                helperText={newEvent.touched.eventTags && newEvent.errors.eventTags} />
                                         </MDBox>
                                     </Grid>
 

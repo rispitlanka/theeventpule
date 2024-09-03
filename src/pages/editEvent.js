@@ -97,6 +97,9 @@ export default function EditEvent() {
             values.date = formattedDate;
             values.endTime = formattedEndTime;
             values.endDate = formattedEndDate;
+            if (values.eventTags) {
+                values.eventTags = values.eventTags.split(',').map(tag => tag.trim());
+            }
             await editEventData(values);
             resetForm();
             toast.info('Event has been successfully updated!');
@@ -125,6 +128,7 @@ export default function EditEvent() {
             eventImage: '',
             mainEventId: '',
             eventTrailer: '',
+            eventTags: '',
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
@@ -219,6 +223,7 @@ export default function EditEvent() {
                         eventImage: event.eventImage,
                         mainEventId: event.mainEventId,
                         eventTrailer: event.eventTrailer,
+                        eventTags: event.eventTags,
                     });
                     setEventImagePreview(event.eventImage);
                     setSelectedStartDate(event.date);
@@ -274,7 +279,7 @@ export default function EditEvent() {
                                             <TextField
                                                 fullWidth
                                                 variant="outlined"
-                                                id="outlined-basic"
+                                                id="name"
                                                 label="Name"
                                                 name="name"
                                                 value={editEvent.values.name}
@@ -287,7 +292,7 @@ export default function EditEvent() {
                                             <TextField
                                                 fullWidth
                                                 variant="outlined"
-                                                id="outlined-basic"
+                                                id="description"
                                                 label="Description"
                                                 name="description"
                                                 value={editEvent.values.description}
@@ -321,7 +326,7 @@ export default function EditEvent() {
                                         <MDBox p={1}>
                                             <TextField fullWidth
                                                 variant="outlined"
-                                                id="outlined-basic"
+                                                id="contactEmail"
                                                 label="Contact Email"
                                                 name="contactEmail"
                                                 value={editEvent.values.contactEmail}
@@ -333,7 +338,7 @@ export default function EditEvent() {
                                         <MDBox p={1}>
                                             <TextField fullWidth
                                                 variant="outlined"
-                                                id="outlined-basic"
+                                                id="contactPhone"
                                                 label="Contact Phone"
                                                 name="contactPhone"
                                                 value={editEvent.values.contactPhone}
@@ -388,7 +393,7 @@ export default function EditEvent() {
                                             <TextField
                                                 fullWidth
                                                 variant="outlined"
-                                                id="outlined-basic"
+                                                id="eventTrailer"
                                                 label="Trailer Link"
                                                 name="eventTrailer"
                                                 value={editEvent.values.eventTrailer}
@@ -396,6 +401,19 @@ export default function EditEvent() {
                                                 onBlur={editEvent.handleBlur}
                                                 error={editEvent.touched.eventTrailer && Boolean(editEvent.errors.eventTrailer)}
                                                 helperText={editEvent.touched.eventTrailer && editEvent.errors.eventTrailer} />
+                                        </MDBox>
+                                        <MDBox p={1}>
+                                            <TextField
+                                                fullWidth
+                                                variant="outlined"
+                                                id="eventTags"
+                                                label="Tags (separate with commas)"
+                                                name="eventTags"
+                                                value={editEvent.values.eventTags}
+                                                onChange={editEvent.handleChange}
+                                                onBlur={editEvent.handleBlur}
+                                                error={editEvent.touched.eventTags && Boolean(editEvent.errors.eventTags)}
+                                                helperText={editEvent.touched.eventTags && editEvent.errors.eventTags} />
                                         </MDBox>
                                     </Grid>
                                     <Grid item xs={6}>
