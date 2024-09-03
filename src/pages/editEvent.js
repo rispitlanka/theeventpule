@@ -124,6 +124,7 @@ export default function EditEvent() {
             isFree: '',
             eventImage: '',
             mainEventId: '',
+            eventTrailer: '',
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
@@ -217,6 +218,7 @@ export default function EditEvent() {
                         isFree: event.isFree,
                         eventImage: event.eventImage,
                         mainEventId: event.mainEventId,
+                        eventTrailer: event.eventTrailer,
                     });
                     setEventImagePreview(event.eventImage);
                     setSelectedStartDate(event.date);
@@ -382,6 +384,21 @@ export default function EditEvent() {
                                                 </Select>
                                             </FormControl>
                                         </MDBox>
+                                        <MDBox p={1}>
+                                            <TextField
+                                                fullWidth
+                                                variant="outlined"
+                                                id="outlined-basic"
+                                                label="Trailer Link"
+                                                name="eventTrailer"
+                                                value={editEvent.values.eventTrailer}
+                                                onChange={editEvent.handleChange}
+                                                onBlur={editEvent.handleBlur}
+                                                error={editEvent.touched.eventTrailer && Boolean(editEvent.errors.eventTrailer)}
+                                                helperText={editEvent.touched.eventTrailer && editEvent.errors.eventTrailer} />
+                                        </MDBox>
+                                    </Grid>
+                                    <Grid item xs={6}>
                                         <MDBox ml={1} mb={1}>
                                             <Grid sx={{ display: 'flex', flexDirection: 'row', }}>
                                                 <MDBox sx={{ mr: 2 }}>
@@ -448,8 +465,6 @@ export default function EditEvent() {
                                                 </MDBox>
                                             </Grid>
                                         </MDBox>
-                                    </Grid>
-                                    <Grid item xs={6}>
                                         <MDBox p={1}>
                                             <Grid container spacing={3}>
                                                 <Grid item xs={6} display={'flex'} flexDirection={'column'}>

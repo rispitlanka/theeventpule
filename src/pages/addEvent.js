@@ -122,6 +122,7 @@ export default function AddEvent() {
             isActive: true,
             isFree: false,
             eventImage: '',
+            eventTrailer: '',
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
@@ -337,6 +338,22 @@ export default function AddEvent() {
                                                 </Select>
                                             </FormControl>
                                         </MDBox>
+                                        <MDBox p={1}>
+                                            <TextField
+                                                fullWidth
+                                                variant="outlined"
+                                                id="outlined-basic"
+                                                label="Trailer Link"
+                                                name="eventTrailer"
+                                                value={newEvent.values.eventTrailer}
+                                                onChange={newEvent.handleChange}
+                                                onBlur={newEvent.handleBlur}
+                                                error={newEvent.touched.eventTrailer && Boolean(newEvent.errors.eventTrailer)}
+                                                helperText={newEvent.touched.eventTrailer && newEvent.errors.eventTrailer} />
+                                        </MDBox>
+                                    </Grid>
+
+                                    <Grid item xs={6} >
                                         <MDBox ml={1} mb={1}>
                                             <Grid sx={{ display: 'flex', flexDirection: 'row', }}>
                                                 <MDBox sx={{ mr: 2 }}>
@@ -402,9 +419,6 @@ export default function AddEvent() {
                                                 </MDBox>
                                             </Grid>
                                         </MDBox>
-                                    </Grid>
-
-                                    <Grid item xs={6} >
                                         <MDBox p={1}>
                                             <Grid container spacing={3}>
                                                 <Grid item xs={6} display={'flex'} flexDirection={'column'}>
