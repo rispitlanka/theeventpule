@@ -358,7 +358,7 @@ export default function GetEventTicket() {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <ReactToPrint trigger={() => <MDButton disabled={bookedTicketsData.length <= 0}>Yes</MDButton>} content={() => componentRef.current} />
+                    <ReactToPrint trigger={() => <MDButton disabled={bookedTicketsData.length <= 0}>Yes</MDButton>} content={() => componentRef.current} onAfterPrint={handleClose} />
                     <MDButton onClick={handleClose}>No</MDButton>
                 </DialogActions>
             </Dialog>
