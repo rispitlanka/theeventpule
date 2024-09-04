@@ -19,8 +19,9 @@ export default function AddStageModel({ open, onClose, eventId }) {
         return data[0];
     };
 
-    const updateQrCode = async (stageID) => {
-        const qrCodeDataUrl = await QRCode.toDataURL(String(stageID));
+    const updateQrCode = async (stageID, eventID) => {
+        const qrData = `${stageID}-${eventID}`;
+        const qrCodeDataUrl = await QRCode.toDataURL(String(qrData));
         const { data, error } = await supabase.from('stages').update({ qrImage: qrCodeDataUrl }).eq('id', stageID).select('*');
         if (error) throw new Error('Error updating QR code:', error.message);
 
@@ -31,7 +32,7 @@ export default function AddStageModel({ open, onClose, eventId }) {
         try {
             values.eventId = eventId;
             const newStage = await addStageData(values);
-            await updateQrCode(newStage.id);
+            await updateQrCode(newStage.id, newStage.eventId);
 
             resetForm();
             onClose();
