@@ -258,7 +258,7 @@ export default function SingleEventOrganization() {
               >
                 <Grid container spacing={3} alignItems="center">
                   <Grid item>
-                    <MDAvatar src={organizationData[0].theatreImage} alt="profile-image" size="lg" shadow="sm" />
+                    <MDAvatar src={organizationData[0].organizationImage} alt="profile-image" size="lg" shadow="sm" />
                   </Grid>
                   <Grid item>
                     <MDBox height="100%" mt={0.5} lineHeight={1}>

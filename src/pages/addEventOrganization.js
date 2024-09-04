@@ -30,8 +30,8 @@ export default function AddEventOrganization() {
   //   const [facilitiesData, setFacilitiesData] = useState([]);
   //   const [selectedFacilityIds, setSelectedFacilityIds] = useState([]);
   //   const [regDate, setRegDate] = useState();
-  //   const [coverImagePreview, setCoverImagePreview] = useState(null);
-  //   const [theatreImagePreview, setTheatreImagePreview] = useState(null);
+  const [coverImagePreview, setCoverImagePreview] = useState(null);
+  const [organizationImagePreview, setOrganizationImagePreview] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   // const handleDateChange = (date) => {
@@ -46,17 +46,17 @@ export default function AddEventOrganization() {
   //     );
   //   };
 
-  //   const handleCoverImageChange = (event) => {
-  //     const file = event.currentTarget.files[0];
-  //     newOrganization.setFieldValue('coverImage', file);
-  //     setCoverImagePreview(URL.createObjectURL(file));
-  //   };
+  const handleCoverImageChange = (event) => {
+    const file = event.currentTarget.files[0];
+    newOrganization.setFieldValue('coverImage', file);
+    setCoverImagePreview(URL.createObjectURL(file));
+  };
 
-  //   const handleTheatreImageChange = (event) => {
-  //     const file = event.currentTarget.files[0];
-  //     newOrganization.setFieldValue('theatreImage', file);
-  //     setTheatreImagePreview(URL.createObjectURL(file));
-  //   };
+  const handleOrganizationImageChange = (event) => {
+    const file = event.currentTarget.files[0];
+    newOrganization.setFieldValue('organizationImage', file);
+    setOrganizationImagePreview(URL.createObjectURL(file));
+  };
 
   //   useEffect(() => {
   //     const fetchFacilities = async () => {
@@ -76,49 +76,49 @@ export default function AddEventOrganization() {
   const onSubmit = async (values, { resetForm }) => {
     setIsLoading(true);
     try {
-      //   if (newOrganization.values.coverImage) {
-      //     const file = newOrganization.values.coverImage;
+      if (newOrganization.values.coverImage) {
+        const file = newOrganization.values.coverImage;
 
-      //     const { data: imageData, error: imageError } = await supabase.storage
-      //       .from('theatre_images')
-      //       .upload(`cover_images/${file.name}`, file, {
-      //         cacheControl: '3600',
-      //         upsert: false,
-      //       });
+        const { data: imageData, error: imageError } = await supabase.storage
+          .from('organization_images')
+          .upload(`cover_images/${file.name}`, file, {
+            cacheControl: '3600',
+            upsert: false,
+          });
 
-      //     if (imageError) {
-      //       throw imageError;
-      //     }
+        if (imageError) {
+          throw imageError;
+        }
 
-      //     if (imageData) {
-      //       const imgURL = supabase.storage.from('theatre_images').getPublicUrl(imageData.path);
-      //       values.coverImage = imgURL.data.publicUrl;
-      //     } else {
-      //       throw new Error('Failed to upload image');
-      //     }
-      //   }
+        if (imageData) {
+          const imgURL = supabase.storage.from('organization_images').getPublicUrl(imageData.path);
+          values.coverImage = imgURL.data.publicUrl;
+        } else {
+          throw new Error('Failed to upload image');
+        }
+      }
 
-      //   if (newOrganization.values.theatreImage) {
-      //     const file = newOrganization.values.theatreImage;
+      if (newOrganization.values.organizationImage) {
+        const file = newOrganization.values.organizationImage;
 
-      //     const { data: imageData, error: imageError } = await supabase.storage
-      //       .from('theatre_images')
-      //       .upload(`images/${file.name}`, file, {
-      //         cacheControl: '3600',
-      //         upsert: false,
-      //       });
+        const { data: imageData, error: imageError } = await supabase.storage
+          .from('organization_images')
+          .upload(`profile_images/${file.name}`, file, {
+            cacheControl: '3600',
+            upsert: false,
+          });
 
-      //     if (imageError) {
-      //       throw imageError;
-      //     }
+        if (imageError) {
+          throw imageError;
+        }
 
-      //     if (imageData) {
-      //       const imgURL = supabase.storage.from('theatre_images').getPublicUrl(imageData.path);
-      //       values.theatreImage = imgURL.data.publicUrl;
-      //     } else {
-      //       throw new Error('Failed to upload image');
-      //     }
-      //   }
+        if (imageData) {
+          const imgURL = supabase.storage.from('organization_images').getPublicUrl(imageData.path);
+          values.organizationImage = imgURL.data.publicUrl;
+        } else {
+          throw new Error('Failed to upload image');
+        }
+      }
 
       //   const selectedFacilityNames = facilitiesData
       //     .filter(facility => selectedFacilityIds.includes(facility.id))
@@ -159,8 +159,8 @@ export default function AddEventOrganization() {
       isActive: true,
       //   registeredDate: '',
       //   notes: '',
-      //   coverImage: '',
-      //   theatreImage: '',
+      coverImage: '',
+      organizationImage: '',
     },
     validationSchema: Yup.object({
       name: Yup.string().required('Required'),
@@ -349,11 +349,11 @@ export default function AddEventOrganization() {
                         </MDBox>
                       ))}
                     </MDBox> */}
-                    {/* <MDBox p={1}>
+                    <MDBox p={1}>
                       <Grid container spacing={3}>
                         <Grid item xs={6} display={'flex'} flexDirection={'column'}>
-                          <MDTypography>Theatre Image</MDTypography>
-                          {theatreImagePreview ? (
+                          <MDTypography>Logo Image</MDTypography>
+                          {organizationImagePreview ? (
                             <MDBox
                               display="flex"
                               justifyContent="center"
@@ -365,7 +365,7 @@ export default function AddEventOrganization() {
                               mb={1}
                               height="100px"
                             >
-                              <img src={theatreImagePreview} alt="Theatre Preview" style={{ width: '100%', maxHeight: '100px' }} />
+                              <img src={organizationImagePreview} alt="Organization Icon" style={{ width: '100%', maxHeight: '100px' }} />
                             </MDBox>
                           ) : (
                             <MDBox
@@ -394,12 +394,12 @@ export default function AddEventOrganization() {
                               <input
                                 type="file"
                                 hidden
-                                onChange={handleTheatreImageChange}
+                                onChange={handleOrganizationImageChange}
                               />
                             </MDButton>
                           </MDBox>
-                          {newOrganization.touched.theatreImage && newOrganization.errors.theatreImage && (
-                            <MDTypography color="error">{newOrganization.errors.theatreImage}</MDTypography>
+                          {newOrganization.touched.organizationImage && newOrganization.errors.organizationImage && (
+                            <MDTypography color="error">{newOrganization.errors.organizationImage}</MDTypography>
                           )}
                         </Grid>
                         <Grid item xs={6} display={'flex'} flexDirection={'column'}>
@@ -454,7 +454,7 @@ export default function AddEventOrganization() {
                           )}
                         </Grid>
                       </Grid>
-                    </MDBox> */}
+                    </MDBox>
                   </Grid>
                 </Grid>
                 {/* <Grid mt={2}>

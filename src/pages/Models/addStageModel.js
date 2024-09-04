@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { supabase } from 'pages/supabaseClient';
+import QRCode from 'qrcode';
 
 export default function AddStageModel({ open, onClose, eventId }) {
     const handleClose = () => {
@@ -11,10 +12,28 @@ export default function AddStageModel({ open, onClose, eventId }) {
         newStageForm.resetForm();
     };
 
+    const addStageData = async (values) => {
+        const { data, error } = await supabase.from('stages').insert([values]).select('*');
+        if (error) throw new Error('Error inserting data:', error.message);
+
+        return data[0];
+    };
+
+    const updateQrCode = async (stageID, eventID) => {
+        const qrData = `${stageID}-${eventID}`;
+        const qrCodeDataUrl = await QRCode.toDataURL(String(qrData));
+        const { data, error } = await supabase.from('stages').update({ qrImage: qrCodeDataUrl }).eq('id', stageID).select('*');
+        if (error) throw new Error('Error updating QR code:', error.message);
+
+        return data;
+    };
+
     const onSubmit = async (values, { resetForm }) => {
         try {
             values.eventId = eventId;
-            await addStageData(values);
+            const newStage = await addStageData(values);
+            await updateQrCode(newStage.id, newStage.eventId);
+
             resetForm();
             onClose();
         } catch (error) {
@@ -34,20 +53,6 @@ export default function AddStageModel({ open, onClose, eventId }) {
         onSubmit,
     });
 
-    const addStageData = async (values) => {
-        try {
-            const { data, error } = await supabase.from('stages').insert([values]).select('*');
-            if (data) {
-                console.log('Data added successfully:', data);
-            }
-            if (error) {
-                throw error;
-            }
-        } catch (error) {
-            throw new Error('Error inserting data:', error.message);
-        }
-    };
-
     return (
         <Dialog onClose={handleClose} open={open} maxWidth="sm" fullWidth>
             <DialogTitle>Add New Stage</DialogTitle>
@@ -58,10 +63,7 @@ export default function AddStageModel({ open, onClose, eventId }) {
                             <TextField
                                 fullWidth
                                 label="Name"
-                                name="name"
-                                value={newStageForm.values.name}
-                                onChange={newStageForm.handleChange}
-                                onBlur={newStageForm.handleBlur}
+                                {...newStageForm.getFieldProps('name')}
                                 error={newStageForm.touched.name && Boolean(newStageForm.errors.name)}
                                 helperText={newStageForm.touched.name && newStageForm.errors.name}
                             />
@@ -71,10 +73,7 @@ export default function AddStageModel({ open, onClose, eventId }) {
                             <TextField
                                 fullWidth
                                 label="Description"
-                                name="description"
-                                value={newStageForm.values.description}
-                                onChange={newStageForm.handleChange}
-                                onBlur={newStageForm.handleBlur}
+                                {...newStageForm.getFieldProps('description')}
                                 error={newStageForm.touched.description && Boolean(newStageForm.errors.description)}
                                 helperText={newStageForm.touched.description && newStageForm.errors.description}
                             />
@@ -87,11 +86,11 @@ export default function AddStageModel({ open, onClose, eventId }) {
                 </DialogActions>
             </form>
         </Dialog>
-    )
+    );
 }
 
 AddStageModel.propTypes = {
-    open: PropTypes.isRequired,
-    onClose: PropTypes.isRequired,
-    eventId: PropTypes.isRequired,
+    open: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+    eventId: PropTypes.string.isRequired,
 };
