@@ -578,8 +578,9 @@ export default function AddEventZone() {
                                         </>
                                     }
                                 </form>
+                                <MDTypography p={1} variant='h6' color='warning' fontWeight='light'>{!isSeatLayout && ticketCategories.length <= 0 && 'Add any ticket category to continue...'}</MDTypography>
                                 <MDBox p={1} sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <MDButton color='info' onClick={handleFormsSubmit} disabled={isSeatLayout && (seatDetails.length <= 0 || !isClicked)}>Save</MDButton>
+                                    <MDButton color='info' onClick={handleFormsSubmit} disabled={isSeatLayout ? (seatDetails.length <= 0 || !isClicked) : ticketCategories.length <= 0} >Save</MDButton>
                                     {isSubmitting && <CircularProgress color='info' sx={{ marginLeft: '15px' }} />}
                                 </MDBox>
                             </MDBox>
