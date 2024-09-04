@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import { Box, Card, CircularProgress, Grid, IconButton, TextField, } from "@mui/material";
+import { Box, Card, CircularProgress, Grid, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, } from "@mui/material";
 import Footer from "examples/Footer";
 import ChairIcon from "@mui/icons-material/Chair";
 import MDBox from "components/MDBox";
@@ -98,13 +98,26 @@ export default function SingleEventZone() {
                                 <MDTypography fontWeight="light" mr={1}>Half Ticket: Rs.{zone.halfPrice}</MDTypography>
                             </Grid>
                         ) : (
-                            zone?.zone_ticket_category?.map((category, index) => (
-                                <Grid key={index} display="flex" flexDirection="row" justifyContent="space-between" mb={1}>
-                                    <MDTypography fontWeight="light" mr={1}>Category: {category.name}</MDTypography>
-                                    <MDTypography fontWeight="light" mr={1}>Price: Rs.{category.price}</MDTypography>
-                                    <MDTypography fontWeight="light" mr={1}>Count: {category.ticketsCount}</MDTypography>
-                                </Grid>
-                            ))
+                            <TableContainer sx={{ boxShadow: 'none' }}>
+                                <Table>
+                                    <TableHead sx={{ display: "table-header-group" }}>
+                                        <TableRow>
+                                            <TableCell>Category</TableCell>
+                                            <TableCell align='center'>Price</TableCell>
+                                            <TableCell align='center'>Count</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {zone?.zone_ticket_category?.map((category, index) => (
+                                            <TableRow key={index}>
+                                                <TableCell> {category.name}</TableCell>
+                                                <TableCell align='center'>{category.price}</TableCell>
+                                                <TableCell align='center'>{category.ticketsCount}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
                         )}
                     </Grid>
                 )))}
