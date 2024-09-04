@@ -162,7 +162,7 @@ export default function EditEvent() {
 
     const fetchVenuesData = async () => {
         try {
-            const { data, error } = await supabase.from('venues').select('*').eq('isActive', true).order('id', { ascending: false });;
+            const { data, error } = await supabase.from('venues').select('*').eq('isActive', true).order('name', { ascending: true });;
             if (error) throw error;
             if (data) {
                 setVenuesData(data);
