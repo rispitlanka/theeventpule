@@ -1,10 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from './supabaseClient';
 
 // @mui material components
 import Grid from "@mui/material/Grid";
-import { Button, Card, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Box, Button, Card, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -24,10 +24,12 @@ import RegistrationFormModel from './Models/registrationFormModel';
 import dayjs from 'dayjs';
 import DataNotFound from 'components/NoData/dataNotFound';
 import AddStageModel from './Models/addStageModel';
+import ReactToPrint from 'react-to-print';
 
 export default function SingleEvent() {
     // const userDetails = useContext(UserDataContext);
     // const userTheatreId = userDetails && userDetails[0].theatreId;
+    const componentRef = useRef([]);
     const [eventData, setEventData] = useState([]);
     const [openEditDialogBox, setOpenEditDialogBox] = useState();
     const [openEditStageDialogBox, setOpenEditStageDialogBox] = useState();
@@ -290,11 +292,49 @@ export default function SingleEvent() {
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {stageData.map((row) => (
+                                            {stageData.map((row, index) => (
                                                 <TableRow key={row.id}>
-                                                    <TableCell >{row.name}</TableCell>
-                                                    <TableCell align='center'>{row.description}</TableCell>
-                                                    <TableCell align='center'><Button onClick={() => deleteStageRow(row.id)}>Delete</Button></TableCell>
+                                                    <TableCell>{row.name}</TableCell>
+                                                    <TableCell align="center">{row.description}</TableCell>
+                                                    <TableCell align="center">
+                                                        <ReactToPrint
+                                                            trigger={() => <Button>Print QR</Button>}
+                                                            content={() => componentRef.current[index]}
+                                                        />
+                                                        <div style={{ display: 'none' }}>
+                                                            <div ref={el => componentRef.current[index] = el}>
+                                                                <Box
+                                                                    sx={{
+                                                                        border: '1px solid #ccc',
+                                                                        borderRadius: '8px',
+                                                                        padding: '16px',
+                                                                        display: 'flex',
+                                                                        flexDirection: 'column',
+                                                                        alignItems: 'center',
+                                                                        width: '400px',
+                                                                        height: '400px',
+                                                                    }}
+                                                                >
+                                                                    <img
+                                                                        src={row.qrImage}
+                                                                        alt="QR Code"
+                                                                        style={{
+                                                                            maxWidth: '100%',
+                                                                            height: '100%',
+                                                                            marginBottom: '8px',
+                                                                        }}
+                                                                    />
+                                                                    <Grid container justifyContent="center" alignItems="center">
+                                                                        <Typography variant="body2" fontWeight="bold" marginRight="4px">
+                                                                            Stage ID:
+                                                                        </Typography>
+                                                                        <Typography variant="body2">{row.id}</Typography>
+                                                                    </Grid>
+                                                                </Box>
+                                                            </div>
+                                                        </div>
+                                                        <Button onClick={() => deleteStageRow(row.id)}>Delete</Button>
+                                                    </TableCell>
                                                 </TableRow>
                                             ))}
                                         </TableBody>
