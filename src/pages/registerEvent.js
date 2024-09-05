@@ -2,14 +2,17 @@ import DynamicForm from 'components/FormSubmission/dynamicForm'
 import Footer from 'examples/Footer'
 import React, { useEffect, useState } from 'react'
 import { supabase } from './supabaseClient';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { Box, Card, CircularProgress } from '@mui/material';
 import MDTypography from 'components/MDTypography';
 import DataNotFound from 'components/NoData/dataNotFound';
 import noFormImage from "assets/images/illustrations/noForms2.png";
+import DashboardLayout from 'examples/LayoutContainers/DashboardLayout';
+import DashboardNavbar from 'examples/Navbars/DashboardNavbar';
 
 export default function RegisterEvent() {
-    const { eventId } = useParams();
+    const location = useLocation();
+    const { eventId, venueId, zoneId, eventName, eventDate, eventTime, venueName, zoneName, isFree, categoryId } = location.state;
     const [formFieldData, setFormFieldData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -32,7 +35,8 @@ export default function RegisterEvent() {
     }, [eventId])
 
     return (
-        <>
+        <DashboardLayout>
+            <DashboardNavbar/>
             <Box
                 sx={{
                     display: 'flex',
@@ -48,7 +52,7 @@ export default function RegisterEvent() {
                     :
                     <Card sx={{ p: 2, mb: 2, width: '80%' }}>
 
-                        <MDTypography variant='h5' mb={1} fontWeight='medium'>Register For The Event</MDTypography>
+                        <MDTypography variant='h5' mb={1} fontWeight='medium'>Register For The Event - {eventName}</MDTypography>
                         {formFieldData && formFieldData.length > 0 ?
                             <DynamicForm sx={{ m: 2 }} fields={formFieldData} eventId={eventId} />
                             :
@@ -58,6 +62,6 @@ export default function RegisterEvent() {
                 }
             </Box>
             <Footer />
-        </>
+        </DashboardLayout>
     )
 }

@@ -55,6 +55,7 @@ export default function useUserRoutes() {
                 '/shows',
                 '/eventOrganization',
                 '/eventBookings',
+                '/eventBookings/book-ticket/:eventId/:venueId',
               ].includes(route.route);
 
             } else if (userRole === 'theatreOwner') {
@@ -124,6 +125,7 @@ export default function useUserRoutes() {
                 '/venues/add-venue"',
                 '/venues/edit-venue/:id',
                 '/eventBookings',
+                '/eventBookings/book-ticket/:eventId/:venueId',
               ].includes(route.route);
             } else if (userRole === 'eventOrganizer') {
               return ![
