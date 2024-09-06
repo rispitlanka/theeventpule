@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Formik, Form, Field } from 'formik';
 import {
@@ -12,12 +12,16 @@ import {
     Select,
     Checkbox,
     Box,
-    Typography
+    Typography,
 } from '@mui/material';
 import { supabase } from 'pages/supabaseClient';
 import MDButton from 'components/MDButton';
 import { ToastContainer, toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import ShortUniqueId from 'short-unique-id';
+import QRCode from 'qrcode';
+import MDTypography from 'components/MDTypography';
+
 
 const renderField = (field) => {
     switch (field.type) {
@@ -82,13 +86,16 @@ const renderField = (field) => {
     }
 };
 
-const DynamicForm = ({ fields, eventId }) => {
+const DynamicForm = ({ fields, eventId, venueId, eventName, venueName, date, time, zoneId, categoryId, price }) => {
+    const uid = new ShortUniqueId({ dictionary: 'number', length: 6 });
+    const [stageIds, setStageIds] = useState([]);
+    const navigate = useNavigate();
+
     const initialValues = fields.reduce((acc, field) => {
         acc[field.name] = '';
         return acc;
     }, {});
 
-    const navigate = useNavigate();
 
     const validate = (values) => {
         const errors = {};
@@ -100,20 +107,43 @@ const DynamicForm = ({ fields, eventId }) => {
         return errors;
     };
 
+    useEffect(() => {
+        const fetchStages = async () => {
+            try {
+                const { data, error } = await supabase.from('stages').select('id').eq('eventId', eventId);
+                if (error) throw error;
+                if (data) {
+                    setStageIds(data)
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchStages();
+    }, [eventId])
+
     const handleSubmit = async (values, { resetForm }) => {
         try {
-            values.details = JSON.stringify(values);
             const dataToAdd = {
                 eventId: eventId,
-                details: values.details,
+                details: JSON.stringify(values),
+            };
+
+            const registrationData = await addRegistrationData(dataToAdd);
+
+            if (registrationData && registrationData.length > 0) {
+                await addTicketData({
+                    registrationId: registrationData[0].id,
+                    eventId,
+                    venueId,
+                    zoneId,
+                    categoryId
+                });
+
+                resetForm();
+                toast.info('Entries have been successfully registered!');
+                document.activeElement.blur();
             }
-            await addRegistrationData(dataToAdd);
-            resetForm();
-            toast.info('Entries have been successfully registered!');
-            document.activeElement.blur();
-            setTimeout(() => {
-                navigate(-1)
-            }, 1500);
         } catch (error) {
             console.error('Error submitting form:', error.message);
         }
@@ -122,16 +152,76 @@ const DynamicForm = ({ fields, eventId }) => {
     const addRegistrationData = async (dataToAdd) => {
         try {
             const { data, error } = await supabase.from('eventRegistrations').insert(dataToAdd).select('*');
-            if (data) {
-                console.log('Data added successfully:', data);
-            }
-            if (error) {
-                throw error;
-            }
+            if (error) throw error;
+            return data;
         } catch (error) {
-            console.error('Error adding data:', error.message);
+            console.error('Error adding registration data:', error.message);
+            throw error;
         }
     };
+
+    const addTicketData = async ({ registrationId, eventId, venueId, zoneId, categoryId }) => {
+        const refId = uid.rnd();
+        try {
+            const dataToInsert = {
+                registrationId,
+                eventId,
+                venueId,
+                zoneId,
+                categoryId,
+                referenceId: refId,
+                eventOrganizationId: 1,
+                price,
+            };
+
+            const { data, error } = await supabase.from('tickets_events').insert(dataToInsert).select('*');
+            if (error) throw error;
+
+            if (data?.length > 0) {
+
+                if (stageIds?.length > 0) {
+                    await insertStageParticipants(data);
+                }
+
+                const qrCodes = await generateQRCodesForTickets(data[0].id);
+
+                navigate(`/eventBookings/book-ticket/ticket-view`, { state: { bookedTicketsData: data, qrCodes, eventName, venueName, date, time } });
+            }
+        } catch (error) {
+            console.error('Error in booking tickets:', error.message);
+            throw error;
+        }
+    };
+
+    const insertStageParticipants = async (tickets) => {
+        try {
+            const stageParticipantsData = tickets.flatMap(ticket =>
+                stageIds.map(stage => ({
+                    stageId: stage.id,
+                    ticketId: ticket.id,
+                    eventId: ticket.eventId,
+                }))
+            );
+
+            const { data, error } = await supabase.from('stage_participants').insert(stageParticipantsData).select('*');
+            if (error) {
+                console.error('Error inserting into stage_participants:', error.message);
+            } else {
+                console.log('Stage participants added successfully:', data);
+            }
+        } catch (error) {
+            console.error('Error in insertStageParticipants:', error.message);
+        }
+    };
+
+    const generateQRCodesForTickets = async (id) => {
+        try {
+            const qrCodeDataUrl = await QRCode.toDataURL(String(id));
+            return qrCodeDataUrl;
+        } catch (err) {
+            console.log('Error generating QR code:', err);
+        }
+    }
 
     return (
         <>
@@ -152,13 +242,15 @@ const DynamicForm = ({ fields, eventId }) => {
                                     )}
                                 </Box>
                             ))}
-                            <MDButton sx={{ marginTop: '10px' }} ariant="contained" type="submit" color='info' >
+                            <MDTypography sx={{ marginTop: '10px' }} variant='h6' color='warning' fontWeight='light'>{!categoryId && 'Select any ticket zone and category to continue...'}</MDTypography>
+                            <MDButton sx={{ marginTop: '10px' }} ariant="contained" type="submit" color='info' disabled={!categoryId}>
                                 Submit
                             </MDButton>
                         </Box>
                     </Form>
                 )}
             </Formik>
+
             <ToastContainer
                 position="bottom-right"
                 autoClose={2000}
@@ -180,4 +272,13 @@ export default DynamicForm;
 DynamicForm.propTypes = {
     fields: PropTypes.isRequired,
     eventId: PropTypes.isRequired,
+    venueId: PropTypes.isRequired,
+    eventName: PropTypes.isRequired,
+    date: PropTypes.isRequired,
+    time: PropTypes.isRequired,
+    zoneId: PropTypes.isRequired,
+    categoryId: PropTypes.isRequired,
+    eventOrganizationId: PropTypes.isRequired,
+    price: PropTypes.isRequired,
+    venueName: PropTypes.isRequired,
 };

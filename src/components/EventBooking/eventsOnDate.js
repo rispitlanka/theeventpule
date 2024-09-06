@@ -8,7 +8,6 @@ import MDBox from 'components/MDBox';
 import noDataImage from "assets/images/illustrations/noData3.svg";
 import { UserDataContext } from 'context';
 import MDButton from 'components/MDButton';
-import TicketsCountModel from './ticketsCountModel';
 import dayjs from 'dayjs';
 
 export default function EventsOnDate() {
@@ -21,13 +20,6 @@ export default function EventsOnDate() {
     const navigate = useNavigate();
     const openPage = (route) => {
         navigate(route);
-    };
-    const [open, setOpen] = useState(false);
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-    const handleClose = () => {
-        setOpen(false);
     };
 
     const currentDate = dayjs().startOf('day').format('YYYY-MM-DDTHH:mm:ss');
@@ -113,17 +105,13 @@ export default function EventsOnDate() {
         });
     }, [events]);
 
-    const [selectedEvent, setSelectedEvent] = useState(null);
-
     const handleBookNowClick = (event) => {
         if (event.venues?.isSeat) {
             openPage(`/eventBookings/book-seats/${event.id}/${event.venueId}`);
         } else {
-            setSelectedEvent(event);
-            handleClickOpen();
+            openPage(`/eventBookings/book-ticket/${event.id}/${event.venueId}?&eventName=${event.name}&venueName=${event.venues?.name}&date=${event.date}&time=${event.startTime}&isFree=${event.isFree}`);
         }
     };
-
     return (
         <>
             {isLoading ? (
@@ -174,23 +162,7 @@ export default function EventsOnDate() {
                         </TableContainer>
                     ) : (
                         <DataNotFound message={'No Events Scheduled Yet !'} image={noDataImage} />
-                    )}
-
-                    {selectedEvent && (
-                        <TicketsCountModel
-                            open={open}
-                            handleClose={() => { setSelectedEvent(null); handleClose(); }}
-                            eventId={selectedEvent.id}
-                            venueId={selectedEvent.venueId}
-                            eventName={selectedEvent.name}
-                            eventDate={selectedEvent.date}
-                            eventTime={selectedEvent.startTime}
-                            venueName={selectedEvent.venues?.name}
-                            fullPrice={selectedEvent.venues?.zones_events[0]?.price}
-                            halfPrice={selectedEvent.venues?.zones_events[0]?.halfPrice}
-                            isFree={selectedEvent.isFree}
-                        />
-                    )}
+                    )}                  
                 </>
             )}
         </>
