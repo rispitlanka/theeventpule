@@ -109,7 +109,7 @@ export default function EventsOnDate() {
         if (event.venues?.isSeat) {
             openPage(`/eventBookings/book-seats/${event.id}/${event.venueId}`);
         } else {
-            openPage(`/eventBookings/book-ticket/${event.id}/${event.venueId}?&eventName=${event.name}&venueName=${event.venues?.name}&date=${event.date}&time=${event.startTime}&isFree=${event.isFree}`);
+            openPage(`/eventBookings/book-ticket/${event.id}/${event.venueId}?&eventName=${event.name}&venueName=${event.venues?.name}&date=${event.date}&time=${event.startTime}&isFree=${event.isFree}&eventOrganizationId=${userOrganizationId}`);
         }
     };
     return (
