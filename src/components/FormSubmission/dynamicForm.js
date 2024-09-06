@@ -86,7 +86,7 @@ const renderField = (field) => {
     }
 };
 
-const DynamicForm = ({ fields, eventId, venueId, eventName, venueName, date, time, zoneId, categoryId, price }) => {
+const DynamicForm = ({ fields, eventId, venueId, eventName, venueName, date, time, zoneId, categoryId, price, eventOrganizationId }) => {
     const uid = new ShortUniqueId({ dictionary: 'number', length: 6 });
     const [stageIds, setStageIds] = useState([]);
     const navigate = useNavigate();
@@ -137,7 +137,8 @@ const DynamicForm = ({ fields, eventId, venueId, eventName, venueName, date, tim
                     eventId,
                     venueId,
                     zoneId,
-                    categoryId
+                    categoryId,
+                    eventOrganizationId,
                 });
 
                 resetForm();
@@ -160,7 +161,7 @@ const DynamicForm = ({ fields, eventId, venueId, eventName, venueName, date, tim
         }
     };
 
-    const addTicketData = async ({ registrationId, eventId, venueId, zoneId, categoryId }) => {
+    const addTicketData = async ({ registrationId, eventId, venueId, zoneId, categoryId, eventOrganizationId }) => {
         const refId = uid.rnd();
         try {
             const dataToInsert = {
@@ -170,8 +171,8 @@ const DynamicForm = ({ fields, eventId, venueId, eventName, venueName, date, tim
                 zoneId,
                 categoryId,
                 referenceId: refId,
-                eventOrganizationId: 1,
                 price,
+                eventOrganizationId,
             };
 
             const { data, error } = await supabase.from('tickets_events').insert(dataToInsert).select('*');
@@ -281,4 +282,5 @@ DynamicForm.propTypes = {
     eventOrganizationId: PropTypes.isRequired,
     price: PropTypes.isRequired,
     venueName: PropTypes.isRequired,
+    eventOrganizationId: PropTypes.isRequired,
 };
