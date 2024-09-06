@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Formik, Form, Field } from 'formik';
 import {
@@ -13,18 +13,15 @@ import {
     Checkbox,
     Box,
     Typography,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogContentText,
-    DialogActions
 } from '@mui/material';
 import { supabase } from 'pages/supabaseClient';
 import MDButton from 'components/MDButton';
 import { ToastContainer, toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import ShortUniqueId from 'short-unique-id';
-import ReactToPrint from 'react-to-print';
+import QRCode from 'qrcode';
+import MDTypography from 'components/MDTypography';
+
 
 const renderField = (field) => {
     switch (field.type) {
@@ -89,19 +86,16 @@ const renderField = (field) => {
     }
 };
 
-const DynamicForm = ({ fields, eventId, venueId, eventName, date, time, zoneId, categoryId, price }) => {
+const DynamicForm = ({ fields, eventId, venueId, eventName, venueName, date, time, zoneId, categoryId, price }) => {
     const uid = new ShortUniqueId({ dictionary: 'number', length: 6 });
-    const [qrCodes, setQrCodes] = useState({});
-    const [bookedTicketsData, setBookedTicketsData] = useState([]);
-    const [open, setOpen] = useState(false);
     const [stageIds, setStageIds] = useState([]);
+    const navigate = useNavigate();
 
     const initialValues = fields.reduce((acc, field) => {
         acc[field.name] = '';
         return acc;
     }, {});
 
-    const navigate = useNavigate();
 
     const validate = (values) => {
         const errors = {};
@@ -113,7 +107,7 @@ const DynamicForm = ({ fields, eventId, venueId, eventName, date, time, zoneId, 
         return errors;
     };
 
-    useEffect(()=>{
+    useEffect(() => {
         const fetchStages = async () => {
             try {
                 const { data, error } = await supabase.from('stages').select('id').eq('eventId', eventId);
@@ -124,37 +118,31 @@ const DynamicForm = ({ fields, eventId, venueId, eventName, date, time, zoneId, 
             } catch (error) {
                 console.log(error);
             }
-        };  
-        fetchStages();  
-    },[eventId])
+        };
+        fetchStages();
+    }, [eventId])
 
     const handleSubmit = async (values, { resetForm }) => {
         try {
-            // Prepare the data for registration
             const dataToAdd = {
                 eventId: eventId,
-                details: JSON.stringify(values),  // Directly stringify here
+                details: JSON.stringify(values),
             };
 
-            // Submit registration data and then submit ticket data using the registration ID
             const registrationData = await addRegistrationData(dataToAdd);
 
             if (registrationData && registrationData.length > 0) {
-                // Use the registrationData to submit ticket data
                 await addTicketData({
-                    registrationId: registrationData[0].id,  // From the registration response
-                    eventId: eventId,
-                    venueId: venueId,
-                    zoneId: zoneId,  // Assuming zoneId and categoryId are available in the context
-                    categoryId: categoryId
+                    registrationId: registrationData[0].id,
+                    eventId,
+                    venueId,
+                    zoneId,
+                    categoryId
                 });
 
-                console.log('Registration and Ticket Data processed successfully:', registrationData);
                 resetForm();
                 toast.info('Entries have been successfully registered!');
                 document.activeElement.blur();
-                // Optionally, navigate back
-                // setTimeout(() => navigate(-1), 1500);
             }
         } catch (error) {
             console.error('Error submitting form:', error.message);
@@ -163,20 +151,18 @@ const DynamicForm = ({ fields, eventId, venueId, eventName, date, time, zoneId, 
 
     const addRegistrationData = async (dataToAdd) => {
         try {
-            // Insert the registration data
             const { data, error } = await supabase.from('eventRegistrations').insert(dataToAdd).select('*');
             if (error) throw error;
-            return data; // Return the registration data if successful
+            return data;
         } catch (error) {
             console.error('Error adding registration data:', error.message);
-            throw error;  // Propagate error to handle it in handleSubmit
+            throw error;
         }
     };
 
-    const addTicketData = async ({ registrationId, eventId, venueId, zoneId, categoryId, eventOrganizationId }) => {
-        const refId = uid.rnd();  // If a unique ID is needed for tickets
+    const addTicketData = async ({ registrationId, eventId, venueId, zoneId, categoryId }) => {
+        const refId = uid.rnd();
         try {
-            // Data to insert into tickets_events
             const dataToInsert = {
                 registrationId,
                 eventId,
@@ -192,25 +178,21 @@ const DynamicForm = ({ fields, eventId, venueId, eventName, date, time, zoneId, 
             if (error) throw error;
 
             if (data?.length > 0) {
-                setBookedTicketsData(data);  // Set booked ticket data
-                toast.info('Tickets have been successfully booked!');
-                handleClickOpen();  // Open the modal or dialog
 
-                // Optionally, handle stage participants if there are any stage IDs
                 if (stageIds?.length > 0) {
-                    await insertStageParticipants(data);  // Separate function for better code structure
+                    await insertStageParticipants(data);
                 }
 
-                // Generate QR Codes for each ticket
-                data.forEach(ticket => generateQRCode(ticket.id));
+                const qrCodes = await generateQRCodesForTickets(data[0].id);
+
+                navigate(`/eventBookings/book-ticket/ticket-view`, { state: { bookedTicketsData: data, qrCodes, eventName, venueName, date, time } });
             }
         } catch (error) {
-            console.log('Error in booking tickets:', error.message);
-            throw error;  // Handle errors gracefully
+            console.error('Error in booking tickets:', error.message);
+            throw error;
         }
     };
 
-    // Insert stage participants function (optional, separated for cleaner code)
     const insertStageParticipants = async (tickets) => {
         try {
             const stageParticipantsData = tickets.flatMap(ticket =>
@@ -232,24 +214,14 @@ const DynamicForm = ({ fields, eventId, venueId, eventName, date, time, zoneId, 
         }
     };
 
-    // QR Code generation function (unchanged)
-    const generateQRCode = async (id) => {
+    const generateQRCodesForTickets = async (id) => {
         try {
             const qrCodeDataUrl = await QRCode.toDataURL(String(id));
-            setQrCodes(prevState => ({ ...prevState, [id]: qrCodeDataUrl }));
+            return qrCodeDataUrl;
         } catch (err) {
-            console.log('Error generating QR code:', err.message);
+            console.log('Error generating QR code:', err);
         }
-    };
-
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-        navigate(-1);
-    };
+    }
 
     return (
         <>
@@ -270,33 +242,14 @@ const DynamicForm = ({ fields, eventId, venueId, eventName, date, time, zoneId, 
                                     )}
                                 </Box>
                             ))}
-                            <MDButton sx={{ marginTop: '10px' }} ariant="contained" type="submit" color='info' >
+                            <MDTypography sx={{ marginTop: '10px' }} variant='h6' color='warning' fontWeight='light'>{!categoryId && 'Select any ticket zone and category to continue...'}</MDTypography>
+                            <MDButton sx={{ marginTop: '10px' }} ariant="contained" type="submit" color='info' disabled={!categoryId}>
                                 Submit
                             </MDButton>
                         </Box>
                     </Form>
                 )}
             </Formik>
-
-            <Dialog
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-            >
-                <DialogTitle id="alert-dialog-title">
-                    Tickets Have Been SuccessFully Booked !
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                        Do you want to print tickets?
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <ReactToPrint trigger={() => <MDButton disabled={bookedTicketsData.length <= 0}>Yes</MDButton>} content={() => componentRef.current} onAfterPrint={handleClose} />
-                    <MDButton onClick={handleClose}>No</MDButton>
-                </DialogActions>
-            </Dialog>
 
             <ToastContainer
                 position="bottom-right"
@@ -327,4 +280,5 @@ DynamicForm.propTypes = {
     categoryId: PropTypes.isRequired,
     eventOrganizationId: PropTypes.isRequired,
     price: PropTypes.isRequired,
+    venueName: PropTypes.isRequired,
 };
