@@ -9,7 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import { Checkbox, FormControlLabel, Switch, TextField } from '@mui/material';
+import { Switch, TextField } from '@mui/material';
 import ImageIcon from '@mui/icons-material/Image';
 import UploadIcon from '@mui/icons-material/Upload';
 
@@ -20,27 +20,15 @@ import Footer from "examples/Footer";
 import MDBox from 'components/MDBox';
 import MDTypography from 'components/MDTypography';
 import MDButton from 'components/MDButton';
-import DeleteDialog from 'components/DeleteDialogBox/deleteDialog';
-import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import dayjs from 'dayjs';
 
 export default function EditEventOrganization() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const [openDeleteDialogBox, setOpenDeleteDialogBox] = useState();
-    // const [selectedDate, setSelectedDate] = useState();
-    // const [existingDate, setExistingDate] = useState();
     const [coverImagePreview, setCoverImagePreview] = useState(null);
     const [coverImageChanged, setCoverImageChanged] = useState(false);
     const [organizationImagePreview, setOrganizationImagePreview] = useState(null);
     const [organizationImageChanged, setOrganizationImageChanged] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-
-    // const handleDateChange = (date) => {
-    //     setSelectedDate(date);
-    // }
 
     const handleOrganizationImageChange = (event) => {
         const file = event.currentTarget.files[0];
@@ -67,24 +55,16 @@ export default function EditEventOrganization() {
                     const organization = data[0];
                     editOrganization.setValues({
                         name: organization.name,
-                        // address: organization.address,
-                        // city: organization.city,
-                        // telephone: organization.telephone,
-                        // ownerName: organization.ownerName,
-                        // ownerPhoneNumber: organization.ownerPhoneNumber,
-                        // ownerEmail: organization.ownerEmail,
-                        // websiteURL: organization.websiteURL,
-                        // licenseInfo: organization.licenseInfo,
-                        // description: organization.description,
-                        // notes: organization.notes,
-                        // registeredDate: organization.registeredDate,
-                        // isActive: organization.isActive,
+                        address: organization.address,
+                        telephone: organization.telephone,
+                        ownerName: organization.ownerName,
+                        ownerMobile: organization.ownerMobile,
+                        ownerEmail: organization.ownerEmail,
+                        isActive: organization.isActive,
                         organizationImage: organization.organizationImage,
                         coverImage: organization.coverImage,
 
                     });
-                    // setExistingDate(organization.registeredDate);
-                    // setSelectedDate(organization.registeredDate);
                     setOrganizationImagePreview(organization.organizationImage);
                     setCoverImagePreview(organization.coverImage);
                 }
@@ -99,43 +79,30 @@ export default function EditEventOrganization() {
     const editOrganization = useFormik({
         initialValues: {
             name: '',
-            // address: '',
-            // city: '',
-            // telephone: '',
-            // ownerName: '',
-            // ownerPhoneNumber: '',
-            // ownerEmail: '',
-            // facilities: [],
-            // websiteURL: '',
-            // latitude: '',
-            // longitude: '',
-            // licenseInfo: '',
-            // description: '',
-            // isActive: '',
-            // registeredDate: '',
-            // notes: '',
+            address: '',
+            telephone: '',
+            ownerName: '',
+            ownerMobile: '',
+            ownerEmail: '',
+            isActive: '',
             coverImage: '',
             organizationImage: '',
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
-            // city: Yup.string().required('Required'),
-            // ownerName: Yup.string().required('Required'),
-            // ownerPhoneNumber: Yup.string()
-            //     .required('Required')
-            //     // .matches(phoneRegExp, 'Mobile number is not valid')
-            //     .min(10, 'Not a valid mobile number')
-            //     .max(10, 'Not a valid mobile number'),
-            // telephone: Yup.string()
-            //     .required('Required')
-            //     // .matches(phoneRegExp, 'Telephone number is not valid')
-            //     .min(10, 'Not a valid telephone number')
-            //     .max(10, 'Not a valid telephone number'),
-            // ownerEmail: Yup.string().required('Email is required').email('Enter a valid email'),
+            telephone: Yup.string()
+                .required('Required')
+                .min(10, 'Not a valid Mobile number')
+                .max(10, 'Not a valid Mobile number'),
+            ownerMobile: Yup.string()
+                .min(10, 'Not a valid Mobile number')
+                .max(10, 'Not a valid Mobile number'),
+            ownerEmail: Yup.string()
+                .matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Enter a valid Email')
+                .email('Enter a valid ownerEmail'),
         }),
         onSubmit: async (values, { resetForm }) => {
             setIsLoading(true);
-            // values.registeredDate = (dayjs(selectedDate).format("YYYY-MM-DD"));
 
             try {
                 if (organizationImageChanged && editOrganization.values.organizationImage) {
@@ -209,31 +176,6 @@ export default function EditEventOrganization() {
         }
     };
 
-    const handleDelete = async () => {
-        setOpenDeleteDialogBox(true);
-    };
-
-    const closeDeleteDialogBox = () => {
-        setOpenDeleteDialogBox(false);
-    };
-
-    const handleDeleteConfirm = async () => {
-        try {
-            const { error } = await supabase.from('theatres').delete().eq('id', id);
-            if (error) {
-                throw error;
-            }
-            console.log('Data deleted successfully');
-            setOpenDeleteDialogBox(false);
-            toast.error('Theatre has been successfully deleted!');
-            setTimeout(() => {
-                navigate(-1);
-            }, 1500);
-        } catch (error) {
-            console.error('Error deleting data:', error.message);
-        }
-    };
-
     return (
         <DashboardLayout><DashboardNavbar /> <MDBox pt={6} pb={3}>
             <Grid container spacing={6}>
@@ -264,7 +206,7 @@ export default function EditEventOrganization() {
                                             <TextField
                                                 fullWidth
                                                 variant="outlined"
-                                                id="outlined-basic"
+                                                id="name"
                                                 label="Name"
                                                 name="name"
                                                 value={editOrganization.values.name}
@@ -273,11 +215,11 @@ export default function EditEventOrganization() {
                                                 error={editOrganization.touched.name && Boolean(editOrganization.errors.name)}
                                                 helperText={editOrganization.touched.name && editOrganization.errors.name} />
                                         </MDBox>
-                                        {/* <MDBox p={1}>
+                                        <MDBox p={1}>
                                             <TextField
                                                 fullWidth
                                                 variant="outlined"
-                                                id="outlined-basic"
+                                                id="address"
                                                 label="Address"
                                                 name="address"
                                                 value={editOrganization.values.address}
@@ -290,20 +232,7 @@ export default function EditEventOrganization() {
                                             <TextField
                                                 fullWidth
                                                 variant="outlined"
-                                                id="outlined-basic"
-                                                label="City"
-                                                name="city"
-                                                value={editOrganization.values.city}
-                                                onChange={editOrganization.handleChange}
-                                                onBlur={editOrganization.handleBlur}
-                                                error={editOrganization.touched.city && Boolean(editOrganization.errors.city)}
-                                                helperText={editOrganization.touched.city && editOrganization.errors.city} />
-                                        </MDBox>
-                                        <MDBox p={1}>
-                                            <TextField
-                                                fullWidth
-                                                variant="outlined"
-                                                id="outlined-basic"
+                                                id="telephone"
                                                 label="Telephone"
                                                 name="telephone"
                                                 value={editOrganization.values.telephone}
@@ -312,65 +241,6 @@ export default function EditEventOrganization() {
                                                 error={editOrganization.touched.telephone && Boolean(editOrganization.errors.telephone)}
                                                 helperText={editOrganization.touched.telephone && editOrganization.errors.telephone} />
                                         </MDBox>
-                                        <MDBox p={1}>
-                                            <TextField fullWidth
-                                                variant="outlined"
-                                                id="outlined-basic"
-                                                label="Website URL"
-                                                name="websiteURL"
-                                                value={editOrganization.values.websiteURL}
-                                                onChange={editOrganization.handleChange}
-                                                onBlur={editOrganization.handleBlur}
-                                                error={editOrganization.touched.websiteURL && Boolean(editOrganization.errors.websiteURL)}
-                                                helperText={editOrganization.touched.websiteURL && editOrganization.errors.websiteURL} />
-                                        </MDBox>
-                                        <MDBox p={1}>
-                                            <TextField fullWidth
-                                                variant="outlined"
-                                                id="outlined-basic"
-                                                label="License Information"
-                                                name="licenseInfo"
-                                                value={editOrganization.values.licenseInfo}
-                                                onChange={editOrganization.handleChange}
-                                                onBlur={editOrganization.handleBlur}
-                                                error={editOrganization.touched.licenseInfo && Boolean(editOrganization.errors.licenseInfo)}
-                                                helperText={editOrganization.touched.licenseInfo && editOrganization.errors.licenseInfo} />
-                                        </MDBox>
-                                        <MDBox p={1}>
-                                            <TextField fullWidth
-                                                variant="outlined"
-                                                id="outlined-basic"
-                                                label="Description"
-                                                name="description"
-                                                value={editOrganization.values.description}
-                                                onChange={editOrganization.handleChange}
-                                                onBlur={editOrganization.handleBlur}
-                                                error={editOrganization.touched.description && Boolean(editOrganization.errors.description)}
-                                                helperText={editOrganization.touched.description && editOrganization.errors.description} />
-                                        </MDBox>
-                                        <MDBox p={1}>
-                                            <TextField fullWidth
-                                                variant="outlined"
-                                                id="outlined-basic"
-                                                label="Notes"
-                                                name="notes"
-                                                value={editOrganization.values.notes}
-                                                onChange={editOrganization.handleChange}
-                                                onBlur={editOrganization.handleBlur}
-                                                error={editOrganization.touched.notes && Boolean(editOrganization.errors.notes)}
-                                                helperText={editOrganization.touched.notes && editOrganization.errors.notes} />
-                                        </MDBox> */}
-                                        {/* <MDBox p={1} >
-                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                <DemoContainer components={['DatePicker']}>
-                                                    <DatePicker
-                                                        label="Select Registered Date"
-                                                        value={selectedDate ? dayjs(selectedDate) : dayjs(existingDate)}
-                                                        onChange={handleDateChange}
-                                                    />
-                                                </DemoContainer>
-                                            </LocalizationProvider>
-                                        </MDBox> */}
                                     </Grid>
                                     <Grid item xs={6} >
                                         <MDBox p={1}>
@@ -380,14 +250,6 @@ export default function EditEventOrganization() {
                                                 {editOrganization.values.isActive ? 'Active' : 'Inactive'}
                                             </MDTypography>
                                         </MDBox>
-                                        {/* <MDBox p={1} display="flex" flexDirection="row" alignItems="center">
-                                            <MDTypography mr={1}>Facilities: </MDTypography>
-                                            {facilitiesData && facilitiesData.length > 0 && facilitiesData.map((facility) => (
-                                                <MDBox key={facility.id} mr={1}>
-                                                    <FormControlLabel control={<Checkbox checked={selectedFacilityIds.includes(facility.id)} onChange={() => handleCheckboxChange(facility.id)} />} label={facility.facility_name} />
-                                                </MDBox>
-                                            ))}
-                                        </MDBox> */}
                                         <MDBox p={1}>
                                             <Grid container spacing={3}>
                                                 <Grid item xs={6} display={'flex'} flexDirection={'column'}>
@@ -496,13 +358,13 @@ export default function EditEventOrganization() {
                                         </MDBox>
                                     </Grid>
                                 </Grid>
-                                {/* <Grid mt={2}>
-                                    <MDTypography>Theatre Owner Info</MDTypography>
+                                <Grid mt={2}>
+                                    <MDTypography>Organization Owner Info</MDTypography>
                                     <MDBox p={1}>
                                         <TextField
                                             fullWidth
                                             variant="outlined"
-                                            id="outlined-basic"
+                                            id="ownerName"
                                             label="Owner Name"
                                             name="ownerName"
                                             value={editOrganization.values.ownerName}
@@ -515,19 +377,19 @@ export default function EditEventOrganization() {
                                         <TextField
                                             fullWidth
                                             variant="outlined"
-                                            id="outlined-basic"
+                                            id="ownerMobile"
                                             label="Owner Phone Number"
-                                            name="ownerPhoneNumber"
-                                            value={editOrganization.values.ownerPhoneNumber}
+                                            name="ownerMobile"
+                                            value={editOrganization.values.ownerMobile}
                                             onChange={editOrganization.handleChange}
                                             onBlur={editOrganization.handleBlur}
-                                            error={editOrganization.touched.ownerPhoneNumber && Boolean(editOrganization.errors.ownerPhoneNumber)}
-                                            helperText={editOrganization.touched.ownerPhoneNumber && editOrganization.errors.ownerPhoneNumber} />
+                                            error={editOrganization.touched.ownerMobile && Boolean(editOrganization.errors.ownerMobile)}
+                                            helperText={editOrganization.touched.ownerMobile && editOrganization.errors.ownerMobile} />
                                     </MDBox>
                                     <MDBox p={1}>
                                         <TextField fullWidth
                                             variant="outlined"
-                                            id="outlined-basic"
+                                            id="ownerEmail"
                                             label="Owner Mail"
                                             name="ownerEmail"
                                             value={editOrganization.values.ownerEmail}
@@ -536,7 +398,7 @@ export default function EditEventOrganization() {
                                             error={editOrganization.touched.ownerEmail && Boolean(editOrganization.errors.ownerEmail)}
                                             helperText={editOrganization.touched.ownerEmail && editOrganization.errors.ownerEmail} />
                                     </MDBox>
-                                </Grid> */}
+                                </Grid>
                                 <MDBox p={1} display={'flex'} flexDirection={'row'} alignItems='center'>
                                     <MDButton color='info' type='submit' sx={{ mr: 1 }} disabled={isLoading}>Update</MDButton>
                                     {isLoading &&
@@ -549,12 +411,6 @@ export default function EditEventOrganization() {
                 </Grid>
             </Grid>
         </MDBox>
-            <DeleteDialog
-                open={openDeleteDialogBox}
-                onClose={closeDeleteDialogBox}
-                onDelete={handleDeleteConfirm}
-                name={'organization'}
-            />
             <Footer />
             <ToastContainer
                 position="bottom-right"

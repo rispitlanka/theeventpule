@@ -20,31 +20,12 @@ import MDBox from 'components/MDBox';
 import MDTypography from 'components/MDTypography';
 import MDButton from 'components/MDButton';
 import { useNavigate } from 'react-router-dom';
-import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import dayjs from 'dayjs';
 
 export default function AddEventOrganization() {
   const navigate = useNavigate();
-  //   const [facilitiesData, setFacilitiesData] = useState([]);
-  //   const [selectedFacilityIds, setSelectedFacilityIds] = useState([]);
-  //   const [regDate, setRegDate] = useState();
   const [coverImagePreview, setCoverImagePreview] = useState(null);
   const [organizationImagePreview, setOrganizationImagePreview] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-
-  // const handleDateChange = (date) => {
-  //   setRegDate(date);
-  // }
-
-  //   const handleCheckboxChange = (facilityId) => {
-  //     setSelectedFacilityIds((prevSelected) =>
-  //       prevSelected.includes(facilityId)
-  //         ? prevSelected.filter((id) => id !== facilityId)
-  //         : [...prevSelected, facilityId]
-  //     );
-  //   };
 
   const handleCoverImageChange = (event) => {
     const file = event.currentTarget.files[0];
@@ -57,21 +38,6 @@ export default function AddEventOrganization() {
     newOrganization.setFieldValue('organizationImage', file);
     setOrganizationImagePreview(URL.createObjectURL(file));
   };
-
-  //   useEffect(() => {
-  //     const fetchFacilities = async () => {
-  //       try {
-  //         const { data, error } = await supabase.from('facilities').select('*').eq('isActive', true);
-  //         if (error) throw error;
-  //         if (data) {
-  //           setFacilitiesData(data);
-  //         }
-  //       } catch (error) {
-  //         console.error('Error fetching questions:', error.message);
-  //       }
-  //     };
-  //     fetchFacilities();
-  //   }, [])
 
   const onSubmit = async (values, { resetForm }) => {
     setIsLoading(true);
@@ -120,13 +86,6 @@ export default function AddEventOrganization() {
         }
       }
 
-      //   const selectedFacilityNames = facilitiesData
-      //     .filter(facility => selectedFacilityIds.includes(facility.id))
-      //     .map(facility => facility.facility_name);
-      //   values.facilities = selectedFacilityNames
-      //   const formattedDate = dayjs(regDate).format('YYYY-MM-DD');
-      //   values.registeredDate = dayjs(new Date).format('YYYY-MM-DD');
-
       await addEventOrganization(values);
       resetForm();
       toast.info('Organization has been successfully created!');
@@ -144,39 +103,27 @@ export default function AddEventOrganization() {
   const newOrganization = useFormik({
     initialValues: {
       name: '',
-      //   address: '',
-      //   city: '',
-      //   telephone: '',
-      //   ownerName: '',
-      //   ownerPhoneNumber: '',
-      //   ownerEmail: '',
-      //   facilities: [],
-      //   websiteURL: '',
-      //   latitude: '',
-      //   longitude: '',
-      //   licenseInfo: '',
-      //   description: '',
+      address: '',
+      telephone: '',
+      ownerName: '',
+      ownerMobile: '',
+      ownerEmail: '',
       isActive: true,
-      //   registeredDate: '',
-      //   notes: '',
       coverImage: '',
       organizationImage: '',
     },
     validationSchema: Yup.object({
       name: Yup.string().required('Required'),
-      //   city: Yup.string().required('Required'),
-      //   ownerName: Yup.string().required('Required'),
-      //   ownerPhoneNumber: Yup.string()
-      //     .required('Required')
-      //     .matches(phoneRegExp, 'Mobile number is not valid')
-      //     .min(10, 'Not a valid mobile number')
-      //     .max(10, 'Not a valid mobile number'),
-      //   telephone: Yup.string()
-      //     .required('Required')
-      //     .matches(phoneRegExp, 'Telephone number is not valid')
-      //     .min(10, 'Not a valid telephone number')
-      //     .max(10, 'Not a valid telephone number'),
-      //   ownerEmail: Yup.string().required('Email is required').email('Enter a valid email'),
+      telephone: Yup.string()
+        .required('Required')
+        .min(10, 'Not a valid Mobile number')
+        .max(10, 'Not a valid Mobile number'),
+      ownerMobile: Yup.string()
+        .min(10, 'Not a valid Mobile number')
+        .max(10, 'Not a valid Mobile number'),
+      ownerEmail: Yup.string()
+        .matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Enter a valid Email')
+        .email('Enter a valid ownerEmail'),
     }),
     onSubmit,
   });
@@ -225,7 +172,7 @@ export default function AddEventOrganization() {
                       <TextField
                         fullWidth
                         variant="outlined"
-                        id="outlined-basic"
+                        id="name"
                         label="Name"
                         name="name"
                         value={newOrganization.values.name}
@@ -234,11 +181,11 @@ export default function AddEventOrganization() {
                         error={newOrganization.touched.name && Boolean(newOrganization.errors.name)}
                         helperText={newOrganization.touched.name && newOrganization.errors.name} />
                     </MDBox>
-                    {/* <MDBox p={1}>
+                    <MDBox p={1}>
                       <TextField
                         fullWidth
                         variant="outlined"
-                        id="outlined-basic"
+                        id="address"
                         label="Address"
                         name="address"
                         value={newOrganization.values.address}
@@ -251,20 +198,7 @@ export default function AddEventOrganization() {
                       <TextField
                         fullWidth
                         variant="outlined"
-                        id="outlined-basic"
-                        label="City"
-                        name="city"
-                        value={newOrganization.values.city}
-                        onChange={newOrganization.handleChange}
-                        onBlur={newOrganization.handleBlur}
-                        error={newOrganization.touched.city && Boolean(newOrganization.errors.city)}
-                        helperText={newOrganization.touched.city && newOrganization.errors.city} />
-                    </MDBox>
-                    <MDBox p={1}>
-                      <TextField
-                        fullWidth
-                        variant="outlined"
-                        id="outlined-basic"
+                        id="telephone"
                         label="Telephone"
                         name="telephone"
                         value={newOrganization.values.telephone}
@@ -273,65 +207,6 @@ export default function AddEventOrganization() {
                         error={newOrganization.touched.telephone && Boolean(newOrganization.errors.telephone)}
                         helperText={newOrganization.touched.telephone && newOrganization.errors.telephone} />
                     </MDBox>
-                    <MDBox p={1}>
-                      <TextField fullWidth
-                        variant="outlined"
-                        id="outlined-basic"
-                        label="Website URL"
-                        name="websiteURL"
-                        value={newOrganization.values.websiteURL}
-                        onChange={newOrganization.handleChange}
-                        onBlur={newOrganization.handleBlur}
-                        error={newOrganization.touched.websiteURL && Boolean(newOrganization.errors.websiteURL)}
-                        helperText={newOrganization.touched.websiteURL && newOrganization.errors.websiteURL} />
-                    </MDBox>
-                    <MDBox p={1}>
-                      <TextField fullWidth
-                        variant="outlined"
-                        id="outlined-basic"
-                        label="License Information"
-                        name="licenseInfo"
-                        value={newOrganization.values.licenseInfo}
-                        onChange={newOrganization.handleChange}
-                        onBlur={newOrganization.handleBlur}
-                        error={newOrganization.touched.licenseInfo && Boolean(newOrganization.errors.licenseInfo)}
-                        helperText={newOrganization.touched.licenseInfo && newOrganization.errors.licenseInfo} />
-                    </MDBox>
-                    <MDBox p={1}>
-                      <TextField fullWidth
-                        variant="outlined"
-                        id="outlined-basic"
-                        label="Description"
-                        name="description"
-                        value={newOrganization.values.description}
-                        onChange={newOrganization.handleChange}
-                        onBlur={newOrganization.handleBlur}
-                        error={newOrganization.touched.description && Boolean(newOrganization.errors.description)}
-                        helperText={newOrganization.touched.description && newOrganization.errors.description} />
-                    </MDBox>
-                    <MDBox p={1}>
-                      <TextField fullWidth
-                        variant="outlined"
-                        id="outlined-basic"
-                        label="Notes"
-                        name="notes"
-                        value={newOrganization.values.notes}
-                        onChange={newOrganization.handleChange}
-                        onBlur={newOrganization.handleBlur}
-                        error={newOrganization.touched.notes && Boolean(newOrganization.errors.notes)}
-                        helperText={newOrganization.touched.notes && newOrganization.errors.notes} />
-                    </MDBox> */}
-                    {/* <MDBox p={1} >
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DemoContainer components={['DatePicker']}>
-                          <DatePicker
-                            label="Select Registered Date"
-                            value={regDate}
-                            onChange={handleDateChange}
-                          />
-                        </DemoContainer>
-                      </LocalizationProvider>
-                    </MDBox> */}
                   </Grid>
                   <Grid item xs={6} >
                     <MDBox p={1}>
@@ -341,14 +216,6 @@ export default function AddEventOrganization() {
                         {newOrganization.values.isActive ? 'Active' : 'Inactive'}
                       </MDTypography>
                     </MDBox>
-                    {/* <MDBox p={1} display="flex" flexDirection="row" alignItems="center" flexWrap="wrap">
-                      <MDTypography mr={1}>Facilities: </MDTypography>
-                      {facilitiesData && facilitiesData.length > 0 && facilitiesData.map((facility) => (
-                        <MDBox key={facility.id} mr={1} minWidth="100px">
-                          <FormControlLabel control={<Checkbox checked={selectedFacilityIds.includes(facility.id)} onChange={() => handleCheckboxChange(facility.id)} />} label={facility.facility_name} />
-                        </MDBox>
-                      ))}
-                    </MDBox> */}
                     <MDBox p={1}>
                       <Grid container spacing={3}>
                         <Grid item xs={6} display={'flex'} flexDirection={'column'}>
@@ -457,13 +324,13 @@ export default function AddEventOrganization() {
                     </MDBox>
                   </Grid>
                 </Grid>
-                {/* <Grid mt={2}>
-                  <MDTypography>Theatre Owner Info</MDTypography>
+                <Grid mt={2}>
+                  <MDTypography>Organization Owner Info</MDTypography>
                   <MDBox p={1}>
                     <TextField
                       fullWidth
                       variant="outlined"
-                      id="outlined-basic"
+                      id="ownerName"
                       label="Owner Name"
                       name="ownerName"
                       value={newOrganization.values.ownerName}
@@ -476,19 +343,19 @@ export default function AddEventOrganization() {
                     <TextField
                       fullWidth
                       variant="outlined"
-                      id="outlined-basic"
+                      id="ownerMobile"
                       label="Owner Phone Number"
-                      name="ownerPhoneNumber"
-                      value={newOrganization.values.ownerPhoneNumber}
+                      name="ownerMobile"
+                      value={newOrganization.values.ownerMobile}
                       onChange={newOrganization.handleChange}
                       onBlur={newOrganization.handleBlur}
-                      error={newOrganization.touched.ownerPhoneNumber && Boolean(newOrganization.errors.ownerPhoneNumber)}
-                      helperText={newOrganization.touched.ownerPhoneNumber && newOrganization.errors.ownerPhoneNumber} />
+                      error={newOrganization.touched.ownerMobile && Boolean(newOrganization.errors.ownerMobile)}
+                      helperText={newOrganization.touched.ownerMobile && newOrganization.errors.ownerMobile} />
                   </MDBox>
                   <MDBox p={1}>
                     <TextField fullWidth
                       variant="outlined"
-                      id="outlined-basic"
+                      id="ownerEmail"
                       label="Owner Mail"
                       name="ownerEmail"
                       value={newOrganization.values.ownerEmail}
@@ -497,7 +364,7 @@ export default function AddEventOrganization() {
                       error={newOrganization.touched.ownerEmail && Boolean(newOrganization.errors.ownerEmail)}
                       helperText={newOrganization.touched.ownerEmail && newOrganization.errors.ownerEmail} />
                   </MDBox>
-                </Grid> */}
+                </Grid>
                 <MDBox p={1} display={'flex'} flexDirection={'row'} alignItems='center'>
                   <MDButton color='info' type='submit' disabled={isLoading}>Save</MDButton>
                   {isLoading &&
