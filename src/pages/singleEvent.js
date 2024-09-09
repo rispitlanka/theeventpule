@@ -25,16 +25,18 @@ import dayjs from 'dayjs';
 import DataNotFound from 'components/NoData/dataNotFound';
 import AddStageModel from './Models/addStageModel';
 import ReactToPrint from 'react-to-print';
+import QRCode from 'qrcode';
 
 export default function SingleEvent() {
     // const userDetails = useContext(UserDataContext);
     // const userTheatreId = userDetails && userDetails[0].theatreId;
-    const componentRef = useRef([]);
     const [eventData, setEventData] = useState([]);
     const [openEditDialogBox, setOpenEditDialogBox] = useState();
     const [openEditStageDialogBox, setOpenEditStageDialogBox] = useState();
     const [formFieldData, setFormFieldData] = useState([]);
     const [stageData, setStageData] = useState([]);
+    const [qrCodes, setQrCodes] = useState({});
+    const componentRefs = useRef([]);
 
     const navigate = useNavigate();
     const openPage = (route) => {
@@ -170,6 +172,18 @@ export default function SingleEvent() {
         return dayjs(date).format('YYYY-MM-DD');
     }
 
+    const generateQRCode = async (stageID) => {
+        try {
+            const qrCodeDataUrl = await QRCode.toDataURL(String(stageID));
+            setQrCodes((prevState) => ({
+                ...prevState,
+                [stageID]: qrCodeDataUrl,
+            }));
+        } catch (error) {
+            console.error("Error generating QR code", error);
+        }
+    };
+
     return (
         <DashboardLayout>
             <DashboardNavbar />
@@ -279,16 +293,19 @@ export default function SingleEvent() {
                         }
                         <>
                             <Grid sx={{ display: 'flex', flexDirection: 'row', position: 'absolute', right: 0, mt: 4 }}>
-                                <MDButton sx={{ mr: 2 }} color='info' onClick={() => handleStageDialogBox()}>Add Stage</MDButton>
+                                <MDButton sx={{ mr: 2 }} color="info" onClick={() => handleStageDialogBox()}>
+                                    Add Stage
+                                </MDButton>
                             </Grid>
-                            {stageData.length > 0 ?
+
+                            {stageData.length > 0 ? (
                                 <TableContainer component={Paper} sx={{ mt: 11, p: 2 }}>
                                     <Table>
                                         <TableHead sx={{ display: "table-header-group" }}>
                                             <TableRow>
                                                 <TableCell>Name</TableCell>
-                                                <TableCell align='center'>Description</TableCell>
-                                                <TableCell align='center'>Action</TableCell>
+                                                <TableCell align="center">Description</TableCell>
+                                                <TableCell align="center">Action</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
@@ -297,33 +314,54 @@ export default function SingleEvent() {
                                                     <TableCell>{row.name}</TableCell>
                                                     <TableCell align="center">{row.description}</TableCell>
                                                     <TableCell align="center">
+                                                        <Button
+                                                            onClick={async () => {
+                                                                await generateQRCode(row.stageID);
+                                                                if (componentRefs.current[index]) {
+                                                                    componentRefs.current[index].click();
+                                                                }
+                                                            }}
+                                                        >
+                                                            Print QR
+                                                        </Button>
+
+                                                        {/* ReactToPrint for printing the QR code */}
                                                         <ReactToPrint
-                                                            trigger={() => <Button>Print QR</Button>}
-                                                            content={() => componentRef.current[index]}
+                                                            trigger={() => (
+                                                                <Button
+                                                                    ref={(el) => (componentRefs.current[index] = el)}
+                                                                    style={{ display: "none" }}
+                                                                >
+                                                                    Print
+                                                                </Button>
+                                                            )}
+                                                            content={() => componentRefs.current[`print_${index}`]}
                                                         />
-                                                        <div style={{ display: 'none' }}>
-                                                            <div ref={el => componentRef.current[index] = el}>
+                                                        <div style={{ display: "none" }}>
+                                                            <div ref={(el) => (componentRefs.current[`print_${index}`] = el)}>
                                                                 <Box
                                                                     sx={{
-                                                                        border: '1px solid #ccc',
-                                                                        borderRadius: '8px',
-                                                                        padding: '16px',
-                                                                        display: 'flex',
-                                                                        flexDirection: 'column',
-                                                                        alignItems: 'center',
-                                                                        width: '400px',
-                                                                        height: '400px',
+                                                                        border: "1px solid #ccc",
+                                                                        borderRadius: "8px",
+                                                                        padding: "16px",
+                                                                        display: "flex",
+                                                                        flexDirection: "column",
+                                                                        alignItems: "center",
+                                                                        width: "400px",
+                                                                        height: "400px",
                                                                     }}
                                                                 >
-                                                                    <img
-                                                                        src={row.qrImage}
-                                                                        alt="QR Code"
-                                                                        style={{
-                                                                            maxWidth: '100%',
-                                                                            height: '100%',
-                                                                            marginBottom: '8px',
-                                                                        }}
-                                                                    />
+                                                                    {qrCodes[row.stageID] && (
+                                                                        <img
+                                                                            src={qrCodes[row.stageID]}
+                                                                            alt="QR Code"
+                                                                            style={{
+                                                                                maxWidth: "100%",
+                                                                                height: "100%",
+                                                                                marginBottom: "8px",
+                                                                            }}
+                                                                        />
+                                                                    )}
                                                                     <Grid container justifyContent="center" alignItems="center">
                                                                         <Typography variant="body2" fontWeight="bold" marginRight="4px">
                                                                             Stage ID:
@@ -340,11 +378,11 @@ export default function SingleEvent() {
                                         </TableBody>
                                     </Table>
                                 </TableContainer>
-                                :
+                            ) : (
                                 <MDBox sx={{ mt: 11 }}>
                                     <DataNotFound message={'No Stages To Show !'} image={noDataImage} />
                                 </MDBox>
-                            }
+                            )}
                         </>
                     </>
                 }

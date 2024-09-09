@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { supabase } from 'pages/supabaseClient';
-import QRCode from 'qrcode';
 
 export default function AddStageModel({ open, onClose, eventId }) {
     const handleClose = () => {
@@ -19,21 +18,10 @@ export default function AddStageModel({ open, onClose, eventId }) {
         return data[0];
     };
 
-    const updateQrCode = async (stageID, eventID) => {
-        const qrData = `${stageID}-${eventID}`;
-        const qrCodeDataUrl = await QRCode.toDataURL(String(qrData));
-        const { data, error } = await supabase.from('stages').update({ qrImage: qrCodeDataUrl }).eq('id', stageID).select('*');
-        if (error) throw new Error('Error updating QR code:', error.message);
-
-        return data;
-    };
-
     const onSubmit = async (values, { resetForm }) => {
         try {
             values.eventId = eventId;
-            const newStage = await addStageData(values);
-            await updateQrCode(newStage.id, newStage.eventId);
-
+            await addStageData(values);
             resetForm();
             onClose();
         } catch (error) {
