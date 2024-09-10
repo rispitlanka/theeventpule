@@ -49,13 +49,10 @@ export default function data() {
         try {
             const { data: venueResponses, error: venueError } = await supabase
                 .from('venues')
-                .select()
+                .select('*,venue_locations(city)')
                 .order('id', { ascending: false });
-
             if (venueError) throw venueError;
-
             setVenueData(venueResponses);
-
         } catch (error) {
             setError(error.message);
         }
@@ -89,7 +86,7 @@ export default function data() {
         ),
         location: (
             <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-                {venue.location}
+                {venue.venue_locations?.city}
             </MDTypography>
         ),
         telephone: (
