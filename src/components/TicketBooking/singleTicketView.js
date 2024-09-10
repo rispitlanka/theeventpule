@@ -32,7 +32,7 @@ export default function SingleTicketView() {
             }
             if (data) {
                 setTicketData(data);
-                generateQRCode(data[0]?.id)
+                generateQRCode(data[0]?.referenceId)
             }
         } catch (error) {
             console.error('Error fetching ticket data:', error.message);
@@ -98,9 +98,9 @@ export default function SingleTicketView() {
         return dayjs(date).format('DD/MM/YYYY');
     }
 
-    const generateQRCode = async (ticketId) => {
+    const generateQRCode = async (referenceId) => {
         try {
-            const qrCodeDataUrl = await QRCode.toDataURL(String(ticketId));
+            const qrCodeDataUrl = await QRCode.toDataURL(String(referenceId));
             setQrCodes(qrCodeDataUrl);
         } catch (error) {
             console.error("Error generating QR code", error);
