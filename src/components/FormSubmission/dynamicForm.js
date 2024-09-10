@@ -86,7 +86,7 @@ const renderField = (field) => {
     }
 };
 
-const DynamicForm = ({ fields, eventId, venueId, eventName, venueName, date, time, zoneId, categoryId, price, eventOrganizationId }) => {
+const DynamicForm = ({ fields, eventId, venueId, eventName, venueName, date, time, zoneId, categoryId, price, eventOrganizationId, bookedBy }) => {
     const uid = new ShortUniqueId({ dictionary: 'number', length: 6 });
     const [stageIds, setStageIds] = useState([]);
     const navigate = useNavigate();
@@ -139,6 +139,7 @@ const DynamicForm = ({ fields, eventId, venueId, eventName, venueName, date, tim
                     zoneId,
                     categoryId,
                     eventOrganizationId,
+                    bookedBy,
                 });
 
                 resetForm();
@@ -161,7 +162,7 @@ const DynamicForm = ({ fields, eventId, venueId, eventName, venueName, date, tim
         }
     };
 
-    const addTicketData = async ({ registrationId, eventId, venueId, zoneId, categoryId, eventOrganizationId }) => {
+    const addTicketData = async ({ registrationId, eventId, venueId, zoneId, categoryId, eventOrganizationId, bookedBy }) => {
         const refId = uid.rnd();
         try {
             const dataToInsert = {
@@ -173,6 +174,8 @@ const DynamicForm = ({ fields, eventId, venueId, eventName, venueName, date, tim
                 referenceId: refId,
                 price,
                 eventOrganizationId,
+                bookedBy,
+                totalPrice: price,
             };
 
             const { data, error } = await supabase.from('tickets_events').insert(dataToInsert).select('*');
@@ -184,7 +187,7 @@ const DynamicForm = ({ fields, eventId, venueId, eventName, venueName, date, tim
                     await insertStageParticipants(data);
                 }
 
-                const qrCodes = await generateQRCodesForTickets(data[0].id);
+                const qrCodes = await generateQRCodesForTickets(data[0].referenceId);
 
                 navigate(`/eventBookings/book-ticket/ticket-view`, { state: { bookedTicketsData: data, qrCodes, eventName, venueName, date, time } });
             }
@@ -201,6 +204,7 @@ const DynamicForm = ({ fields, eventId, venueId, eventName, venueName, date, tim
                     stageId: stage.id,
                     ticketId: ticket.id,
                     eventId: ticket.eventId,
+                    referenceId: ticket.referenceId,
                 }))
             );
 
@@ -283,4 +287,5 @@ DynamicForm.propTypes = {
     price: PropTypes.isRequired,
     venueName: PropTypes.isRequired,
     eventOrganizationId: PropTypes.isRequired,
+    bookedBy: PropTypes.isRequired,
 };
