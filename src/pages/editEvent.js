@@ -97,8 +97,12 @@ export default function EditEvent() {
             values.date = formattedDate;
             values.endTime = formattedEndTime;
             values.endDate = formattedEndDate;
-            if (values.eventTags) {
+            if (Array.isArray(values.eventTags)) {
+                values.eventTags = values.eventTags.map(tag => tag.trim());
+            } else if (typeof values.eventTags === 'string') {
                 values.eventTags = values.eventTags.split(',').map(tag => tag.trim());
+            } else {
+                console.error('Unexpected data type for values.eventTags');
             }
             await editEventData(values);
             resetForm();
