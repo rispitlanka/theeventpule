@@ -102,7 +102,7 @@ export default function BookedTicketView() {
                                                     <Box display="flex" alignItems='center' mt={1}>
                                                         <MDTypography sx={{ mr: 1 }}>Time:</MDTypography>
                                                         <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>
-                                                            {bookedTicketsData[0]?.events?.name} at {formattedTime(time)}
+                                                            {formattedDate(date)} at {formattedTime(time)}
                                                         </MDTypography>
                                                     </Box>
                                                     <Box display="flex" alignItems='center' mt={1}>

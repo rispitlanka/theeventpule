@@ -21,7 +21,7 @@ export default function TicketBookingAndRegistration() {
     const venueName = queryParams.get('venueName');
     const date = queryParams.get('date');
     const time = queryParams.get('time');
-    const isFree = queryParams.get('isFree');
+    const isFree = queryParams.get('isFree') === 'true';
 
     const navigate = useNavigate();
     const [venueData, setVenueData] = useState([]);
@@ -29,6 +29,19 @@ export default function TicketBookingAndRegistration() {
     const [selectedCategoryId, setSelectedCategoryId] = useState(null); // Track selected category
     const [bookedTicketsCount, setBookedTicketsCount] = useState({});
     const [totalTicketsCount, setTotalTicketsCount] = useState({});
+    const [organizationName, setOrganizationName] = useState([]);
+
+    const fetchOrganization = async () => {
+        try {
+            const { data, error } = await supabase.from('eventOrganizations').select('name').eq('id', userOrganizationId);
+            if (error) throw error;
+            if (data) {
+                setOrganizationName(data[0].name)
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     const fetchVenue = async () => {
         try {
@@ -42,7 +55,7 @@ export default function TicketBookingAndRegistration() {
                     acc[category.id] = parseInt(category.ticketsCount, 10) || 0;
                     return acc;
                 }, {});
-                setTotalTicketsCount(ticketsCountByCategory);              
+                setTotalTicketsCount(ticketsCountByCategory);
             }
             if (error) {
                 console.log(error);
@@ -53,11 +66,12 @@ export default function TicketBookingAndRegistration() {
     };
 
     useEffect(() => {
+        fetchOrganization();
         fetchVenue();
     }, []);
 
     const zoneName = selectedZoneId && (venueData[0]?.zones_events?.filter(zone => zone.id === selectedZoneId).map(zone => zone.name)[0]);
-    const ticketPrice = selectedCategoryId && (venueData[0]?.zone_ticket_category?.filter(category => category.id === selectedCategoryId).map(category => category.price)[0]);
+    const ticketPrice = isFree ? 'Free' : selectedCategoryId && (venueData[0]?.zone_ticket_category?.filter(category => category.id === selectedCategoryId).map(category => category.price)[0]);
 
     useEffect(() => {
         const fetchBookedTicketsCount = async (selectedZoneId, eventId) => {
@@ -175,18 +189,19 @@ export default function TicketBookingAndRegistration() {
 
                             <MDTypography variant='h5' mb={1} fontWeight='medium'>Register For The Event - {eventName}</MDTypography>
                             {formFieldData && formFieldData.length > 0 ?
-                                <DynamicForm sx={{ m: 2 }} 
-                                fields={formFieldData} 
-                                eventId={eventId} 
-                                venueId={venueId} 
-                                eventName={eventName} 
-                                venueName={venueName} 
-                                date={date} 
-                                time={time} 
-                                zoneId={selectedZoneId}
-                                categoryId={selectedCategoryId}
-                                eventOrganizationId={userOrganizationId}
-                                price={ticketPrice}
+                                <DynamicForm sx={{ m: 2 }}
+                                    fields={formFieldData}
+                                    eventId={eventId}
+                                    venueId={venueId}
+                                    eventName={eventName}
+                                    venueName={venueName}
+                                    date={date}
+                                    time={time}
+                                    zoneId={selectedZoneId}
+                                    categoryId={selectedCategoryId}
+                                    eventOrganizationId={userOrganizationId}
+                                    price={ticketPrice}
+                                    bookedBy={organizationName || null}
                                 />
                                 :
                                 <DataNotFound message={'No Forms Available !'} image={noFormImage} />
