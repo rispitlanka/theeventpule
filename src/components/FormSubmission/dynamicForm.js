@@ -187,7 +187,7 @@ const DynamicForm = ({ fields, eventId, venueId, eventName, venueName, date, tim
                     await insertStageParticipants(data);
                 }
 
-                const qrCodes = await generateQRCodesForTickets(data[0].referenceId);
+                const qrCodes = await generateQRCodesForTickets(data[0].referenceId, data[0].eventId, data[0].id);
 
                 navigate(`/eventBookings/book-ticket/ticket-view`, { state: { bookedTicketsData: data, qrCodes, eventName, venueName, date, time } });
             }
@@ -219,9 +219,9 @@ const DynamicForm = ({ fields, eventId, venueId, eventName, venueName, date, tim
         }
     };
 
-    const generateQRCodesForTickets = async (id) => {
+    const generateQRCodesForTickets = async (referenceId, eventId, ticketId) => {
         try {
-            const qrCodeDataUrl = await QRCode.toDataURL(String(id));
+            const qrCodeDataUrl = await QRCode.toDataURL(String(`ReferenceID:${referenceId} && EventID:${eventId} && TicketID:${ticketId}`));
             return qrCodeDataUrl;
         } catch (err) {
             console.log('Error generating QR code:', err);
