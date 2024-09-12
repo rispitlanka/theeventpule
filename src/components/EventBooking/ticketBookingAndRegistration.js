@@ -1,4 +1,4 @@
-import { Card, CircularProgress, FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, Radio, RadioGroup, Select } from '@mui/material';
+import { Card, CircularProgress, FormControl, FormControlLabel, FormLabel, Grid, InputLabel, MenuItem, Radio, RadioGroup, Select } from '@mui/material';
 import MDBox from 'components/MDBox'
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout'
 import DashboardNavbar from 'examples/Navbars/DashboardNavbar'
@@ -123,93 +123,109 @@ export default function TicketBookingAndRegistration() {
     return (
         <DashboardLayout>
             <DashboardNavbar />
-            <Card>
-                <MDBox m={1}>
-                    <MDBox>
-                        <FormControl fullWidth>
-                            <InputLabel>Select Zone</InputLabel>
-                            <Select
-                                label="Select Zone"
-                                value={selectedZoneId}
-                                onChange={(e) => {
-                                    setSelectedZoneId(e.target.value);
-                                    setSelectedCategoryId(null);
-                                }}
-                                sx={{ height: '45px' }}
-                            >
-                                {venueData[0]?.zones_events?.map((zone) => (
-                                    <MenuItem key={zone.id} value={zone.id}>
-                                        {zone.name}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </MDBox>
-                    <MDBox p={1}>
-                        <FormControl>
-                            <FormLabel>Ticket Category</FormLabel>
-                            {venueData[0]?.zone_ticket_category
-                                ?.filter(category => category.zoneId === selectedZoneId)
-                                .map((category) => {
-                                    const totalTickets = totalTicketsCount[category.id] || 0;
-                                    const bookedTickets = bookedTicketsCount[category.id] || 0;
-                                    const availableTickets = totalTickets - bookedTickets;
+            <MDBox
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    width: '80%'
+                }}>
 
-                                    return (
-                                        <RadioGroup
-                                            key={category.id}
-                                            value={selectedCategoryId}
-                                            onChange={(e) => setSelectedCategoryId(category.id)}
-                                        >
-                                            <FormControlLabel
-                                                value={category.id}
-                                                control={<Radio />}
-                                                label={`${category.name} (${availableTickets} available)`}
-                                            />
-                                        </RadioGroup>
-                                    );
-                                })}
-                        </FormControl>
-                    </MDBox>
-                </MDBox>
-                <MDBox
+                <Card
                     sx={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        height: '100vh',
+                        padding: 5,
                     }}
                 >
-                    {isLoading ?
-                        <MDBox sx={{ display: 'flex', justifyContent: 'center' }}>
-                            <CircularProgress color="info" />
-                        </MDBox>
-                        :
-                        <Card sx={{ p: 2, mb: 2, width: '80%' }}>
+                    <MDBox sx={{ width: '100%' }}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <FormControl fullWidth>
+                                    <InputLabel>Select Zone</InputLabel>
+                                    <Select
+                                        fullWidth
+                                        label="Select Zone"
+                                        value={selectedZoneId}
+                                        onChange={(e) => {
+                                            setSelectedZoneId(e.target.value);
+                                            setSelectedCategoryId(null);
+                                        }}
+                                        sx={{ height: '45px' }}
+                                    >
+                                        {venueData[0]?.zones_events?.map((zone) => (
+                                            <MenuItem key={zone.id} value={zone.id}>
+                                                {zone.name}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
 
-                            <MDTypography variant='h5' mb={1} fontWeight='medium'>Register For The Event - {eventName}</MDTypography>
-                            {formFieldData && formFieldData.length > 0 ?
-                                <DynamicForm sx={{ m: 2 }}
-                                    fields={formFieldData}
-                                    eventId={eventId}
-                                    venueId={venueId}
-                                    eventName={eventName}
-                                    venueName={venueName}
-                                    date={date}
-                                    time={time}
-                                    zoneId={selectedZoneId}
-                                    categoryId={selectedCategoryId}
-                                    eventOrganizationId={userOrganizationId}
-                                    price={ticketPrice}
-                                    bookedBy={organizationName || null}
-                                />
-                                :
-                                <DataNotFound message={'No Forms Available !'} image={noFormImage} />
-                            }
-                        </Card>
-                    }
-                </MDBox>
-            </Card>
+                            {selectedZoneId && (
+                                <Grid item xs={12}>
+                                    <FormControl fullWidth>
+                                        <FormLabel>Ticket Category</FormLabel>
+                                        {venueData[0]?.zone_ticket_category
+                                            ?.filter((category) => category.zoneId === selectedZoneId)
+                                            .map((category) => {
+                                                const totalTickets = totalTicketsCount[category.id] || 0;
+                                                const bookedTickets = bookedTicketsCount[category.id] || 0;
+                                                const availableTickets = totalTickets - bookedTickets;
+
+                                                return (
+                                                    <RadioGroup
+                                                        key={category.id}
+                                                        value={selectedCategoryId}
+                                                        onChange={(e) => setSelectedCategoryId(category.id)}
+                                                    >
+                                                        <FormControlLabel
+                                                            value={category.id}
+                                                            control={<Radio />}
+                                                            label={`${category.name} (${availableTickets} available)`}
+                                                        />
+                                                    </RadioGroup>
+                                                );
+                                            })}
+                                    </FormControl>
+                                </Grid>
+                            )}
+                        </Grid>
+                    </MDBox>
+
+                    <MDBox sx={{ width: '100%', marginTop: 2 }}>
+                        {isLoading ? (
+                            <MDBox sx={{ display: 'flex', justifyContent: 'center' }}>
+                                <CircularProgress color="info" />
+                            </MDBox>
+                        ) : (
+                            <MDBox>
+                                <MDTypography variant="h5" mb={1} fontWeight="medium">
+                                    Register For The Event - {eventName}
+                                </MDTypography>
+                                {formFieldData && formFieldData.length > 0 ? (
+                                    <DynamicForm
+                                        sx={{ m: 2 }}
+                                        fields={formFieldData}
+                                        eventId={eventId}
+                                        venueId={venueId}
+                                        eventName={eventName}
+                                        venueName={venueName}
+                                        date={date}
+                                        time={time}
+                                        zoneId={selectedZoneId}
+                                        categoryId={selectedCategoryId}
+                                        eventOrganizationId={userOrganizationId}
+                                        price={ticketPrice}
+                                        bookedBy={organizationName || null}
+                                    />
+                                ) : (
+                                    <DataNotFound message={'No Forms Available !'} image={noFormImage} />
+                                )}
+                            </MDBox>
+                        )}
+                    </MDBox>
+                </Card>
+
+            </MDBox>
+
         </DashboardLayout>
     )
 }

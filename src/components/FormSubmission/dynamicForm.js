@@ -38,8 +38,8 @@ const renderField = (field) => {
         case 'Radio':
             return (
                 <FormControl component="fieldset">
-                    <FormLabel component="legend">{field.name}</FormLabel>
-                    <RadioGroup row>
+                    {/* <FormLabel component="legend">{field.name}</FormLabel> */}
+                    <RadioGroup row sx={{ marginLeft: 2 }}>
                         {field.options.split(',').map((options) => (
                             <FormControlLabel
                                 key={options}
@@ -269,7 +269,7 @@ const DynamicForm = ({ fields, eventId, venueId, eventName, venueName, date, tim
                             ))}
                             <MDTypography sx={{ marginTop: '10px' }} variant='h6' color='warning' fontWeight='light'>{!categoryId && 'Select any ticket zone and category to continue...'}</MDTypography>
                             <MDButton sx={{ marginTop: '10px' }} ariant="contained" type="submit" color='info' disabled={!categoryId}>
-                                Submit
+                                Register & Book Ticket
                             </MDButton>
                         </Box>
                     </Form>
