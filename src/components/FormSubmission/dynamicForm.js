@@ -29,6 +29,10 @@ const renderField = (field) => {
             return <Field as={TextField} fullWidth name={field.name} type="text" variant="outlined" />;
         case 'Number':
             return <Field as={TextField} fullWidth name={field.name} type="number" variant="outlined" />;
+        case 'Phone':
+            return <Field as={TextField} fullWidth name={field.name} type="tel" pattern="[0-9]{10}" variant="outlined" />;
+        case 'Email':
+            return <Field as={TextField} fullWidth name={field.name} type="email" variant="outlined" />;
         case 'Radio':
             return (
                 <FormControl component="fieldset">
