@@ -260,7 +260,7 @@ export default function SingleEvent() {
                         </Card>
                         <Grid sx={{ display: 'flex', flexDirection: 'row', position: 'absolute', right: 0, mt: 4 }}>
                             <MDButton sx={{ mr: 2 }} color='info' onClick={() => handleDialogBox()}>Add Registration Form</MDButton>
-                            <MDButton sx={{ mr: 2 }} color='info' onClick={() => handleViewForm()}>View Registration Form</MDButton>
+                            {/* <MDButton sx={{ mr: 2 }} color='info' onClick={() => handleViewForm()}>View Registration Form</MDButton> */}
                             <MDButton color='info' onClick={handleViewEventRegistrations}>View Event Registrations</MDButton>
                         </Grid>
                         {formFieldData.length > 0 ?

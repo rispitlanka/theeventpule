@@ -81,6 +81,8 @@ export default function RegistrationFormModel({ open, onClose, eventId }) {
                                 >
                                     <MenuItem value="Text">Text</MenuItem>
                                     <MenuItem value="Number">Number</MenuItem>
+                                    <MenuItem value="Phone">Phone Number</MenuItem>
+                                    <MenuItem value="Email">Email</MenuItem>
                                     <MenuItem value="Select">Select</MenuItem>
                                     <MenuItem value="Date">Date</MenuItem>
                                     <MenuItem value="Radio">Radio</MenuItem>
@@ -94,6 +96,8 @@ export default function RegistrationFormModel({ open, onClose, eventId }) {
                             selectedType !== 'Number' &&
                             selectedType !== 'Date' &&
                             selectedType !== 'Password' &&
+                            selectedType !== 'Phone' &&
+                            selectedType !== 'Email' &&
                             <Grid item xs={12}>
                                 <TextField
                                     required
