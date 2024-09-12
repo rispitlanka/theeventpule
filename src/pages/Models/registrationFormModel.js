@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, InputLabel, MenuItem, Select, TextField } from '@mui/material'
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, InputLabel, MenuItem, Select, TextField } from '@mui/material'
 import React, { useState } from 'react'
 import PropTypes from 'prop-types';
 import { useFormik } from 'formik';
@@ -7,6 +7,9 @@ import { supabase } from 'pages/supabaseClient';
 
 export default function RegistrationFormModel({ open, onClose, eventId }) {
     const [selectedType, setSelectedType] = useState();
+    const [formImagePreview, setFormImagePreview] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+
     const handleClose = () => {
         onClose();
         setSelectedType('');
@@ -14,7 +17,26 @@ export default function RegistrationFormModel({ open, onClose, eventId }) {
     };
 
     const onSubmit = async (values, { resetForm }) => {
+        setIsLoading(true);
         try {
+            if (newFormField.values.formImage) {
+                const file = newFormField.values.formImage;
+                const { data: imageData, error: imageError } = await supabase.storage
+                    .from('form_images')
+                    .upload(`${file.name}`, file, {
+                        cacheControl: '3600',
+                        upsert: false,
+                    });
+                if (imageError) {
+                    throw imageError;
+                }
+                if (imageData) {
+                    const imgURL = supabase.storage.from('form_images').getPublicUrl(imageData.path);
+                    values.formImage = imgURL.data.publicUrl;
+                } else {
+                    throw new Error('Failed to upload image');
+                }
+            }
             values.type = selectedType;
             values.eventId = eventId;
             await addFormFieldData(values);
@@ -30,6 +52,7 @@ export default function RegistrationFormModel({ open, onClose, eventId }) {
             name: '',
             type: '',
             options: '',
+            formImage: '',
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
@@ -41,6 +64,7 @@ export default function RegistrationFormModel({ open, onClose, eventId }) {
         try {
             const { data, error } = await supabase.from('registrationForm').insert([values]).select('*');
             if (data) {
+                setIsLoading(false);
                 console.log('Data added successfully:', data);
             }
             if (error) {
@@ -49,6 +73,12 @@ export default function RegistrationFormModel({ open, onClose, eventId }) {
         } catch (error) {
             throw new Error('Error inserting data:', error.message);
         }
+    };
+
+    const handleImagePreview = (event) => {
+        const file = event.currentTarget.files[0];
+        newFormField.setFieldValue('formImage', file);
+        setFormImagePreview(URL.createObjectURL(file));
     };
 
     return (
@@ -88,35 +118,63 @@ export default function RegistrationFormModel({ open, onClose, eventId }) {
                                     <MenuItem value="Radio">Radio</MenuItem>
                                     <MenuItem value="Checkbox">CheckBox</MenuItem>
                                     <MenuItem value="Password">Password</MenuItem>
+                                    <MenuItem value="Image">Image</MenuItem>
                                 </Select>
                             </FormControl>
                         </Grid>
-                        {selectedType && selectedType.length > 0 &&
-                            selectedType !== 'Text' &&
-                            selectedType !== 'Number' &&
-                            selectedType !== 'Date' &&
-                            selectedType !== 'Password' &&
-                            selectedType !== 'Phone' &&
-                            selectedType !== 'Email' &&
-                            <Grid item xs={12}>
-                                <TextField
-                                    required
-                                    fullWidth
-                                    label="Options"
-                                    name="options"
-                                    value={newFormField.values.options}
-                                    onChange={newFormField.handleChange}
-                                    onBlur={newFormField.handleBlur}
-                                    error={newFormField.touched.options && Boolean(newFormField.errors.options)}
-                                    helperText={newFormField.touched.options && newFormField.errors.options}
-                                />
-                            </Grid>
-                        }
+                        {selectedType && selectedType.length > 0 && (
+                            <>
+                                {(selectedType === 'Select' || selectedType === 'Radio' || selectedType === 'Checkbox') && (
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            required
+                                            fullWidth
+                                            label="Options"
+                                            name="options"
+                                            value={newFormField.values.options}
+                                            onChange={newFormField.handleChange}
+                                            onBlur={newFormField.handleBlur}
+                                            error={newFormField.touched.options && Boolean(newFormField.errors.options)}
+                                            helperText={newFormField.touched.options && newFormField.errors.options}
+                                        />
+                                    </Grid>
+                                )}
+                                {selectedType === 'Image' && (
+                                    <Grid item xs={12}>
+                                        {formImagePreview &&
+                                            <Box
+                                                display="flex"
+                                                justifyContent="center"
+                                                alignItems="center"
+                                                border="1px dashed"
+                                                borderRadius="4px"
+                                                width="50%"
+                                                maxHeight="200px"
+                                                mb={1}
+                                                height="100px"
+                                            >
+                                                <img src={formImagePreview} alt="Theatre Preview" style={{ width: '100%', maxHeight: '100px' }} />
+                                            </Box>
+                                        }
+                                        <Button component="label">
+                                            Upload Image
+                                            <input
+                                                type="file"
+                                                hidden
+                                                accept="image/*"
+                                                onChange={handleImagePreview}
+                                                name="formImage"
+                                            />
+                                        </Button>
+                                    </Grid>
+                                )}
+                            </>
+                        )}
                     </Grid>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} color="secondary">Cancel</Button>
-                    <Button type="submit" color="primary">Save</Button>
+                    <Button type="submit" color="primary" disabled={isLoading}>{isLoading ? 'Saving...' : 'Save'}</Button>
                 </DialogActions>
             </form>
         </Dialog>

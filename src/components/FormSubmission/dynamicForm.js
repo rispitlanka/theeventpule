@@ -30,9 +30,11 @@ const renderField = (field) => {
         case 'Number':
             return <Field as={TextField} fullWidth name={field.name} type="number" variant="outlined" />;
         case 'Phone':
-            return <Field as={TextField} fullWidth name={field.name} type="tel" pattern="[0-9]{10}" variant="outlined" />;
+            return <Field as={TextField} fullWidth name={field.name} type="tel" variant="outlined" />;
         case 'Email':
             return <Field as={TextField} fullWidth name={field.name} type="email" variant="outlined" />;
+        case 'Image':
+            return <Box marginTop={1}><img src={field.formImage} width="150" height="200" /></Box>;
         case 'Radio':
             return (
                 <FormControl component="fieldset">
@@ -103,11 +105,25 @@ const DynamicForm = ({ fields, eventId, venueId, eventName, venueName, date, tim
 
     const validate = (values) => {
         const errors = {};
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const phoneRegex = /^\+?[0-9]\d{1,9}$/;
+
         fields.forEach((field) => {
             if (!values[field.name]) {
                 errors[field.name] = `${field.name} is required`;
             }
+            if (field.type === 'Email' && values[field.name]) {
+                if (!emailRegex.test(values[field.name])) {
+                    errors[field.name] = `${field.name} must be a valid email address`;
+                }
+            }
+            if (field.type === 'Phone' && values[field.name]) {
+                if (!phoneRegex.test(values[field.name])) {
+                    errors[field.name] = `${field.name} must be a valid phone number`;
+                }
+            }
         });
+
         return errors;
     };
 
