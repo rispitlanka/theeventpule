@@ -18,24 +18,39 @@ export default function BookedTicketView() {
     const componentRef = useRef();
     const location = useLocation();
     const navigate = useNavigate();
-    const { bookedTicketsData, qrCodes, eventName, venueName, date, time } = location.state || { bookedTicketsData: [], qrCodes: [] };
+    const { bookedTicketsData, qrCodes, eventName, venueName, date, time, categoryName } = location.state || { bookedTicketsData: [], qrCodes: [] };
     const [organizationName, setOrganizationName] = useState([]);
+    const [eventImages, setEventImages] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [open, setOpen] = useState(false);
 
-    useEffect(() => {
-        const fetchOrganization = async () => {
-            try {
-                const { data, error } = await supabase.from('eventOrganizations').select('name').eq('id', userOrganizationId);
-                if (error) throw error;
-                if (data) {
-                    setOrganizationName(data[0].name)
-                }
-            } catch (error) {
-                console.log(error);
+    const fetchOrganization = async () => {
+        try {
+            const { data, error } = await supabase.from('eventOrganizations').select('name').eq('id', userOrganizationId);
+            if (error) throw error;
+            if (data) {
+                setOrganizationName(data[0].name)
             }
-        };
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const fetchEventImage = async () => {
+        try {
+            const { data, error } = await supabase.from('events').select('eventImage').eq('id', bookedTicketsData[0].eventId);
+            if (error) throw error;
+            if (data) {
+                setEventImages(data[0].eventImage)
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
         fetchOrganization();
+        fetchEventImage()
     }, [bookedTicketsData])
 
     const formattedTime = (time) => {
@@ -78,7 +93,7 @@ export default function BookedTicketView() {
                             }}>
                                 <Box sx={{ flexGrow: 1, mt: 5, mb: 2 }}>
                                     <Grid container spacing={3} justifyContent="center">
-                                        <Grid item xs={12} sm={6} md={4} lg={3} >
+                                        <Grid item xs={12} sm={6} md={4} lg={4} >
                                             <Card sx={{
                                                 position: 'relative',
                                                 p: 2,
@@ -88,11 +103,32 @@ export default function BookedTicketView() {
                                                 width: '100%',
                                             }}>
                                                 <div ref={componentRef}>
-                                                    <Box sx={{ backgroundColor: '#e0e0e0', textAlign: 'center', mt: 1, mb: 3 }}>
-                                                        <MDTypography variant="h2" sx={{ fontSize: { xs: '1.5rem', md: '2rem' } }}>{organizationName}</MDTypography>
+                                                    <Box sx={{ backgroundColor: '#e0e0e0', textAlign: 'center', mt: 1, mb: 3, padding: '10px', }}>
+                                                        <MDTypography
+                                                            variant="h2"
+                                                            sx={{
+                                                                fontSize: { xs: '1.5rem', md: '2rem' },
+                                                                mb: 2,
+                                                                backgroundColor: '#e0e0e0',
+                                                                display: 'inline-block',
+                                                                width: 'auto',
+                                                            }}
+                                                        >
+                                                            {organizationName}
+                                                        </MDTypography>
+                                                        <img
+                                                            src={eventImages}
+                                                            alt="Event"
+                                                            style={{
+                                                                width: '100%',
+                                                                display: 'block',
+                                                                marginTop: '10px',
+                                                                borderRadius: '4px',
+                                                            }}
+                                                        />
                                                     </Box>
 
-                                                    <MDTypography variant='body2' sx={{ position: 'absolute', top: { xs: 60, md: 75 }, right: { xs: 15, md: 20 }, fontSize: { xs: '0.75rem', md: '1rem' } }}>
+                                                    <MDTypography variant='body2' sx={{ position: 'absolute', top: { xs: 60, md: 75 }, right: { xs: 15, md: 30 }, fontSize: { xs: '0.75rem', md: '1rem' } }}>
                                                         Ticket ID : {bookedTicketsData[0].id}
                                                     </MDTypography>
                                                     <Box display="flex" alignItems='center' mt={3}>
@@ -108,6 +144,10 @@ export default function BookedTicketView() {
                                                     <Box display="flex" alignItems='center' mt={1}>
                                                         <MDTypography sx={{ mr: 1 }}>Venue:</MDTypography>
                                                         <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{venueName}</MDTypography>
+                                                    </Box>
+                                                    <Box display="flex" alignItems='center' mt={1}>
+                                                        <MDTypography sx={{ mr: 1 }}>Category:</MDTypography>
+                                                        <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{categoryName}</MDTypography>
                                                     </Box>
                                                     <Box display="flex" alignItems='center' mt={1}>
                                                         <MDTypography sx={{ mr: 1 }}>Price:</MDTypography>
