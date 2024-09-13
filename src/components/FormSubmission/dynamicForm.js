@@ -92,7 +92,7 @@ const renderField = (field) => {
     }
 };
 
-const DynamicForm = ({ fields, eventId, venueId, eventName, venueName, date, time, zoneId, categoryId, price, eventOrganizationId, bookedBy }) => {
+const DynamicForm = ({ fields, eventId, venueId, eventName, venueName, date, time, zoneId, categoryId, categoryName, price, eventOrganizationId, bookedBy }) => {
     const uid = new ShortUniqueId({ dictionary: 'number', length: 6 });
     const navigate = useNavigate();
 
@@ -189,7 +189,7 @@ const DynamicForm = ({ fields, eventId, venueId, eventName, venueName, date, tim
 
             if (data?.length > 0) {
                 const qrCodes = await generateQRCodesForTickets(data[0].referenceId, data[0].eventId, data[0].id);
-                navigate(`/eventBookings/book-ticket/ticket-view`, { state: { bookedTicketsData: data, qrCodes, eventName, venueName, date, time } });
+                navigate(`/eventBookings/book-ticket/ticket-view`, { state: { bookedTicketsData: data, qrCodes, eventName, venueName, date, time, categoryName } });
             }
         } catch (error) {
             console.error('Error in booking tickets:', error.message);
@@ -261,6 +261,7 @@ DynamicForm.propTypes = {
     time: PropTypes.isRequired,
     zoneId: PropTypes.isRequired,
     categoryId: PropTypes.isRequired,
+    categoryName: PropTypes.isRequired,
     eventOrganizationId: PropTypes.isRequired,
     price: PropTypes.isRequired,
     venueName: PropTypes.isRequired,

@@ -70,7 +70,7 @@ export default function TicketBookingAndRegistration() {
         fetchVenue();
     }, []);
 
-    const zoneName = selectedZoneId && (venueData[0]?.zones_events?.filter(zone => zone.id === selectedZoneId).map(zone => zone.name)[0]);
+    const categoryName = selectedCategoryId && (venueData[0]?.zone_ticket_category?.filter(category => category.id === selectedCategoryId).map(category => category.name)[0]);
     const ticketPrice = isFree ? 'Free' : selectedCategoryId && (venueData[0]?.zone_ticket_category?.filter(category => category.id === selectedCategoryId).map(category => category.price)[0]);
 
     useEffect(() => {
@@ -212,6 +212,7 @@ export default function TicketBookingAndRegistration() {
                                         time={time}
                                         zoneId={selectedZoneId}
                                         categoryId={selectedCategoryId}
+                                        categoryName={categoryName}
                                         eventOrganizationId={userOrganizationId}
                                         price={ticketPrice}
                                         bookedBy={organizationName || null}
