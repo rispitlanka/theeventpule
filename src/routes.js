@@ -665,7 +665,7 @@ const routes = [
     component: <BookedTicketView />,
   },
   {
-    route: "/viewTickets/single-ticket/:ticketId",
+    route: "/viewTickets/single-ticket/:ticketId/:eventId",
     component: <SingleTicketView />,
   },
   {

@@ -1,4 +1,4 @@
-import { Box, Button, Card, CircularProgress, Grid } from '@mui/material'
+import { Box, Button, Card, CircularProgress, Grid, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material'
 import MDBox from 'components/MDBox'
 import MDButton from 'components/MDButton'
 import MDTypography from 'components/MDTypography'
@@ -17,16 +17,17 @@ import QRCode from 'qrcode';
 export default function SingleTicketView() {
     const userDetails = useContext(UserDataContext);
     const userOrganizationId = userDetails && userDetails[0].eventOrganizationId;
-    const { ticketId } = useParams();
+    const { ticketId, eventId } = useParams();
     const [ticketData, setTicketData] = useState([]);
     const [organizationName, setOrganizationName] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [qrCodes, setQrCodes] = useState({});
+    const [registrationFormData, setRegistrationFormData] = useState([]);
     const componentRefs = useRef([]);
 
     const fetchEventData = async () => {
         try {
-            const { data, error } = await supabase.from('tickets_events').select('*,events(name,startTime),venues(name),seats_events(seatName)').eq('id', ticketId);
+            const { data, error } = await supabase.from('tickets_events').select('*,events(name,startTime),venues(name),seats_events(seatName),eventRegistrations(details,paymentStatus)').eq('id', ticketId);
             if (error) {
                 throw error;
             }
@@ -38,6 +39,20 @@ export default function SingleTicketView() {
             console.error('Error fetching ticket data:', error.message);
         }
     };
+
+    const fetchRegistrationForm = async () => {
+        try {
+            const { data, error } = await supabase.from('registrationForm').select('*').eq('eventId', eventId);
+            if (data) {
+                setRegistrationFormData(data);
+            }
+
+            if (error) throw error;
+        } catch (error) {
+            console.log(error)
+        }
+    };
+
     const fetchOrganization = async () => {
         try {
             const { data, error } = await supabase.from('eventOrganizations').select('name').eq('id', userOrganizationId);
@@ -54,6 +69,7 @@ export default function SingleTicketView() {
         const fetchData = async () => {
             try {
                 setIsLoading(true);
+                await fetchRegistrationForm();
                 await fetchEventData();
                 await fetchOrganization();
             } catch (error) {
@@ -64,6 +80,16 @@ export default function SingleTicketView() {
         };
         fetchData();
     }, [ticketId]);
+
+    const allKeysOfRegisteredEvents = [
+        ...new Set(
+            ticketData
+                .filter(item => item?.eventRegistrations?.details)
+                .flatMap(item => Object.keys(JSON.parse(item.eventRegistrations.details)))
+        )
+    ];
+    const allKeysOfForm = [...new Set(registrationFormData.map(item => (item.name)))];
+    const matchingKeys = allKeysOfRegisteredEvents.filter(key => allKeysOfForm.includes(key) && key !== 'id');
 
     const cancelTicket = async (id) => {
         try {
@@ -123,6 +149,35 @@ export default function SingleTicketView() {
                                 mt: 2,
                                 p: 2,
                             }}>
+                                <Card>
+                                    <Table>
+                                        <TableHead sx={{ display: "table-header-group" }}>
+                                            <TableRow>
+                                                {matchingKeys.map((key) => (
+                                                    <TableCell key={key}>{key}</TableCell>
+                                                ))}
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {ticketData.map((item, index) => {
+                                                const details = item?.eventRegistrations?.details
+                                                    ? JSON.parse(item.eventRegistrations.details)
+                                                    : null;
+
+                                                return (
+                                                    <TableRow key={index}>
+                                                        {matchingKeys.map((key) => (
+                                                            <TableCell key={key}>
+                                                                {details?.[key] || '--'}
+                                                            </TableCell>
+                                                        ))}
+                                                    </TableRow>
+                                                );
+                                            })}
+                                        </TableBody>
+                                    </Table>
+
+                                </Card>
                                 <div ref={componentRefs}>
                                     <Box sx={{ flexGrow: 1, mt: 5, mb: 2 }}>
                                         <Grid container spacing={3} justifyContent="center">
