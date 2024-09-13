@@ -94,7 +94,6 @@ const renderField = (field) => {
 
 const DynamicForm = ({ fields, eventId, venueId, eventName, venueName, date, time, zoneId, categoryId, price, eventOrganizationId, bookedBy }) => {
     const uid = new ShortUniqueId({ dictionary: 'number', length: 6 });
-    const [stageIds, setStageIds] = useState([]);
     const navigate = useNavigate();
 
     const initialValues = fields.reduce((acc, field) => {
@@ -109,8 +108,10 @@ const DynamicForm = ({ fields, eventId, venueId, eventName, venueName, date, tim
         const phoneRegex = /^\+?[0-9]\d{1,9}$/;
 
         fields.forEach((field) => {
-            if (!values[field.name]) {
-                errors[field.name] = `${field.name} is required`;
+            if (field.type !== 'Image') {
+                if (!values[field.name]) {
+                    errors[field.name] = `${field.name} is required`;
+                }
             }
             if (field.type === 'Email' && values[field.name]) {
                 if (!emailRegex.test(values[field.name])) {
@@ -126,21 +127,6 @@ const DynamicForm = ({ fields, eventId, venueId, eventName, venueName, date, tim
 
         return errors;
     };
-
-    useEffect(() => {
-        const fetchStages = async () => {
-            try {
-                const { data, error } = await supabase.from('stages').select('id').eq('eventId', eventId);
-                if (error) throw error;
-                if (data) {
-                    setStageIds(data)
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        fetchStages();
-    }, [eventId])
 
     const handleSubmit = async (values, { resetForm }) => {
         try {
@@ -202,40 +188,12 @@ const DynamicForm = ({ fields, eventId, venueId, eventName, venueName, date, tim
             if (error) throw error;
 
             if (data?.length > 0) {
-
-                if (stageIds?.length > 0) {
-                    await insertStageParticipants(data);
-                }
-
                 const qrCodes = await generateQRCodesForTickets(data[0].referenceId, data[0].eventId, data[0].id);
-
                 navigate(`/eventBookings/book-ticket/ticket-view`, { state: { bookedTicketsData: data, qrCodes, eventName, venueName, date, time } });
             }
         } catch (error) {
             console.error('Error in booking tickets:', error.message);
             throw error;
-        }
-    };
-
-    const insertStageParticipants = async (tickets) => {
-        try {
-            const stageParticipantsData = tickets.flatMap(ticket =>
-                stageIds.map(stage => ({
-                    stageId: stage.id,
-                    ticketId: ticket.id,
-                    eventId: ticket.eventId,
-                    referenceId: ticket.referenceId,
-                }))
-            );
-
-            const { data, error } = await supabase.from('stage_participants').insert(stageParticipantsData).select('*');
-            if (error) {
-                console.error('Error inserting into stage_participants:', error.message);
-            } else {
-                console.log('Stage participants added successfully:', data);
-            }
-        } catch (error) {
-            console.error('Error in insertStageParticipants:', error.message);
         }
     };
 
