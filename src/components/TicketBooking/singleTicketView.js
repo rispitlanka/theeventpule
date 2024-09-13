@@ -27,7 +27,7 @@ export default function SingleTicketView() {
 
     const fetchEventData = async () => {
         try {
-            const { data, error } = await supabase.from('tickets_events').select('*,events(name,startTime),venues(name),seats_events(seatName),eventRegistrations(details,paymentStatus)').eq('id', ticketId);
+            const { data, error } = await supabase.from('tickets_events').select('*,events(name,startTime,eventImage),venues(name),seats_events(seatName),eventRegistrations(details,paymentStatus),zone_ticket_category(name)').eq('id', ticketId);
             if (error) {
                 throw error;
             }
@@ -46,7 +46,6 @@ export default function SingleTicketView() {
             if (data) {
                 setRegistrationFormData(data);
             }
-
             if (error) throw error;
         } catch (error) {
             console.log(error)
@@ -181,7 +180,7 @@ export default function SingleTicketView() {
                                 <div ref={componentRefs}>
                                     <Box sx={{ flexGrow: 1, mt: 5, mb: 2 }}>
                                         <Grid container spacing={3} justifyContent="center">
-                                            <Grid item xs={12} sm={6} md={4} lg={3} >
+                                            <Grid item xs={12} sm={6} md={4} lg={4} >
                                                 <Card sx={{
                                                     position: 'relative',
                                                     p: 2,
@@ -190,11 +189,31 @@ export default function SingleTicketView() {
                                                     boxSizing: 'border-box',
                                                     width: '100%',
                                                 }}>
-                                                    <Box sx={{ backgroundColor: '#e0e0e0', textAlign: 'center', mt: 1, mb: 3 }}>
-                                                        <MDTypography variant="h2" sx={{ fontSize: { xs: '1.5rem', md: '2rem' } }}>{organizationName}</MDTypography>
+                                                    <Box sx={{ backgroundColor: '#e0e0e0', textAlign: 'center', mt: 1, mb: 3, padding: '10px', }}>
+                                                        <MDTypography
+                                                            variant="h2"
+                                                            sx={{
+                                                                fontSize: { xs: '1.5rem', md: '2rem' },
+                                                                mb: 2,
+                                                                backgroundColor: '#e0e0e0',
+                                                                display: 'inline-block',
+                                                                width: 'auto',
+                                                            }}
+                                                        >
+                                                            {organizationName}
+                                                        </MDTypography>
+                                                        <img
+                                                            src={ticketData[0]?.events?.eventImage}
+                                                            alt="Event"
+                                                            style={{
+                                                                width: '100%',
+                                                                display: 'block',
+                                                                marginTop: '10px',
+                                                                borderRadius: '4px',
+                                                            }}
+                                                        />
                                                     </Box>
-
-                                                    <MDTypography variant='body2' sx={{ position: 'absolute', top: { xs: 60, md: 75 }, right: { xs: 15, md: 20 }, fontSize: { xs: '0.75rem', md: '1rem' } }}>
+                                                    <MDTypography variant='body2' sx={{ position: 'absolute', top: { xs: 60, md: 75 }, right: { xs: 15, md: 30 }, fontSize: { xs: '0.75rem', md: '1rem' } }}>
                                                         Ticket ID : {ticketData[0].id}
                                                     </MDTypography>
                                                     <Box display="flex" alignItems='center' mt={3}>
@@ -210,6 +229,10 @@ export default function SingleTicketView() {
                                                     <Box display="flex" alignItems='center' mt={1}>
                                                         <MDTypography sx={{ mr: 1 }}>Venue:</MDTypography>
                                                         <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{(ticketData[0]?.venues?.name)}</MDTypography>
+                                                    </Box>
+                                                    <Box display="flex" alignItems='center' mt={1}>
+                                                        <MDTypography sx={{ mr: 1 }}>Category:</MDTypography>
+                                                        <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{(ticketData[0]?.zone_ticket_category?.name)}</MDTypography>
                                                     </Box>
                                                     <Box display="flex" alignItems='center' mt={1}>
                                                         <MDTypography sx={{ mr: 1 }}>Price:</MDTypography>
