@@ -16,6 +16,7 @@ import noDataImage from "assets/images/illustrations/noData3.svg";
 import { UserDataContext } from 'context';
 import { supabase } from './supabaseClient';
 import EditIcon from '@mui/icons-material/Edit';
+import parse from 'html-react-parser';
 
 export default function Events() {
   const userDetails = useContext(UserDataContext);
@@ -190,7 +191,7 @@ export default function Events() {
                         {eventsData.map((row) => (
                           <TableRow key={row.id} >
                             <TableCell onClick={(e) => { e.stopPropagation(); openPage(`/events/single-event/${row.id}`); }} style={{ cursor: 'pointer' }}>{row.name}</TableCell>
-                            <TableCell align='center'>{row.description}</TableCell>
+                            <TableCell align='center'> {parse(row.description)}</TableCell>
                             <TableCell align='center'><Switch checked={row.isActive} onChange={(e) => handleStatusChange(row.id, e.target.checked)} /></TableCell>
                             <TableCell align='center'>{row.event_categories?.name}</TableCell>
                             <TableCell align='center' onClick={(e) => { e.stopPropagation(); openPage(`/events/edit-event/${row.id}`); }} style={{ cursor: 'pointer' }}>Edit</TableCell>

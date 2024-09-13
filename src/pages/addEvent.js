@@ -27,6 +27,8 @@ import { MobileTimePicker } from '@mui/x-date-pickers/MobileTimePicker';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import { UserDataContext } from 'context';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 export default function AddEvent() {
     const navigate = useNavigate();
@@ -242,18 +244,18 @@ export default function AddEvent() {
                                                 helperText={newEvent.touched.name && newEvent.errors.name} />
                                         </MDBox>
                                         <MDBox p={1}>
-                                            <TextField
-                                                fullWidth
-                                                variant="outlined"
-                                                id="description"
-                                                label="Description"
-                                                name="description"
+                                            <label htmlFor="description" >Description</label>
+                                            <ReactQuill
+                                                theme='snow'
                                                 value={newEvent.values.description}
-                                                onChange={newEvent.handleChange}
-                                                onBlur={newEvent.handleBlur}
-                                                error={newEvent.touched.description && Boolean(newEvent.errors.description)}
-                                                helperText={newEvent.touched.description && newEvent.errors.description} />
-                                        </MDBox>
+                                                onChange={(value) => newEvent.setFieldValue('description', value)}
+                                                onBlur={() => newEvent.setFieldTouched('description', true)}
+                                            />
+
+                                            {newEvent.touched.description && Boolean(newEvent.errors.description) && (
+                                                <p style={{ color: 'red' }}>{newEvent.errors.description}</p>
+                                            )}
+                                        </MDBox>                                       
                                         <MDBox p={1}>
                                             <FormControl fullWidth error={Boolean(newEvent.touched.categoryId && newEvent.errors.categoryId)}>
                                                 <InputLabel>Select Category</InputLabel>
