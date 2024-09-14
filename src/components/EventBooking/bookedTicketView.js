@@ -103,7 +103,15 @@ export default function BookedTicketView() {
                                                 width: '100%',
                                             }}>
                                                 <div ref={componentRef}>
-                                                    <Box sx={{ backgroundColor: '#e0e0e0', textAlign: 'center', mt: 1, mb: 3, padding: '10px', }}>
+                                                    <Box
+                                                        sx={{
+                                                            backgroundColor: '#e0e0e0',
+                                                            textAlign: 'center',
+                                                            mt: 1,
+                                                            mb: 3,
+                                                            padding: '10px'
+                                                        }}
+                                                    >
                                                         <MDTypography
                                                             variant="h2"
                                                             sx={{
@@ -116,6 +124,21 @@ export default function BookedTicketView() {
                                                         >
                                                             {organizationName}
                                                         </MDTypography>
+
+                                                        <Box
+                                                            sx={{
+                                                                textAlign: 'right',
+                                                                mb: 1
+                                                            }}
+                                                        >
+                                                            <MDTypography
+                                                                variant='body2'
+                                                                sx={{ fontSize: { xs: '0.75rem', md: '1rem' } }}
+                                                            >
+                                                                Ticket ID: {bookedTicketsData[0].id}
+                                                            </MDTypography>
+                                                        </Box>
+
                                                         <img
                                                             src={eventImages}
                                                             alt="Event"
@@ -127,10 +150,6 @@ export default function BookedTicketView() {
                                                             }}
                                                         />
                                                     </Box>
-
-                                                    <MDTypography variant='body2' sx={{ position: 'absolute', top: { xs: 60, md: 75 }, right: { xs: 15, md: 30 }, fontSize: { xs: '0.75rem', md: '1rem' } }}>
-                                                        Ticket ID : {bookedTicketsData[0].id}
-                                                    </MDTypography>
                                                     <Box display="flex" alignItems='center' mt={3}>
                                                         <MDTypography sx={{ mr: 1 }}>Event:</MDTypography>
                                                         <MDTypography variant='h5' sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>{eventName}</MDTypography>
@@ -156,7 +175,7 @@ export default function BookedTicketView() {
                                                     <Grid container mt={3}>
                                                         <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: { xs: 'center', sm: 'flex-start' } }}>
                                                             <MDTypography sx={{ fontSize: { xs: '0.75rem', md: '1rem' } }}>{formattedDate(bookedTicketsData[0]?.created_at)}</MDTypography>
-                                                            <MDTypography sx={{ fontSize: { xs: '0.75rem', md: '1rem' } }}>theEventPulse</MDTypography>
+                                                            <MDTypography sx={{ fontSize: { xs: '0.75rem', md: '1rem' } }}>Seatsnaps</MDTypography>
                                                         </Grid>
                                                         <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: { xs: 'center', sm: 'flex-end' } }}>
                                                             {qrCodes && bookedTicketsData && (
