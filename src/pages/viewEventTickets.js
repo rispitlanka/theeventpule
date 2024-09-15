@@ -1,7 +1,7 @@
 import Footer from 'examples/Footer'
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout'
 import DashboardNavbar from 'examples/Navbars/DashboardNavbar'
-import { Button, Card, CardContent, CircularProgress, Grid, List, ListItem, ListItemText, TextField } from '@mui/material'
+import { Card, CardContent, CircularProgress, Grid, TextField } from '@mui/material'
 import DataTable from "examples/Tables/DataTable";
 import ticketsTableData from "layouts/tables/data/eventTicketsTableData";
 import MDBox from 'components/MDBox'
@@ -13,7 +13,7 @@ import ReportsLineChart from 'examples/Charts/LineCharts/ReportsLineChart';
 import { supabase } from './supabaseClient';
 import { UserDataContext } from 'context';
 import MDInput from 'components/MDInput';
-import { CSVLink, CSVDownload } from "react-csv";
+import { CSVLink } from "react-csv";
 import MDButton from 'components/MDButton';
 
 export default function ViewTickets() {
@@ -30,7 +30,7 @@ export default function ViewTickets() {
     const [error, setError] = useState('');
     const [searched, setSearched] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [allEventTickets, setAllEventTickets] = useState([]);
+    const [paymentStatus, setPaymentStatus] = useState('all');
 
     const getCurrentDate = () => {
         const today = new Date();
@@ -126,17 +126,20 @@ export default function ViewTickets() {
 
     const groupedTickets = groupTicketsByReferenceId(tickets);
 
-    // search and filter inside table
     const handleSearch = (event) => {
         setSearchTerm(event.target.value);
     };
 
     const filteredRows = useMemo(() => {
-        return pRows?.filter(row => {
+        return pRows?.filter((row) => {
             const reference = row.referenceId?.props?.children;
-            return reference?.includes(searchTerm);
+            const status = row.paymentStatus?.props?.children;
+            const matchesSearch = reference?.includes(searchTerm);
+            const matchesStatus =
+                paymentStatus === 'all' || (paymentStatus === 'done' && status?.includes('done')) || (paymentStatus === 'pending' && !status?.includes('done'));
+            return matchesSearch && matchesStatus;
         });
-    }, [searchTerm, pRows]);
+    }, [searchTerm, paymentStatus, pRows]);
 
     const headers = [
         { label: "Id", key: "id" },
@@ -151,6 +154,7 @@ export default function ViewTickets() {
         { label: "Organizers", key: "organizationName" },
         { label: "Reference Id", key: "referenceId" },
         { label: "Booked By", key: "bookedBy" },
+        { label: "Phone", key: "phone" },
         { label: "Booked Date", key: "created_at" },
     ];
 
@@ -159,6 +163,7 @@ export default function ViewTickets() {
         created_at: ticket.bookedDate?.props?.children,
         seatId: ticket.seatId?.props?.children,
         bookedBy: ticket.bookedBy?.props?.children,
+        phone: ticket.phone?.props?.children,
         referenceId: ticket.referenceId?.props?.children,
         eventName: ticket.eventName?.props?.children,
         category: ticket.category?.props?.children,
@@ -169,7 +174,6 @@ export default function ViewTickets() {
         venue: ticket.venue?.props.children,
         zone: ticket.zone?.props.children,
     })) : [];
-
     return (
         <DashboardLayout>
             <DashboardNavbar />
@@ -246,6 +250,29 @@ export default function ViewTickets() {
                                 <CSVLink data={data} headers={headers} filename={"Tickets"}>
                                     <MDButton variant='contained' color='info'>Download Tickets as CSV</MDButton>
                                 </CSVLink>
+                            </MDBox>
+                            <MDBox pt={3} pr={3} display="flex" justifyContent="right" gap={1}>
+                                <MDButton
+                                    variant={paymentStatus === 'pending' ? 'contained' : 'outlined'}
+                                    color='warning'
+                                    onClick={() => setPaymentStatus('pending')}
+                                >
+                                    Pending
+                                </MDButton>
+                                <MDButton
+                                    variant={paymentStatus === 'done' ? 'contained' : 'outlined'}
+                                    color='success'
+                                    onClick={() => setPaymentStatus('done')}
+                                >
+                                    Done
+                                </MDButton>
+                                <MDButton
+                                    variant={paymentStatus === 'all' ? 'contained' : 'outlined'}
+                                    color='info'
+                                    onClick={() => setPaymentStatus('all')}
+                                >
+                                    All
+                                </MDButton>
                             </MDBox>
                             {isLoading ? (
                                 <MDBox p={3} display="flex" justifyContent="center">
