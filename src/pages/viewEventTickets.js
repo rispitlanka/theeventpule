@@ -13,6 +13,7 @@ import { UserDataContext } from 'context';
 import MDInput from 'components/MDInput';
 import { CSVLink } from "react-csv";
 import MDButton from 'components/MDButton';
+import { useNavigate } from 'react-router-dom'
 
 export default function ViewTickets() {
     const userDetails = useContext(UserDataContext);
@@ -24,6 +25,10 @@ export default function ViewTickets() {
     const [allEventTickets, setAllEventTickets] = useState([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
+    const navigate = useNavigate();
+    const openPage = (route) => {
+        navigate(route);
+    };
 
 
     const getAllEventTickets = async () => {
@@ -34,7 +39,6 @@ export default function ViewTickets() {
             }
             if (data) {
                 setAllEventTickets(data);
-                console.log('tickets', data)
             }
         }
         catch (error) {
@@ -248,6 +252,7 @@ export default function ViewTickets() {
                                                                 return (
                                                                     <TableRow
                                                                         key={row.referenceId}
+                                                                        onClick={(e) => { e.stopPropagation(); openPage(`/viewTickets/single-ticket/${row.id}/${row.eventId}`); }} style={{ cursor: 'pointer' }}
                                                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                                                     >
                                                                         <TableCell component="th" scope="row">
