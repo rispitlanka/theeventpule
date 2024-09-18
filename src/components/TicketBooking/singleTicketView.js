@@ -221,7 +221,7 @@ export default function SingleTicketView() {
                                                                 variant='body2'
                                                                 sx={{ fontSize: { xs: '0.75rem', md: '1rem' } }}
                                                             >
-                                                                Ticket ID: {ticketData[0].id}
+                                                                Reference ID: {ticketData[0].referenceId}
                                                             </MDTypography>
                                                         </Box>
 
