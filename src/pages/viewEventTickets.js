@@ -1,9 +1,7 @@
 import Footer from 'examples/Footer'
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout'
 import DashboardNavbar from 'examples/Navbars/DashboardNavbar'
-import { Card, CardContent, CircularProgress, Grid, TextField } from '@mui/material'
-import DataTable from "examples/Tables/DataTable";
-import ticketsTableData from "layouts/tables/data/eventTicketsTableData";
+import { Card, CardContent, CircularProgress, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, ToggleButton, ToggleButtonGroup } from '@mui/material'
 import MDBox from 'components/MDBox'
 import MDTypography from 'components/MDTypography'
 import DataNotFound from 'components/NoData/dataNotFound'
@@ -17,283 +15,276 @@ import { CSVLink } from "react-csv";
 import MDButton from 'components/MDButton';
 
 export default function ViewTickets() {
-    const { columns: pColumns, rows: pRows } = ticketsTableData();
     const userDetails = useContext(UserDataContext);
     const userOrganizationId = userDetails && userDetails[0].eventOrganizationId;
     const [chartData, setChartData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [eventId, setEventId] = useState([]);
-
-    const [referenceId, setReferenceId] = useState('');
-    const [tickets, setTickets] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
-    const [searched, setSearched] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [paymentStatus, setPaymentStatus] = useState('all');
+    const [allEventTickets, setAllEventTickets] = useState([]);
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
 
-    const getCurrentDate = () => {
-        const today = new Date();
-        const yyyy = today.getFullYear();
-        const mm = String(today.getMonth() + 1).padStart(2, '0');
-        const dd = String(today.getDate()).padStart(2, '0');
-        return `${yyyy}-${mm}-${dd}`;
+
+    const getAllEventTickets = async () => {
+        try {
+            const { data, error } = await supabase.from('tickets_events').select('*,events(name),zone_ticket_category(name),eventOrganizations(name),zones_events(name),venues(name),eventRegistrations(details,paymentStatus)').eq('eventOrganizationId', userOrganizationId).order('id', { ascending: false });
+            if (error) {
+                console.log('ticketsResponseError', error)
+            }
+            if (data) {
+                setAllEventTickets(data);
+                console.log('tickets', data)
+            }
+        }
+        catch (error) {
+            console.error('Error in fetching tickets:', error.message);
+        }
+    };
+
+    const fetchData = async () => {
+        try {
+            const { data, error } = await supabase
+                .rpc('get_event_ticket_count', { eventorganization_id: userOrganizationId });
+            if (error) throw error;
+            const labels = data.map(item => {
+                const date = new Date(item.date);
+                return date.toLocaleDateString('en-GB', { month: '2-digit', day: '2-digit', });
+            }); const count = data.map(item => item.ticket_count);
+            setChartData({ labels, datasets: { label: "Count", data: count } });
+
+        } catch (error) {
+            console.log(error)
+        }
     };
 
     useEffect(() => {
-        const fetchEventsByDate = async () => {
+        const fetchAllData = async () => {
             try {
-                const currentDate = getCurrentDate();
-                const { data, error } = await supabase
-                    .from('events')
-                    .select('id')
-                    .eq('eventOrganizationId', userOrganizationId)
-                    .gte('date', currentDate);
-
-                if (error) throw error;
-                const eventIds = data.map(event => event.id);
-                setEventId(eventIds);
+                setIsLoading(true);
+                await fetchData();
+                await getAllEventTickets();
             } catch (error) {
-                console.log(error)
-            }
-        }
-        const fetchTickets = async () => {
-            if (referenceId.trim() === '' || eventId.length === 0) {
-                setTickets([]);
-                setError('');
-                setSearched(false);
-                return;
-            }
-            setLoading(true);
-            setError('');
-            setSearched(true);
-            try {
-                const { data, error } = await supabase
-                    .from('tickets_events')
-                    .select('*')
-                    .in('eventId', eventId)
-                    .ilike('referenceId', `%${referenceId}%`);
-
-                if (error) throw error;
-                setTickets(data);
-            } catch (error) {
-                setError('Error fetching tickets');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        const delayDebounceFn = setTimeout(() => {
-            fetchTickets();
-        }, 500);
-
-        fetchEventsByDate();
-        return () => clearTimeout(delayDebounceFn);
-    }, [referenceId]);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const { data, error } = await supabase
-                    .rpc('get_event_ticket_count', { eventorganization_id: 1 });
-                if (error) throw error;
-                const labels = data.map(item => {
-                    const date = new Date(item.date);
-                    return date.toLocaleDateString('en-GB', { month: '2-digit', day: '2-digit', });
-                }); const count = data.map(item => item.ticket_count);
-                setChartData({ labels, datasets: { label: "Count", data: count } });
-
-            } catch (error) {
-                console.log(error)
+                console.error('Error fetching data', error);
             } finally {
                 setIsLoading(false);
             }
         };
-
-        fetchData();
+        fetchAllData();
     }, [userOrganizationId]);
-
-    const groupTicketsByReferenceId = (tickets) => {
-        return tickets.reduce((groups, ticket) => {
-            const { referenceId } = ticket;
-            if (!groups[referenceId]) {
-                groups[referenceId] = [];
-            }
-            groups[referenceId].push(ticket);
-            return groups;
-        }, {});
-    };
-
-    const groupedTickets = groupTicketsByReferenceId(tickets);
 
     const handleSearch = (event) => {
         setSearchTerm(event.target.value);
     };
 
     const filteredRows = useMemo(() => {
-        return pRows?.filter((row) => {
-            const reference = row.referenceId?.props?.children;
-            const status = row.paymentStatus?.props?.children;
+        return allEventTickets?.filter((row) => {
+            const reference = row.referenceId;
+            const status = row.eventRegistrations?.paymentStatus;
             const matchesSearch = reference?.includes(searchTerm);
             const matchesStatus =
                 paymentStatus === 'all' || (paymentStatus === 'done' && status?.includes('done')) || (paymentStatus === 'pending' && !status?.includes('done'));
             return matchesSearch && matchesStatus;
         });
-    }, [searchTerm, paymentStatus, pRows]);
+    }, [searchTerm, paymentStatus, allEventTickets]);
+
+    const handlePaymentStatusChange = (event, newStatus) => {
+        if (newStatus !== null) {
+            setPaymentStatus(newStatus);
+        }
+    };
 
     const headers = [
         { label: "Id", key: "id" },
-        { label: "Seat Id", key: "seatId" },
+        { label: "Reference Id", key: "referenceId" },
+        { label: "First Name", key: "firstName" },
+        { label: "Last Name", key: "lastName" },
+        { label: "Phone", key: "phone" },
+        { label: "Email", key: "email" },
+        { label: "Gender", key: "gender" },
         { label: "Category", key: "category" },
         { label: "Price", key: "price" },
+        { label: "Date", key: "bookedDate" },
+        { label: "Time", key: "bookedTime" },
         { label: "Event", key: "eventName" },
-        { label: "Checked In", key: "checkedIn" },
-        { label: "Active", key: "isActive" },
-        { label: "Zone", key: "zone" },
-        { label: "Venue", key: "venue" },
-        { label: "Organizers", key: "organizationName" },
-        { label: "Reference Id", key: "referenceId" },
-        { label: "Booked By", key: "bookedBy" },
-        { label: "Phone", key: "phone" },
-        { label: "Booked Date", key: "created_at" },
     ];
 
-    const data = filteredRows ? filteredRows.map(ticket => ({
-        id: ticket.id?.props?.children?.props?.id,
-        created_at: ticket.bookedDate?.props?.children,
-        seatId: ticket.seatId?.props?.children,
-        bookedBy: ticket.bookedBy?.props?.children,
-        phone: ticket.phone?.props?.children,
-        referenceId: ticket.referenceId?.props?.children,
-        eventName: ticket.eventName?.props?.children,
-        category: ticket.category?.props?.children,
-        checkedIn: ticket.checkedIn?.props?.children,
-        isActive: ticket.isActive?.props?.children,
-        organizationName: ticket.organizationName?.props.children,
-        price: ticket.price?.props.children,
-        venue: ticket.venue?.props.children,
-        zone: ticket.zone?.props.children,
-    })) : [];
+    const data = allEventTickets ? allEventTickets.map(ticket => {
+        const parsedDetails = ticket.eventRegistrations?.details ? JSON.parse(ticket.eventRegistrations.details) : {};
+        const formattedDate = new Date(ticket.created_at).toLocaleDateString('en-GB', {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+        });
+        const formattedTime = new Date(ticket.created_at).toLocaleTimeString('en-GB', {
+            hour: '2-digit', minute: '2-digit', hour12: true,
+        });
+        return {
+            id: ticket.id,
+            referenceId: ticket.referenceId,
+            firstName: parsedDetails["First Name"] || "N/A",
+            lastName: parsedDetails["Last Name"] || "N/A",
+            phone: parsedDetails["Phone Number"] || "N/A",
+            email: parsedDetails["Email"] || "N/A",
+            gender: parsedDetails["Gender"] || "N/A",
+            category: ticket.zone_ticket_category?.name,
+            price: ticket.price,
+            bookedDate: formattedDate,
+            bookedTime: formattedTime,
+            eventName: ticket.events?.name,
+        };
+    })
+        : [];
+
+    const formattedDate = (date) => {
+        return ((new Date(date)).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true, }))
+    }
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0); // Reset to the first page
+    };
+
+    const currentRows = filteredRows && filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
     return (
         <DashboardLayout>
             <DashboardNavbar />
-            <MDBox sx={{ mt: 2, mb: 2 }}>
-                <TextField fullWidth id="standard-basic" label="Search for tickets" variant="standard" value={referenceId} onChange={(e) => setReferenceId(e.target.value)} sx={{ mb: 1 }} />
-                {loading && <MDTypography>Searching...<CircularProgress color="info" /></MDTypography>}
-                {error && <MDTypography>{error}</MDTypography>}
-                {!loading && searched && tickets.length === 0 && (
-                    <MDTypography variant="body2">No tickets found</MDTypography>
-                )}
-                <Grid container spacing={2}>
-                    {Object.entries(groupedTickets).map(([refId, tickets]) => (
-                        <Grid item xs={12} key={refId}>
-                            <Card>
-                                <CardContent>
-                                    <MDTypography variant="h6">Reference ID: {refId}</MDTypography>
-                                    <MDTypography>Booked By: {tickets.bookedBy}</MDTypography>
-                                    {tickets.map((ticket) => (
-                                        <Grid key={ticket.id}>
-                                            <MDTypography variant="body2" mr={2}>Ticket ID: {ticket.id}</MDTypography>
-                                        </Grid>
-                                    ))}
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                    ))}
-                </Grid>
-            </MDBox>
-            <MDBox pt={6} pb={3}>
+            <MDBox pt={6}>
                 {isLoading ?
                     <MDBox p={3} display="flex" justifyContent="center">
                         <CircularProgress color="info" />
                     </MDBox>
                     :
-                    <ReportsLineChart
-                        color="info"
-                        title="Tickets Count"
-                        description="Number of booked tickets of the last week"
-                        date="Weekly"
-                        chart={chartData}
-                    />
-                }
-            </MDBox>
+                    <>
+                        <MDBox pb={6}>
+                            <ReportsLineChart
+                                color="info"
+                                title="Tickets Count"
+                                description="Number of booked tickets of the last week"
+                                date="Weekly"
+                                chart={chartData}
+                            />
+                        </MDBox>
+                        <MDBox pt={6} pb={3}>
+                            <Grid container spacing={6}>
+                                <Grid item xs={12}>
+                                    <Card>
+                                        <MDBox
+                                            mx={2}
+                                            mt={-3}
+                                            py={3}
+                                            px={2}
+                                            pt={1}
+                                            variant="gradient"
+                                            bgColor="info"
+                                            borderRadius="lg"
+                                            coloredShadow="info"
+                                            display="flex"
+                                            justifyContent="space-between"
+                                        >
+                                            <MDTypography variant="h6" color="white">
+                                                Tickets
+                                            </MDTypography>
+                                        </MDBox>
+                                        <MDBox pt={3} pl={3} display="flex" justifyContent="left">
+                                            <MDInput
+                                                placeholder="Search by reference id..."
+                                                value={searchTerm}
+                                                onChange={handleSearch}
+                                            />
+                                        </MDBox>
+                                        <MDBox display="flex" justifyContent="space-between" alignItems="center" p={3}>
+                                            <ToggleButtonGroup
+                                                size="small"
+                                                value={paymentStatus}
+                                                exclusive
+                                                onChange={handlePaymentStatusChange}
+                                            >
+                                                <ToggleButton value="pending" key="pending" color="warning">
+                                                    <MDTypography>Pending</MDTypography>
+                                                </ToggleButton>
+                                                <ToggleButton value="done" key="done" color="success">
+                                                    <MDTypography>Done</MDTypography>
+                                                </ToggleButton>
+                                                <ToggleButton value="all" key="all" color="info">
+                                                    <MDTypography>All</MDTypography>
+                                                </ToggleButton>
+                                            </ToggleButtonGroup>
+                                            <MDBox>
+                                                <CSVLink data={data} headers={headers} filename={"Tickets"}>
+                                                    <MDButton variant='contained' color='info'>Download Tickets as CSV</MDButton>
+                                                </CSVLink>
+                                            </MDBox>
+                                        </MDBox>
+                                        {isLoading ? (
+                                            <MDBox p={3} display="flex" justifyContent="center">
+                                                <CircularProgress color="info" />
+                                            </MDBox>
+                                        ) : filteredRows && filteredRows.length > 0 ? (
+                                            <MDBox pt={3}>
+                                                <TableContainer component={Paper}>
+                                                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                                                        <TableHead sx={{ display: "table-header-group" }}>
+                                                            <TableRow>
+                                                                <TableCell>Reference ID</TableCell>
+                                                                <TableCell>Event</TableCell>
+                                                                <TableCell>Booked Date</TableCell>
+                                                                <TableCell>Booked by</TableCell>
+                                                                <TableCell>Phone</TableCell>
+                                                                <TableCell>Payment Status</TableCell>
+                                                                <TableCell>Category</TableCell>
+                                                            </TableRow>
+                                                        </TableHead>
+                                                        <TableBody>
+                                                            {currentRows.map((row) => {
+                                                                const parsedDetails = row.eventRegistrations?.details ? JSON.parse(row.eventRegistrations.details) : {};
+                                                                const firstName = parsedDetails["First Name"] || "N/A";
+                                                                const lastName = parsedDetails["Last Name"] || "N/A";
+                                                                const phone = parsedDetails["Phone Number"] || "N/A";
 
-            <MDBox pt={6} pb={3}>
-                <Grid container spacing={6}>
-                    <Grid item xs={12}>
-                        <Card>
-                            <MDBox
-                                mx={2}
-                                mt={-3}
-                                py={3}
-                                px={2}
-                                pt={1}
-                                variant="gradient"
-                                bgColor="info"
-                                borderRadius="lg"
-                                coloredShadow="info"
-                                display="flex"
-                                justifyContent="space-between"
-                            >
-                                <MDTypography variant="h6" color="white">
-                                    Tickets
-                                </MDTypography>
-                            </MDBox>
-                            <MDBox pt={3} pl={3} display="flex" justifyContent="left">
-                                <MDInput
-                                    placeholder="Search by reference id..."
-                                    value={searchTerm}
-                                    onChange={handleSearch}
-                                />
-                            </MDBox>
-                            <MDBox pt={3} pr={3} display="flex" justifyContent="right">
-                                <CSVLink data={data} headers={headers} filename={"Tickets"}>
-                                    <MDButton variant='contained' color='info'>Download Tickets as CSV</MDButton>
-                                </CSVLink>
-                            </MDBox>
-                            <MDBox pt={3} pr={3} display="flex" justifyContent="right" gap={1}>
-                                <MDButton
-                                    variant={paymentStatus === 'pending' ? 'contained' : 'outlined'}
-                                    color='warning'
-                                    onClick={() => setPaymentStatus('pending')}
-                                >
-                                    Pending
-                                </MDButton>
-                                <MDButton
-                                    variant={paymentStatus === 'done' ? 'contained' : 'outlined'}
-                                    color='success'
-                                    onClick={() => setPaymentStatus('done')}
-                                >
-                                    Done
-                                </MDButton>
-                                <MDButton
-                                    variant={paymentStatus === 'all' ? 'contained' : 'outlined'}
-                                    color='info'
-                                    onClick={() => setPaymentStatus('all')}
-                                >
-                                    All
-                                </MDButton>
-                            </MDBox>
-                            {isLoading ? (
-                                <MDBox p={3} display="flex" justifyContent="center">
-                                    <CircularProgress color="info" />
-                                </MDBox>
-                            ) : filteredRows && filteredRows.length > 0 ? (
-                                <MDBox pt={3}>
-                                    <DataTable
-                                        table={{ columns: pColumns, rows: filteredRows }}
-                                        isSorted={false}
-                                        entriesPerPage={true}
-                                        showTotalEntries={true}
-                                        noEndBorder
-                                    />
-                                </MDBox>
-                            ) : (
-                                <DataNotFound message={'No Tickets Reserved Yet !'} image={noTicketImage} />
-                            )}
-                        </Card>
-                    </Grid>
-                </Grid>
+                                                                return (
+                                                                    <TableRow
+                                                                        key={row.referenceId}
+                                                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                                                    >
+                                                                        <TableCell component="th" scope="row">
+                                                                            {row.referenceId}
+                                                                        </TableCell>
+                                                                        <TableCell align="left">{row.events?.name}</TableCell>
+                                                                        <TableCell align="left">{formattedDate(row.created_at)}</TableCell>
+                                                                        <TableCell align="left">{`${firstName} ${lastName}`}</TableCell>
+                                                                        <TableCell align="left">{phone}</TableCell>
+                                                                        <TableCell align="left">{row.eventRegistrations?.paymentStatus}</TableCell>
+                                                                        <TableCell align="left">{row.zone_ticket_category?.name}</TableCell>
+                                                                    </TableRow>
+                                                                );
+                                                            })}
+                                                        </TableBody>
+                                                    </Table>
+                                                    <TablePagination
+                                                        rowsPerPageOptions={[5, 10, 25, 50]}
+                                                        component="div"
+                                                        count={filteredRows.length}
+                                                        rowsPerPage={rowsPerPage}
+                                                        page={page}
+                                                        onPageChange={handleChangePage}
+                                                        onRowsPerPageChange={handleChangeRowsPerPage}
+                                                    />
+                                                </TableContainer>
+                                            </MDBox>
+
+                                        ) : (
+                                            <DataNotFound message={'No Tickets Reserved Yet !'} image={noTicketImage} />
+                                        )}
+                                    </Card>
+                                </Grid>
+                            </Grid>
+                        </MDBox>
+                    </>
+                }
             </MDBox>
             <Footer />
         </DashboardLayout>
