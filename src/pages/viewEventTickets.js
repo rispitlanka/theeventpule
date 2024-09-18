@@ -113,29 +113,37 @@ export default function ViewTickets() {
         { label: "Event", key: "eventName" },
     ];
 
-    const data = allEventTickets ? allEventTickets.map(ticket => {
-        const parsedDetails = ticket.eventRegistrations?.details ? JSON.parse(ticket.eventRegistrations.details) : {};
-        const formattedDate = new Date(ticket.created_at).toLocaleDateString('en-GB', {
-            day: '2-digit', month: '2-digit', year: 'numeric',
-        });
-        const formattedTime = new Date(ticket.created_at).toLocaleTimeString('en-GB', {
-            hour: '2-digit', minute: '2-digit', hour12: true,
-        });
-        return {
-            id: ticket.id,
-            referenceId: ticket.referenceId,
-            firstName: parsedDetails["First Name"] || "N/A",
-            lastName: parsedDetails["Last Name"] || "N/A",
-            phone: parsedDetails["Phone Number"] || "N/A",
-            email: parsedDetails["Email"] || "N/A",
-            gender: parsedDetails["Gender"] || "N/A",
-            category: ticket.zone_ticket_category?.name,
-            price: ticket.price,
-            bookedDate: formattedDate,
-            bookedTime: formattedTime,
-            eventName: ticket.events?.name,
-        };
+    const data = allEventTickets ? allEventTickets.filter(ticket => {
+        const status = ticket.eventRegistrations?.paymentStatus;
+        return (
+            paymentStatus === 'all' ||
+            (paymentStatus === 'done' && status?.includes('done')) ||
+            (paymentStatus === 'pending' && !status?.includes('done'))
+        );
     })
+        .map(ticket => {
+            const parsedDetails = ticket.eventRegistrations?.details ? JSON.parse(ticket.eventRegistrations.details) : {};
+            const formattedDate = new Date(ticket.created_at).toLocaleDateString('en-GB', {
+                day: '2-digit', month: '2-digit', year: 'numeric',
+            });
+            const formattedTime = new Date(ticket.created_at).toLocaleTimeString('en-GB', {
+                hour: '2-digit', minute: '2-digit', hour12: true,
+            });
+            return {
+                id: ticket.id,
+                referenceId: ticket.referenceId,
+                firstName: parsedDetails["First Name"] || "N/A",
+                lastName: parsedDetails["Last Name"] || "N/A",
+                phone: parsedDetails["Phone Number"] || "N/A",
+                email: parsedDetails["Email"] || "N/A",
+                gender: parsedDetails["Gender"] || "N/A",
+                category: ticket.zone_ticket_category?.name,
+                price: ticket.price,
+                bookedDate: formattedDate,
+                bookedTime: formattedTime,
+                eventName: ticket.events?.name,
+            };
+        })
         : [];
 
     const formattedDate = (date) => {
