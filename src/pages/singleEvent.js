@@ -26,11 +26,16 @@ import DataNotFound from 'components/NoData/dataNotFound';
 import AddStageModel from './Models/addStageModel';
 import ReactToPrint from 'react-to-print';
 import QRCode from 'qrcode';
+import parse from 'html-react-parser';
+
+
 
 export default function SingleEvent() {
     // const userDetails = useContext(UserDataContext);
     // const userTheatreId = userDetails && userDetails[0].theatreId;
-    const [eventData, setEventData] = useState([]);
+    const [showFullDescription, setShowFullDescription] = useState(false);
+
+    const [eventData, setEventData] = useState(null);
     const [openEditDialogBox, setOpenEditDialogBox] = useState();
     const [openEditStageDialogBox, setOpenEditStageDialogBox] = useState();
     const [formFieldData, setFormFieldData] = useState([]);
@@ -50,13 +55,16 @@ export default function SingleEvent() {
             const { data, error } = await supabase.from('events').select(`*,venues(name),event_categories(name)`).eq('id', id);
             if (error) throw error;
             if (data) {
-                setEventData(data);
+                setEventData(data[0]);
             }
         } catch (error) {
             console.log(error);
         }
     };
-
+    const toggleDescription = () => {
+        setShowFullDescription((prev) => !prev);
+      };
+    
     const fetchRegistrationFormField = async () => {
         try {
             const { data, error } = await supabase.from('registrationForm').select('*').eq('eventId', id);
@@ -162,6 +170,8 @@ export default function SingleEvent() {
     }
 
     const formattedTime = (time) => {
+        console.log(time);
+        
         const [hours, minutes, seconds] = time.split(':');
         const date = new Date();
         date.setHours(hours, minutes, seconds);
@@ -200,13 +210,13 @@ export default function SingleEvent() {
                             `${linearGradient(
                                 rgba(gradients.info.main, 0.6),
                                 rgba(gradients.info.state, 0.6)
-                            )}, url(${eventData[0]?.eventImage || ''})`,
+                            )}, url(${eventData?.eventImage || ''})`,
                         backgroundSize: "cover",
                         backgroundPosition: "50%",
                         overflow: "hidden",
                     }}
                 />
-                {eventData && eventData.length > 0 &&
+                {eventData  &&
                     <>
                         <Card
                             sx={{
@@ -221,39 +231,42 @@ export default function SingleEvent() {
                                 <Grid item>
                                     <MDBox height="100%" mt={0.5} lineHeight={1}>
                                         <MDTypography variant="h5" fontWeight="medium">
-                                            {eventData[0].name}
+                                            {eventData.name}
                                         </MDTypography>
 
                                         <Grid sx={{ display: 'flex', flexDirection: 'row', mt: 0.5 }}>
                                             <MDTypography sx={{ mr: 1 }} variant="body2" color="text" fontWeight="regular">
-                                                Date: {formattedDate(eventData[0].date)}
+                                                Date: {formattedDate(eventData.date)}
                                             </MDTypography>
                                             <MDTypography sx={{ mr: 1 }} variant="body2" color="text" fontWeight="regular">
-                                                Time: {formattedTime(eventData[0].startTime)}
+                                                Time: {formattedTime(eventData.startTime)}
                                             </MDTypography>
                                             <MDTypography variant="body2" color="text" fontWeight="regular">
-                                                Venue: {eventData[0].venues?.name}
+                                                Venue: {eventData.venues?.name}
                                             </MDTypography>
                                         </Grid>
 
                                         <Grid sx={{ display: 'flex', flexDirection: 'row', mt: 0.5 }}>
                                             <MDTypography sx={{ mr: 1 }} variant="button" color="text" fontWeight="regular">
-                                                Phone: {eventData[0].contactPhone}
+                                                Phone: {eventData.contactPhone}
                                             </MDTypography>
                                             <MDTypography sx={{ mr: 1 }} variant="button" color="text" fontWeight="regular">
-                                                Mail: {eventData[0].contactEmail}
+                                                Mail: {eventData.contactEmail}
                                             </MDTypography>
                                             <MDTypography sx={{ mr: 1 }} variant="button" color="text" fontWeight="regular">
-                                                Status: {`${eventData[0].isActive ? 'Active' : 'Inactive'}`}
+                                                Status: {`${eventData.isActive ? 'Active' : 'Inactive'}`}
                                             </MDTypography>
                                             <MDTypography sx={{ mr: 1 }} variant="button" color="text" fontWeight="regular">
-                                                Category: {eventData[0].event_categories?.name}
+                                                Category: {eventData.event_categories?.name}
                                             </MDTypography>
-                                            <MDTypography variant="button" color="text" fontWeight="regular">
-                                                Description: {eventData[0].description}
-                                            </MDTypography>
+                                          
                                         </Grid>
-
+                                        <Grid sx={{ display: 'flex', flexDirection: 'column', mt: 0.5 }}>
+      <MDTypography variant="button" color="text" fontWeight="regular"> Description:
+      {eventData.description.length > 50 ? eventData.description.replace(/<[^>]*>/g, '').substring(0, 50) + '...' : eventData.description.replace(/<[^>]*>/g, '')}
+      </MDTypography>
+   
+    </Grid>
                                     </MDBox>
                                 </Grid>
                             </Grid>

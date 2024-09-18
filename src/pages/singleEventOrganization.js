@@ -25,7 +25,7 @@ export default function SingleEventOrganization() {
   const userDetails = useContext(UserDataContext);
   const userOrganizationId = userDetails && userDetails[0].eventOrganizationId;
   const userRole = userDetails && userDetails[0].userRole;
-  const [organizationData, setOrganizationData] = useState([]);
+  const [organizationData, setOrganizationData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
@@ -37,9 +37,9 @@ export default function SingleEventOrganization() {
 
   const fetchSingleOrganizationData = async () => {
     try {
-      const { data, error } = await supabase.from('eventOrganizations').select().eq('id', userOrganizationID);
+      const { data, error } = await supabase.from('eventOrganizations').select().eq('id', userOrganizationID).single();
       if (error) throw error;
-      if (data && data.length > 0) {
+      if (data ) {
         setOrganizationData(data);
       }
     } catch (error) {
@@ -75,14 +75,14 @@ export default function SingleEventOrganization() {
                 `${linearGradient(
                   rgba(gradients.info.main, 0.6),
                   rgba(gradients.info.state, 0.6)
-                )}, url(${organizationData[0]?.coverImage || ''})`,
+                )}, url(${organizationData?.coverImage || '-'})`,
               backgroundSize: "cover",
               backgroundPosition: "50%",
               overflow: "hidden",
             }}
           />
 
-          {organizationData && organizationData.length > 0 ?
+          {organizationData ?
             <>
               <Card
                 sx={{
@@ -95,12 +95,12 @@ export default function SingleEventOrganization() {
               >
                 <Grid container spacing={3} alignItems="center">
                   <Grid item>
-                    <MDAvatar src={organizationData[0].organizationImage} alt="profile-image" size="lg" shadow="sm" />
+                    <MDAvatar src={organizationData.organizationImage} alt="profile-image" size="lg" shadow="sm" />
                   </Grid>
                   <Grid item>
                     <MDBox height="100%" mt={0.5} lineHeight={1}>
                       <MDTypography variant="h5" fontWeight="medium">
-                        {organizationData[0].name}
+                        {organizationData.name ||""}
                       </MDTypography>
                     </MDBox>
                   </Grid>
@@ -122,7 +122,7 @@ export default function SingleEventOrganization() {
                         <MDBox display="flex" alignItems="center" mb={0.5}>
                           <MDBox width="80%" ml={0.5}>
                             <MDTypography variant="button" fontWeight="regular" color="text">
-                              {organizationData[0].name}
+                              {organizationData.name || '-'}
                             </MDTypography>
                           </MDBox>
                         </MDBox>
@@ -134,7 +134,7 @@ export default function SingleEventOrganization() {
                         <MDBox display="flex" alignItems="center" mb={0.5}>
                           <MDBox width="80%" ml={0.5}>
                             <MDTypography variant="button" fontWeight="regular" color="text">
-                              {organizationData[0].address}
+                              {organizationData.address || '-'}
                             </MDTypography>
                           </MDBox>
                         </MDBox>
@@ -146,7 +146,7 @@ export default function SingleEventOrganization() {
                         <MDBox display="flex" alignItems="center" mb={0.5}>
                           <MDBox width="80%" ml={0.5}>
                             <MDTypography variant="button" fontWeight="regular" color="text">
-                              {organizationData[0].telephone}
+                              {organizationData.telephone || '-'}
                             </MDTypography>
                           </MDBox>
                         </MDBox>
@@ -167,7 +167,7 @@ export default function SingleEventOrganization() {
                         <MDBox display="flex" alignItems="center" mb={0.5}>
                           <MDBox width="80%" ml={0.5}>
                             <MDTypography variant="button" fontWeight="regular" color="text">
-                              {organizationData[0].ownerName}
+                              {organizationData.ownerName || '-'}
                             </MDTypography>
                           </MDBox>
                         </MDBox>
@@ -179,7 +179,7 @@ export default function SingleEventOrganization() {
                         <MDBox display="flex" alignItems="center" mb={0.5}>
                           <MDBox width="80%" ml={0.5}>
                             <MDTypography variant="button" fontWeight="regular" color="text">
-                              {organizationData[0].ownerMobile}
+                              {organizationData.ownerMobile || '-'}
                             </MDTypography>
                           </MDBox>
                         </MDBox>
@@ -191,7 +191,7 @@ export default function SingleEventOrganization() {
                         <MDBox display="flex" alignItems="center" mb={0.5}>
                           <MDBox width="80%" ml={0.5}>
                             <MDTypography variant="button" fontWeight="regular" color="text">
-                              {organizationData[0].ownerEmail}
+                              {organizationData.ownerEmail || '-'}
                             </MDTypography>
                           </MDBox>
                         </MDBox>
