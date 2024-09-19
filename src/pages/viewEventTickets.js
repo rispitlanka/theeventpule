@@ -23,6 +23,7 @@ export default function ViewTickets() {
     const [searchTerm, setSearchTerm] = useState('');
     const [paymentStatus, setPaymentStatus] = useState('all');
     const [allEventTickets, setAllEventTickets] = useState([]);
+    const [registrationFormData, setRegistrationFormData] = useState([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const navigate = useNavigate();
@@ -30,6 +31,17 @@ export default function ViewTickets() {
         navigate(route);
     };
 
+    const fetchRegistrationForm = async () => {
+        try {
+            const { data, error } = await supabase.from('registrationForm').select('*');
+            if (data) {
+                setRegistrationFormData(data);
+            }
+            if (error) throw error;
+        } catch (error) {
+            console.log(error)
+        }
+    };
 
     const getAllEventTickets = async () => {
         try {
@@ -67,6 +79,7 @@ export default function ViewTickets() {
             try {
                 setIsLoading(true);
                 await fetchData();
+                await fetchRegistrationForm();
                 await getAllEventTickets();
             } catch (error) {
                 console.error('Error fetching data', error);
@@ -98,19 +111,25 @@ export default function ViewTickets() {
         }
     };
 
+    const allKeysOfRegisteredEvents = [
+        ...new Set(
+            allEventTickets
+                .filter(item => item?.eventRegistrations?.details)
+                .flatMap(item => Object.keys(JSON.parse(item.eventRegistrations.details)))
+        )
+    ];
+    const allKeysOfForm = [...new Set(registrationFormData.map(item => (item.name)))];
+    const matchingKeys = allKeysOfRegisteredEvents.filter(key => allKeysOfForm.includes(key) && key !== 'id');
+
     const headers = [
         { label: "Id", key: "id" },
         { label: "Reference Id", key: "referenceId" },
-        { label: "First Name", key: "firstName" },
-        { label: "Last Name", key: "lastName" },
-        { label: "Phone", key: "phone" },
-        { label: "Email", key: "email" },
-        { label: "Gender", key: "gender" },
         { label: "Category", key: "category" },
         { label: "Price", key: "price" },
         { label: "Date", key: "bookedDate" },
         { label: "Time", key: "bookedTime" },
         { label: "Event", key: "eventName" },
+        ...matchingKeys.map(key => ({ label: key, key }))
     ];
 
     const data = allEventTickets ? allEventTickets.filter(ticket => {
@@ -129,20 +148,22 @@ export default function ViewTickets() {
             const formattedTime = new Date(ticket.created_at).toLocaleTimeString('en-GB', {
                 hour: '2-digit', minute: '2-digit', hour12: true,
             });
-            return {
+
+            const dataObject = {
                 id: ticket.id,
                 referenceId: ticket.referenceId,
-                firstName: parsedDetails["First Name"] || "N/A",
-                lastName: parsedDetails["Last Name"] || "N/A",
-                phone: parsedDetails["Phone Number"] || "N/A",
-                email: parsedDetails["Email"] || "N/A",
-                gender: parsedDetails["Gender"] || "N/A",
-                category: ticket.zone_ticket_category?.name,
-                price: ticket.price,
+                category: ticket.zone_ticket_category?.name || "N/A",
+                price: ticket.price || "N/A",
                 bookedDate: formattedDate,
                 bookedTime: formattedTime,
-                eventName: ticket.events?.name,
+                eventName: ticket.events?.name || "N/A",
             };
+
+            matchingKeys.forEach(key => {
+                dataObject[key] = parsedDetails[key] || "N/A";
+            });
+
+            return dataObject;
         })
         : [];
 
