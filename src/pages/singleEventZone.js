@@ -2,15 +2,20 @@ import React, { useContext, useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import { Box, Card, CircularProgress, Grid, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, } from "@mui/material";
+import { Box, Button, Card, CircularProgress, Grid, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, } from "@mui/material";
 import Footer from "examples/Footer";
 import ChairIcon from "@mui/icons-material/Chair";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { FixedSizeGrid } from 'react-window';
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { UserDataContext } from "context";
+import EditTicketCategoryModel from "./Models/editTicketCategoryModel";
+import DeleteDialog from "components/DeleteDialogBox/deleteDialog";
+import { ToastContainer, toast } from 'react-toastify';
+
 
 export default function SingleEventZone() {
     const userDetails = useContext(UserDataContext);
@@ -21,9 +26,42 @@ export default function SingleEventZone() {
     const [seatsData, setSeatsData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [zoneData, setZoneData] = useState([]);
-    const navigate = useNavigate();
-    const openPage = (route) => {
-        navigate(route);
+    const [openDialogBox, setOpenDialogBox] = useState();
+    const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+    const [openDeleteDialogBox, setOpenDeleteDialogBox] = useState();
+
+    //  model for edit option
+    const handleDialogBoxOpen = (id) => {
+        setSelectedCategoryId(id);
+        setOpenDialogBox(true);
+    }
+    const handleDialogBoxClose = () => {
+        setOpenDialogBox(false);
+        fetchZoneData();
+        setSelectedCategoryId();
+    };
+
+    // model for delete confirmation
+    const handleDelete = async () => {
+        setOpenDeleteDialogBox(true);
+    };
+
+    const closeDeleteDialogBox = () => {
+        setOpenDeleteDialogBox(false);
+    };
+
+    const handleDeleteConfirm = async (categoryId) => {
+        try {
+            const { error } = await supabase.from('zone_ticket_category').delete().eq('id', categoryId);
+            if (error) {
+                throw error;
+            }
+            console.log('Data deleted successfully');
+            setOpenDeleteDialogBox(false);
+            toast.error('Category has been successfully deleted!');
+        } catch (error) {
+            console.error('Error deleting data:', error.message);
+        }
     };
 
     useEffect(() => {
@@ -105,6 +143,7 @@ export default function SingleEventZone() {
                                             <TableCell>Category</TableCell>
                                             <TableCell align='center'>Price</TableCell>
                                             <TableCell align='center'>Count</TableCell>
+                                            <TableCell align='center'>Action</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -113,6 +152,10 @@ export default function SingleEventZone() {
                                                 <TableCell> {category.name}</TableCell>
                                                 <TableCell align='center'>{category.price}</TableCell>
                                                 <TableCell align='center'>{category.ticketsCount}</TableCell>
+                                                <TableCell align='center'>
+                                                    <Button onClick={() => handleDialogBoxOpen(category.id)}><EditIcon /></Button>
+                                                    <Button onClick={() => handleDelete(category.id)}><DeleteIcon /></Button>
+                                                </TableCell>
                                             </TableRow>
                                         ))}
                                     </TableBody>
@@ -182,7 +225,30 @@ export default function SingleEventZone() {
                     }
                 </MDBox>
             </Card>
+            <EditTicketCategoryModel
+                open={openDialogBox}
+                onClose={handleDialogBoxClose}
+                categoryId={selectedCategoryId}
+            />
+            <DeleteDialog
+                open={openDeleteDialogBox}
+                onClose={closeDeleteDialogBox}
+                onDelete={handleDeleteConfirm}
+                name={'ticket category'}
+            />
             <Footer />
+            <ToastContainer
+                position="bottom-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
         </DashboardLayout>
     );
 }
