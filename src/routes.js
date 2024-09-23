@@ -49,6 +49,7 @@ import Notifications from "layouts/notifications";
 import Profile from "layouts/profile";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
+import ResetPassword from "layouts/authentication/reset-password/cover/resetPassword";
 import AddOwner from "pages/addOwner";
 import AddScreen from "pages/addScreen";
 import ManageOwner from "pages/manageOwner";
@@ -156,6 +157,14 @@ const routes = [
     icon: <Icon icon="material-symbols:account-circle" />,
     route: "/authentication/sign-up",
     component: <SignUp />,
+  },
+  {
+    type: "collapse",
+    name: "Reset Password",
+    key: "reset-password",
+    icon: <Icon icon="material-symbols:account-circle" />,
+    route: "/authentication/reset-password",
+    component: <ResetPassword />,
   },
   {
     type: "collapse",

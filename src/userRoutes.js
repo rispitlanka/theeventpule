@@ -199,7 +199,7 @@ export default function useUserRoutes() {
 
         } else {
           filteredRoutes = routes.filter(route => {
-            return route.route === '/authentication/sign-in' || route.route === '/register/:eventId';
+            return route.route === '/authentication/sign-in' || route.route === '/register/:eventId' || route.route === '/authentication/reset-password';
           });
         }
         setUserRoutes(filteredRoutes);
