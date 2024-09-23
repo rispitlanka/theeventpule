@@ -56,6 +56,7 @@ export default function useUserRoutes() {
                 '/eventOrganization',
                 '/eventBookings',
                 '/eventBookings/book-ticket/:eventId/:venueId',
+                '/authentication/reset-password',
               ].includes(route.route);
 
             } else if (userRole === 'theatreOwner') {
@@ -126,6 +127,7 @@ export default function useUserRoutes() {
                 '/venues/edit-venue/:id',
                 '/eventBookings',
                 '/eventBookings/book-ticket/:eventId/:venueId',
+                '/authentication/reset-password',
               ].includes(route.route);
             } else if (userRole === 'eventOrganizer') {
               return ![
@@ -192,6 +194,7 @@ export default function useUserRoutes() {
                 '/eventOrganizations/single-eventOrganization/:id',
                 '/eventOrganizations/add-eventOrganization',
                 '/eventOrganizations/edit-eventOrganization/:id',
+                '/authentication/reset-password',
               ].includes(route.route);
             }
             return route.route === '/dashboard';
