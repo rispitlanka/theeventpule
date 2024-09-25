@@ -29,6 +29,7 @@ import QRCode from 'qrcode';
 import parse from 'html-react-parser';
 import AddIcon from '@mui/icons-material/Add';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import EditRegistrationFormModel from './Models/editRegistrationFormModel';
 
 
 export default function SingleEvent() {
@@ -37,8 +38,10 @@ export default function SingleEvent() {
     const [showFullDescription, setShowFullDescription] = useState(false);
 
     const [eventData, setEventData] = useState(null);
-    const [openEditDialogBox, setOpenEditDialogBox] = useState();
-    const [openEditStageDialogBox, setOpenEditStageDialogBox] = useState();
+    const [openAddFieldDialogBox, setOpenAddFieldDialogBox] = useState();
+    const [openEditFieldDialogBox, setOpenEditFieldDialogBox] = useState();
+    const [selectedFieldId, setSelectedFieldId] = useState();
+    const [openAddStageDialogBox, setOpenAddStageDialogBox] = useState();
     const [formFieldData, setFormFieldData] = useState([]);
     const [stageData, setStageData] = useState([]);
     const [qrCodes, setQrCodes] = useState({});
@@ -145,20 +148,30 @@ export default function SingleEvent() {
         }
     };
 
-    const handleDialogBox = () => {
-        setOpenEditDialogBox(true);
+    const handleAddFieldDialogBox = () => {
+        setOpenAddFieldDialogBox(true);
     }
 
-    const handleEditDialogClose = () => {
-        setOpenEditDialogBox(false);
+    const handleAddFieldDialogClose = () => {
+        setOpenAddFieldDialogBox(false);
         fetchRegistrationFormField();
     };
 
-    const handleStageDialogBox = () => {
-        setOpenEditStageDialogBox(true);
+    const handleEditFieldDialogBox = (fieldId) => {
+        setSelectedFieldId(fieldId);
+        setOpenEditFieldDialogBox(true);
     }
-    const handleEditStageDialogClose = () => {
-        setOpenEditStageDialogBox(false);
+
+    const handleEditFieldDialogClose = () => {
+        setOpenEditFieldDialogBox(false);
+        fetchRegistrationFormField();
+    };
+
+    const handleAddStageDialogBox = () => {
+        setOpenAddStageDialogBox(true);
+    }
+    const handleAddStageDialogClose = () => {
+        setOpenAddStageDialogBox(false);
         fetchStages();
     };
 
@@ -291,7 +304,7 @@ export default function SingleEvent() {
                                 </MDTypography>
                                 <MDBox display="flex" justifyContent="flex-end" alignItems="center" gap={2}>
                                     <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
-                                        <MDButton onClick={() => handleDialogBox()}><AddIcon color="info" /></MDButton>
+                                        <MDButton onClick={() => handleAddFieldDialogBox()}><AddIcon color="info" /></MDButton>
                                     </MDBox>
                                     <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
                                         <MDButton onClick={() => handleViewEventRegistrations()}><VisibilityIcon color="info" /></MDButton>
@@ -299,7 +312,7 @@ export default function SingleEvent() {
                                 </MDBox>
                             </MDBox>
                             {/* <Grid sx={{ display: 'flex', flexDirection: 'row', position: 'absolute', right: 0, mt: 4 }}>
-                            <MDButton sx={{ mr: 2 }} color='info' onClick={() => handleDialogBox()}>Add Registration Form</MDButton>
+                            <MDButton sx={{ mr: 2 }} color='info' onClick={() => handleAddFieldDialogBox()}>Add Registration Form</MDButton>
                             <MDButton sx={{ mr: 2 }} color='info' onClick={() => handleViewForm()}>View Registration Form</MDButton>
                             <MDButton color='info' onClick={handleViewEventRegistrations}>View Event Registrations</MDButton>
                         </Grid> */}
@@ -320,7 +333,10 @@ export default function SingleEvent() {
                                                     <TableCell >{row.name}</TableCell>
                                                     <TableCell align='center'>{row.type}</TableCell>
                                                     <TableCell align='center'>{row.options || '--'}</TableCell>
-                                                    <TableCell align='center'><Button onClick={() => deleteRow(row.id)}>Delete</Button></TableCell>
+                                                    <TableCell align='center'>
+                                                        <Button onClick={() => handleEditFieldDialogBox(row.id)}>Edit</Button>
+                                                        <Button onClick={() => deleteRow(row.id)}>Delete</Button>
+                                                    </TableCell>
                                                 </TableRow>
                                             ))}
                                         </TableBody>
@@ -350,11 +366,11 @@ export default function SingleEvent() {
                                     Stages
                                 </MDTypography>
                                 <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
-                                    <MDButton onClick={() => handleStageDialogBox()}><AddIcon color="info" /></MDButton>
+                                    <MDButton onClick={() => handleAddStageDialogBox()}><AddIcon color="info" /></MDButton>
                                 </MDBox>
                             </MDBox>
                             {/* <Grid sx={{ display: 'flex', flexDirection: 'row', position: 'absolute', right: 0, mt: 4 }}>
-                                    <MDButton sx={{ mr: 2 }} color="info" onClick={() => handleStageDialogBox()}>
+                                    <MDButton sx={{ mr: 2 }} color="info" onClick={() => handleAddStageDialogBox()}>
                                         Add Stage
                                     </MDButton>
                                 </Grid> */}
@@ -448,13 +464,18 @@ export default function SingleEvent() {
                     </>
                 }
                 <RegistrationFormModel
-                    open={openEditDialogBox}
-                    onClose={handleEditDialogClose}
+                    open={openAddFieldDialogBox}
+                    onClose={handleAddFieldDialogClose}
                     eventId={id}
                 />
+                <EditRegistrationFormModel
+                    open={openEditFieldDialogBox}
+                    onClose={handleEditFieldDialogClose}
+                    fieldId={selectedFieldId}
+                />
                 <AddStageModel
-                    open={openEditStageDialogBox}
-                    onClose={handleEditStageDialogClose}
+                    open={openAddStageDialogBox}
+                    onClose={handleAddStageDialogClose}
                     eventId={id}
                 />
             </MDBox>
