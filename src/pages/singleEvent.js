@@ -27,7 +27,8 @@ import AddStageModel from './Models/addStageModel';
 import ReactToPrint from 'react-to-print';
 import QRCode from 'qrcode';
 import parse from 'html-react-parser';
-
+import AddIcon from '@mui/icons-material/Add';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 
 export default function SingleEvent() {
@@ -63,8 +64,8 @@ export default function SingleEvent() {
     };
     const toggleDescription = () => {
         setShowFullDescription((prev) => !prev);
-      };
-    
+    };
+
     const fetchRegistrationFormField = async () => {
         try {
             const { data, error } = await supabase.from('registrationForm').select('*').eq('eventId', id);
@@ -171,7 +172,6 @@ export default function SingleEvent() {
 
     const formattedTime = (time) => {
         console.log(time);
-        
         const [hours, minutes, seconds] = time.split(':');
         const date = new Date();
         date.setHours(hours, minutes, seconds);
@@ -216,7 +216,7 @@ export default function SingleEvent() {
                         overflow: "hidden",
                     }}
                 />
-                {eventData  &&
+                {eventData &&
                     <>
                         <Card
                             sx={{
@@ -225,6 +225,7 @@ export default function SingleEvent() {
                                 mx: 3,
                                 py: 2,
                                 px: 2,
+                                mb: 10,
                             }}
                         >
                             <Grid container spacing={3} alignItems="center">
@@ -259,60 +260,107 @@ export default function SingleEvent() {
                                             <MDTypography sx={{ mr: 1 }} variant="button" color="text" fontWeight="regular">
                                                 Category: {eventData.event_categories?.name}
                                             </MDTypography>
-                                          
+
                                         </Grid>
                                         <Grid sx={{ display: 'flex', flexDirection: 'column', mt: 0.5 }}>
-      <MDTypography variant="button" color="text" fontWeight="regular"> Description:
-      {eventData.description.length > 50 ? eventData.description.replace(/<[^>]*>/g, '').substring(0, 50) + '...' : eventData.description.replace(/<[^>]*>/g, '')}
-      </MDTypography>
-   
-    </Grid>
+                                            <MDTypography variant="button" color="text" fontWeight="regular"> Description:
+                                                {eventData.description.length > 50 ? eventData.description.replace(/<[^>]*>/g, '').substring(0, 50) + '...' : eventData.description.replace(/<[^>]*>/g, '')}
+                                            </MDTypography>
+
+                                        </Grid>
                                     </MDBox>
                                 </Grid>
                             </Grid>
                         </Card>
-                        <Grid sx={{ display: 'flex', flexDirection: 'row', position: 'absolute', right: 0, mt: 4 }}>
-                            <MDButton sx={{ mr: 2 }} color='info' onClick={() => handleDialogBox()}>Add Registration Form</MDButton>
-                            {/* <MDButton sx={{ mr: 2 }} color='info' onClick={() => handleViewForm()}>View Registration Form</MDButton> */}
-                            <MDButton color='info' onClick={handleViewEventRegistrations}>View Event Registrations</MDButton>
-                        </Grid>
-                        {formFieldData.length > 0 ?
-                            <TableContainer component={Paper} sx={{ mt: 11, p: 2 }}>
-                                <Table>
-                                    <TableHead sx={{ display: "table-header-group" }}>
-                                        <TableRow>
-                                            <TableCell>Name</TableCell>
-                                            <TableCell align='center'>Type</TableCell>
-                                            <TableCell align='center'>Options</TableCell>
-                                            <TableCell align='center'>Action</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {formFieldData.map((row) => (
-                                            <TableRow key={row.id}>
-                                                <TableCell >{row.name}</TableCell>
-                                                <TableCell align='center'>{row.type}</TableCell>
-                                                <TableCell align='center'>{row.options || '--'}</TableCell>
-                                                <TableCell align='center'><Button onClick={() => deleteRow(row.id)}>Delete</Button></TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                            :
-                            <MDBox sx={{ mt: 11 }}>
-                                <DataNotFound message={'No Fields To Show !'} image={noDataImage} />
+                        <Card>
+                            <MDBox
+                                mx={2}
+                                mt={-3}
+                                py={3}
+                                px={2}
+                                pt={1}
+                                variant="gradient"
+                                bgColor="info"
+                                borderRadius="lg"
+                                coloredShadow="info"
+                                display="flex"
+                                justifyContent="space-between"
+                            >
+                                <MDTypography variant="h6" color="white">
+                                    Form fileds
+                                </MDTypography>
+                                <MDBox display="flex" justifyContent="flex-end" alignItems="center" gap={2}>
+                                    <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
+                                        <MDButton onClick={() => handleDialogBox()}><AddIcon color="info" /></MDButton>
+                                    </MDBox>
+                                    <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
+                                        <MDButton onClick={() => handleViewEventRegistrations()}><VisibilityIcon color="info" /></MDButton>
+                                    </MDBox>
+                                </MDBox>
                             </MDBox>
-                        }
-                        <>
-                            <Grid sx={{ display: 'flex', flexDirection: 'row', position: 'absolute', right: 0, mt: 4 }}>
-                                <MDButton sx={{ mr: 2 }} color="info" onClick={() => handleStageDialogBox()}>
-                                    Add Stage
-                                </MDButton>
-                            </Grid>
+                            {/* <Grid sx={{ display: 'flex', flexDirection: 'row', position: 'absolute', right: 0, mt: 4 }}>
+                            <MDButton sx={{ mr: 2 }} color='info' onClick={() => handleDialogBox()}>Add Registration Form</MDButton>
+                            <MDButton sx={{ mr: 2 }} color='info' onClick={() => handleViewForm()}>View Registration Form</MDButton>
+                            <MDButton color='info' onClick={handleViewEventRegistrations}>View Event Registrations</MDButton>
+                        </Grid> */}
+                            {formFieldData.length > 0 ?
+                                <TableContainer component={Paper} sx={{ p: 2 }}>
+                                    <Table>
+                                        <TableHead sx={{ display: "table-header-group" }}>
+                                            <TableRow>
+                                                <TableCell>Name</TableCell>
+                                                <TableCell align='center'>Type</TableCell>
+                                                <TableCell align='center'>Options</TableCell>
+                                                <TableCell align='center'>Action</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {formFieldData.map((row) => (
+                                                <TableRow key={row.id}>
+                                                    <TableCell >{row.name}</TableCell>
+                                                    <TableCell align='center'>{row.type}</TableCell>
+                                                    <TableCell align='center'>{row.options || '--'}</TableCell>
+                                                    <TableCell align='center'><Button onClick={() => deleteRow(row.id)}>Delete</Button></TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                                :
+                                <MDBox sx={{ mt: 11 }}>
+                                    <DataNotFound message={'No Fields To Show !'} image={noDataImage} />
+                                </MDBox>
+                            }
+                        </Card>
+                        <Card sx={{ marginTop: 10 }}>
+                            <MDBox
+                                mx={2}
+                                mt={-3}
+                                py={3}
+                                px={2}
+                                pt={1}
+                                variant="gradient"
+                                bgColor="info"
+                                borderRadius="lg"
+                                coloredShadow="info"
+                                display="flex"
+                                justifyContent="space-between"
+                            >
+                                <MDTypography variant="h6" color="white">
+                                    Stages
+                                </MDTypography>
+                                <MDBox variant="gradient" borderRadius="xl" display="flex" justifyContent="center" alignItems="center" width="4rem" height="4rem" mt={-3}>
+                                    <MDButton onClick={() => handleStageDialogBox()}><AddIcon color="info" /></MDButton>
+                                </MDBox>
+                            </MDBox>
+                            {/* <Grid sx={{ display: 'flex', flexDirection: 'row', position: 'absolute', right: 0, mt: 4 }}>
+                                    <MDButton sx={{ mr: 2 }} color="info" onClick={() => handleStageDialogBox()}>
+                                        Add Stage
+                                    </MDButton>
+                                </Grid> */}
 
                             {stageData.length > 0 ? (
-                                <TableContainer component={Paper} sx={{ mt: 11, p: 2 }}>
+                                <TableContainer component={Paper} sx={{ p: 2 }}>
                                     <Table>
                                         <TableHead sx={{ display: "table-header-group" }}>
                                             <TableRow>
@@ -396,7 +444,7 @@ export default function SingleEvent() {
                                     <DataNotFound message={'No Stages To Show !'} image={noDataImage} />
                                 </MDBox>
                             )}
-                        </>
+                        </Card>
                     </>
                 }
                 <RegistrationFormModel
