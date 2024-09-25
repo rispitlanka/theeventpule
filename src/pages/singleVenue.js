@@ -65,14 +65,14 @@ export default function SingleVenue() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <MDBox mb={2} />
+      <MDBox mb={2} mt={4} />
       {isLoading ?
         <MDBox p={3} display="flex" justifyContent="center">
           <CircularProgress color="info" />
         </MDBox>
         :
         <MDBox position="relative" mb={5}>
-          <MDBox
+          {/* <MDBox
             display="flex"
             alignItems="center"
             position="relative"
@@ -88,23 +88,23 @@ export default function SingleVenue() {
               backgroundPosition: "50%",
               overflow: "hidden",
             }}
-          />
+          /> */}
 
           {venueData && venueData.length > 0 ?
             <>
               <Card
                 sx={{
                   position: "relative",
-                  mt: -8,
-                  mx: 3,
+                  // mt: -8,
+                  // mx: 3,
                   py: 2,
                   px: 2,
                 }}
               >
                 <Grid container spacing={3} alignItems="center">
-                  <Grid item>
+                  {/* <Grid item>
                     <MDAvatar src={venueData[0].theatreImage} alt="profile-image" size="lg" shadow="sm" />
-                  </Grid>
+                  </Grid> */}
                   <Grid item>
                     <MDBox height="100%" mt={0.5} lineHeight={1}>
                       <MDTypography variant="h5" fontWeight="medium">
