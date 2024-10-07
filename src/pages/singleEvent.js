@@ -195,9 +195,9 @@ export default function SingleEvent() {
         return dayjs(date).format('YYYY-MM-DD');
     }
 
-    const generateQRCode = async (stageID) => {
+    const generateQRCode = async (stageID, eventID) => {
         try {
-            const qrCodeDataUrl = await QRCode.toDataURL(String(stageID));
+            const qrCodeDataUrl = await QRCode.toDataURL(String(`ReferenceID:${stageID} && EventID:${eventID}`));
             setQrCodes((prevState) => ({
                 ...prevState,
                 [stageID]: qrCodeDataUrl,
@@ -393,7 +393,7 @@ export default function SingleEvent() {
                                                     <TableCell align="center">
                                                         <Button
                                                             onClick={async () => {
-                                                                await generateQRCode(row.stageID);
+                                                                await generateQRCode(row.id, row.eventId);
                                                                 if (componentRefs.current[index]) {
                                                                     componentRefs.current[index].click();
                                                                 }
@@ -428,9 +428,9 @@ export default function SingleEvent() {
                                                                         height: "400px",
                                                                     }}
                                                                 >
-                                                                    {qrCodes[row.stageID] && (
+                                                                    {qrCodes[row.id] && (
                                                                         <img
-                                                                            src={qrCodes[row.stageID]}
+                                                                            src={qrCodes[row.id]}
                                                                             alt="QR Code"
                                                                             style={{
                                                                                 maxWidth: "100%",
