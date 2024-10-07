@@ -334,7 +334,7 @@ export default function SingleEvent() {
                                                     <TableCell align='center'>{row.type}</TableCell>
                                                     <TableCell align='center'>{row.options || '--'}</TableCell>
                                                     <TableCell align='center'>
-                                                        <Button onClick={() => handleEditFieldDialogBox(row.id)}>Edit</Button>
+                                                        {/* <Button onClick={() => handleEditFieldDialogBox(row.id)}>Edit</Button> */}
                                                         <Button onClick={() => deleteRow(row.id)}>Delete</Button>
                                                     </TableCell>
                                                 </TableRow>
