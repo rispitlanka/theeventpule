@@ -197,7 +197,7 @@ export default function SingleEvent() {
 
     const generateQRCode = async (stageID, eventID) => {
         try {
-            const qrCodeDataUrl = await QRCode.toDataURL(String(`ReferenceID:${stageID} && EventID:${eventID}`));
+            const qrCodeDataUrl = await QRCode.toDataURL(String(`StageID:${stageID} && EventID:${eventID}`));
             setQrCodes((prevState) => ({
                 ...prevState,
                 [stageID]: qrCodeDataUrl,
