@@ -325,6 +325,8 @@ export default function SingleEvent() {
                                                 <TableCell align='center'>Type</TableCell>
                                                 <TableCell align='center'>Options</TableCell>
                                                 <TableCell align='center'>Action</TableCell>
+                                                <TableCell align='center'>Action</TableCell>
+
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
@@ -333,10 +335,10 @@ export default function SingleEvent() {
                                                     <TableCell >{row.name}</TableCell>
                                                     <TableCell align='center'>{row.type}</TableCell>
                                                     <TableCell align='center'>{row.options || '--'}</TableCell>
-                                                    <TableCell align='center'>
-                                                        {/* <Button onClick={() => handleEditFieldDialogBox(row.id)}>Edit</Button> */}
-                                                        <Button onClick={() => deleteRow(row.id)}>Delete</Button>
+                                                    <TableCell> <Button onClick={() => handleEditFieldDialogBox(row.id)}>Edit</Button></TableCell>
+                                                    <TableCell align='center'> <Button onClick={() => deleteRow(row.id)}>Delete</Button>
                                                     </TableCell>
+
                                                 </TableRow>
                                             ))}
                                         </TableBody>
@@ -472,6 +474,7 @@ export default function SingleEvent() {
                     open={openEditFieldDialogBox}
                     onClose={handleEditFieldDialogClose}
                     fieldId={selectedFieldId}
+                    fetchRegistrationFormField={fetchRegistrationFormField}
                 />
                 <AddStageModel
                     open={openAddStageDialogBox}
