@@ -4,6 +4,7 @@ import * as Yup from 'yup';
 import { supabase } from './supabaseClient';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { v4 as uuidv4 } from 'uuid';
 
 // @mui material components
 import Grid from "@mui/material/Grid";
@@ -38,6 +39,10 @@ export default function AddEvent() {
     const [selectedEndTime, setSelectedEndTime] = useState(null);
     const [selectedStartDate, setSelectedStartDate] = useState();
     const [selectedEndDate, setSelectedEndDate] = useState();
+    const [selectedRegistrationStartTime, setSelectedRegistrationStartTime] = useState(null);
+    const [selectedRegistrationEndTime, setSelectedRegistrationEndTime] = useState(null);
+    const [selectedRegistrationStartDate, setSelectedRegistrationStartDate] = useState();
+    const [selectedRegistrationEndDate, setSelectedRegistrationEndDate] = useState();
     const [venuesData, setVenuesData] = useState([]);
     const [categoryData, setCategoryData] = useState([]);
     const [mainEventData, setMainEventdata] = useState([]);
@@ -46,16 +51,41 @@ export default function AddEvent() {
 
     const handleTimeChange = (newTime) => {
         setSelectedStartTime(newTime);
+
     };
+
     const handleDateChange = (date) => {
         setSelectedStartDate((date));
+
     }
 
     const handleEndTimeChange = (newTime) => {
         setSelectedEndTime(newTime);
+
+
     };
+
     const handleEndDateChange = (date) => {
         setSelectedEndDate((date));
+
+    }
+
+    const handleRegistrationTimeChange = (newTime) => {
+        setSelectedRegistrationStartTime(newTime);
+    };
+
+    const handleRegistrationDateChange = (date) => {
+        setSelectedRegistrationStartDate((date));
+    }
+
+
+    const handleRegistrationEndTimeChange = (newTime) => {
+        setSelectedRegistrationEndTime(newTime);
+
+    };
+
+    const handleRegistrationEndDateChange = (date) => {
+        setSelectedRegistrationEndDate((date));
     }
 
     const handleEventImagePreview = (event) => {
@@ -68,10 +98,11 @@ export default function AddEvent() {
         try {
             if (newEvent.values.eventImage) {
                 const file = newEvent.values.eventImage;
+                const uniqueFileName = `${uuidv4()}-${file.name}`;
 
                 const { data: imageData, error: imageError } = await supabase.storage
                     .from('events_images')
-                    .upload(`${file.name}`, file, {
+                    .upload(uniqueFileName, file, {
                         cacheControl: '3600',
                         upsert: false,
                     });
@@ -91,14 +122,27 @@ export default function AddEvent() {
             const formattedDate = dayjs(selectedStartDate).format('YYYY-MM-DD');
             const formattedEndTime = dayjs(selectedEndTime).format('hh:mm A');
             const formattedEndDate = dayjs(selectedEndDate).format('YYYY-MM-DD');
+            const formattedRegistrationOpenTime = dayjs(selectedRegistrationStartTime).format('hh:mm A');
+            const formattedRegistrationOpenDate = dayjs(selectedRegistrationStartDate).format('YYYY-MM-DD');
+            const formattedRegistrationCloseTime = dayjs(selectedRegistrationEndTime).format('hh:mm A');
+            const formattedRegistrationCloseDate = dayjs(selectedRegistrationEndDate).format('YYYY-MM-DD');
+
+
             values.startTime = formattedTime;
             values.date = formattedDate;
             values.endTime = formattedEndTime;
             values.endDate = formattedEndDate;
             values.eventOrganizationId = userOrganizationId;
+            values.registrationOpeningTime = formattedRegistrationOpenTime;
+            values.registrationOpeningDate = formattedRegistrationOpenDate;
+            values.registrationClosingTime = formattedRegistrationCloseTime;
+            values.registrationClosingDate = formattedRegistrationCloseDate;
+
             if (values.eventTags) {
                 values.eventTags = values.eventTags.split(',').map(tag => tag.trim());
             }
+
+
             await addEventData(values);
             resetForm();
             toast.info('Event has been successfully created!');
@@ -119,6 +163,10 @@ export default function AddEvent() {
             endDate: '',
             startTime: '',
             endTime: '',
+            registrationOpeningDate: '',
+            registrationClosingDate: '',
+            registrationOpeningTime: '',
+            registrationClosingTime: '',
             contactEmail: '',
             contactPhone: '',
             venueId: '',
@@ -148,6 +196,7 @@ export default function AddEvent() {
 
     const addEventData = async (values) => {
         try {
+
             const { data, error } = await supabase.from('events').insert([values]).select('*');
             if (data) {
                 console.log('Data added succesfully:');
@@ -255,7 +304,7 @@ export default function AddEvent() {
                                             {newEvent.touched.description && Boolean(newEvent.errors.description) && (
                                                 <p style={{ color: 'red' }}>{newEvent.errors.description}</p>
                                             )}
-                                        </MDBox>                                       
+                                        </MDBox>
                                         <MDBox p={1}>
                                             <FormControl fullWidth error={Boolean(newEvent.touched.categoryId && newEvent.errors.categoryId)}>
                                                 <InputLabel>Select Category</InputLabel>
@@ -438,6 +487,73 @@ export default function AddEvent() {
                                                 </MDBox>
                                             </Grid>
                                         </MDBox>
+
+                                        <MDBox ml={1} mb={1}>
+                                            <Grid sx={{ display: 'flex', flexDirection: 'row', }}>
+                                                <MDBox sx={{ mr: 2 }}>
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <DemoContainer components={['DatePicker']}>
+                                                            <DatePicker
+                                                                disablePast
+                                                                label="Registration Start Date"
+                                                                value={selectedRegistrationStartDate}
+                                                                onChange={handleRegistrationDateChange}
+                                                            />
+                                                        </DemoContainer>
+                                                    </LocalizationProvider>
+                                                </MDBox>
+                                                <MDBox sx={{ ml: 2 }}>
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <DemoContainer components={['MobileTimePicker']}>
+                                                            <MobileTimePicker
+                                                                label={'Registration Start Time'}
+                                                                openTo="hours"
+                                                                value={selectedRegistrationStartTime}
+                                                                onChange={handleRegistrationTimeChange}
+                                                                minTime={selectedRegistrationStartDate && dayjs(selectedRegistrationStartDate).isSame(today, 'day') ? today : null}
+                                                            />
+                                                        </DemoContainer>
+                                                    </LocalizationProvider>
+                                                </MDBox>
+                                            </Grid>
+                                        </MDBox>
+                                        <MDBox ml={1} mb={1}>
+                                            <Grid sx={{ display: 'flex', flexDirection: 'row', }}>
+                                                <MDBox sx={{ mr: 2 }}>
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <DemoContainer components={['DatePicker']}>
+                                                            <DatePicker
+                                                                disablePast
+                                                                label="Registration End Date"
+                                                                value={selectedRegistrationEndDate}
+                                                                onChange={handleRegistrationEndDateChange}
+                                                                minDate={selectedRegistrationStartDate}
+                                                            />
+                                                        </DemoContainer>
+                                                    </LocalizationProvider>
+                                                </MDBox>
+                                                <MDBox sx={{ ml: 2 }}>
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <DemoContainer components={['MobileTimePicker']}>
+                                                            <MobileTimePicker
+                                                                label={'Registration End Time'}
+                                                                openTo="hours"
+                                                                value={selectedRegistrationEndTime}
+                                                                onChange={handleRegistrationEndTimeChange}
+                                                                minTime={
+                                                                    selectedRegistrationStartDate &&
+                                                                        selectedRegistrationEndDate &&
+                                                                        dayjs(selectedRegistrationStartDate).isSame(selectedRegistrationEndDate, 'day') &&
+                                                                        selectedRegistrationStartTime
+                                                                        ? selectedRegistrationStartTime
+                                                                        : null
+                                                                } />
+                                                        </DemoContainer>
+                                                    </LocalizationProvider>
+                                                </MDBox>
+                                            </Grid>
+                                        </MDBox>
+
                                         <MDBox p={1}>
                                             <Grid container spacing={3}>
                                                 <Grid item xs={6} display={'flex'} flexDirection={'column'}>
