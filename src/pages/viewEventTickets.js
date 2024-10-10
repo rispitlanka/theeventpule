@@ -25,7 +25,11 @@ export default function ViewTickets() {
     const [allEventTickets, setAllEventTickets] = useState([]);
     const [registrationFormData, setRegistrationFormData] = useState([]);
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [eventFree, setEventFree] = useState(false);
+    // const [totalPendingCount, setTotalPendingCount] = useState(0);
+    // const [totalDoneCount, setTotalDoneCount] = useState(0);
+
     const navigate = useNavigate();
     const openPage = (route) => {
         navigate(route);
@@ -45,12 +49,23 @@ export default function ViewTickets() {
 
     const getAllEventTickets = async () => {
         try {
-            const { data, error } = await supabase.from('tickets_events').select('*,events(name),zone_ticket_category(name),eventOrganizations(name),zones_events(name),venues(name),eventRegistrations(details,paymentStatus)').eq('eventOrganizationId', userOrganizationId).order('id', { ascending: false });
+            const { data, error } = await supabase.from('tickets_events').select('*,events(name,isFree),zone_ticket_category(name),eventOrganizations(name),zones_events(name),venues(name),eventRegistrations(details,paymentStatus)').eq('eventOrganizationId', userOrganizationId).order('id', { ascending: false });
             if (error) {
                 console.log('ticketsResponseError', error)
             }
             if (data) {
+
+
                 setAllEventTickets(data);
+
+                const isAnyEventFree = data.some(ticket => ticket.events?.isFree);
+                setEventFree(isAnyEventFree);
+
+                // const pendingCount = data.filter(ticket => ticket.eventRegistrations?.paymentStatus === 'pending').length;
+                // const doneCount = data.filter(ticket => ticket.eventRegistrations?.paymentStatus === 'done').length;
+
+                // setTotalPendingCount(pendingCount);
+                // setTotalDoneCount(doneCount);
             }
         }
         catch (error) {
@@ -223,6 +238,7 @@ export default function ViewTickets() {
                                                 Tickets
                                             </MDTypography>
                                         </MDBox>
+
                                         <MDBox pt={3} pl={3} display="flex" justifyContent="left">
                                             <MDInput
                                                 placeholder="Search by reference id..."
@@ -247,70 +263,81 @@ export default function ViewTickets() {
                                                     <MDTypography>All</MDTypography>
                                                 </ToggleButton>
                                             </ToggleButtonGroup>
+
                                             <MDBox>
                                                 <CSVLink data={data} headers={headers} filename={"Tickets"}>
                                                     <MDButton variant='contained' color='info'>Download Tickets as CSV</MDButton>
                                                 </CSVLink>
                                             </MDBox>
                                         </MDBox>
+
+
                                         {isLoading ? (
                                             <MDBox p={3} display="flex" justifyContent="center">
                                                 <CircularProgress color="info" />
                                             </MDBox>
                                         ) : filteredRows && filteredRows.length > 0 ? (
-                                            <MDBox pt={3}>
-                                                <TableContainer component={Paper}>
-                                                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                                                        <TableHead sx={{ display: "table-header-group" }}>
-                                                            <TableRow>
-                                                                <TableCell>Reference ID</TableCell>
-                                                                <TableCell>Event</TableCell>
-                                                                <TableCell>Booked Date</TableCell>
-                                                                <TableCell>Booked by</TableCell>
-                                                                <TableCell>Phone</TableCell>
-                                                                <TableCell>Payment Status</TableCell>
-                                                                <TableCell>Category</TableCell>
-                                                            </TableRow>
-                                                        </TableHead>
-                                                        <TableBody>
-                                                            {currentRows.map((row) => {
-                                                                const parsedDetails = row.eventRegistrations?.details ? JSON.parse(row.eventRegistrations.details) : {};
-                                                                // const firstName = parsedDetails["First Name"] || "N/A";
-                                                                // const lastName = parsedDetails["Last Name"] || "N/A";
-                                                                const phone = parsedDetails["Phone Number"] || parsedDetails["Local Mobile Number"] || "N/A";
+                                            <>
+                                                {!eventFree && (
+                                                    <MDBox display="flex" justifyContent="space-between" alignItems="center" pl={3}>
+                                                        <MDTypography variant="h6">Number of Tickets: {filteredRows.length}</MDTypography>
 
-                                                                return (
-                                                                    <TableRow
-                                                                        key={row.referenceId}
-                                                                        onClick={(e) => { e.stopPropagation(); openPage(`/viewTickets/single-ticket/${row.id}/${row.eventId}`); }} style={{ cursor: 'pointer' }}
-                                                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                                                    >
-                                                                        <TableCell component="th" scope="row">
-                                                                            {row.referenceId}
-                                                                        </TableCell>
-                                                                        <TableCell align="left">{row.events?.name}</TableCell>
-                                                                        <TableCell align="left">{formattedDate(row.created_at)}</TableCell>
-                                                                        <TableCell align="left">{row.bookedBy}</TableCell>
-                                                                        <TableCell align="left">{phone}</TableCell>
-                                                                        <TableCell align="left">{row.eventRegistrations?.paymentStatus}</TableCell>
-                                                                        <TableCell align="left">{row.zone_ticket_category?.name}</TableCell>
-                                                                    </TableRow>
-                                                                );
-                                                            })}
-                                                        </TableBody>
-                                                    </Table>
-                                                    <TablePagination
-                                                        rowsPerPageOptions={[5, 10, 25, 50]}
-                                                        component="div"
-                                                        count={filteredRows.length}
-                                                        rowsPerPage={rowsPerPage}
-                                                        page={page}
-                                                        onPageChange={handleChangePage}
-                                                        onRowsPerPageChange={handleChangeRowsPerPage}
-                                                    />
-                                                </TableContainer>
-                                            </MDBox>
+                                                    </MDBox>
+                                                )}
+                                                <MDBox pt={3}>
+                                                    <TableContainer component={Paper}>
+                                                        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                                                            <TableHead sx={{ display: "table-header-group" }}>
+                                                                <TableRow>
+                                                                    <TableCell>Reference ID</TableCell>
+                                                                    <TableCell>Event</TableCell>
+                                                                    <TableCell>Booked Date</TableCell>
+                                                                    <TableCell>Booked by</TableCell>
+                                                                    <TableCell>Phone</TableCell>
+                                                                    <TableCell>Payment Status</TableCell>
+                                                                    <TableCell>Category</TableCell>
+                                                                </TableRow>
+                                                            </TableHead>
+                                                            <TableBody>
+                                                                {currentRows.map((row) => {
+                                                                    const parsedDetails = row.eventRegistrations?.details ? JSON.parse(row.eventRegistrations.details) : {};
+                                                                    // const firstName = parsedDetails["First Name"] || "N/A";
+                                                                    // const lastName = parsedDetails["Last Name"] || "N/A";
+                                                                    const phone = parsedDetails["Phone Number"] || parsedDetails["Local Mobile Number"] || "N/A";
 
+                                                                    return (
+                                                                        <TableRow
+                                                                            key={row.referenceId}
+                                                                            onClick={(e) => { e.stopPropagation(); openPage(`/viewTickets/single-ticket/${row.id}/${row.eventId}`); }} style={{ cursor: 'pointer' }}
+                                                                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                                                        >
+                                                                            <TableCell component="th" scope="row">
+                                                                                {row.referenceId}
+                                                                            </TableCell>
+                                                                            <TableCell align="left">{row.events?.name}</TableCell>
+                                                                            <TableCell align="left">{formattedDate(row.created_at)}</TableCell>
+                                                                            <TableCell align="left">{row.bookedBy}</TableCell>
+                                                                            <TableCell align="left">{phone}</TableCell>
+                                                                            <TableCell align="left">{row.eventRegistrations?.paymentStatus}</TableCell>
+                                                                            <TableCell align="left">{row.zone_ticket_category?.name}</TableCell>
+                                                                        </TableRow>
+                                                                    );
+                                                                })}
+                                                            </TableBody>
+                                                        </Table>
+                                                        <TablePagination
+                                                            rowsPerPageOptions={[10, 20, 30, 40, 50]}
+                                                            component="div"
+                                                            count={filteredRows.length}
+                                                            rowsPerPage={rowsPerPage}
+                                                            page={page}
+                                                            onPageChange={handleChangePage}
+                                                            onRowsPerPageChange={handleChangeRowsPerPage}
+                                                        />
+                                                    </TableContainer>
+                                                </MDBox>
+
+                                            </>
                                         ) : (
                                             <DataNotFound message={'No Tickets Reserved Yet !'} image={noTicketImage} />
                                         )}
