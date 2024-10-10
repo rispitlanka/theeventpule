@@ -9,11 +9,15 @@ export default function EditRegistrationFormModel({ open, onClose, fieldId }) {
     const [selectedType, setSelectedType] = useState();
     const [formImagePreview, setFormImagePreview] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [isRequired, setIsRequired] = useState();
+
 
     const handleClose = () => {
         onClose();
         setSelectedType('');
         editFormField.resetForm();
+        setIsRequired('');
+        setFormImagePreview(null);
     };
 
     useEffect(() => {
@@ -23,24 +27,35 @@ export default function EditRegistrationFormModel({ open, onClose, fieldId }) {
                 if (error) {
                     throw error;
                 }
+
                 if (data && data.length > 0) {
                     const fields = data[0];
                     editFormField.setValues({
                         name: fields.name,
                         type: fields.type,
-                        options: fields.options,
+                        options: fields.options || '',
+                        isRequired: fields.isRequired ? 'Yes' : 'No',
+                        eventId: fields.eventId
                     });
+                    setSelectedType(fields.type);  // Set selected type
+                    setIsRequired(fields.isRequired ? 'Yes' : 'No');  // Set required state
+
+                    if (fields.type === 'Image') {
+                        setFormImagePreview(fields.formImage);
+                    }
+
                 }
             } catch (error) {
                 console.error('Error fetching fields data:', error.message);
             }
         };
         fetchFormField();
-    }, [fieldId]);
+    }, [fieldId, open]);
 
     const onSubmit = async (values, { resetForm }) => {
         setIsLoading(true);
         try {
+
             if (editFormField.values.formImage) {
                 const file = editFormField.values.formImage;
                 const { data: imageData, error: imageError } = await supabase.storage
@@ -61,11 +76,15 @@ export default function EditRegistrationFormModel({ open, onClose, fieldId }) {
             }
             values.type = selectedType;
             values.fieldId = fieldId;
+            values.isRequired = isRequired === 'Yes';
+
             await addFormFieldData(values);
             resetForm();
             onClose();
+            setIsLoading(false);
         } catch (error) {
             console.error('Error submitting form:', error.message);
+            setIsLoading(false);
         }
     };
 
@@ -75,6 +94,9 @@ export default function EditRegistrationFormModel({ open, onClose, fieldId }) {
             type: '',
             options: '',
             formImage: '',
+            isRequired: 'No',
+            eventId: '',
+
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
@@ -84,19 +106,28 @@ export default function EditRegistrationFormModel({ open, onClose, fieldId }) {
 
     const addFormFieldData = async (values) => {
         try {
-            const { data, error } = await supabase.from('registrationForm').insert([values]).select('*');
-            if (data) {
-                setIsLoading(false);
-                console.log('Data added successfully:', data);
-            }
+
+
+
+            const { fieldId, ...updateValues } = values;
+
+            const { data, error } = await supabase
+                .from('registrationForm')
+                .update(updateValues)
+                .eq('id', fieldId);
+
             if (error) {
                 throw error;
             }
+
+            if (data) {
+                setIsLoading(false);
+                console.log('Data updated successfully:', data);
+            }
         } catch (error) {
-            throw new Error('Error inserting data:', error.message);
+            console.error('Error updating data:', error.message);
         }
     };
-
     const handleImagePreview = (event) => {
         const file = event.currentTarget.files[0];
         editFormField.setFieldValue('formImage', file);
@@ -141,6 +172,21 @@ export default function EditRegistrationFormModel({ open, onClose, fieldId }) {
                                     <MenuItem value="Checkbox">CheckBox</MenuItem>
                                     <MenuItem value="Password">Password</MenuItem>
                                     <MenuItem value="Image">Image</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <FormControl fullWidth>
+                                <InputLabel>Is Required?</InputLabel>
+                                <Select
+                                    required
+                                    label="Is Required?"
+                                    value={isRequired}
+                                    onChange={(e) => setIsRequired(e.target.value)}
+                                    sx={{ height: '45px' }}
+                                >
+                                    <MenuItem value="Yes">Yes</MenuItem>
+                                    <MenuItem value="No">No</MenuItem>
                                 </Select>
                             </FormControl>
                         </Grid>
@@ -192,6 +238,7 @@ export default function EditRegistrationFormModel({ open, onClose, fieldId }) {
                                 )}
                             </>
                         )}
+
                     </Grid>
                 </DialogContent>
                 <DialogActions>
