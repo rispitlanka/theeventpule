@@ -8,11 +8,13 @@ import { supabase } from 'pages/supabaseClient';
 export default function RegistrationFormModel({ open, onClose, eventId }) {
     const [selectedType, setSelectedType] = useState();
     const [formImagePreview, setFormImagePreview] = useState(null);
+    const [isRequired, setIsRequired] = useState();
     const [isLoading, setIsLoading] = useState(false);
 
     const handleClose = () => {
         onClose();
         setSelectedType('');
+        setIsRequired();
         newFormField.resetForm();
     };
 
@@ -39,6 +41,7 @@ export default function RegistrationFormModel({ open, onClose, eventId }) {
             }
             values.type = selectedType;
             values.eventId = eventId;
+            values.isRequired = isRequired === 'Yes';
             await addFormFieldData(values);
             resetForm();
             onClose();
@@ -53,6 +56,7 @@ export default function RegistrationFormModel({ open, onClose, eventId }) {
             type: '',
             options: '',
             formImage: '',
+            isRequired: 'No',
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required'),
@@ -98,6 +102,21 @@ export default function RegistrationFormModel({ open, onClose, eventId }) {
                                 error={newFormField.touched.name && Boolean(newFormField.errors.name)}
                                 helperText={newFormField.touched.name && newFormField.errors.name}
                             />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <FormControl fullWidth>
+                                <InputLabel>Is Required?</InputLabel>
+                                <Select
+                                    required
+                                    label="Is Required?"
+                                    value={isRequired}
+                                    onChange={(e) => setIsRequired(e.target.value)} // Update state on change
+                                    sx={{ height: '45px' }}
+                                >
+                                    <MenuItem value="Yes">Yes</MenuItem>
+                                    <MenuItem value="No">No</MenuItem>
+                                </Select>
+                            </FormControl>
                         </Grid>
                         <Grid item xs={12}>
                             <FormControl fullWidth>
