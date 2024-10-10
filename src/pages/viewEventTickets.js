@@ -180,6 +180,7 @@ export default function ViewTickets() {
         setPage(0); // Reset to the first page
     };
 
+
     const currentRows = filteredRows && filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
     return (
@@ -274,9 +275,9 @@ export default function ViewTickets() {
                                                         <TableBody>
                                                             {currentRows.map((row) => {
                                                                 const parsedDetails = row.eventRegistrations?.details ? JSON.parse(row.eventRegistrations.details) : {};
-                                                                const firstName = parsedDetails["First Name"] || "N/A";
-                                                                const lastName = parsedDetails["Last Name"] || "N/A";
-                                                                const phone = parsedDetails["Phone Number"] || "N/A";
+                                                                // const firstName = parsedDetails["First Name"] || "N/A";
+                                                                // const lastName = parsedDetails["Last Name"] || "N/A";
+                                                                const phone = parsedDetails["Phone Number"] || parsedDetails["Local Mobile Number"] || "N/A";
 
                                                                 return (
                                                                     <TableRow
@@ -289,7 +290,7 @@ export default function ViewTickets() {
                                                                         </TableCell>
                                                                         <TableCell align="left">{row.events?.name}</TableCell>
                                                                         <TableCell align="left">{formattedDate(row.created_at)}</TableCell>
-                                                                        <TableCell align="left">{`${firstName} ${lastName}`}</TableCell>
+                                                                        <TableCell align="left">{row.bookedBy}</TableCell>
                                                                         <TableCell align="left">{phone}</TableCell>
                                                                         <TableCell align="left">{row.eventRegistrations?.paymentStatus}</TableCell>
                                                                         <TableCell align="left">{row.zone_ticket_category?.name}</TableCell>
