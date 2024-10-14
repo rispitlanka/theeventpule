@@ -49,7 +49,7 @@ export default function ViewTickets() {
 
     const getAllEventTickets = async () => {
         try {
-            const { data, error } = await supabase.from('tickets_events').select('*,events(name,isFree),zone_ticket_category(name),eventOrganizations(name),zones_events(name),venues(name),eventRegistrations(details,paymentStatus)').eq('eventOrganizationId', userOrganizationId).order('id', { ascending: false });
+            const { data, error } = await supabase.from('tickets_events').select('*,events(name,isFree),zone_ticket_category(name),eventOrganizations(name),zones_events(name),venues(name),eventRegistrations(details,paymentStatus,isBookedByAdmin)').eq('eventOrganizationId', userOrganizationId).order('id', { ascending: false });
             if (error) {
                 console.log('ticketsResponseError', error)
             }
@@ -316,7 +316,15 @@ export default function ViewTickets() {
                                                                             </TableCell>
                                                                             <TableCell align="left">{row.events?.name}</TableCell>
                                                                             <TableCell align="left">{formattedDate(row.created_at)}</TableCell>
-                                                                            <TableCell align="left">{fullName !== 'N/A' ? fullName : (firstName !== 'N/A' && lastName !== 'N/A' ? `${firstName} ${lastName}` : 'N/A')}</TableCell>
+                                                                            <TableCell align="left">
+                                                                                {row.eventRegistrations?.isBookedByAdmin
+                                                                                    ? 'Admin'
+                                                                                    : (fullName !== 'N/A'
+                                                                                        ? fullName
+                                                                                        : (firstName !== 'N/A' && lastName !== 'N/A'
+                                                                                            ? `${firstName} ${lastName}`
+                                                                                            : 'N/A'))}
+                                                                            </TableCell>
                                                                             <TableCell align="left">{phone}</TableCell>
                                                                             <TableCell align="left">{row.eventRegistrations?.paymentStatus}</TableCell>
                                                                             <TableCell align="left">{row.zone_ticket_category?.name}</TableCell>
