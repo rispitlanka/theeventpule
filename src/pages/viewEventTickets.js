@@ -14,6 +14,7 @@ import MDInput from 'components/MDInput';
 import { CSVLink } from "react-csv";
 import MDButton from 'components/MDButton';
 import { useNavigate } from 'react-router-dom'
+import _ from 'lodash';
 
 export default function ViewTickets() {
     const userDetails = useContext(UserDataContext);
@@ -126,6 +127,7 @@ export default function ViewTickets() {
         }
     };
 
+
     const allKeysOfRegisteredEvents = [
         ...new Set(
             allEventTickets
@@ -192,7 +194,35 @@ export default function ViewTickets() {
 
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0); // Reset to the first page
+        setPage(0);
+    };
+
+
+    const categoryWiseCount = _.groupBy(filteredRows, (row) => {
+        const paymentStatus = row.eventRegistrations?.paymentStatus;
+        const category = row.zone_ticket_category?.name || "N/A";
+        return `${category}_${paymentStatus}`;
+    });
+
+    const renderCategoryCounts = () => {
+        const categories = Object.keys(_.groupBy(filteredRows, (row) => row.zone_ticket_category?.name || "N/A"));
+
+        return categories.map((category) => {
+            const doneCount = categoryWiseCount[`${category}_done`]?.length || 0;
+            const pendingCount = categoryWiseCount[`${category}_pending`]?.length || 0;
+            const allCount = doneCount + pendingCount;
+
+            return (
+                <MDTypography key={category} variant="h6" pl={3}>
+                    {category} :-
+                    {paymentStatus !== 'pending' && paymentStatus !== 'done' && ` Total: ${allCount}, `}
+                    {paymentStatus !== 'pending' && ` Done: ${doneCount}`}
+                    {paymentStatus === 'pending' ? "" : paymentStatus !== 'done' && ", "}
+                    {paymentStatus !== 'done' && ` Pending: ${pendingCount}`}
+
+                </MDTypography>
+            );
+        });
     };
 
 
@@ -279,10 +309,15 @@ export default function ViewTickets() {
                                         ) : filteredRows && filteredRows.length > 0 ? (
                                             <>
                                                 {!eventFree && (
-                                                    <MDBox display="flex" justifyContent="space-between" alignItems="center" pl={3}>
-                                                        <MDTypography variant="h6">Number of Tickets: {filteredRows.length}</MDTypography>
+                                                    <>
+                                                        <MDBox display="flex" justifyContent="space-between" alignItems="center" pl={3}>
+                                                            <MDTypography variant="h6">Number of Tickets: {filteredRows.length}</MDTypography>
+                                                        </MDBox>
 
-                                                    </MDBox>
+                                                        <MDBox pl={3} pt={2}>
+                                                            {renderCategoryCounts()}
+                                                        </MDBox>
+                                                    </>
                                                 )}
                                                 <MDBox pt={3}>
                                                     <TableContainer component={Paper}>
