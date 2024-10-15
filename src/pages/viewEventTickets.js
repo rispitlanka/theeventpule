@@ -115,7 +115,7 @@ export default function ViewTickets() {
             const status = row.eventRegistrations?.paymentStatus;
             const matchesSearch = reference?.includes(searchTerm);
             const matchesStatus =
-                paymentStatus === 'all' || (paymentStatus === 'done' && status?.includes('done')) || (paymentStatus === 'pending' && !status?.includes('done'));
+                paymentStatus === 'all' || (paymentStatus === 'done' && status?.includes('done')) || (paymentStatus === 'pending' && status?.includes('pending')) || (paymentStatus === 'manual' && status?.includes('manual'));
             return matchesSearch && matchesStatus;
         });
     }, [searchTerm, paymentStatus, allEventTickets]);
@@ -152,7 +152,8 @@ export default function ViewTickets() {
         return (
             paymentStatus === 'all' ||
             (paymentStatus === 'done' && status?.includes('done')) ||
-            (paymentStatus === 'pending' && !status?.includes('done'))
+            (paymentStatus === 'pending' && status?.includes('pending')) ||
+            (paymentStatus === 'manual' && status?.includes('manual'))
         );
     })
         .map(ticket => {
@@ -258,6 +259,9 @@ export default function ViewTickets() {
                                                 </ToggleButton>
                                                 <ToggleButton value="done" key="done" color="success">
                                                     <MDTypography>Done</MDTypography>
+                                                </ToggleButton>
+                                                <ToggleButton value="manual" key="manual" color="success">
+                                                    <MDTypography>Manual</MDTypography>
                                                 </ToggleButton>
                                                 <ToggleButton value="all" key="all" color="info">
                                                     <MDTypography>All</MDTypography>

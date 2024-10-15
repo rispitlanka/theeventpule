@@ -134,6 +134,7 @@ const DynamicForm = ({ fields, eventId, venueId, eventName, venueName, date, tim
                 eventId: eventId,
                 details: JSON.stringify(values),
                 isBookedByAdmin: true,
+                paymentStatus: 'manual'
             };
 
             const registrationData = await addRegistrationData(dataToAdd);
