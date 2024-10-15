@@ -51,7 +51,7 @@ export default function ViewEventRegistrations() {
 
     const fetchRegistrationForm = async () => {
         try {
-            const { data, error } = await supabase.from('registrationForm').select('*').eq('eventId', id);
+            const { data, error } = await supabase.from('registrationForm').select('*').eq('eventId', id).order("id", { ascending: true });
             if (data) {
                 setRegistrationFormData(data);
             }
