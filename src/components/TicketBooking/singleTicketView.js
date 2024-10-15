@@ -144,9 +144,9 @@ export default function SingleTicketView() {
                     {ticketData.length > 0 && (
                         <MDBox sx={{ position: "relative", mt: 2, p: 2 }}>
                             <Grid container spacing={2}>
-                                <Grid item xs={12} sm={6} md={4} lg={4}>
+                                <Grid item xs={12} sm={6} md={5} lg={5}>
                                     <div style={{ display: 'flex', justifyContent: 'flex-start', padding: '20px' }}>
-                                        <Card style={{ marginLeft: '10px', width: '300px' }}>
+                                        <Card style={{ marginLeft: '10px', width: '450px' }}>
                                             <CardContent>
                                                 {ticketData.map((item, index) => {
                                                     const details = item?.eventRegistrations?.details
@@ -177,7 +177,7 @@ export default function SingleTicketView() {
                                     </div>
                                 </Grid>
 
-                                <Grid item xs={12} sm={6} md={6} lg={5}>
+                                <Grid item xs={12} sm={6} md={4} lg={5}>
                                     <div ref={componentRefs}>
                                         <Box sx={{ flexGrow: 1, mt: 3, mb: 2 }}>
                                             <Grid container spacing={3} justifyContent="center">
