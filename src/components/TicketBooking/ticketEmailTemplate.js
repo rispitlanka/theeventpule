@@ -57,7 +57,7 @@ const TicketEmail = ({ attendee, event }) => {
 
           <div style="padding: 20px; background-color: #1e1e1e; border-top: 1px solid #dddddd; border-bottom: 1px solid #dddddd;">
             <p style="color:#ffffff; text-align:center;">Please show this ticket with the QR code at the entrance of the event</p>
-            <div style="display: flex; justify-content: space-between; padding: 20px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
               <div style="text-align: left;">
                 <p>Booking ID - ${bookingId}</p>
                 <h3 style="margin: 0;">${eventName}</h3>
@@ -65,7 +65,7 @@ const TicketEmail = ({ attendee, event }) => {
                 <p>${time} | ${date}</p>
                
               </div>
-              <div style="text-align: right;">
+              <div style="text-align: right; width: 120px; height: 120px; margin: auto 10px;">
                 <img src=${qrValue} alt="QR Code" style="width: 100%; height: 100%;">
               </div>
             </div>
