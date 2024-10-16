@@ -142,7 +142,7 @@ export default function ViewTickets() {
             const status = row.eventRegistrations?.paymentStatus;
             const matchesSearch = reference?.includes(searchTerm);
             const matchesStatus =
-                paymentStatus === 'all' || (paymentStatus === 'done' && status?.includes('done')) || (paymentStatus === 'pending' && !status?.includes('done')) || (paymentStatus === 'manual' && status?.includes('manual'));
+                paymentStatus === 'all' || (paymentStatus === 'done' && status?.includes('done')) || (paymentStatus === 'pending' && status?.includes('pending')) || (paymentStatus === 'manual' && status?.includes('manual'));
             return matchesSearch && matchesStatus;
         });
     }, [searchTerm, paymentStatus, allEventTickets]);
@@ -150,6 +150,7 @@ export default function ViewTickets() {
     const handlePaymentStatusChange = (event, newStatus) => {
         if (newStatus !== null) {
             setPaymentStatus(newStatus);
+
         }
     };
 
@@ -180,7 +181,7 @@ export default function ViewTickets() {
         return (
             paymentStatus === 'all' ||
             (paymentStatus === 'done' && status?.includes('done')) ||
-            (paymentStatus === 'pending' && !status?.includes('done')) || (paymentStatus === 'manual' && status?.includes('manual'))
+            (paymentStatus === 'pending' && status?.includes('pending')) || (paymentStatus === 'manual' && status?.includes('manual'))
         );
     })
         .map(ticket => {
@@ -381,6 +382,10 @@ export default function ViewTickets() {
                                                                     //const category = row.zone_ticket_category?.name || "N/A";
                                                                     const referenceId = row.referenceId || "N/A";
 
+                                                                    const paymentStatus = row.eventRegistrations?.paymentStatus
+                                                                        ? row.eventRegistrations?.paymentStatus.charAt(0).toUpperCase() + row.eventRegistrations?.paymentStatus.slice(1)
+                                                                        : "N/A";
+
                                                                     const eventName = row.events?.name || "N/A";
                                                                     const eventImage = row.events?.eventImage || "N/A";
                                                                     const location = row.venues?.name || "N/A";
@@ -405,7 +410,7 @@ export default function ViewTickets() {
                                                                             <TableCell align="left">{formattedDate(row.created_at)}</TableCell>
                                                                             <TableCell align="left">{fullName !== 'N/A' ? fullName : (firstName !== 'N/A' && lastName !== 'N/A' ? `${firstName} ${lastName}` : 'N/A')}</TableCell>
                                                                             <TableCell align="left">{phone}</TableCell>
-                                                                            <TableCell align="left">{row.eventRegistrations?.paymentStatus}</TableCell>
+                                                                            <TableCell align="left">{paymentStatus}</TableCell>
                                                                             <TableCell align="left">{row.zone_ticket_category?.name}</TableCell>
                                                                             <TableCell align="left"><TicketEmail
                                                                                 attendee={{
