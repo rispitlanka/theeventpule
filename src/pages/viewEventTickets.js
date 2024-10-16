@@ -15,6 +15,10 @@ import { CSVLink } from "react-csv";
 import MDButton from 'components/MDButton';
 import { useNavigate } from 'react-router-dom'
 import _ from 'lodash';
+import TicketEmail from 'components/TicketBooking/ticketEmailTemplate'
+import dayjs, { Dayjs } from 'dayjs'
+
+
 
 export default function ViewTickets() {
     const userDetails = useContext(UserDataContext);
@@ -28,6 +32,7 @@ export default function ViewTickets() {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [eventFree, setEventFree] = useState(false);
+    const [qrCodes, setQrCodes] = useState({});
     // const [totalPendingCount, setTotalPendingCount] = useState(0);
     // const [totalDoneCount, setTotalDoneCount] = useState(0);
 
@@ -50,29 +55,50 @@ export default function ViewTickets() {
 
     const getAllEventTickets = async () => {
         try {
-            const { data, error } = await supabase.from('tickets_events').select('*,events(name,isFree),zone_ticket_category(name),eventOrganizations(name),zones_events(name),venues(name),eventRegistrations(details,paymentStatus)').eq('eventOrganizationId', userOrganizationId).order('id', { ascending: false });
+            const { data, error } = await supabase
+                .from('tickets_events')
+                .select('*,events(name,isFree,eventImage,startTime,endTime,date),zone_ticket_category(name),eventOrganizations(name),zones_events(name),venues(name),eventRegistrations(details,paymentStatus)')
+                .eq('eventOrganizationId', userOrganizationId)
+                .order('id', { ascending: false });
+
             if (error) {
-                console.log('ticketsResponseError', error)
+                console.log('ticketsResponseError', error);
             }
+
             if (data) {
 
+                const updatedData = await Promise.all(data.map(async (ticket) => {
+                    const qrCodeDataUrl = await generateQRCode(ticket.referenceId, ticket.eventId, ticket.id);
+                    return { ...ticket, qrCode: qrCodeDataUrl };
+                }));
 
-                setAllEventTickets(data);
+                setAllEventTickets(updatedData);
 
-                const isAnyEventFree = data.some(ticket => ticket.events?.isFree);
+
+                const isAnyEventFree = updatedData.some(ticket => ticket.events?.isFree);
                 setEventFree(isAnyEventFree);
 
-                // const pendingCount = data.filter(ticket => ticket.eventRegistrations?.paymentStatus === 'pending').length;
-                // const doneCount = data.filter(ticket => ticket.eventRegistrations?.paymentStatus === 'done').length;
 
-                // setTotalPendingCount(pendingCount);
-                // setTotalDoneCount(doneCount);
             }
-        }
-        catch (error) {
+        } catch (error) {
             console.error('Error in fetching tickets:', error.message);
         }
     };
+
+    const generateQRCode = async (referenceId, eventId, ticketId) => {
+        try {
+            const qrValue = `ReferenceID:${referenceId} && EventID:${eventId} && TicketID:${ticketId}`;
+
+
+            const qrCodeDataUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qrValue)}&size=128x128`;
+
+            return qrCodeDataUrl;
+        } catch (error) {
+            console.error("Error generating QR code", error);
+            return null;
+        }
+    };
+
 
     const fetchData = async () => {
         try {
@@ -116,7 +142,7 @@ export default function ViewTickets() {
             const status = row.eventRegistrations?.paymentStatus;
             const matchesSearch = reference?.includes(searchTerm);
             const matchesStatus =
-                paymentStatus === 'all' || (paymentStatus === 'done' && status?.includes('done')) || (paymentStatus === 'pending' && !status?.includes('done'));
+                paymentStatus === 'all' || (paymentStatus === 'done' && status?.includes('done')) || (paymentStatus === 'pending' && !status?.includes('done')) || (paymentStatus === 'manual' && status?.includes('manual'));
             return matchesSearch && matchesStatus;
         });
     }, [searchTerm, paymentStatus, allEventTickets]);
@@ -154,7 +180,7 @@ export default function ViewTickets() {
         return (
             paymentStatus === 'all' ||
             (paymentStatus === 'done' && status?.includes('done')) ||
-            (paymentStatus === 'pending' && !status?.includes('done'))
+            (paymentStatus === 'pending' && !status?.includes('done')) || (paymentStatus === 'manual' && status?.includes('manual'))
         );
     })
         .map(ticket => {
@@ -210,23 +236,25 @@ export default function ViewTickets() {
         return categories.map((category) => {
             const doneCount = categoryWiseCount[`${category}_done`]?.length || 0;
             const pendingCount = categoryWiseCount[`${category}_pending`]?.length || 0;
-            const allCount = doneCount + pendingCount;
+            const manualCount = categoryWiseCount[`${category}_manual`]?.length || 0;
+            const allCount = doneCount + pendingCount + manualCount;
 
             return (
                 <MDTypography key={category} variant="h6" pl={3}>
                     {category} :-
-                    {paymentStatus !== 'pending' && paymentStatus !== 'done' && ` Total: ${allCount}, `}
-                    {paymentStatus !== 'pending' && ` Done: ${doneCount}`}
-                    {paymentStatus === 'pending' ? "" : paymentStatus !== 'done' && ", "}
-                    {paymentStatus !== 'done' && ` Pending: ${pendingCount}`}
+                    {paymentStatus !== 'pending' && paymentStatus !== 'done' && paymentStatus !== 'manual' && ` Total: ${allCount}  `}
+                    {paymentStatus !== 'pending' && paymentStatus !== 'manual' && ` Done: ${doneCount}  `}
+                    {paymentStatus !== 'pending' && paymentStatus !== 'done' && ` Manual: ${manualCount}  `}
+
+
+                    {paymentStatus !== 'done' && paymentStatus !== 'manual' && ` Pending: ${pendingCount}  `}
 
                 </MDTypography>
             );
         });
     };
-
-
     const currentRows = filteredRows && filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
 
     return (
         <DashboardLayout>
@@ -289,6 +317,9 @@ export default function ViewTickets() {
                                                 <ToggleButton value="done" key="done" color="success">
                                                     <MDTypography>Done</MDTypography>
                                                 </ToggleButton>
+                                                <ToggleButton value="manual" key="manual" color="standard">
+                                                    <MDTypography>Manual</MDTypography>
+                                                </ToggleButton>
                                                 <ToggleButton value="all" key="all" color="info">
                                                     <MDTypography>All</MDTypography>
                                                 </ToggleButton>
@@ -308,7 +339,7 @@ export default function ViewTickets() {
                                             </MDBox>
                                         ) : filteredRows && filteredRows.length > 0 ? (
                                             <>
-                                                {!eventFree && (
+                                                {!eventFree ? (
                                                     <>
                                                         <MDBox display="flex" justifyContent="space-between" alignItems="center" pl={3}>
                                                             <MDTypography variant="h6">Number of Tickets: {filteredRows.length}</MDTypography>
@@ -318,7 +349,9 @@ export default function ViewTickets() {
                                                             {renderCategoryCounts()}
                                                         </MDBox>
                                                     </>
-                                                )}
+                                                ) : (<MDBox display="flex" justifyContent="space-between" alignItems="center" pl={3}>
+                                                    <MDTypography variant="h6">Number of Tickets: {filteredRows.length}</MDTypography>
+                                                </MDBox>)}
                                                 <MDBox pt={3}>
                                                     <TableContainer component={Paper}>
                                                         <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -331,15 +364,34 @@ export default function ViewTickets() {
                                                                     <TableCell>Phone</TableCell>
                                                                     <TableCell>Payment Status</TableCell>
                                                                     <TableCell>Category</TableCell>
+                                                                    <TableCell>Copy Template</TableCell>
                                                                 </TableRow>
                                                             </TableHead>
                                                             <TableBody>
                                                                 {currentRows.map((row) => {
+
                                                                     const parsedDetails = row.eventRegistrations?.details ? JSON.parse(row.eventRegistrations?.details) : {};
                                                                     const firstName = parsedDetails["First Name"] || "N/A";
                                                                     const lastName = parsedDetails["Last Name"] || "N/A";
                                                                     const fullName = parsedDetails["Full Name"] || "N/A";
+                                                                    const email = parsedDetails["Email"] || parsedDetails["Email Address"] || "N/A";
+                                                                    //const tShirtSize = parsedDetails["T-Shirt Size"] || "N/A";
                                                                     const phone = parsedDetails["Phone Number"] || parsedDetails["Local Mobile Number"] || "N/A";
+                                                                    const name = fullName !== 'N/A' ? fullName : (firstName !== 'N/A' && lastName !== 'N/A' ? `${firstName}${lastName}` : 'N/A')
+                                                                    //const category = row.zone_ticket_category?.name || "N/A";
+                                                                    const referenceId = row.referenceId || "N/A";
+
+                                                                    const eventName = row.events?.name || "N/A";
+                                                                    const eventImage = row.events?.eventImage || "N/A";
+                                                                    const location = row.venues?.name || "N/A";
+                                                                    const date = dayjs(row.events?.date).format('ddd, DD MMM YYYY') || "N/A";
+                                                                    const formatTime = (time) => time.slice(0, -3);
+
+                                                                    const time = `${formatTime(row.events?.startTime)} - ${formatTime(row.events?.endTime)}` || "N/A";
+                                                                    const qrCode = row.qrCode || "N/A";
+
+
+
                                                                     return (
                                                                         <TableRow
                                                                             key={row.referenceId}
@@ -347,7 +399,7 @@ export default function ViewTickets() {
                                                                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                                                         >
                                                                             <TableCell component="th" scope="row">
-                                                                                {row.referenceId}
+                                                                                {referenceId}
                                                                             </TableCell>
                                                                             <TableCell align="left">{row.events?.name}</TableCell>
                                                                             <TableCell align="left">{formattedDate(row.created_at)}</TableCell>
@@ -355,6 +407,24 @@ export default function ViewTickets() {
                                                                             <TableCell align="left">{phone}</TableCell>
                                                                             <TableCell align="left">{row.eventRegistrations?.paymentStatus}</TableCell>
                                                                             <TableCell align="left">{row.zone_ticket_category?.name}</TableCell>
+                                                                            <TableCell align="left"><TicketEmail
+                                                                                attendee={{
+                                                                                    name: name,
+                                                                                    email: email,
+                                                                                    phoneNumber: phone,
+                                                                                    // tShirtSize: tShirtSize,
+                                                                                    // ticketType: category,
+                                                                                    bookingId: referenceId,
+                                                                                }}
+                                                                                event={{
+                                                                                    eventName: eventName,
+                                                                                    location: location,
+                                                                                    date: date,
+                                                                                    time: time,
+                                                                                    bannerUrl: eventImage,
+                                                                                    qrValue: qrCode,
+                                                                                }}
+                                                                            /></TableCell>
                                                                         </TableRow>
                                                                     );
                                                                 })}
