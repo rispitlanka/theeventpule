@@ -24,6 +24,7 @@
     "@mui/material": "^5.15.16",
     "@mui/x-date-pickers": "^7.3.2",
     "@supabase/supabase-js": "^2.43.0",
+    "axios": "^1.7.7",
     "chart.js": "4.3.0",
     "chroma-js": "2.4.2",
     "dayjs": "^1.11.11",
@@ -89,5 +90,7 @@
   },
   "overrides": {
     "svgo": "3.0.2"
-  }
+  },
+  "proxy": "https://dreamin24.seatsnaps.com"
+
 }

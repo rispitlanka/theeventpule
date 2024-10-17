@@ -36,6 +36,7 @@ export default function ViewTickets() {
     // const [totalPendingCount, setTotalPendingCount] = useState(0);
     // const [totalDoneCount, setTotalDoneCount] = useState(0);
 
+
     const navigate = useNavigate();
     const openPage = (route) => {
         navigate(route);
@@ -378,7 +379,7 @@ export default function ViewTickets() {
                                                                     const email = parsedDetails["Email"] || parsedDetails["Email Address"] || "N/A";
                                                                     //const tShirtSize = parsedDetails["T-Shirt Size"] || "N/A";
                                                                     const phone = parsedDetails["Phone Number"] || parsedDetails["Local Mobile Number"] || "N/A";
-                                                                    const name = fullName !== 'N/A' ? fullName : (firstName !== 'N/A' && lastName !== 'N/A' ? `${firstName}${lastName}` : 'N/A')
+                                                                    const name = fullName !== 'N/A' ? fullName : (firstName !== 'N/A' && lastName !== 'N/A' ? `${firstName} ${lastName}` : 'N/A')
                                                                     //const category = row.zone_ticket_category?.name || "N/A";
                                                                     const referenceId = row.referenceId || "N/A";
 
@@ -400,18 +401,18 @@ export default function ViewTickets() {
                                                                     return (
                                                                         <TableRow
                                                                             key={row.referenceId}
-                                                                            onClick={(e) => { e.stopPropagation(); openPage(`/viewTickets/single-ticket/${row.id}/${row.eventId}`); }} style={{ cursor: 'pointer' }}
+                                                                            style={{ cursor: 'pointer' }}
                                                                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                                                         >
-                                                                            <TableCell component="th" scope="row">
+                                                                            <TableCell onClick={(e) => { e.stopPropagation(); openPage(`/viewTickets/single-ticket/${row.id}/${row.eventId}`); }} component="th" scope="row">
                                                                                 {referenceId}
                                                                             </TableCell>
-                                                                            <TableCell align="left">{row.events?.name}</TableCell>
-                                                                            <TableCell align="left">{formattedDate(row.created_at)}</TableCell>
-                                                                            <TableCell align="left">{fullName !== 'N/A' ? fullName : (firstName !== 'N/A' && lastName !== 'N/A' ? `${firstName} ${lastName}` : 'N/A')}</TableCell>
-                                                                            <TableCell align="left">{phone}</TableCell>
-                                                                            <TableCell align="left">{paymentStatus}</TableCell>
-                                                                            <TableCell align="left">{row.zone_ticket_category?.name}</TableCell>
+                                                                            <TableCell onClick={(e) => { e.stopPropagation(); openPage(`/viewTickets/single-ticket/${row.id}/${row.eventId}`); }} align="left">{row.events?.name}</TableCell>
+                                                                            <TableCell onClick={(e) => { e.stopPropagation(); openPage(`/viewTickets/single-ticket/${row.id}/${row.eventId}`); }} align="left">{formattedDate(row.created_at)}</TableCell>
+                                                                            <TableCell onClick={(e) => { e.stopPropagation(); openPage(`/viewTickets/single-ticket/${row.id}/${row.eventId}`); }} align="left">{fullName !== 'N/A' ? fullName : (firstName !== 'N/A' && lastName !== 'N/A' ? `${firstName} ${lastName}` : 'N/A')}</TableCell>
+                                                                            <TableCell onClick={(e) => { e.stopPropagation(); openPage(`/viewTickets/single-ticket/${row.id}/${row.eventId}`); }} align="left">{phone}</TableCell>
+                                                                            <TableCell onClick={(e) => { e.stopPropagation(); openPage(`/viewTickets/single-ticket/${row.id}/${row.eventId}`); }} align="left">{paymentStatus}</TableCell>
+                                                                            <TableCell onClick={(e) => { e.stopPropagation(); openPage(`/viewTickets/single-ticket/${row.id}/${row.eventId}`); }} align="left">{row.zone_ticket_category?.name}</TableCell>
                                                                             <TableCell align="left"><TicketEmail
                                                                                 attendee={{
                                                                                     name: name,
