@@ -1,4 +1,4 @@
-import { Button } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar } from '@mui/material';
 import axios from 'axios';
 import { supabase } from 'pages/supabaseClient';
 import PropTypes from 'prop-types';
@@ -7,6 +7,9 @@ import React, { useEffect, useState } from 'react';
 const TicketEmail = ({ attendee, event }) => {
   const [isEmailSent, setIsEmailSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+
 
   const {
     name,
@@ -26,10 +29,12 @@ const TicketEmail = ({ attendee, event }) => {
     qrValue,
   } = event;
 
-  const sendEmail = async (e) => {
+  const handleOpenDialog = () => setOpenDialog(true);
+  const handleCloseDialog = () => setOpenDialog(false);
 
-    e.preventDefault()
+  const sendEmail = async () => {
     setLoading(true);
+    setOpenDialog(false);
 
     const emailTemplate = `<!DOCTYPE html>
       <html lang="en" dir="ltr">
@@ -122,6 +127,7 @@ const TicketEmail = ({ attendee, event }) => {
 
 
         setIsEmailSent(true);
+        setOpenSnackbar(true);
       } else {
         alert('Failed to send email');
       }
@@ -151,6 +157,10 @@ const TicketEmail = ({ attendee, event }) => {
     fetchEmailStatus();
   }, [bookingId]);
 
+  const handleSnackbarClose = () => {
+    setOpenSnackbar(false);
+  };
+
   return (
     <div>
       {isEmailSent ? (
@@ -164,16 +174,48 @@ const TicketEmail = ({ attendee, event }) => {
           ✔ Sent
         </Button>
       ) : (
-        <Button
-          key={bookingId}
-          variant="contained"
-          color="primary"
-          onClick={sendEmail}
-          disabled={loading}
-          sx={{ borderRadius: '10px', color: 'white !important', width: "100%" }}
-        >
-          {loading ? 'Sending...' : 'Send '}
-        </Button>
+        <>
+          <Button
+            key={bookingId}
+            variant="contained"
+            color="primary"
+            onClick={handleOpenDialog}
+            disabled={loading}
+            sx={{ borderRadius: '10px', color: 'white !important', width: "100%" }}
+          >
+            {loading ? 'Sending...' : 'Send '}
+          </Button>
+
+          {/* Confirmation Dialog */}
+          <Dialog
+            open={openDialog}
+            onClose={handleCloseDialog}
+          >
+            <DialogTitle>Confirm Email</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                Are you sure to send the confirmation email to {name} ({email})?
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseDialog} color="secondary">
+                Cancel
+              </Button>
+              <Button onClick={sendEmail} color="primary" disabled={loading}>
+                {loading ? 'Sending...' : 'Send'}
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          {/* Success Snackbar */}
+          <Snackbar
+            open={openSnackbar}
+            onClose={handleSnackbarClose}
+            message="Email sent successfully!"
+            autoHideDuration={3000}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+          />
+        </>
       )}
     </div>
   );
@@ -184,8 +226,8 @@ TicketEmail.propTypes = {
   attendee: PropTypes.shape({
     name: PropTypes.string.isRequired,
     email: PropTypes.string.isRequired,
-    phoneNumber: PropTypes.string.isRequired,
-    tShirtSize: PropTypes.string.isRequired,
+    // phoneNumber: PropTypes.string.isRequired,
+    // tShirtSize: PropTypes.string.isRequired,
     ticketType: PropTypes.string.isRequired,
     bookingId: PropTypes.string.isRequired,
   }).isRequired,

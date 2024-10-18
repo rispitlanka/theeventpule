@@ -395,6 +395,8 @@ export default function ViewTickets() {
 
                                                                     const time = `${formatTime(row.events?.startTime)} - ${formatTime(row.events?.endTime)}` || "N/A";
                                                                     const qrCode = row.qrCode || "N/A";
+                                                                    // const isEmailSent = row.isEmailSent
+
 
 
 
@@ -421,6 +423,7 @@ export default function ViewTickets() {
                                                                                     // tShirtSize: tShirtSize,
                                                                                     // ticketType: category,
                                                                                     bookingId: referenceId,
+                                                                                    //isEmailConfirmationSent: isEmailSent,
                                                                                 }}
                                                                                 event={{
                                                                                     eventName: eventName,
