@@ -151,6 +151,7 @@ export default function ViewTickets() {
     const handlePaymentStatusChange = (event, newStatus) => {
         if (newStatus !== null) {
             setPaymentStatus(newStatus);
+            setPage(0)
 
         }
     };
