@@ -48,7 +48,10 @@ function ResetPassword() {
         try {
             const { data, error } = await supabase.auth.updateUser({ password: confirmPassword });
             if (data) {
+                let { error } = await supabase.auth.signOut();
+                if (error) alert("There was an error in signing out your account.");
                 toast.info('Password Has Been Changed!');
+                localStorage.removeItem('userEmail');
                 setTimeout(() => {
                     navigate('/authentication/sign-in');
                 }, 1000);

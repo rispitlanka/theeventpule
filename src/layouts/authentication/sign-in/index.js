@@ -79,6 +79,19 @@ function Basic() {
     }
   };
 
+  const sendResetLink = async () => {
+    if (email) {
+      try {
+        const { data, error } = await supabase.auth.resetPasswordForEmail(email)
+        if (data) alert("Reset link has been sent to your email.");
+        if (error) alert("Error in sending reset link.");
+      } catch (error) { console.log(error) }
+    }
+    else {
+      alert("Please Provide an email address.");
+    }
+  }
+
   return (
     <BasicLayout image={bgImage}>
       <Card>
@@ -140,21 +153,21 @@ function Basic() {
                 Sign in
               </MDButton>
             </MDBox>
-            {/* <MDBox mt={3} mb={1} textAlign="center">
+            <MDBox mt={3} mb={1} textAlign="center">
               <MDTypography variant="button" color="text">
-                Don&apos;t have an account?{" "}
+                Forgot password?{" "}
                 <MDTypography
-                  component={Link}
-                  to="/authentication/sign-up"
+                  onClick={sendResetLink}
+                  style={{ cursor: "pointer" }}
                   variant="button"
-                  color="info"
-                  fontWeight="medium"
+                  color="dark"
+                  // fontWeight="medium"
                   textGradient
                 >
-                  Sign up
+                  Click here to Send a Reset Link
                 </MDTypography>
               </MDTypography>
-            </MDBox> */}
+            </MDBox>
           </MDBox>
         </MDBox>
       </Card>
