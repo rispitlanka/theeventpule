@@ -466,6 +466,14 @@ const routes = [
     component: <Reports />,
   },
   {
+    type: "collapse",
+    name: "Profile",
+    key: "profile",
+    icon: <Icon icon="iconamoon:profile-fill" />,
+    route: "/profile",
+    component: <Profile />,
+  },
+  {
     route: "/facilities/add-facilities",
     component: <AddFacilities />,
   },
@@ -732,14 +740,6 @@ const routes = [
   //   icon: <Icon fontSize="small">notifications</Icon>,
   //   route: "/notifications",
   //   component: <Notifications />,
-  // },
-  // {
-  //   type: "collapse",
-  //   name: "Profile",
-  //   key: "profile",
-  //   icon: <Icon fontSize="small">person</Icon>,
-  //   route: "/profile",
-  //   component: <Profile />,
   // },
 ];
 
