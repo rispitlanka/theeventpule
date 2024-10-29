@@ -56,7 +56,10 @@ function ResetPassword() {
                     navigate('/authentication/sign-in');
                 }, 1000);
             }
-            if (error) alert("There was an error updating your password.");
+            if (error) {
+                alert("There was an error updating your password.");
+                console.log("There was an error updating your password.", error);
+            }
         } catch (error) {
             console.log(error, 'Error in updating password');
         }
