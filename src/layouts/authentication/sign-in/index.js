@@ -27,6 +27,7 @@ function Basic() {
   const [password, setPassword] = useState('');
   // const [rememberMe, setRememberMe] = useState(false);
   const [emailError, setEmailError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const openPage = (route) => {
     navigate(route);
@@ -76,6 +77,28 @@ function Basic() {
     } catch (error) {
       console.error('Sign-in error:', error.message);
       toast.error(error.message);
+    }
+  };
+
+  const sendResetLink = async () => {
+    if (!validateEmail(email)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+    try {
+      setIsLoading(true);
+      const { error } = await supabase.auth.resetPasswordForEmail(email);
+      if (error) {
+        console.error("Error sending reset link:", error.message);
+        alert("Error in sending reset link.");
+      } else {
+        alert("Reset link has been sent to your email.");
+      }
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      alert("Something went wrong. Please try again later.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -140,21 +163,22 @@ function Basic() {
                 Sign in
               </MDButton>
             </MDBox>
-            {/* <MDBox mt={3} mb={1} textAlign="center">
+            <MDBox mt={3} mb={1} textAlign="center">
               <MDTypography variant="button" color="text">
-                Don&apos;t have an account?{" "}
+                Forgot password?{" "}
                 <MDTypography
-                  component={Link}
-                  to="/authentication/sign-up"
+                  onClick={sendResetLink}
+                  disabled={isLoading}
+                  style={{ cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.6 : 1 }}
                   variant="button"
                   color="info"
-                  fontWeight="medium"
                   textGradient
                 >
-                  Sign up
+                  {isLoading ? "Sending..." : "Click here to send a reset link"}
                 </MDTypography>
               </MDTypography>
-            </MDBox> */}
+
+            </MDBox>
           </MDBox>
         </MDBox>
       </Card>

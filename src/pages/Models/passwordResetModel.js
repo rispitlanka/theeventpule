@@ -1,43 +1,27 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
-// @mui material components
-import Card from "@mui/material/Card";
-
-// Material Dashboard 2 React components
-import MDBox from "components/MDBox";
-import MDTypography from "components/MDTypography";
-import MDInput from "components/MDInput";
-import MDButton from "components/MDButton";
-import { supabase } from "pages/supabaseClient";
-import { ToastContainer, toast } from 'react-toastify';
-
-// Images
-import bgImage from "assets/images/bg-reset-cover.jpeg";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import BasicLayout from "layouts/authentication/components/BasicLayout";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import MDBox from 'components/MDBox';
+import MDInput from 'components/MDInput';
+import React, { useState } from 'react'
 import { IconButton } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import PropTypes from 'prop-types';
+import MDTypography from 'components/MDTypography';
+import { ToastContainer, toast } from 'react-toastify';
+import { supabase } from "pages/supabaseClient";
 
-function ResetPassword() {
+export default function PasswordResetModel({ open, onClose }) {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [passwordError, setPasswordError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
-    const navigate = useNavigate();
+
+    const handleClose = () => {
+        onClose();
+        setNewPassword('');
+        setConfirmPassword('');
+        setPasswordError('');
+        setShowPassword(false);
+    };
 
     const handleResetPassword = async () => {
         if (newPassword !== confirmPassword) {
@@ -48,13 +32,8 @@ function ResetPassword() {
         try {
             const { data, error } = await supabase.auth.updateUser({ password: confirmPassword });
             if (data) {
-                let { error } = await supabase.auth.signOut();
-                if (error) alert("There was an error in signing out your account.");
                 toast.info('Password Has Been Changed!');
-                localStorage.removeItem('userEmail');
-                setTimeout(() => {
-                    navigate('/authentication/sign-in');
-                }, 1000);
+                handleClose();
             }
             if (error) alert("There was an error updating your password.");
         } catch (error) {
@@ -85,25 +64,11 @@ function ResetPassword() {
     };
 
     return (
-        <BasicLayout coverHeight="50vh" image={bgImage}>
-            <Card>
-                <MDBox
-                    variant="gradient"
-                    bgColor="info"
-                    borderRadius="lg"
-                    coloredShadow="success"
-                    mx={2}
-                    mt={-3}
-                    py={2}
-                    mb={1}
-                    textAlign="center"
-                >
-                    <MDTypography variant="h3" fontWeight="medium" color="white" mt={1}>
-                        Reset Password
-                    </MDTypography>
-                </MDBox>
-                <MDBox pt={4} pb={3} px={3}>
-                    <MDBox component="form" role="form">
+        <>
+            <Dialog onClose={handleClose} open={open} maxWidth="sm" fullWidth>
+                <DialogTitle>Reset Password</DialogTitle>
+                <DialogContent>
+                    <MDBox pt={4} pb={3} px={3} component="form" role="form">
                         <MDBox mb={4}>
                             <MDInput
                                 type={showPassword ? 'text' : 'password'}
@@ -141,20 +106,13 @@ function ResetPassword() {
                                 <MDTypography color="error">{passwordError}</MDTypography>
                             </MDBox>
                         )}
-                        <MDBox mt={6} mb={1}>
-                            <MDButton
-                                variant="gradient"
-                                color="info"
-                                fullWidth
-                                onClick={handleResetPassword}
-                                disabled={newPassword === '' || confirmPassword === '' || newPassword !== confirmPassword}
-                            >
-                                Reset
-                            </MDButton>
-                        </MDBox>
                     </MDBox>
-                </MDBox>
-            </Card>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} color="secondary">Cancel</Button>
+                    <Button onClick={handleResetPassword} disabled={newPassword === '' || confirmPassword === '' || newPassword !== confirmPassword} color="primary">Reset</Button>
+                </DialogActions>
+            </Dialog>
             <ToastContainer
                 position="bottom-center"
                 autoClose={5000}
@@ -167,8 +125,11 @@ function ResetPassword() {
                 pauseOnHover
                 theme="light"
             />
-        </BasicLayout>
+        </>
     );
 }
 
-export default ResetPassword;
+PasswordResetModel.propTypes = {
+    open: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+};
