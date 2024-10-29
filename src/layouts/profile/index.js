@@ -122,7 +122,7 @@ function Overview() {
         >
           <Grid container spacing={3} alignItems="center">
             <Grid item>
-              <MDAvatar src={burceMars} alt="profile-image" size="xl" shadow="sm" />
+              {/* <MDAvatar src={burceMars} alt="profile-image" size="xl" shadow="sm" /> */}
             </Grid>
             <Grid item>
               <MDBox height="100%" mt={0.5} lineHeight={1}>
@@ -134,13 +134,18 @@ function Overview() {
                 </MDTypography>
               </MDBox>
             </Grid>
-            <Grid item xs={12} md={6} lg={4} sx={{ ml: "auto" }}>
+            <Grid item xs={12} md={6} lg={4} sx={{ ml: 'auto', display: 'flex', justifyContent: 'flex-end' }}>
               <Button
                 id="basic-button"
                 aria-controls={open ? 'basic-menu' : undefined}
                 aria-haspopup="true"
                 aria-expanded={open ? 'true' : undefined}
                 onClick={handleClick}
+                startIcon={
+                  <Icon fontSize="small" sx={{ mt: -0.25 }}>
+                    settings
+                  </Icon>
+                }
               >
                 Settings
               </Button>
