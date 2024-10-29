@@ -373,13 +373,10 @@ export default function ViewTickets() {
                                                                 {currentRows.map((row) => {
 
                                                                     const parsedDetails = row.eventRegistrations?.details ? JSON.parse(row.eventRegistrations?.details) : {};
-                                                                    const firstName = parsedDetails["First Name"] || "N/A";
-                                                                    const lastName = parsedDetails["Last Name"] || "N/A";
-                                                                    const fullName = parsedDetails["Full Name"] || "N/A";
                                                                     const email = parsedDetails["Email"] || parsedDetails["Email Address"] || "N/A";
                                                                     //const tShirtSize = parsedDetails["T-Shirt Size"] || "N/A";
                                                                     const phone = parsedDetails["Phone Number"] || parsedDetails["Local Mobile Number"] || "N/A";
-                                                                    const name = fullName !== 'N/A' ? fullName : (firstName !== 'N/A' && lastName !== 'N/A' ? `${firstName} ${lastName}` : 'N/A')
+                                                                    const name = parsedDetails["Full Name"] || (parsedDetails["First Name"] && parsedDetails["Last Name"] ? `${parsedDetails["First Name"]} ${parsedDetails["Last Name"]}` : parsedDetails["Name"]) || "N/A";
                                                                     //const category = row.zone_ticket_category?.name || "N/A";
                                                                     const referenceId = row.referenceId || "N/A";
 
@@ -411,7 +408,7 @@ export default function ViewTickets() {
                                                                             </TableCell>
                                                                             <TableCell onClick={(e) => { e.stopPropagation(); openPage(`/viewTickets/single-ticket/${row.id}/${row.eventId}`); }} align="left">{row.events?.name}</TableCell>
                                                                             <TableCell onClick={(e) => { e.stopPropagation(); openPage(`/viewTickets/single-ticket/${row.id}/${row.eventId}`); }} align="left">{formattedDate(row.created_at)}</TableCell>
-                                                                            <TableCell onClick={(e) => { e.stopPropagation(); openPage(`/viewTickets/single-ticket/${row.id}/${row.eventId}`); }} align="left">{fullName !== 'N/A' ? fullName : (firstName !== 'N/A' && lastName !== 'N/A' ? `${firstName} ${lastName}` : 'N/A')}</TableCell>
+                                                                            <TableCell onClick={(e) => { e.stopPropagation(); openPage(`/viewTickets/single-ticket/${row.id}/${row.eventId}`); }} align="left">{name}</TableCell>
                                                                             <TableCell onClick={(e) => { e.stopPropagation(); openPage(`/viewTickets/single-ticket/${row.id}/${row.eventId}`); }} align="left">{phone}</TableCell>
                                                                             <TableCell onClick={(e) => { e.stopPropagation(); openPage(`/viewTickets/single-ticket/${row.id}/${row.eventId}`); }} align="left">{paymentStatus}</TableCell>
                                                                             <TableCell onClick={(e) => { e.stopPropagation(); openPage(`/viewTickets/single-ticket/${row.id}/${row.eventId}`); }} align="left">{row.zone_ticket_category?.name}</TableCell>
