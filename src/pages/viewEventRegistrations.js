@@ -198,9 +198,7 @@ export default function ViewEventRegistrations() {
                         <>
                             {eventRegistrationData.map((item, index) => {
                                 const details = JSON.parse(item.details);
-                                const fullName = details["Full Name"] || "N/A";
-                                const firstName = details["First Name"] || "N/A";
-                                const lastName = details["Last Name"] || "N/A";
+                                const name = details["Full Name"] || (details["First Name"] && details["Last Name"] ? `${details["First Name"]} ${details["Last Name"]}` : details["Name"]) || "N/A";
 
                                 return (
                                     <Card key={index} sx={{ mb: 2, p: 2, }}>
@@ -208,7 +206,7 @@ export default function ViewEventRegistrations() {
                                             ID: {item.id}
                                         </MDTypography>
                                         <MDTypography variant="body1">
-                                            Name: {fullName !== 'N/A' ? fullName : `${firstName} ${lastName}` || 'N/A'}
+                                            Name: {name}
                                         </MDTypography>
 
                                         <Button
