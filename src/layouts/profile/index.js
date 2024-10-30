@@ -188,38 +188,40 @@ function Overview() {
           </MDBox>
         )
           :
-          <>
-            <MDBox pt={4} px={2} lineHeight={1.25}>
-              <MDTypography variant="h6" fontWeight="medium">
-                Events
-              </MDTypography>
-              <MDBox mb={1}>
-                <MDTypography variant="button" color="text">
-                  Events organized by you
+          eventsData && eventsData.length > 0 && (
+            <>
+              <MDBox pt={4} px={2} lineHeight={1.25}>
+                <MDTypography variant="h6" fontWeight="medium">
+                  Events
                 </MDTypography>
+                <MDBox mb={1}>
+                  <MDTypography variant="button" color="text">
+                    Events organized by you
+                  </MDTypography>
+                </MDBox>
               </MDBox>
-            </MDBox>
-            <MDBox p={2} >
-              <Grid container spacing={6}>
-                {eventsData && eventsData.length > 0 && eventsData.map((event, index) => (
-                  <Grid item key={index} xs={12} md={6} xl={3}>
-                    <DefaultProjectCard
-                      image={event.eventImage}
-                      label={event.event_categories?.name}
-                      title={event.name}
-                      description={event.description.length > 50 ? event.description.replace(/<[^>]*>/g, '').substring(0, 50) + '...' : event.description.replace(/<[^>]*>/g, '')}
-                      action={{
-                        type: "internal",
-                        route: `/events/single-event/${event.id}`,
-                        color: "info",
-                        label: "view event",
-                      }}
-                    />
-                  </Grid>
-                ))}
-              </Grid>
-            </MDBox>
-          </>
+              <MDBox p={2} >
+                <Grid container spacing={6}>
+                  {eventsData.map((event, index) => (
+                    <Grid item key={index} xs={12} md={6} xl={3}>
+                      <DefaultProjectCard
+                        image={event.eventImage}
+                        label={event.event_categories?.name}
+                        title={event.name}
+                        description={event.description.length > 50 ? event.description.replace(/<[^>]*>/g, '').substring(0, 50) + '...' : event.description.replace(/<[^>]*>/g, '')}
+                        action={{
+                          type: "internal",
+                          route: `/events/single-event/${event.id}`,
+                          color: "info",
+                          label: "view event",
+                        }}
+                      />
+                    </Grid>
+                  ))}
+                </Grid>
+              </MDBox>
+            </>
+          )
         }
 
       </MDBox>
