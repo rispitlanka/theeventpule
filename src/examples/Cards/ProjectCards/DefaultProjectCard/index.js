@@ -75,7 +75,7 @@ function DefaultProjectCard({ image, label, title, description, action, authors 
           }}
         />
       </MDBox>
-      <MDBox mt={1} mx={0.5}>
+      <MDBox mt={1} mx={0.5} p={1}>
         <MDTypography variant="button" fontWeight="regular" color="text" textTransform="capitalize">
           {label}
         </MDTypography>
