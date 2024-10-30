@@ -42,14 +42,6 @@ import PlatformSettings from "layouts/profile/components/PlatformSettings";
 import profilesListData from "layouts/profile/data/profilesListData";
 
 // Images
-import homeDecor1 from "assets/images/home-decor-1.jpg";
-import homeDecor2 from "assets/images/home-decor-2.jpg";
-import homeDecor3 from "assets/images/home-decor-3.jpg";
-import homeDecor4 from "assets/images/home-decor-4.jpeg";
-import team1 from "assets/images/team-1.jpg";
-import team2 from "assets/images/team-2.jpg";
-import team3 from "assets/images/team-3.jpg";
-import team4 from "assets/images/team-4.jpg";
 import MDAvatar from "components/MDAvatar";
 import Card from "@mui/material/Card";
 import AppBar from "@mui/material/AppBar";
@@ -58,18 +50,21 @@ import Tab from "@mui/material/Tab";
 import Icon from "@mui/material/Icon";
 import burceMars from "assets/images/bruce-mars.jpg";
 import backgroundImage from "assets/images/bg-profile.jpeg";
-import { Button, Menu, MenuItem } from "@mui/material";
-import { useContext, useState } from "react";
+import { Button, CircularProgress, Menu, MenuItem } from "@mui/material";
+import { useContext, useEffect, useState } from "react";
 import PasswordResetModel from "pages/Models/passwordResetModel";
 import { UserDataContext } from "context";
+import { supabase } from "pages/supabaseClient";
 
 function Overview() {
   const userDetails = useContext(UserDataContext);
-  const email = userDetails && userDetails[0].email;
+  const userOrganizationId = userDetails && userDetails[0].eventOrganizationId;
   const name = userDetails && userDetails[0].name;
   const userRole = userDetails && userDetails[0].userRole;
   const [openResetModel, setOpenResetModel] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [eventsData, setEventsData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const open = Boolean(anchorEl);
 
@@ -88,6 +83,28 @@ function Overview() {
     setOpenResetModel(false);
     setAnchorEl(null);
   };
+
+  const fetchEventsData = async () => {
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase.from('events').select('id,name,description,eventImage,event_categories(name)').eq('eventOrganizationId', userOrganizationId).order('id', { ascending: false });
+      if (data) {
+        setEventsData(data);
+        console.log('Events fetched successfully:', data);
+      }
+      if (error) {
+        throw error;
+      }
+    } catch (error) {
+      console.error('Error fetching events:', error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchEventsData();
+  }, [userOrganizationId]);
 
   return (
     <DashboardLayout>
@@ -163,6 +180,48 @@ function Overview() {
             </Grid>
           </Grid>
         </Card>
+
+        {/* events */}
+        {isLoading ? (
+          <MDBox p={3} display="flex" justifyContent="center">
+            <CircularProgress color="info" />
+          </MDBox>
+        )
+          :
+          <>
+            <MDBox pt={4} px={2} lineHeight={1.25}>
+              <MDTypography variant="h6" fontWeight="medium">
+                Events
+              </MDTypography>
+              <MDBox mb={1}>
+                <MDTypography variant="button" color="text">
+                  Events organized by you
+                </MDTypography>
+              </MDBox>
+            </MDBox>
+            <MDBox p={2} >
+              <Grid container spacing={6}>
+                {eventsData && eventsData.length > 0 && eventsData.map((event, index) => (
+                  <Grid item key={index} xs={12} md={6} xl={3}>
+                    <DefaultProjectCard
+                      image={event.eventImage}
+                      label={event.event_categories?.name}
+                      title={event.name}
+                      description={event.description.length > 50 ? event.description.replace(/<[^>]*>/g, '').substring(0, 50) + '...' : event.description.replace(/<[^>]*>/g, '')}
+                      action={{
+                        type: "internal",
+                        route: `/events/single-event/${event.id}`,
+                        color: "info",
+                        label: "view event",
+                      }}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
+            </MDBox>
+          </>
+        }
+
       </MDBox>
       <PasswordResetModel
         open={openResetModel}
