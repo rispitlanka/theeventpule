@@ -51,7 +51,7 @@ function Footer({ light }) {
             fontSize={size.sm}
           >
             &copy; {new Date().getFullYear()}, Seatsnaps | by
-            <Link href="https://www.creative-tim.com/" target="_blank">
+            <Link href="https://www.seatsnaps.com/" target="_blank">
               <MDTypography variant="button" fontWeight="medium" color={light ? "white" : "dark"}>
                 &nbsp;Rispit&nbsp;
               </MDTypography>
@@ -75,7 +75,7 @@ function Footer({ light }) {
             })}
           >
             <MDBox component="li" pr={2} lineHeight={1}>
-              <Link href="https://www.creative-tim.com/" target="_blank">
+              <Link href="https://www.rispit.com/" target="_blank">
                 <MDTypography
                   variant="button"
                   fontWeight="regular"
@@ -86,7 +86,7 @@ function Footer({ light }) {
               </Link>
             </MDBox>
             <MDBox component="li" px={2} lineHeight={1}>
-              <Link href="https://www.creative-tim.com/presentation" target="_blank">
+              <Link href="https://www.rispit.com/" target="_blank">
                 <MDTypography
                   variant="button"
                   fontWeight="regular"
