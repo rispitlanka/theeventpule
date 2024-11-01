@@ -196,16 +196,33 @@ export default function AddEvent() {
 
     const addEventData = async (values) => {
         try {
+            const { data: eventData, error: eventError } = await supabase.from('events').insert([values]).select('id').single();
 
-            const { data, error } = await supabase.from('events').insert([values]).select('*');
-            if (data) {
-                console.log('Data added succesfully:');
+            if (eventError) {
+                throw new Error(`Error adding event data: ${eventError.message}`);
             }
-            if (error) {
-                throw error;
+
+            const eventID = eventData?.id;
+            if (!eventID) {
+                throw new Error('No event ID returned after inserting event.');
             }
+
+            const formValues = [
+                { name: 'Full Name', type: 'Text', isRequired: true, eventId: eventID },
+                { name: 'Phone', type: 'Phone', isRequired: true, eventId: eventID },
+                { name: 'Email', type: 'Email', isRequired: true, eventId: eventID },
+            ];
+
+            const { data: formData, error: formError } = await supabase.from('registrationForm').insert(formValues).select('*');
+
+            if (formError) {
+                throw new Error(`Error adding registration form data: ${formError.message}`);
+            }
+
+            console.log('Event and registration forms added successfully');
         } catch (error) {
-            throw new Error('Error inserting data:', error.message);
+            console.error('Error inserting data:', error.message);
+            throw error;
         }
     };
 
