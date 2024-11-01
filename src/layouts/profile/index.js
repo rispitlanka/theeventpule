@@ -188,7 +188,7 @@ function Overview() {
                       {name}
                     </MDTypography>
                     <MDTypography variant="button" color="text" fontWeight="regular">
-                      {userRole}
+                      {userRole.replace(/([A-Z])/g, ' $1').trim().replace(/^./, match => match.toUpperCase())}
                       {organizationData && ` - ${organizationData.name}`}
                       {" | "}
                       {email}
