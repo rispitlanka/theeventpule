@@ -45,6 +45,10 @@ export default function EditEvent() {
     const [selectedEndTime, setSelectedEndTime] = useState(null);
     const [selectedStartDate, setSelectedStartDate] = useState();
     const [selectedEndDate, setSelectedEndDate] = useState();
+    const [selectedRegistrationStartTime, setSelectedRegistrationStartTime] = useState(null);
+    const [selectedRegistrationEndTime, setSelectedRegistrationEndTime] = useState(null);
+    const [selectedRegistrationStartDate, setSelectedRegistrationStartDate] = useState();
+    const [selectedRegistrationEndDate, setSelectedRegistrationEndDate] = useState();
     const today = dayjs();
 
     const handleTimeChange = (newTime) => {
@@ -59,6 +63,20 @@ export default function EditEvent() {
     };
     const handleEndDateChange = (date) => {
         setSelectedEndDate((date));
+    }
+
+    const handleRegistrationTimeChange = (newTime) => {
+        setSelectedRegistrationStartTime(newTime);
+    };
+    const handleRegistrationDateChange = (date) => {
+        setSelectedRegistrationStartDate((date));
+    }
+
+    const handleRegistrationEndTimeChange = (newTime) => {
+        setSelectedRegistrationEndTime(newTime);
+    };
+    const handleRegistrationEndDateChange = (date) => {
+        setSelectedRegistrationEndDate((date));
     }
 
     const handleEventImageChange = (event) => {
@@ -99,6 +117,10 @@ export default function EditEvent() {
             values.date = formattedDate;
             values.endTime = formattedEndTime;
             values.endDate = formattedEndDate;
+            values.registrationClosingDate = dayjs(selectedRegistrationEndDate).format('YYYY-MM-DD');
+            values.registrationOpeningDate = dayjs(selectedRegistrationStartDate).format('YYYY-MM-DD');;
+            values.registrationOpeningTime = dayjs(selectedRegistrationStartTime).format('hh:mm A');
+            values.registrationClosingTime = dayjs(selectedRegistrationEndTime).format('hh:mm A');;
             if (Array.isArray(values.eventTags)) {
                 values.eventTags = values.eventTags.map(tag => tag.trim());
             } else if (typeof values.eventTags === 'string') {
@@ -126,6 +148,10 @@ export default function EditEvent() {
             endDate: '',
             startTime: '',
             endTime: '',
+            registrationOpeningDate: '',
+            registrationOpeningTime: '',
+            registrationClosingDate: '',
+            registrationClosingTime: '',
             contactEmail: '',
             contactPhone: '',
             venueId: '',
@@ -221,6 +247,10 @@ export default function EditEvent() {
                         endDate: event.endDate,
                         startTime: event.startTime,
                         endTime: event.endTime,
+                        registrationOpeningDate: event.registrationOpeningDate,
+                        registrationOpeningTime: event.registrationOpeningTime,
+                        registrationClosingDate: event.registrationClosingDate,
+                        registrationClosingTime: event.registrationClosingTime,
                         contactEmail: event.contactEmail,
                         contactPhone: event.contactPhone,
                         venueId: event.venueId,
@@ -233,7 +263,9 @@ export default function EditEvent() {
                     });
                     setEventImagePreview(event.eventImage);
                     setSelectedStartDate(event.date);
+                    setSelectedRegistrationStartDate(event.registrationOpeningDate);
                     setSelectedEndDate(event.endDate);
+                    setSelectedRegistrationEndDate(event.registrationClosingDate);
                     const parsedStartTime = dayjs().startOf('day').set('hour', dayjs(event.startTime, "HH:mm:ss").hour())
                         .set('minute', dayjs(event.startTime, "HH:mm:ss").minute())
                         .set('second', dayjs(event.startTime, "HH:mm:ss").second());
@@ -242,6 +274,14 @@ export default function EditEvent() {
                         .set('minute', dayjs(event.endTime, "HH:mm:ss").minute())
                         .set('second', dayjs(event.endTime, "HH:mm:ss").second());
                     setSelectedEndTime(parsedEndTime);
+                    const parsedRegistrationStartTime = dayjs().startOf('day').set('hour', dayjs(event.registrationOpeningTime, "HH:mm:ss").hour())
+                        .set('minute', dayjs(event.startTime, "HH:mm:ss").minute())
+                        .set('second', dayjs(event.startTime, "HH:mm:ss").second());
+                    setSelectedRegistrationStartTime(parsedRegistrationStartTime);
+                    const parsedRegistrationEndTime = dayjs().startOf('day').set('hour', dayjs(event.registrationClosingTime, "HH:mm:ss").hour())
+                        .set('minute', dayjs(event.endTime, "HH:mm:ss").minute())
+                        .set('second', dayjs(event.endTime, "HH:mm:ss").second());
+                    setSelectedRegistrationEndTime(parsedRegistrationEndTime);
                 }
             } catch (error) {
                 console.error('Error fetching event data:', error.message);
@@ -481,6 +521,73 @@ export default function EditEvent() {
                                                                         dayjs(selectedStartDate).isSame(selectedEndDate, 'day') &&
                                                                         selectedStartTime
                                                                         ? selectedStartTime
+                                                                        : null
+                                                                }
+                                                            />
+                                                        </DemoContainer>
+                                                    </LocalizationProvider>
+                                                </MDBox>
+                                            </Grid>
+                                        </MDBox>
+
+                                        <MDBox ml={1} mb={1}>
+                                            <Grid sx={{ display: 'flex', flexDirection: 'row', }}>
+                                                <MDBox sx={{ mr: 2 }}>
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <DemoContainer components={['DatePicker']}>
+                                                            <DatePicker
+                                                                disablePast
+                                                                label="Select Registration Start Date"
+                                                                value={dayjs(selectedRegistrationStartDate)}
+                                                                onChange={handleRegistrationDateChange}
+                                                            />
+                                                        </DemoContainer>
+                                                    </LocalizationProvider>
+                                                </MDBox>
+                                                <MDBox sx={{ ml: 2 }}>
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <DemoContainer components={['MobileTimePicker']}>
+                                                            <MobileTimePicker
+                                                                label={'Registration Start Time'}
+                                                                openTo="hours"
+                                                                value={selectedRegistrationStartTime}
+                                                                onChange={handleRegistrationTimeChange}
+                                                            // minTime={selectedRegistrationStartDate && dayjs(selectedRegistrationStartDate).isSame(today, 'day') ? today : null}
+                                                            />
+                                                        </DemoContainer>
+                                                    </LocalizationProvider>
+                                                </MDBox>
+                                            </Grid>
+                                        </MDBox>
+                                        <MDBox ml={1} mb={1}>
+                                            <Grid sx={{ display: 'flex', flexDirection: 'row', }}>
+                                                <MDBox sx={{ mr: 2 }}>
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <DemoContainer components={['DatePicker']}>
+                                                            <DatePicker
+                                                                disablePast
+                                                                label="Select Registration End Date"
+                                                                value={dayjs(selectedRegistrationEndDate)}
+                                                                onChange={handleRegistrationEndDateChange}
+                                                                minDate={dayjs(selectedRegistrationStartDate)}
+                                                            />
+                                                        </DemoContainer>
+                                                    </LocalizationProvider>
+                                                </MDBox>
+                                                <MDBox sx={{ ml: 2 }}>
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <DemoContainer components={['MobileTimePicker']}>
+                                                            <MobileTimePicker
+                                                                label={'Registration End Time'}
+                                                                openTo="hours"
+                                                                value={selectedRegistrationEndTime}
+                                                                onChange={handleRegistrationEndTimeChange}
+                                                                minTime={
+                                                                    selectedRegistrationStartDate &&
+                                                                        selectedRegistrationEndDate &&
+                                                                        dayjs(selectedRegistrationStartDate).isSame(selectedRegistrationEndDate, 'day') &&
+                                                                        selectedRegistrationStartTime
+                                                                        ? selectedRegistrationStartTime
                                                                         : null
                                                                 }
                                                             />
