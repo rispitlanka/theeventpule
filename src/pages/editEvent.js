@@ -275,12 +275,12 @@ export default function EditEvent() {
                         .set('second', dayjs(event.endTime, "HH:mm:ss").second());
                     setSelectedEndTime(parsedEndTime);
                     const parsedRegistrationStartTime = dayjs().startOf('day').set('hour', dayjs(event.registrationOpeningTime, "HH:mm:ss").hour())
-                        .set('minute', dayjs(event.startTime, "HH:mm:ss").minute())
-                        .set('second', dayjs(event.startTime, "HH:mm:ss").second());
+                        .set('minute', dayjs(event.registrationOpeningTime, "HH:mm:ss").minute())
+                        .set('second', dayjs(event.registrationOpeningTime, "HH:mm:ss").second());
                     setSelectedRegistrationStartTime(parsedRegistrationStartTime);
                     const parsedRegistrationEndTime = dayjs().startOf('day').set('hour', dayjs(event.registrationClosingTime, "HH:mm:ss").hour())
-                        .set('minute', dayjs(event.endTime, "HH:mm:ss").minute())
-                        .set('second', dayjs(event.endTime, "HH:mm:ss").second());
+                        .set('minute', dayjs(event.registrationClosingTime, "HH:mm:ss").minute())
+                        .set('second', dayjs(event.registrationClosingTime, "HH:mm:ss").second());
                     setSelectedRegistrationEndTime(parsedRegistrationEndTime);
                 }
             } catch (error) {
@@ -346,7 +346,7 @@ export default function EditEvent() {
                                             {editEvent.touched.description && Boolean(editEvent.errors.description) && (
                                                 <p style={{ color: 'red' }}>{editEvent.errors.description}</p>
                                             )}
-                                        </MDBox>                                   
+                                        </MDBox>
                                         <MDBox p={1}>
                                             <FormControl fullWidth error={Boolean(editEvent.touched.categoryId && editEvent.errors.categoryId)}>
                                                 <InputLabel>Select Category</InputLabel>
@@ -469,7 +469,7 @@ export default function EditEvent() {
                                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                         <DemoContainer components={['DatePicker']}>
                                                             <DatePicker
-                                                                disablePast
+                                                                // disablePast
                                                                 label="Select Start Date"
                                                                 value={dayjs(selectedStartDate)}
                                                                 onChange={handleDateChange}
@@ -485,7 +485,7 @@ export default function EditEvent() {
                                                                 openTo="hours"
                                                                 value={selectedStartTime}
                                                                 onChange={handleTimeChange}
-                                                                minTime={selectedStartDate && dayjs(selectedStartDate).isSame(today, 'day') ? today : null}
+                                                                // minTime={selectedStartDate && dayjs(selectedStartDate).isSame(today, 'day') ? today : null}
                                                             />
                                                         </DemoContainer>
                                                     </LocalizationProvider>
@@ -498,7 +498,7 @@ export default function EditEvent() {
                                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                         <DemoContainer components={['DatePicker']}>
                                                             <DatePicker
-                                                                disablePast
+                                                                // disablePast
                                                                 label="Select End Date"
                                                                 value={dayjs(selectedEndDate)}
                                                                 onChange={handleEndDateChange}
@@ -536,7 +536,7 @@ export default function EditEvent() {
                                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                         <DemoContainer components={['DatePicker']}>
                                                             <DatePicker
-                                                                disablePast
+                                                                // disablePast
                                                                 label="Select Registration Start Date"
                                                                 value={dayjs(selectedRegistrationStartDate)}
                                                                 onChange={handleRegistrationDateChange}
@@ -565,7 +565,7 @@ export default function EditEvent() {
                                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                         <DemoContainer components={['DatePicker']}>
                                                             <DatePicker
-                                                                disablePast
+                                                                // disablePast
                                                                 label="Select Registration End Date"
                                                                 value={dayjs(selectedRegistrationEndDate)}
                                                                 onChange={handleRegistrationEndDateChange}
