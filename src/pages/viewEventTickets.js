@@ -151,6 +151,7 @@ export default function ViewTickets() {
     const handlePaymentStatusChange = (event, newStatus) => {
         if (newStatus !== null) {
             setPaymentStatus(newStatus);
+            setPage(0)
 
         }
     };
@@ -366,7 +367,7 @@ export default function ViewTickets() {
                                                                     <TableCell>Phone</TableCell>
                                                                     <TableCell>Payment Status</TableCell>
                                                                     <TableCell>Category</TableCell>
-                                                                    <TableCell>Copy Template</TableCell>
+                                                                    <TableCell>Send Email</TableCell>
                                                                 </TableRow>
                                                             </TableHead>
                                                             <TableBody>
